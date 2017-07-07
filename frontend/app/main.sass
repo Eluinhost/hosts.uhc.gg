@@ -1,0 +1,61 @@
+@import "~normalize.css/normalize.css"
+@import "~@blueprintjs/core/dist/blueprint.css"
+@import "~@blueprintjs/labs/dist/blueprint-labs.css"
+@import "~react-datepicker/dist/react-datepicker.css"
+@import "~rc-time-picker/assets/index.css"
+
+@import "~@blueprintjs/core/dist/variables"
+
+body
+  background: $dark-gray2
+
+.app-container
+  max-width: 920px
+  margin-left: auto
+  margin-right: auto
+  margin-top: 30px
+
+.required-star
+  color: $red4
+  padding-left: 5px
+
+// this is silly but required to be higher than the date picker
+.rc-time-picker-panel
+  z-index: 10000000000
+
+.rc-time-picker-panel
+  .rc-time-picker-panel-select
+    max-height: 144px
+    overflow-y: auto
+    ul
+      max-height: initial
+
+.rc-time-picker-panel-combobox
+  display: flex
+
+.rc-time-picker-panel-select
+  flex: 1
+
+.date-time-field-time-section
+  text-align: center
+  margin: 10px
+
+.rc-time-picker-input
+  width: 170px
+  font-size: 130%
+  text-align: center
+
+.rc-time-picker-panel-input
+  width: 100%
+  font-size: 130%
+  text-align: center
+
+.rc-time-picker-panel-inner
+  width: 100%
+
+.game-information, .server-details, .teams-styles, .scenarios-and-tags
+  display: flex
+
+  > *
+    flex: 1
+    margin: 10px

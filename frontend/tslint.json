@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "max-line-length": [true, 120],
+    "variable-name": [true, "check-format", "allow-pascal-case", "ban-keywords"],
+    "jsx-boolean-value": [true, "never"],
+    "import-name": false
+  },
+  "extends": ["tslint-config-airbnb", "tslint-react"]
+}
