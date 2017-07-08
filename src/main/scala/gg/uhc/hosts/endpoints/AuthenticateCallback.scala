@@ -1,8 +1,5 @@
 package gg.uhc.hosts.endpoints
 
-import java.time.Instant
-import java.time.temporal.ChronoUnit
-
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
