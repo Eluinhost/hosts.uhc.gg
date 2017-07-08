@@ -32,13 +32,13 @@ const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProp
         </span>
       </Popover>
     );
-  } else {
-    return (
-      <a className="pt-button pt-minimal pt-icon-user" href="/authenticate">
-        Log In
-      </a>
-    );
   }
+
+  return (
+    <a className="pt-button pt-minimal pt-icon-user" href="/authenticate">
+      Log In
+    </a>
+  );
 };
 
 function mapStateToProps(state: ApplicationState): UsernameComponentProps {
