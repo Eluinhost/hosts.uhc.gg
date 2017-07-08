@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper } from './FieldWrapper';
+import { FieldWrapper, renderErrors } from './FieldWrapper';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
-import { renderErrors } from '../../../build/components/fields/FieldWrapper';
 
 export interface DateTimeFieldProps extends BaseFieldProps {
   readonly label: string;
