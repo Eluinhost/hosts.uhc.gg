@@ -3,11 +3,12 @@ import { Username } from './Username';
 import { HostForm } from './HostForm';
 import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
-import { Route, RouteComponentProps, RouteProps, Switch } from 'react-router';
+import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { omit } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
+import { HomePage } from './HomePage';
 
 const NavBar: React.SFC = () => (
   <nav className="pt-navbar .modifier">
@@ -49,10 +50,11 @@ type RoutesStateProps = {
   permissions: string[];
 };
 
-const RoutesComponent : React.SFC<RoutesStateProps> = ({ permissions }) => (
+const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
     <AuthedRoute path="/host" component={HostFormPage} required="host" permissions={permissions} />
     <Route path="/login/:token" component={LoginPage} />
+    <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>
 );
@@ -63,7 +65,9 @@ function mapStateToProps(state: ApplicationState): RoutesStateProps {
   };
 }
 
-const Routes = connect<RoutesStateProps, {}, {}>(mapStateToProps)(RoutesComponent);
+const Routes = withRouter<{}>(
+  connect<RoutesStateProps, {}, RouteComponentProps<any>>(mapStateToProps)(RoutesComponent),
+);
 
 export const App: React.SFC = () => (
   <BrowserRouter>
