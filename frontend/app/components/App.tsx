@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Username } from './Username';
 import { HostForm } from './HostForm';
 import { NonIdealState } from '@blueprintjs/core';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Link } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { omit } from 'ramda';
@@ -13,7 +13,9 @@ import { HomePage } from './HomePage';
 const NavBar: React.SFC = () => (
   <nav className="pt-navbar .modifier">
     <div className="pt-navbar-group pt-align-left">
-      <div className="pt-navbar-heading">uhc.gg hosting</div>
+      <Link to="/">
+        <div className="pt-navbar-heading">uhc.gg hosting</div>
+      </Link>
     </div>
     <div className="pt-navbar-group pt-align-right">
       <Username />
