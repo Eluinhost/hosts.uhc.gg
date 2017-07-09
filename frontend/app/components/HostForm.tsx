@@ -9,15 +9,21 @@ import { DateTimeField } from './fields/DateTimeField';
 import { range } from 'ramda';
 import { TextField } from './fields/TextField';
 import { SelectField } from './fields/SelectField';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { MarkdownField } from './fields/MarkdownField';
 import { TagsField } from './fields/TagsField';
 import { ApplicationState } from '../state/ApplicationState';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { logout as logoutAction } from '../state/AuthenticationState';
 
 type HostFormStateProps = {
-  teamStyle?: TeamStyle;
-  initialValues: HostFormData;
-  authToken: string;
+  readonly teamStyle?: TeamStyle;
+  readonly initialValues: HostFormData;
+  readonly authToken: string;
+};
+
+type HostFormDispatchProps = {
+  readonly logout: () => any;
 };
 
 export type HostFormData = {
@@ -191,7 +197,7 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
     </form>
   );
 
-const formConfig: Config<HostFormData, HostFormStateProps, {}> = {
+const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProps & RouteComponentProps<any>, {}> = {
   form: 'host',
   validate: (values) => {
     const errors: FormErrors<HostFormData> = {};
@@ -264,12 +270,13 @@ const formConfig: Config<HostFormData, HostFormStateProps, {}> = {
           break;
         case 401:
           // User cookie has expired, get them to reauthenticate
-          alert('Reauth');
           window.location.href = '/authenticate';
           break;
         case 403:
           alert('You do not have hosting permission');
-          window.location.reload();
+          // force log them out
+          props.logout();
+          props.history.push('/');
           break;
         default:
           alert('Unexpected server issue, please contact an admin if this persists');
@@ -291,7 +298,17 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
   };
 }
 
-export const HostForm = connect<HostFormStateProps, {}, {}>(
-  mapStateToProps,
-)(reduxForm(formConfig)(HostFormComponent));
+function mapDispatchToProps(dispatch: Dispatch<any>): HostFormDispatchProps {
+  return {
+    logout: () => dispatch(logoutAction()),
+  };
+}
 
+export const HostForm =
+  withRouter<{}>(
+    connect<HostFormStateProps, HostFormDispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(
+      reduxForm(formConfig)(
+        HostFormComponent,
+      ),
+    ),
+  );

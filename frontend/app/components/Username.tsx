@@ -4,6 +4,7 @@ import { Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
 import { AuthenticationState, logout as logoutAction } from '../state/AuthenticationState';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 type UsernameComponentProps = {
   readonly authentication: AuthenticationState;
@@ -47,16 +48,19 @@ function mapStateToProps(state: ApplicationState): UsernameComponentProps {
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>): UsernameDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<any>, ownProps: RouteComponentProps<any>): UsernameDispatchProps {
   return {
     logout: () => {
       dispatch(logoutAction());
-      window.location.href = '/';
+      ownProps.history.push('/');
     },
   };
 }
 
-export const Username = connect<UsernameComponentProps, UsernameDispatchProps, {}>(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UsernameComponent);
+export const Username = withRouter<{}>(
+  connect<UsernameComponentProps, UsernameDispatchProps, RouteComponentProps<any>>(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(UsernameComponent),
+);
+
