@@ -2,7 +2,6 @@ import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
 import { Match } from '../Match';
 import { Spinner, NonIdealState, Alert, Intent } from '@blueprintjs/core';
-import {ChangeEvent} from "react";
 
 type MatchComponentProps = {
   readonly match: Match;
@@ -19,7 +18,7 @@ class MatchComponent extends React.Component<MatchComponentProps, MatchComponent
     removalReason: '',
   };
 
-  onDeletePress = () => this.setState({ confirmOpen: true })
+  onDeletePress = () => this.setState({ confirmOpen: true });
 
   onDeleteConfirm() {
     if (!this.state.removalReason)
@@ -28,8 +27,8 @@ class MatchComponent extends React.Component<MatchComponentProps, MatchComponent
     // TODO call api
   }
 
-  onRemovalReasonChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
-    this.setState({ removalReason: e.target.value });
+  onRemovalReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    this.setState({ removalReason: e.target.value })
 
   render() {
     return (
