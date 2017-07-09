@@ -18,6 +18,7 @@ case class MatchRow(
     region: String,
     removed: Boolean,
     removedBy: Option[String],
+    removedReason: Option[String],
     created: Instant)
 
 case class CreateMatchModel(
@@ -33,11 +34,12 @@ case class CreateMatchModel(
     content: String,
     region: String) {
 
-  def toRow(author: String, removed: Boolean, removedBy: Option[String]) = MatchRow(
+  def toRow(author: String) = MatchRow(
     id = -1,
     author = author,
-    removed = removed,
-    removedBy = removedBy,
+    removed = false,
+    removedBy = None,
+    removedReason = None,
     opens = opens,
     address = address,
     ip = ip,

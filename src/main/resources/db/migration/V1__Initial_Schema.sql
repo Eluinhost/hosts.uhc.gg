@@ -14,6 +14,7 @@ CREATE TABLE matches (
   region TEXT NOT NULL,
   removed BOOLEAN NOT NULL,
   removedBy TEXT,
+  removedReason TEXT,
   created TIMESTAMP NOT NULL
 );
 

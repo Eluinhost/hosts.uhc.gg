@@ -4,13 +4,12 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akkahttptwirl.TwirlSupport._
-import gg.uhc.hosts.endpoints.{Authenticate, AuthenticateCallback, CreateMatch, ListMatches}
-
+import gg.uhc.hosts.endpoints._
 
 object Routes {
   val api: Route = pathPrefix("api") {
     (pathPrefix("matches") & pathEndOrSingleSlash) {
-      get(ListMatches.route) ~ post(CreateMatch.route)
+      get(ListMatches.route) ~ post(CreateMatch.route) ~ delete(DeleteMatch.route)
     } ~ complete(StatusCodes.NotFound)
   }
 

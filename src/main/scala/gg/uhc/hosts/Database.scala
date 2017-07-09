@@ -42,6 +42,16 @@ object Database {
     transactor.shutdown.unsafePerformIO
   }
 
+  private[this] def removeQuery(id: Long, reason: String, remover: String): Update0 =
+    sql"""
+      UPDATE matches
+      SET
+        removed = true,
+        removedReason = $reason,
+        removedBy = $remover
+      WHERE id = $id
+     """.asInstanceOf[Fragment].update
+
   private[this] def listQuery: Query0[MatchRow] =
     sql"""
        SELECT
@@ -115,6 +125,8 @@ object Database {
   def list: ConnectionIO[List[MatchRow]] = listQuery.list
 
   def insert(m: MatchRow): ConnectionIO[Int] = insertQuery(m).run
+
+  def remove(id: Long, reason: String, remover: String): ConnectionIO[Int] = removeQuery(id, reason, remover).run
 
   def getPermissions(username: String): ConnectionIO[List[String]] =
     getPermissionsQuery(username).list

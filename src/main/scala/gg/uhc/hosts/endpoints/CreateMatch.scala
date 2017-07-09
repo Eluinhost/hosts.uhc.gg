@@ -4,7 +4,6 @@ import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneOffset}
 
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.HttpChallenges
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts.Database.DatabaseErrorRejection
@@ -12,28 +11,6 @@ import gg.uhc.hosts._
 
 object CreateMatch {
   import CustomJsonCodec._
-
-  private[this] val rejectionHandler = RejectionHandler
-    .newBuilder()
-    .handle {
-      case DatabaseErrorRejection(t) ⇒ // when database explodes
-        extractActorSystem { system ⇒
-          system.log.error("DB error", t)
-          complete(StatusCodes.InternalServerError)
-        }
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _) ⇒ // when no perms
-        complete(StatusCodes.Forbidden)
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsMissing, _) ⇒ // when no session
-        complete(StatusCodes.Unauthorized)
-      case ValidationRejection(m, _) ⇒ // when invalid data
-        complete(StatusCodes.BadRequest → m)
-      case t ⇒
-        extractActorSystem { system ⇒
-          system.log.error(s"Unknown rejection type $t")
-          complete(StatusCodes.InternalServerError)
-        }
-    }
-    .result()
 
   private[this] val teamStyles: Map[String, Boolean] = Map(
     "ffa"      → false,
@@ -55,11 +32,7 @@ object CreateMatch {
         scenarios = provided.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // remove duplicates
         tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList // remove duplicates
       )
-      .toRow(
-        author = author,
-        removed = false,
-        removedBy = None
-      )
+      .toRow(author = author)
 
     if (m.opens.isBefore(Instant.now().plus(30, ChronoUnit.MINUTES)))
       return reject(ValidationRejection("Must be at least 30 minutes in advance"))
@@ -117,18 +90,6 @@ object CreateMatch {
     provide(m)
   }
 
-  private[this] def requirePermission(username: String, permission: String): Directive0 =
-    Database.requireSucessfulQuery(Database.getPermissions(username)) flatMap {
-      case l if l.contains("host") ⇒ pass
-      case _ ⇒
-        reject(
-          AuthenticationFailedRejection(
-            AuthenticationFailedRejection.CredentialsRejected,
-            HttpChallenges.basic("login")
-          )
-        )
-    }
-
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
     Database.requireSucessfulQuery(Database.insert(m)) flatMap {
       case 0 ⇒ reject(DatabaseErrorRejection(new IllegalStateException("no rows inserted")))
@@ -136,15 +97,13 @@ object CreateMatch {
     }
 
   val route: Route =
-    handleRejections(rejectionHandler) {
-      Session.requireValidSession { session ⇒
-        requirePermission(session.username, "host") {
-          // parse the entity
-          entity(as[CreateMatchModel]) { entity ⇒
-            validateAndConvertToRow(entity, session.username) { validated ⇒
-              requireInsertMatch(validated) {
-                complete(StatusCodes.Created → validated)
-              }
+    handleRejections(EndpointRejectionHandler()) {
+      Permissions.requirePermission("host") { session ⇒
+        // parse the entity
+        entity(as[CreateMatchModel]) { entity ⇒
+          validateAndConvertToRow(entity, session.username) { validated ⇒
+            requireInsertMatch(validated) {
+              complete(StatusCodes.Created → validated)
             }
           }
         }
