@@ -21,15 +21,17 @@ export type AuthenticationState = {
   readonly data?: AuthenticationData;
 };
 
-export const login = createAction<AuthenticationData>('LOGIN');
-export const logout = createAction('LOGOUT');
+export const AuthenticationActions = {
+  login: createAction<AuthenticationData>('LOGIN'),
+  logout: createAction('LOGOUT'),
+};
 
 const notLoggedIn: AuthenticationState = {
   loggedIn: false,
 };
 
 export const reducer: Reducer<AuthenticationState> = buildReducer<AuthenticationState>()
-  .handle(login, (state, action) => {
+  .handle(AuthenticationActions.login, (state, action) => {
     storage.setItem(storageKey, action.payload!.raw);
 
     return {
@@ -37,7 +39,7 @@ export const reducer: Reducer<AuthenticationState> = buildReducer<Authentication
       data: action.payload,
     };
   })
-  .handle(logout, () => {
+  .handle(AuthenticationActions.logout, () => {
     storage.removeItem(storageKey);
 
     return notLoggedIn;

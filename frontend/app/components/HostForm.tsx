@@ -14,7 +14,7 @@ import { MarkdownField } from './fields/MarkdownField';
 import { TagsField } from './fields/TagsField';
 import { ApplicationState } from '../state/ApplicationState';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { logout as logoutAction } from '../state/AuthenticationState';
+import { AuthenticationActions } from '../state/AuthenticationState';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
@@ -300,7 +300,7 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
 
 function mapDispatchToProps(dispatch: Dispatch<any>): HostFormDispatchProps {
   return {
-    logout: () => dispatch(logoutAction()),
+    logout: () => dispatch(AuthenticationActions.logout()),
   };
 }
 

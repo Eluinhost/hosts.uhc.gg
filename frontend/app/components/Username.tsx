@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
-import { AuthenticationState, logout as logoutAction } from '../state/AuthenticationState';
+import { AuthenticationState, AuthenticationActions } from '../state/AuthenticationState';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -51,7 +51,7 @@ function mapStateToProps(state: ApplicationState): UsernameComponentProps {
 function mapDispatchToProps(dispatch: Dispatch<any>, ownProps: RouteComponentProps<any>): UsernameDispatchProps {
   return {
     logout: () => {
-      dispatch(logoutAction());
+      dispatch(AuthenticationActions.logout());
       ownProps.history.push('/');
     },
   };

@@ -1,6 +1,6 @@
 import { Redirect, RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import { AuthenticationData, login as loginAction, parseJwt } from '../state/AuthenticationState';
+import { AuthenticationData, AuthenticationActions, parseJwt } from '../state/AuthenticationState';
 import { connect } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
 
@@ -37,6 +37,6 @@ export const LoginPageComponent: React.SFC<RouteComponentProps<LoginPageParams> 
 export const LoginPage = connect<{}, LoginPageDispatchProps, RouteComponentProps<LoginPageParams>>(
   () => ({}),
   dispatch => ({
-    login: data => dispatch(loginAction(data)),
+    login: data => dispatch(AuthenticationActions.login(data)),
   }) as LoginPageDispatchProps,
 )(LoginPageComponent);
