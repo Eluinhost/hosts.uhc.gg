@@ -42,7 +42,7 @@ object Database {
     transactor.shutdown.unsafePerformIO
   }
 
-  private[this] val listQuery: Query0[MatchRow] =
+  private[this] def listQuery: Query0[MatchRow] =
     sql"""
        SELECT
         id,
