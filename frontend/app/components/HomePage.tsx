@@ -19,7 +19,7 @@ export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
       </div>
     </Link>
 
-    <Link to="/mod/matches">
+    <Link to="/moderate/matches">
       <div className="pt-card pt-interactive">
         <h4>Moderate matches</h4>
         <p>

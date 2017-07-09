@@ -9,6 +9,7 @@ import { omit } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
+import { MatchModerationPage } from './MatchModerationPage';
 
 const NavBar: React.SFC = () => (
   <nav className="pt-navbar .modifier">
@@ -65,6 +66,12 @@ type RoutesStateProps = {
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
     <AuthedRoute path="/host" component={HostFormPage} required="host" permissions={permissions} />
+    <AuthedRoute
+      path="/moderate/matches"
+      component={MatchModerationPage}
+      required="moderator"
+      permissions={permissions}
+    />
     <Route path="/login/:token" component={LoginPage} />
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
