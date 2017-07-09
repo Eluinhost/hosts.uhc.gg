@@ -12,7 +12,7 @@ export type LoginPageDispatchProps = {
   readonly login: (data: AuthenticationData) => any;
 };
 
-const InvalidToken: React.SFC = () => <NonIdealState title="Invalid login token" visual="warning" />;
+const InvalidToken: React.SFC = () => <NonIdealState title="Invalid login token" visual="warning-sign" />;
 
 export const LoginPageComponent: React.SFC<RouteComponentProps<LoginPageParams> & LoginPageDispatchProps> =
   ({ match, login }) => {

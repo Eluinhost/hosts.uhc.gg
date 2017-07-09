@@ -36,14 +36,24 @@ type AuthedRouteProps = {
   required: string;
 } & RouteProps;
 
+const NoPermissionAction: React.SFC = () => (
+  <a className="pt-button pt-minimal pt-icon-user" href="/authenticate">
+    Go to Log In
+  </a>
+);
+
+const NoPermissionRoute: React.SFC = () => (
+  <NonIdealState
+    title="Forbidden"
+    description="You do not have permission to use this. You may attempt to login with an authorised account below"
+    visual="warning-sign"
+    action={<NoPermissionAction />}
+  />
+);
+
 const AuthedRoute: React.SFC<AuthedRouteProps> = (props) => {
   if (!props.permissions.some(perm => perm === props.required))
-    return (
-      <NonIdealState
-        title="You do not have permission to do this"
-        visual="warning"
-      />
-    );
+    return <NoPermissionRoute />;
 
   return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
 };
