@@ -45,6 +45,7 @@ object Database {
   private[this] val listQuery: Query0[MatchRow] =
     sql"""
        SELECT
+        id,
         author,
         opens,
         address,
@@ -127,7 +128,7 @@ object Database {
   def requireSucessfulQuery[T](query: ConnectionIO[T]): Directive1[T] = {
     onComplete(runDbQuery(query)) flatMap {
       case Success(value) ⇒ provide(value)
-      case Failure(t) ⇒ reject(DatabaseErrorRejection(t))
+      case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
     }
   }
 }

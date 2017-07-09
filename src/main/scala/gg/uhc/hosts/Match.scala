@@ -3,6 +3,7 @@ package gg.uhc.hosts
 import java.time.Instant
 
 case class MatchRow(
+    id: Int,
     author: String,
     opens: Instant,
     address: Option[String],
@@ -33,6 +34,7 @@ case class CreateMatchModel(
     region: String) {
 
   def toRow(author: String, removed: Boolean, removedBy: Option[String]) = MatchRow(
+    id = -1,
     author = author,
     removed = removed,
     removedBy = removedBy,
