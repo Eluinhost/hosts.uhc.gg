@@ -70,6 +70,7 @@ object Database {
         region,
         removed,
         removedBy,
+        removedReason,
         created
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
@@ -93,6 +94,7 @@ object Database {
         region,
         removed,
         removedBy,
+        removedReason,
         created
       ) VALUES (
         ${m.author},
@@ -109,6 +111,7 @@ object Database {
         ${m.region},
         ${m.removed},
         ${m.removedBy},
+        ${m.removedReason},
         ${m.created}
       );""".asInstanceOf[Fragment].update
 
