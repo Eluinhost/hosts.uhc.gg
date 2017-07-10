@@ -8,8 +8,10 @@ import gg.uhc.hosts.endpoints._
 
 object Routes {
   val api: Route = pathPrefix("api") {
-    (pathPrefix("matches") & pathEndOrSingleSlash) {
-      get(ListMatches.route) ~ post(CreateMatch.route) ~ delete(DeleteMatch.route)
+    pathPrefix("matches") {
+      pathEndOrSingleSlash {
+        get(ListMatches.route) ~ post(CreateMatch.route)
+      } ~ delete(DeleteMatch.route)
     } ~ complete(StatusCodes.NotFound)
   }
 
