@@ -1,6 +1,5 @@
 declare interface Window {
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: (a: object) => Function;
-  __INITIAL_SESSION_INFORMATION__: BackendData;
 }
 
 type ReactDatePickerProps = {
@@ -117,11 +116,11 @@ declare module 'rc-time-picker' {
 
 declare module 'snuownd' {
   type SnuOwndParser = {
-    readonly render(markdown: string): string
+    readonly render(markdown: string): string;
   };
 
   type SnuOwnd = {
-    readonly getParser(): SnuOwndParser
+    readonly getParser(): SnuOwndParser;
   };
 
   const value: SnuOwnd;
@@ -133,6 +132,6 @@ interface PromiseConstructor
   all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Promise<[T1, T2]>;
   all<T1, T2, T3>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>]): Promise<[T1, T2, T3]>;
   all<T1, T2, T3, T4>(
-    values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseList<T4>]
+    values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseList<T4>],
   ): Promise<[T1, T2, T3, T4]>;
 }
