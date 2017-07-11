@@ -16,5 +16,6 @@ export type Match = {
   region: string;
   removed: boolean;
   removedBy: string | null;
+  removedReason: string | null;
   created: moment.Moment;
 };

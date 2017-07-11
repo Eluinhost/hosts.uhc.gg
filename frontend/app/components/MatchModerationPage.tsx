@@ -37,10 +37,20 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
   }
 
   static Match: React.SFC<{ match: Match, onDeletePress: () => any }> = ({ match, onDeletePress }) => (
-    <div className="pt-card">
+    <div className="pt-card match-moderation-match">
       <strong>ID:{match.id}</strong>
       {match.author}'s #{match.count}
-      <button className="pt-button pt-intent-danger" onClick={onDeletePress}>Delete</button>
+
+      <div className="match-moderation-actions">
+        <button
+          className="pt-button pt-intent-danger"
+          onClick={onDeletePress}
+          disabled={match.removed}
+        >
+          {match.removed ? 'Removed' : 'Delete'}
+        </button>
+        {match.removed && <span className="removed-reason">{match.removedReason} - /u/{match.removedBy}</span>}
+      </div>
     </div>
   )
 
