@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
 import { MatchModerationPage } from './MatchModerationPage';
+import { LoginButton } from './LoginButton';
 
 const NavBar: React.SFC = () => (
   <nav className="pt-navbar .modifier">
@@ -37,24 +38,18 @@ type AuthedRouteProps = {
   required: string;
 } & RouteProps;
 
-const NoPermissionAction: React.SFC = () => (
-  <a className="pt-button pt-minimal pt-icon-user" href="/authenticate">
-    Go to Log In
-  </a>
-);
-
-const NoPermissionRoute: React.SFC = () => (
+const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) => (
   <NonIdealState
     title="Forbidden"
     description="You do not have permission to use this. You may attempt to login with an authorised account below"
     visual="warning-sign"
-    action={<NoPermissionAction />}
+    action={<LoginButton />}
   />
 );
 
 const AuthedRoute: React.SFC<AuthedRouteProps> = (props) => {
   if (!props.permissions.some(perm => perm === props.required))
-    return <NoPermissionRoute />;
+    return <Route component={NoPermissionRoute} />;
 
   return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
 };

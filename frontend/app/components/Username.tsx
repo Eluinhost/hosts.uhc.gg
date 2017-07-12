@@ -5,6 +5,7 @@ import { AuthenticationState, AuthenticationActions } from '../state/Authenticat
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { LoginButton } from './LoginButton';
 
 type UsernameComponentProps = {
   readonly authentication: AuthenticationState;
@@ -24,23 +25,20 @@ const UserMenu: React.SFC<{ logout: () => any }> = ({ logout }) => (
   </Menu>
 );
 
-const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProps> = ({ authentication, logout }) => {
-  if (authentication.loggedIn) {
-    return (
-      <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
-        <span className="pt-button pt-minimal pt-icon-user">
-          {authentication.data!.claims.username}
-        </span>
-      </Popover>
-    );
-  }
+const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProps> =
+  ({ authentication, logout }) => {
+    if (authentication.loggedIn) {
+      return (
+        <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
+          <span className="pt-button pt-minimal pt-icon-user">
+            {authentication.data!.claims.username}
+          </span>
+        </Popover>
+      );
+    }
 
-  return (
-    <a className="pt-button pt-minimal pt-icon-user" href="/authenticate">
-      Log In
-    </a>
-  );
-};
+    return <LoginButton />;
+  };
 
 function mapStateToProps(state: ApplicationState): UsernameComponentProps {
   return {
