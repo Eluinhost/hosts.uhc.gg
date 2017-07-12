@@ -3,10 +3,7 @@ import * as React from 'react';
 import { AuthenticationData, AuthenticationActions, parseJwt } from '../state/AuthenticationState';
 import { connect } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
-
-export type LoginPageParams = {
-  readonly token: string;
-};
+import { parse } from 'query-string';
 
 export type LoginPageDispatchProps = {
   readonly login: (data: AuthenticationData) => any;
@@ -14,19 +11,23 @@ export type LoginPageDispatchProps = {
 
 const InvalidToken: React.SFC = () => <NonIdealState title="Invalid login token" visual="warning-sign" />;
 
-export const LoginPageComponent: React.SFC<RouteComponentProps<LoginPageParams> & LoginPageDispatchProps> =
-  ({ match, login }) => {
-    const fixed = match.params.token.replace(/-/g, '.');
+export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageDispatchProps> =
+  ({ location, login }) => {
+    const { path, token } = parse(location.search);
+
+    if (!path || !token || !path.startsWith('/'))
+      return <InvalidToken />;
+
 
     try {
-      const claims = parseJwt(fixed);
+      const claims = parseJwt(token);
 
       login({
         claims,
-        raw: fixed,
+        raw: token,
       });
 
-      return <Redirect to="/" />;
+      return <Redirect to={path} />;
     } catch (err) {
       console.error(err);
     }
@@ -34,7 +35,7 @@ export const LoginPageComponent: React.SFC<RouteComponentProps<LoginPageParams> 
     return <InvalidToken />;
   };
 
-export const LoginPage = connect<{}, LoginPageDispatchProps, RouteComponentProps<LoginPageParams>>(
+export const LoginPage = connect<{}, LoginPageDispatchProps, RouteComponentProps<any>>(
   () => ({}),
   dispatch => ({
     login: data => dispatch(AuthenticationActions.login(data)),

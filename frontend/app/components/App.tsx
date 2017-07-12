@@ -72,7 +72,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
       required="moderator"
       permissions={permissions}
     />
-    <Route path="/login/:token" component={LoginPage} />
+    <Route path="/login" component={LoginPage} />
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>
