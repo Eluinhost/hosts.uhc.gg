@@ -4,6 +4,14 @@ import { Reducer } from 'redux';
 import { Match } from '../Match';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
+import {
+  ApiError,
+  fetchUpcomingMatches,
+  ForbiddenError,
+  NotAuthenticatedError,
+  removeMatch,
+  UnexpectedResponseError,
+} from '../api/index';
 
 export type MatchRemovalModelState = {
   readonly isModalOpen: boolean;
@@ -16,7 +24,6 @@ export type MatchRemovalModelState = {
 
 export type MatchModerationState = {
   readonly matches: Match[];
-  readonly optimisticDelete?: Match;
   readonly fetching: boolean;
   readonly error?: string;
   readonly removal: MatchRemovalModelState;
@@ -29,7 +36,12 @@ const startFetch = createAction('MATCH_MODERATION_START_FETCH');
 const endFetch = createAction<Match[]>('MATCH_MODERATION_END_FETCH');
 const fetchError = createAction<string>('MATCH_MODERATION_FETCH_ERROR');
 
-const startRemoval = createAction<Match>('MATCH_MODERATION_START_REMOVAL');
+type StartRemovalPayload = {
+  id: number;
+  reason: string;
+  user: string;
+};
+const startRemoval = createAction<StartRemovalPayload>('MATCH_MODERATION_START_REMOVAL');
 const endRemoval = createAction('MATCH_MODERATION_END_REMOVAL');
 const removalError = createAction<string>('MATCH_MODERATION_REMOVAL_ERROR');
 
@@ -44,15 +56,19 @@ export const MatchModerationActions = {
     return (dispatch) => {
       dispatch(startFetch());
 
-      return fetch('/api/matches')
-        .then(_ => _.json()) // TODO status code
-        .then((data) => {
-          dispatch(endFetch(data));
-        })
+      return fetchUpcomingMatches()
+        .then(data => dispatch(endFetch(data)))
         .catch((err) => {
-          console.error(err);
+          if (err instanceof NotAuthenticatedError)
+            return dispatch(fetchError('You are not logged in'));
 
-          dispatch(fetchError('Unable to fetch list from server'));
+          if (err instanceof ForbiddenError)
+            return dispatch(fetchError('You do not have permissions to do this'));
+
+          if (err instanceof UnexpectedResponseError)
+            return dispatch(fetchError('Uexpected response from the server'));
+
+          return dispatch(fetchError('Unable to fetch list from server'));
         });
     };
   },
@@ -68,35 +84,31 @@ export const MatchModerationActions = {
   /**
    * Sends actual deletion request
    */
-  confirmDelete(): ThunkAction<void, ApplicationState, {}> {
+  confirmDelete(): ThunkAction<Promise<any>, ApplicationState, {}> {
     return (dispatch, getState) => {
       const state = getState();
-      const match = state.matchModeration.matches
-        .find(it => it.id === state.matchModeration.removal.targettedId)!;
 
-      dispatch(startRemoval(match));
+      const id = state.matchModeration.removal.targettedId!;
+      const reason = state.matchModeration.removal.reason;
+      const authentication = state.authentication;
 
-      // TODO include reason
-      return fetch(`/api/matches/${match.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${state.authentication.data!.raw}`,
-        },
-        body: JSON.stringify({ reason: state.matchModeration.removal.reason }),
-      })
-        .then((response) => {
-          if (response.status !== 204) {
-            throw new Error('Invalid response');
-          }
-        })
-        .then(() => {
-          dispatch(endRemoval());
-        })
+      dispatch(startRemoval({ id, reason, user: state.authentication.data!.claims.username }));
+
+      return removeMatch(id, reason, authentication)
+        .then(data => dispatch(endRemoval()))
         .catch((err) => {
-          console.error(err);
+          if (err instanceof NotAuthenticatedError)
+            dispatch(removalError('You are not logged in')); // TODO some kind of 'relogin' action
 
-          dispatch(removalError('Failed to remove match'));
+          if (err instanceof ForbiddenError)
+            return dispatch(removalError('You do not have permissions to use this'));
+
+          if (err instanceof UnexpectedResponseError)
+            return dispatch(removalError('Unexpected response from the server'));
+
+          console.log(err, err instanceof NotAuthenticatedError, err instanceof ApiError);
+
+          return dispatch(removalError('Unable to remove item from server'));
         });
     };
   },
@@ -158,11 +170,23 @@ export const reducer: Reducer<MatchModerationState> =
         },
       };
     })
-    .handle(startRemoval, (state, action: Action<Match>) => {
+    .handle(startRemoval, (state, action: Action<StartRemovalPayload>) => {
+      const { id, reason, user } = action.payload!;
+
       return {
         ...state,
-        matches: state.matches.filter(it => it.id !== action.payload!.id),
-        optimisticDelete: action.payload!,
+        matches: state.matches.map((match) => {
+          if (match.id === id) {
+            return {
+              ...match,
+              removed: true,
+              removedBy: user,
+              removedReason: reason,
+            };
+          }
+
+          return match;
+        }),
         removal: {
           ...state.removal,
           fetching: true,
@@ -173,7 +197,6 @@ export const reducer: Reducer<MatchModerationState> =
     .handle(endRemoval, (state) => {
       return {
         ...state,
-        optimisticDelete: undefined,
         removal: {
           ...state.removal,
           fetching: false,
@@ -183,9 +206,22 @@ export const reducer: Reducer<MatchModerationState> =
       };
     })
     .handle(removalError, (state, action) => {
+      const id = state.removal.targettedId;
+
       return {
         ...state,
-        matches: [...state.matches, state.optimisticDelete!],
+        matches: state.matches.map((match) => {
+          if (match.id === id) {
+            return {
+              ...match,
+              removed: false,
+              removedReason: null,
+              removedBy: null,
+            };
+          }
+
+          return match;
+        }),
         optimisticDeletes: undefined,
         removal: {
           ...state.removal,
