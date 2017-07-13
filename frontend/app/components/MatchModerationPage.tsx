@@ -67,8 +67,14 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
 
     return (
       <div>
-        <h1>Match Moderation</h1>
-        <button className="pt-button" disabled={this.props.fetching} onClick={this.props.refetch}>Refresh</button>
+        <Button
+          disabled={this.props.fetching}
+          onClick={this.props.refetch}
+          iconName="refresh"
+          intent={Intent.SUCCESS}
+        >
+          Refresh
+        </Button>
 
         <MatchModerationPageComponent.Error loading={this.props.fetching} error={this.props.error} />
         <MatchModerationPageComponent.Loader loading={this.props.fetching} />
@@ -95,7 +101,7 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
 
             {this.props.removal.error && <span>{this.props.removal.error}</span>}
 
-            <Button onClick={this.props.closeModal}>Cancel</Button>
+            <Button onClick={this.props.closeModal} disabled={this.props.removal.fetching}>Cancel</Button>
             <Button
               intent={Intent.DANGER}
               onClick={this.props.confirmDelete}
