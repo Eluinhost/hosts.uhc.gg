@@ -3,7 +3,7 @@ import { Config, FormErrors, FormProps, formValueSelector, reduxForm } from 'red
 import * as moment from 'moment';
 import { Regions } from '../Regions';
 import { TeamStyle, TeamStyles } from '../TeamStyles';
-import { Button } from '@blueprintjs/core';
+import { Button, Intent } from '@blueprintjs/core';
 import { NumberField } from './fields/NumberField';
 import { DateTimeField } from './fields/DateTimeField';
 import { range } from 'ramda';
@@ -109,7 +109,7 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
 };
 
 const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
-  ({ submitting, handleSubmit, teamStyle }) => (
+  ({ submitting, handleSubmit, teamStyle, valid }) => (
     <form onSubmit={handleSubmit}>
 
       <NumberField
@@ -193,7 +193,15 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         disabled={submitting}
       />
 
-      <Button type="submit" loading={submitting}>Submit</Button>
+      <Button
+        type="submit"
+        disabled={submitting || !valid}
+        iconName="cloud-upload"
+        loading={submitting}
+        intent={valid ? Intent.SUCCESS : Intent.WARNING}
+      >
+        {submitting ? 'Creating...' : 'Create Match'}
+      </Button>
     </form>
   );
 
