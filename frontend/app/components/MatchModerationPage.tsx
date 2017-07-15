@@ -42,13 +42,14 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
       {match.author}'s #{match.count}
 
       <div className="match-moderation-actions">
-        <button
-          className="pt-button pt-intent-danger"
+        <Button
           onClick={onDeletePress}
           disabled={match.removed}
+          intent={Intent.DANGER}
+          iconName="delete"
         >
           {match.removed ? 'Removed' : 'Delete'}
-        </button>
+        </Button>
         {match.removed && <span className="removed-reason">{match.removedReason} - /u/{match.removedBy}</span>}
       </div>
     </div>
@@ -101,11 +102,18 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
 
             {this.props.removal.error && <span>{this.props.removal.error}</span>}
 
-            <Button onClick={this.props.closeModal} disabled={this.props.removal.fetching}>Cancel</Button>
+            <Button
+              onClick={this.props.closeModal}
+              disabled={this.props.removal.fetching}
+              iconName="arrow-left"
+            >
+              Cancel
+            </Button>
             <Button
               intent={Intent.DANGER}
               onClick={this.props.confirmDelete}
               disabled={!validReason || this.props.removal.fetching}
+              iconName="delete"
             >
               Delete
             </Button>
