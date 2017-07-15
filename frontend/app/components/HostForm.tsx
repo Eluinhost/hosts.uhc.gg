@@ -14,31 +14,20 @@ import { MarkdownField } from './fields/MarkdownField';
 import { TagsField } from './fields/TagsField';
 import { ApplicationState } from '../state/ApplicationState';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { AuthenticationActions } from '../state/AuthenticationState';
+import { AuthenticationActions, AuthenticationState } from '../state/AuthenticationState';
+import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../api/index';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
   readonly initialValues: HostFormData;
-  readonly authToken: string;
+  readonly authentication: AuthenticationState;
 };
 
 type HostFormDispatchProps = {
   readonly logout: () => any;
 };
 
-export type HostFormData = {
-  address?: string;
-  ip: string;
-  scenarios: string[];
-  opens: moment.Moment;
-  region: string;
-  content: string;
-  tags: string[];
-  size: number;
-  teams: string;
-  customStyle?: string;
-  count: number;
-};
+export type HostFormData = CreateMatchData;
 
 function nextSlot(): moment.Moment {
   const time = moment().add(30, 'minute');
@@ -257,42 +246,28 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
     return errors;
   },
   onSubmit: (values, dispatch, props) => {
-    return fetch('/api/matches', {
-      credentials: 'include',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${props.authToken}`,
-      },
-      body: JSON.stringify(values),
-    }).then((response) => {
-      switch (response.status) {
-        case 201:
-          // Post created
-          // TODO go to 'completed' route
-          alert('Created');
-          break;
-        case 400:
-          // Bad request
-          response.text().then(text => alert(`Bad data ${text}`));
-          break;
-        case 401:
+    return createMatch(values, props.authentication)
+      .then(_ => alert('Created'))
+      .catch((err) => {
+        if (err instanceof BadDataError)
+          return alert(`Bad data: ${err.message}`);
+
+        if (err instanceof NotAuthenticatedError) {
           // User cookie has expired, get them to reauthenticate
-          window.location.href = '/authenticate';
-          break;
-        case 403:
+          window.location.href = '/authenticate?path=/host';
+          return;
+        }
+
+        if (err instanceof ForbiddenError) {
           alert('You do not have hosting permission');
           // force log them out
           props.logout();
           props.history.push('/');
-          break;
-        default:
-          alert('Unexpected server issue, please contact an admin if this persists');
-      }
-    }).catch((err) => {
-      console.error(err);
-      alert(`Unexpected error: ${err}`);
-    });
+          return;
+        }
+
+        alert('Unexpected server issue, please contact an admin if this persists');
+      });
   },
 };
 
@@ -302,7 +277,7 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
   return {
     teamStyle: TeamStyles.find(t => t.value === selector(state, 'teams')),
     initialValues: state.host.formInitialState,
-    authToken: state.authentication.data ? state.authentication.data.raw : '',// TODO this page should be auth only
+    authentication: state.authentication,
   };
 }
 

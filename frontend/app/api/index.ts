@@ -1,16 +1,20 @@
 import { Match } from '../Match';
 import { AuthenticationState } from '../state/AuthenticationState';
 import { ApplicationError } from '../ApplicationError';
+import * as moment from 'moment';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
 export class ForbiddenError extends ApiError {}
 export class UnexpectedResponseError extends ApiError {}
+export class BadDataError extends ApiError {}
 
 const verifyStatus = (expected: number) => function (response: Response): Promise<Response> {
   switch (response.status) {
     case expected:
       return Promise.resolve(response);
+    case 400:
+      return response.text().then(text => Promise.reject(new BadDataError(text)));
     case 401:
       return Promise.reject(new NotAuthenticatedError());
     case 403:
@@ -38,7 +42,30 @@ export function removeMatch(id: number, reason: string, authentication: Authenti
       Authorization: `Bearer ${authentication.data!.raw}`,
     },
     body: JSON.stringify({ reason }),
-  })
-    .then(verifyStatus(204))
-    .then(_ => undefined);
+  }).then(verifyStatus(204)).then(_ => undefined);
+}
+
+export type CreateMatchData = {
+  address?: string;
+  ip: string;
+  scenarios: string[];
+  opens: moment.Moment;
+  region: string;
+  content: string;
+  tags: string[];
+  size: number;
+  teams: string;
+  customStyle?: string;
+  count: number;
+};
+
+export function createMatch(data: CreateMatchData, authentication: AuthenticationState): Promise<void> {
+  return fetch('/api/matches', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authentication.data!.raw}`,
+    },
+    body: JSON.stringify(data),
+  }).then(verifyStatus(201)).then(_ => undefined);
 }
