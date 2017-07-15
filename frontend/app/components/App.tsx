@@ -12,6 +12,25 @@ import { HomePage } from './HomePage';
 import { MatchModerationPage } from './MatchModerationPage';
 import { LoginButton } from './LoginButton';
 
+type NavBarButtonProps = {
+  readonly text: string;
+  readonly icon: string;
+  readonly to: string;
+};
+const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<any>> =
+  ({ text, icon, to, location }) => (
+    <Link to={to}>
+      <Button
+        className="pt-minimal"
+        iconName="cloud-upload"
+        active={location.pathname.startsWith(to)}
+      >
+        {text}
+      </Button>
+    </Link>
+  );
+const NavbarButton: React.ComponentClass<NavBarButtonProps> = withRouter<NavBarButtonProps>(NavBarButtonComponent);
+
 const NavBar: React.SFC = () => (
   <nav className="pt-navbar">
     <div className="pt-navbar-group">
@@ -20,30 +39,21 @@ const NavBar: React.SFC = () => (
       </Link>
     </div>
     <div className="pt-navbar-group">
-      <Link to="/host">
-        <Button
-          className="pt-minimal"
-          iconName="cloud-upload"
-        >
-          Host
-        </Button>
-      </Link>
-      <Link to="/moderate/matches">
-        <Button
-          className="pt-minimal"
-          iconName="confirm"
-        >
-          Moderate
-        </Button>
-      </Link>
-      <Link to="/moderate/users">
-        <Button
-          className="pt-minimal"
-          iconName="take-action"
-        >
-          Admin
-        </Button>
-      </Link>
+      <NavbarButton
+        to="/host"
+        text="Host"
+        icon="cloud-upload"
+      />
+      <NavbarButton
+        to="/moderate/matches"
+        text="Moderate"
+        icon="confirm"
+      />
+      <NavbarButton
+        to="/moderate/users"
+        text="Admin"
+        icon="take-action"
+      />
     </div>
     <div className="pt-navbar-group">
       <Username />
