@@ -6,7 +6,9 @@ import java.time.{Instant, ZoneOffset}
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
-import gg.uhc.hosts.Database.DatabaseErrorRejection
+import gg.uhc.hosts.Database.{DatabaseErrorRejection, requireSucessfulQuery}
+import gg.uhc.hosts.Permissions.requirePermission
+import gg.uhc.hosts.Session.requireValidSession
 import gg.uhc.hosts._
 
 object CreateMatch {
@@ -91,19 +93,21 @@ object CreateMatch {
   }
 
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
-    Database.requireSucessfulQuery(Database.insert(m)) flatMap {
+    requireSucessfulQuery(Database.insert(m)) flatMap {
       case 0 ⇒ reject(DatabaseErrorRejection(new IllegalStateException("no rows inserted")))
       case _ ⇒ pass
     }
 
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {
-      Permissions.requirePermission("host") { session ⇒
-        // parse the entity
-        entity(as[CreateMatchModel]) { entity ⇒
-          validateAndConvertToRow(entity, session.username) { validated ⇒
-            requireInsertMatch(validated) {
-              complete(StatusCodes.Created → validated)
+      requireValidSession { session ⇒
+        requirePermission("host", session.username) {
+          // parse the entity
+          entity(as[CreateMatchModel]) { entity ⇒
+            validateAndConvertToRow(entity, session.username) { validated ⇒
+              requireInsertMatch(validated) {
+                complete(StatusCodes.Created → validated)
+              }
             }
           }
         }

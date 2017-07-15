@@ -37,7 +37,7 @@ object AuthenticateCallback {
     }
 
   val route: Route =
-    parameter('error)(error) ~                // Check for error paramter first
+    parameter('error)(error) ~                 // Check for error paramter first
       parameters('code, 'state ? "/")(valid) ~ // Then check for code parameter
       error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
 }
