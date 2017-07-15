@@ -21,6 +21,7 @@ object Routes {
   val authenticate: Route = pathPrefix("authenticate") {
     pathEndOrSingleSlash(Authenticate.route) ~
       (pathPrefix("callback") & pathEndOrSingleSlash)(AuthenticateCallback.route) ~
+      (post & pathPrefix("refresh") & pathEndOrSingleSlash)(AuthenticateRefresh.route) ~
       complete(StatusCodes.NotFound)
   }
 
