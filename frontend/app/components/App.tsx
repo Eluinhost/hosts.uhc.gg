@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Username } from './Username';
 import { HostForm } from './HostForm';
-import { NonIdealState } from '@blueprintjs/core';
+import { Button, NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter, Link } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
@@ -13,13 +13,39 @@ import { MatchModerationPage } from './MatchModerationPage';
 import { LoginButton } from './LoginButton';
 
 const NavBar: React.SFC = () => (
-  <nav className="pt-navbar .modifier">
-    <div className="pt-navbar-group pt-align-left">
+  <nav className="pt-navbar">
+    <div className="pt-navbar-group">
       <Link to="/">
         <div className="pt-navbar-heading">uhc.gg hosting</div>
       </Link>
     </div>
-    <div className="pt-navbar-group pt-align-right">
+    <div className="pt-navbar-group">
+      <Link to="/host">
+        <Button
+          className="pt-minimal"
+          iconName="cloud-upload"
+        >
+          Host
+        </Button>
+      </Link>
+      <Link to="/moderate/matches">
+        <Button
+          className="pt-minimal"
+          iconName="confirm"
+        >
+          Moderate
+        </Button>
+      </Link>
+      <Link to="/moderate/users">
+        <Button
+          className="pt-minimal"
+          iconName="take-action"
+        >
+          Admin
+        </Button>
+      </Link>
+    </div>
+    <div className="pt-navbar-group">
       <Username />
     </div>
   </nav>

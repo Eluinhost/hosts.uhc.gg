@@ -123,7 +123,7 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
 
       <DateTimeField
         name="opens"
-        label="Opening Time (in the timezone of your PC)"
+        label="Opening Time"
         required
         disabled={submitting}
         datePickerProps={openingDateProps}
