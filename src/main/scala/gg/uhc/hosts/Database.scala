@@ -115,6 +115,16 @@ object Database {
         ${m.created}
       );""".asInstanceOf[Fragment].update
 
+  private[this] def isOwnerQuery(id: Long, username: String): Query0[Boolean] =
+    sql"""
+        SELECT
+          author
+        FROM
+          matches
+        WHERE
+          id = $id
+      """.asInstanceOf[Fragment].query[String].map(_ == username)
+
   private[this] def getPermissionsQuery(username: String): Query0[String] =
     sql"""
       SELECT
@@ -130,6 +140,8 @@ object Database {
   def insert(m: MatchRow): ConnectionIO[Int] = insertQuery(m).run
 
   def remove(id: Long, reason: String, remover: String): ConnectionIO[Int] = removeQuery(id, reason, remover).run
+
+  def isOwner(id: Long, username: String): ConnectionIO[Boolean] = isOwnerQuery(id, username).unique
 
   def getPermissions(username: String): ConnectionIO[List[String]] =
     getPermissionsQuery(username).list

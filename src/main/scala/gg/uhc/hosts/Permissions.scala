@@ -5,20 +5,21 @@ import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Dir
 import akka.http.scaladsl.server.Directives._
 
 object Permissions {
-
-  def requirePermission(permission: String): Directive1[Session] =
-    Session.requireValidSession.flatMap { session ⇒
-      Database.requireSucessfulQuery(Database.getPermissions(session.username)).flatMap {
-        case l if l.contains(permission) ⇒
-          provide(session)
-        case _ ⇒
-          reject(
-            AuthenticationFailedRejection(
-              AuthenticationFailedRejection.CredentialsRejected,
-              HttpChallenges.basic("login")
-            )
-          )
-      }
+  def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
+    Database.requireSucessfulQuery(Database.getPermissions(username)).flatMap {
+      case l if l.contains(permission) ⇒ provide(true)
+      case _                           ⇒ provide(false)
     }
 
+  def requirePermission(permission: String, username: String): Directive0 =
+    checkHasPermission(permission, username) flatMap {
+      case true ⇒ pass
+      case false ⇒
+        reject(
+          AuthenticationFailedRejection(
+            AuthenticationFailedRejection.CredentialsRejected,
+            HttpChallenges.basic("login")
+          )
+        )
+    }
 }
