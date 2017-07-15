@@ -301,7 +301,7 @@ const selector = formValueSelector('host');
 function mapStateToProps(state: ApplicationState): HostFormStateProps {
   return {
     teamStyle: TeamStyles.find(t => t.value === selector(state, 'teams')),
-    initialValues: state.hostFormInitialData,
+    initialValues: state.host.formInitialState,
     authToken: state.authentication.data ? state.authentication.data.raw : '',// TODO this page should be auth only
   };
 }

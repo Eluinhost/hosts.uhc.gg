@@ -7,11 +7,15 @@ import { Store } from 'redux';
 import { ApplicationState } from './ApplicationState';
 import { omit } from 'ramda';
 
-export type HostFormInitialValuesState = HostFormData;
+export type HostingFormInitialState = HostFormData;
+
+export type HostingState = {
+  formInitialState: HostingFormInitialState;
+};
 
 export const reducer = buildReducer().done(); // Do nothing
 
-const defaultData: HostFormInitialValuesState = {
+const defaultData: HostingFormInitialState = {
   opens: minDate,
   region: Regions[0].value,
   teams: TeamStyles[0].value,
@@ -25,20 +29,24 @@ const defaultData: HostFormInitialValuesState = {
   count: 1,
 };
 
-export async function initialValues(): Promise<HostFormInitialValuesState> {
+export async function initialValues(): Promise<HostingState> {
   try {
-    const hostFormInitialData = await storage.getItem<HostFormInitialValuesState>('host-form-data');
+    const hostFormInitialData = await storage.getItem<HostingFormInitialState>('host-form-data');
 
     return {
-      ...(hostFormInitialData || defaultData),
-      opens: minDate,
+      formInitialState: {
+        ...(hostFormInitialData || defaultData),
+        opens: minDate,
+      },
     };
   } catch (err) {
     console.error(err);
 
     return {
-      ...defaultData,
-      opens: minDate,
+      formInitialState: {
+        ...defaultData,
+        opens: minDate,
+      },
     };
   }
 }

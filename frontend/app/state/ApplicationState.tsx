@@ -2,12 +2,12 @@ import thunkMiddleware from 'redux-thunk';
 import { FormStateMap, reducer as formReducer } from 'redux-form';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import * as Authentication from './AuthenticationState';
-import * as HostFormInitialValues from './HostFormInitialValuesState';
+import * as Hosting from './HostingState';
 import * as MatchModeration from './MatchModerationState';
 
 export type ApplicationState = {
   readonly authentication: Authentication.AuthenticationState,
-  readonly hostFormInitialData: HostFormInitialValues.HostFormInitialValuesState;
+  readonly host: Hosting.HostingState;
   readonly form: FormStateMap;
   readonly matchModeration: MatchModeration.MatchModerationState;
 };
@@ -16,18 +16,18 @@ const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || com
 
 export async function createReduxStore(): Promise<Store<ApplicationState>> {
   const authenticationState = await Authentication.initialValues();
-  const hostFormInitialValuesState = await HostFormInitialValues.initialValues();
+  const hostingState = await Hosting.initialValues();
   const matchModerationState = await MatchModeration.initialValues();
 
   const store = createStore<ApplicationState>(
     combineReducers<ApplicationState>({
       form: formReducer,
-      hostFormInitialData: HostFormInitialValues.reducer,
+      host: Hosting.reducer,
       authentication: Authentication.reducer,
       matchModeration: MatchModeration.reducer,
     }),
     {
-      hostFormInitialData: hostFormInitialValuesState,
+      host: hostingState,
       authentication: authenticationState,
       form: {},
       matchModeration: matchModerationState,
@@ -35,7 +35,7 @@ export async function createReduxStore(): Promise<Store<ApplicationState>> {
     composeEnhancers(applyMiddleware(thunkMiddleware)),
   );
 
-  HostFormInitialValues.postInit(store);
+  Hosting.postInit(store);
 
   return store;
 }
