@@ -7,8 +7,6 @@ import gg.uhc.hosts.Session.requireValidSession
 import gg.uhc.hosts.{Database, Session}
 
 object AuthenticateRefresh {
-  case class RefreshPayload(token: String)
-
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {
       requireValidSession { session ⇒
