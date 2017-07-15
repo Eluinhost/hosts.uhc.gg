@@ -98,15 +98,13 @@ export const MatchModerationActions = {
         .then(data => dispatch(endRemoval()))
         .catch((err) => {
           if (err instanceof NotAuthenticatedError)
-            dispatch(removalError('You are not logged in')); // TODO some kind of 'relogin' action
+            return dispatch(removalError('You are not logged in')); // TODO some kind of 'relogin' action
 
           if (err instanceof ForbiddenError)
             return dispatch(removalError('You do not have permissions to use this'));
 
           if (err instanceof UnexpectedResponseError)
             return dispatch(removalError('Unexpected response from the server'));
-
-          console.log(err, err instanceof NotAuthenticatedError, err instanceof ApiError);
 
           return dispatch(removalError('Unable to remove item from server'));
         });
