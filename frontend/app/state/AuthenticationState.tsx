@@ -83,7 +83,7 @@ const notLoggedIn: AuthenticationState = {
 export const reducer: Reducer<AuthenticationState> = buildReducer<AuthenticationState>()
   .handle(setLoggedInData, (state, action: Action<AuthenticationData>) => {
     storage.setItem(`${storageKey}.accessToken`, action.payload!.rawAccessToken);
-    storage.setItem(`${storageKey}.refrsehToken`, action.payload!.rawRefreshToken);
+    storage.setItem(`${storageKey}.refreshToken`, action.payload!.rawRefreshToken);
 
     return {
       loggedIn: true,
