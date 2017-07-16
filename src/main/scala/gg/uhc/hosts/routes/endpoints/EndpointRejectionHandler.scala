@@ -1,9 +1,9 @@
-package gg.uhc.hosts.endpoints
+package gg.uhc.hosts.routes.endpoints
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{complete, extractActorSystem}
 import akka.http.scaladsl.server.{AuthenticationFailedRejection, RejectionHandler, ValidationRejection}
-import gg.uhc.hosts.Database.DatabaseErrorRejection
+import gg.uhc.hosts.routes.DatabaseErrorRejection
 
 object EndpointRejectionHandler {
   val handler: RejectionHandler = RejectionHandler

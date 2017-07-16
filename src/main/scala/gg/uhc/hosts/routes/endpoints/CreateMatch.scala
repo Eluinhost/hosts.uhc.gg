@@ -1,4 +1,4 @@
-package gg.uhc.hosts.endpoints
+package gg.uhc.hosts.routes.endpoints
 
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneOffset}
@@ -6,16 +6,16 @@ import java.time.{Instant, ZoneOffset}
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
-import gg.uhc.hosts.Database.{DatabaseErrorRejection, requireSucessfulQuery}
-import gg.uhc.hosts.Permissions.requirePermission
-import gg.uhc.hosts.Session.requireValidSession
 import gg.uhc.hosts._
+import gg.uhc.hosts.database.Database
+import gg.uhc.hosts.routes.{CustomDirectives, DatabaseErrorRejection}
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
   */
-object CreateMatch {
+class CreateMatch(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
+  import customDirectives._
 
   private[this] val teamStyles: Map[String, Boolean] = Map(
     "ffa"      → false,
@@ -96,14 +96,14 @@ object CreateMatch {
   }
 
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
-    requireSucessfulQuery(Database.insert(m)) flatMap {
+    requireSucessfulQuery(database.insertMatch(m)) flatMap {
       case 0 ⇒ reject(DatabaseErrorRejection(new IllegalStateException("no rows inserted")))
       case _ ⇒ pass
     }
 
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireValidSession { session ⇒
+      requireAuthentication { session ⇒
         requirePermission("host", session.username) {
           // parse the entity
           entity(as[CreateMatchModel]) { entity ⇒

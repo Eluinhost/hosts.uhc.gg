@@ -1,17 +1,24 @@
-package gg.uhc.hosts
+package gg.uhc.hosts.routes
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akkahttptwirl.TwirlSupport._
-import gg.uhc.hosts.endpoints._
+import gg.uhc.hosts.routes.endpoints._
 
-object Routes {
+class Routes(
+    listMatches: ListMatches,
+    createMatches: CreateMatch,
+    deleteMatches: DeleteMatch,
+    auth: Authenticate,
+    authCallback: AuthenticateCallback,
+    authRefresh: AuthenticateRefresh) {
+
   val api: Route = pathPrefix("api") {
     pathPrefix("matches") {
       pathEndOrSingleSlash {
-        get(ListMatches.route) ~ post(CreateMatch.route)
-      } ~ delete(DeleteMatch.route)
+        get(listMatches.route) ~ post(createMatches.route)
+      } ~ delete(deleteMatches.route)
     } ~ complete(StatusCodes.NotFound)
   }
 
@@ -19,9 +26,9 @@ object Routes {
     complete(html.frontend.render())
 
   val authenticate: Route = pathPrefix("authenticate") {
-    pathEndOrSingleSlash(Authenticate.route) ~
-      (pathPrefix("callback") & pathEndOrSingleSlash)(AuthenticateCallback.route) ~
-      (post & pathPrefix("refresh") & pathEndOrSingleSlash)(AuthenticateRefresh.route) ~
+    pathEndOrSingleSlash(auth.route) ~
+      (pathPrefix("callback") & pathEndOrSingleSlash)(authCallback.route) ~
+      (post & pathPrefix("refresh") & pathEndOrSingleSlash)(authRefresh.route) ~
       complete(StatusCodes.NotFound)
   }
 

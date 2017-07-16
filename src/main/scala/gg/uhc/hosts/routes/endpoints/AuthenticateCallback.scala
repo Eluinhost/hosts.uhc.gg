@@ -1,11 +1,13 @@
-package gg.uhc.hosts.endpoints
+package gg.uhc.hosts.routes.endpoints
 
 import java.net.URLEncoder
 
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import gg.uhc.hosts.{ApiHelpers, Database, Session}
+import gg.uhc.hosts.authentication.Session
+import gg.uhc.hosts.database.Database
+import gg.uhc.hosts.reddit.{RedditAuthenticationApi, RedditSecuredApi}
 
 import scala.util.{Failure, Success}
 
@@ -14,18 +16,18 @@ import scala.util.{Failure, Success}
   * the frontend with the authentication JWT + any passed 'path' parameter that reddit returned
   * as part of the 'state' paramter
   */
-object AuthenticateCallback {
+class AuthenticateCallback(authenticationApi: RedditAuthenticationApi, oauthApi: RedditSecuredApi, database: Database) {
   def error(error: String): Route =
     complete(StatusCodes.Unauthorized → s"You must provide access to use this service, Error: $error")
 
   def valid(code: String, state: String): Route =
     extractExecutionContext { implicit ec ⇒
       val task = for {
-        accessToken ← ApiHelpers.authentication.getAccessToken(authCode = code)
-        username    ← ApiHelpers.api.getUsername(accessToken.access_token)
-        permissions ← Database.runDbQuery(Database.getPermissions(username))
+        accessToken ← authenticationApi.getAccessToken(authCode = code)
+        username    ← oauthApi.getUsername(accessToken.access_token)
+        permissions ← database.run(database.getPermissions(username))
       } yield
-        Session(
+        Session.Authenticated(
           username = username,
           permissions = permissions
         )
