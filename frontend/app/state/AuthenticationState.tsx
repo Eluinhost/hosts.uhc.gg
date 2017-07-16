@@ -4,7 +4,7 @@ import { Reducer } from 'redux';
 import { storage } from '../storage';
 import * as decodeJwt from 'jwt-decode';
 
-const storageKey = 'raw-jwt-token';
+const storageKey = 'authentication';
 
 export type Claims = {
   readonly username: string;
@@ -12,7 +12,8 @@ export type Claims = {
 };
 
 export type AuthenticationData = {
-  readonly raw: string;
+  readonly accessToken: string;
+  readonly refreshToken: string;
   readonly claims: Claims;
 };
 
@@ -32,7 +33,8 @@ const notLoggedIn: AuthenticationState = {
 
 export const reducer: Reducer<AuthenticationState> = buildReducer<AuthenticationState>()
   .handle(AuthenticationActions.login, (state, action) => {
-    storage.setItem(storageKey, action.payload!.raw);
+    storage.setItem(`${storageKey}.accessToken`, action.payload!.accessToken);
+    storage.setItem(`${storageKey}.refrsehToken`, action.payload!.refreshToken);
 
     return {
       loggedIn: true,
@@ -52,16 +54,18 @@ export function parseJwt(token: string): Claims {
 
 export async function initialValues(): Promise<AuthenticationState> {
   try {
-    const raw = await storage.getItem<string>(storageKey);
+    const accessToken = await storage.getItem<string>(`${storageKey}.accessToken`);
+    const refreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
 
-    if (!raw)
+    if (!accessToken || !refreshToken)
       return notLoggedIn;
 
-    const parsed = parseJwt(raw);
+    const parsed = parseJwt(accessToken);
 
     return {
       data: {
-        raw,
+        accessToken,
+        refreshToken,
         claims: parsed,
       },
       loggedIn: true,

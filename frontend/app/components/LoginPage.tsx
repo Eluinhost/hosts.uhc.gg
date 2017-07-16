@@ -13,9 +13,9 @@ const InvalidToken: React.SFC = () => <NonIdealState title="Invalid login token"
 
 export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageDispatchProps> =
   ({ location, login }) => {
-    const { path, token } = parse(location.search);
+    const { path, token, refresh } = parse(location.search);
 
-    if (!path || !token || !path.startsWith('/'))
+    if (!path || !token || !refresh || !path.startsWith('/'))
       return <InvalidToken />;
 
 
@@ -24,7 +24,8 @@ export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageD
 
       login({
         claims,
-        raw: token,
+        accessToken: token,
+        refreshToken: refresh,
       });
 
       return <Redirect to={path} />;

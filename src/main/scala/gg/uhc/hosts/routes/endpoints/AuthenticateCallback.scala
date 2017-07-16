@@ -26,20 +26,17 @@ class AuthenticateCallback(authenticationApi: RedditAuthenticationApi, oauthApi:
         accessToken ← authenticationApi.getAccessToken(authCode = code)
         username    ← oauthApi.getUsername(accessToken.access_token)
         permissions ← database.run(database.getPermissions(username))
-      } yield
-        Session.Authenticated(
-          username = username,
-          permissions = permissions
-        )
+      } yield username → permissions
 
       onComplete(task) {
         case Failure(_) ⇒
           complete(StatusCodes.Unauthorized → "Unable to lookup your account details")
-        case Success(session) ⇒
-          redirect(
-            s"/login?path=${URLEncoder.encode(state, "utf-8")}&token=${URLEncoder.encode(session.toJwt, "utf-8")}",
-            StatusCodes.TemporaryRedirect
-          )
+        case Success((username, permissions)) ⇒
+          val token = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
+          val refresh = URLEncoder.encode(Session.RefreshToken(username).toJwt, "utf-8")
+          val path = URLEncoder.encode(state, "utf-8")
+
+          redirect(s"/login?path=$path&token=$token&refresh=$refresh", StatusCodes.TemporaryRedirect)
       }
     }
 
