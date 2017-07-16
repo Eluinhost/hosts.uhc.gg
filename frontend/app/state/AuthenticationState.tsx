@@ -91,7 +91,8 @@ export const reducer: Reducer<AuthenticationState> = buildReducer<Authentication
     };
   })
   .handle(AuthenticationActions.logout, () => {
-    storage.removeItem(storageKey);
+    storage.removeItem(`${storageKey}.accessToken`);
+    storage.removeItem(`${storageKey}.refreshToken`);
 
     return notLoggedIn;
   })
