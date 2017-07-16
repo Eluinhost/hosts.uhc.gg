@@ -11,6 +11,9 @@ import gg.uhc.hosts._
 
 case class DeleteMatch(reason: String)
 
+/**
+  * Removes a match. Must provide a reason. Can only be ran by 'moderator' permission or author of match.
+  */
 object DeleteMatch {
   import CustomJsonCodec._
 

@@ -6,6 +6,10 @@ import gg.uhc.hosts.Database.requireSucessfulQuery
 import gg.uhc.hosts.Session.requireValidSession
 import gg.uhc.hosts.{Database, Session}
 
+/**
+  * Endpoint that when called with a valid authentication header
+  * will return a new JWT with refreshed permissions from the DB.
+  */
 object AuthenticateRefresh {
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {

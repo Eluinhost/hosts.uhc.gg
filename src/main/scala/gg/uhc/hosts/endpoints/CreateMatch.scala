@@ -11,6 +11,9 @@ import gg.uhc.hosts.Permissions.requirePermission
 import gg.uhc.hosts.Session.requireValidSession
 import gg.uhc.hosts._
 
+/**
+  * Creates a new Match object. Requires login + 'host' permission
+  */
 object CreateMatch {
   import CustomJsonCodec._
 

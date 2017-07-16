@@ -9,6 +9,11 @@ import gg.uhc.hosts.{ApiHelpers, Database, Session}
 
 import scala.util.{Failure, Success}
 
+/**
+  * Callback endpoint from Reddit. On valid data will generate a JWT and forward the user to
+  * the frontend with the authentication JWT + any passed 'path' parameter that reddit returned
+  * as part of the 'state' paramter
+  */
 object AuthenticateCallback {
   def error(error: String): Route =
     complete(StatusCodes.Unauthorized → s"You must provide access to use this service, Error: $error")
