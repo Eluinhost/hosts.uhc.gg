@@ -22,7 +22,7 @@ const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<a
     <Link to={to}>
       <Button
         className="pt-minimal"
-        iconName="cloud-upload"
+        iconName={icon}
         active={location.pathname.startsWith(to)}
       >
         {text}
