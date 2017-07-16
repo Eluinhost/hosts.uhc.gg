@@ -29,9 +29,6 @@ export type MatchModerationState = {
   readonly removal: MatchRemovalModelState;
 };
 
-// TODO removal should just set a flag in the match object as removed instead of actually deleting it in the lsit
-// and then show the removal reason in the list.
-
 const startFetch = createAction('MATCH_MODERATION_START_FETCH');
 const endFetch = createAction<Match[]>('MATCH_MODERATION_END_FETCH');
 const fetchError = createAction<string>('MATCH_MODERATION_FETCH_ERROR');
