@@ -39,8 +39,8 @@ export const Navbar: React.SFC = () => (
         icon="cloud-upload"
       />
       <NavbarButton
-        to="/moderate/matches"
-        text="Moderate"
+        to="/matches"
+        text="Matches"
         icon="confirm"
       />
       <NavbarButton

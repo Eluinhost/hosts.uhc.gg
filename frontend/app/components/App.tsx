@@ -58,7 +58,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
   <Switch>
     <AuthedRoute path="/host" component={HostFormPage} required="host" permissions={permissions} />
     <AuthedRoute
-      path="/moderate/matches"
+      path="/matches"
       component={MatchModerationPage}
       required={matchesPagePermissions}
       permissions={permissions}
