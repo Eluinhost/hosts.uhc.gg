@@ -11,15 +11,15 @@ import gg.uhc.hosts.routes.CustomDirectives
 /**
   * Removes a match. Must provide a reason. Can only be ran by 'moderator' permission or author of match.
   */
-class DeleteMatch(customDirectives: CustomDirectives, database: Database) {
+class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import customDirectives._
 
-  case class DeleteMatchPayload(reason: String)
+  case class RemoveMatchPayload(reason: String)
 
-  def validate(data: DeleteMatchPayload): Directive[Unit] = {
+  def validate(data: RemoveMatchPayload): Directive[Unit] = {
     if (data.reason.length == 0)
-      return reject(ValidationRejection("Must provide a reason for deletion"))
+      return reject(ValidationRejection("Must provide a reason for removal"))
 
     pass
   }
@@ -41,7 +41,7 @@ class DeleteMatch(customDirectives: CustomDirectives, database: Database) {
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { authentication ⇒
         (requirePermission("moderator", authentication.username) | requireOwner(id, authentication.username)) {
-          entity(as[DeleteMatchPayload]) { data ⇒
+          entity(as[RemoveMatchPayload]) { data ⇒
             validate(data) {
               requireSucessfulQuery(database.removeMatch(id, data.reason, authentication.username)) {
                 case 0 ⇒ complete(StatusCodes.NotFound) // None updated

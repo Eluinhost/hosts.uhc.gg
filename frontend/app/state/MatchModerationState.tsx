@@ -42,7 +42,7 @@ const startRemoval = createAction<StartRemovalPayload>('MATCH_MODERATION_START_R
 const endRemoval = createAction('MATCH_MODERATION_END_REMOVAL');
 const removalError = createAction<string>('MATCH_MODERATION_REMOVAL_ERROR');
 
-const setDeleteTarget = createAction<number>('MATCH_MODERATION_SET_DELETE_TARGET');
+const setRemovalTarget = createAction<number>('MATCH_MODERATION_SET_REMOVAL_TARGET');
 const openModal = createAction('MATCH_MODERATION_OPEN_MODAL');
 
 export const MatchModerationActions = {
@@ -74,14 +74,14 @@ export const MatchModerationActions = {
    */
   askForReason(id: number): ThunkAction<void, ApplicationState, {}> {
     return (dispatch) => {
-      dispatch(setDeleteTarget(id));
+      dispatch(setRemovalTarget(id));
       dispatch(openModal());
     };
   },
   /**
    * Sends actual deletion request
    */
-  confirmDelete(): ThunkAction<Promise<any>, ApplicationState, {}> {
+  confirmRemove(): ThunkAction<Promise<any>, ApplicationState, {}> {
     return (dispatch, getState) => {
       const state = getState();
 
@@ -138,7 +138,7 @@ export const reducer: Reducer<MatchModerationState> =
         error: action.payload,
       };
     })
-    .handle(setDeleteTarget, (state, action) => {
+    .handle(setRemovalTarget, (state, action) => {
       return {
         ...state,
         removal: {
@@ -217,7 +217,6 @@ export const reducer: Reducer<MatchModerationState> =
 
           return match;
         }),
-        optimisticDeletes: undefined,
         removal: {
           ...state.removal,
           fetching: false,

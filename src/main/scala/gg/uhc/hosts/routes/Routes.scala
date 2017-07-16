@@ -7,18 +7,18 @@ import akkahttptwirl.TwirlSupport._
 import gg.uhc.hosts.routes.endpoints._
 
 class Routes(
-    listMatches: ListMatches,
-    createMatches: CreateMatch,
-    deleteMatches: DeleteMatch,
-    auth: Authenticate,
-    authCallback: AuthenticateCallback,
-    authRefresh: AuthenticateRefresh) {
+              listMatches: ListMatches,
+              createMatches: CreateMatch,
+              removeMatches: RemoveMatch,
+              auth: Authenticate,
+              authCallback: AuthenticateCallback,
+              authRefresh: AuthenticateRefresh) {
 
   val api: Route = pathPrefix("api") {
     pathPrefix("matches") {
       pathEndOrSingleSlash {
         get(listMatches.route) ~ post(createMatches.route)
-      } ~ delete(deleteMatches.route)
+      } ~ delete(removeMatches.route)
     } ~ complete(StatusCodes.NotFound)
   }
 

@@ -10,7 +10,7 @@ trait RouteModule extends DatabaseModule with RedditModule {
 
   lazy val listMatchesEndpoint: ListMatches = wire[ListMatches]
   lazy val createMatchesEndpoint: CreateMatch = wire[CreateMatch]
-  lazy val deleteMatchesEndpoint: DeleteMatch = wire[DeleteMatch]
+  lazy val removeMatchesEndpoint: RemoveMatch = wire[RemoveMatch]
   lazy val authEndpoint: Authenticate = wire[Authenticate]
   lazy val authCallbackEndpoint: AuthenticateCallback = wire[AuthenticateCallback]
   lazy val authRefreshEndpoint: AuthenticateRefresh = wire[AuthenticateRefresh]

@@ -10,18 +10,18 @@ import { contains } from 'ramda';
 
 type MatchRowProps = {
   readonly match: Match;
-  readonly onDeletePress: () => any;
-  readonly canDelete: boolean;
+  readonly onRemovePress: () => any;
+  readonly canRemove: boolean;
 };
 
-const MatchDeleteButton: React.SFC<MatchRowProps> = ({ onDeletePress, match }) => (
+const RemoveMatchButton: React.SFC<MatchRowProps> = ({ onRemovePress, match }) => (
   <Button
-    onClick={onDeletePress}
+    onClick={onRemovePress}
     disabled={match.removed}
     intent={Intent.DANGER}
     iconName="delete"
   >
-    {match.removed ? 'Removed' : 'Delete'}
+    {match.removed ? 'Removed' : 'Remove'}
   </Button>
 );
 
@@ -37,7 +37,7 @@ const MatchRow: React.SFC<MatchRowProps> = props => (
     {props.match.author}'s #{props.match.count}
 
     <div className="match-moderation-actions">
-      {props.canDelete && <MatchDeleteButton {...props}/>}
+      {props.canRemove && <RemoveMatchButton {...props}/>}
       {props.match.removed && <MatchRemovedReason {...props}/>}
     </div>
   </div>
@@ -62,7 +62,7 @@ export type MatchModerationPageDispatchProps = {
   readonly askForReason: (id: number) => any;
   readonly updateReason: (reason: string) => any;
   readonly closeModal: () => any;
-  readonly confirmDelete: () => any;
+  readonly confirmRemove: () => any;
 };
 
 export type MatchModerationPageStateProps = {
@@ -79,14 +79,14 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
   }
 
   renderMatches = () => this.props.matches.map((match) => {
-    const onDeletePress = () => this.props.askForReason(match.id);
+    const onRemovePress = () => this.props.askForReason(match.id);
 
     return (
       <MatchRow
         match={match}
         key={match.id}
-        onDeletePress={onDeletePress}
-        canDelete={this.props.isModerator || this.props.username === match.author}
+        onRemovePress={onRemovePress}
+        canRemove={this.props.isModerator || this.props.username === match.author}
       />
     );
   })
@@ -120,8 +120,8 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
           inline={false}
           onClose={this.props.closeModal}
         >
-          <div className="pt-card pt-elevation-4 delete-match-modal">
-            <h3>Are you sure you want to delete this game?</h3>
+          <div className="pt-card pt-elevation-4 remove-match-modal">
+            <h3>Are you sure you want to remove this game? This cannot be undone</h3>
 
             <label>Reason: (required)</label>
             <textarea
@@ -141,11 +141,11 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
             </Button>
             <Button
               intent={Intent.DANGER}
-              onClick={this.props.confirmDelete}
+              onClick={this.props.confirmRemove}
               disabled={!validReason || this.props.removal.fetching}
               iconName="delete"
             >
-              Delete
+              Remove
             </Button>
           </div>
         </Overlay>
@@ -165,7 +165,7 @@ function mapStateToProps(state: ApplicationState): MatchModerationPageStateProps
 function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchModerationPageDispatchProps {
   return {
     refetch: () => dispatch(MatchModerationActions.refetch()),
-    confirmDelete: () => dispatch(MatchModerationActions.confirmDelete()),
+    confirmRemove: () => dispatch(MatchModerationActions.confirmRemove()),
     updateReason: (reason: string) => dispatch(MatchModerationActions.updateReason(reason)),
     closeModal: () => dispatch(MatchModerationActions.closeModal()),
     askForReason: (id: number) => dispatch(MatchModerationActions.askForReason(id)),
