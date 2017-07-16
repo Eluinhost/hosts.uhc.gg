@@ -6,6 +6,56 @@ import { MatchModerationActions, MatchModerationState } from '../state/MatchMode
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
+import { contains } from 'ramda';
+
+type MatchRowProps = {
+  readonly match: Match;
+  readonly onDeletePress: () => any;
+  readonly canDelete: boolean;
+};
+
+const MatchDeleteButton: React.SFC<MatchRowProps> = ({ onDeletePress, match }) => (
+  <Button
+    onClick={onDeletePress}
+    disabled={match.removed}
+    intent={Intent.DANGER}
+    iconName="delete"
+  >
+    {match.removed ? 'Removed' : 'Delete'}
+  </Button>
+);
+
+const MatchRemovedReason: React.SFC<MatchRowProps> = ({ match }) => (
+  <span className="removed-reason">
+    {match.removedReason} - /u/{match.removedBy}
+  </span>
+);
+
+const MatchRow: React.SFC<MatchRowProps> = props => (
+  <div className="pt-card match-moderation-match">
+    <strong>ID:{props.match.id}</strong>
+    {props.match.author}'s #{props.match.count}
+
+    <div className="match-moderation-actions">
+      {props.canDelete && <MatchDeleteButton {...props}/>}
+      {props.match.removed && <MatchRemovedReason {...props}/>}
+    </div>
+  </div>
+);
+
+const Error: React.SFC<{ loading: boolean, error?: string }> = ({ loading, error }) => {
+  if (loading || !error)
+    return null;
+
+  return <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>;
+};
+
+const Loader: React.SFC<{ loading: boolean }> = ({ loading }) => {
+  if (!loading)
+    return null;
+
+  return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
+};
 
 export type MatchModerationPageDispatchProps = {
   readonly refetch: () => any;
@@ -15,50 +65,30 @@ export type MatchModerationPageDispatchProps = {
   readonly confirmDelete: () => any;
 };
 
-type MatchModerationPageProps = MatchModerationState & MatchModerationPageDispatchProps & RouteComponentProps<any>;
+export type MatchModerationPageStateProps = {
+  readonly isModerator: boolean;
+  readonly username: string;
+} & MatchModerationState;
+
+type MatchModerationPageProps =
+  MatchModerationPageStateProps & MatchModerationPageDispatchProps & RouteComponentProps<any>;
 
 class MatchModerationPageComponent extends React.Component<MatchModerationPageProps> {
   componentDidMount() {
     this.props.refetch();
   }
 
-  static Error: React.SFC<{ loading: boolean, error?: string }> = ({ loading, error }) => {
-    if (loading || !error)
-      return null;
-
-    return <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>;
-  }
-
-  static Loader: React.SFC<{ loading: boolean }> = ({ loading }) => {
-    if (!loading)
-      return null;
-
-    return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
-  }
-
-  static Match: React.SFC<{ match: Match, onDeletePress: () => any }> = ({ match, onDeletePress }) => (
-    <div className="pt-card match-moderation-match">
-      <strong>ID:{match.id}</strong>
-      {match.author}'s #{match.count}
-
-      <div className="match-moderation-actions">
-        <Button
-          onClick={onDeletePress}
-          disabled={match.removed}
-          intent={Intent.DANGER}
-          iconName="delete"
-        >
-          {match.removed ? 'Removed' : 'Delete'}
-        </Button>
-        {match.removed && <span className="removed-reason">{match.removedReason} - /u/{match.removedBy}</span>}
-      </div>
-    </div>
-  )
-
   renderMatches = () => this.props.matches.map((match) => {
     const onDeletePress = () => this.props.askForReason(match.id);
 
-    return <MatchModerationPageComponent.Match match={match} key={match.id} onDeletePress={onDeletePress} />;
+    return (
+      <MatchRow
+        match={match}
+        key={match.id}
+        onDeletePress={onDeletePress}
+        canDelete={this.props.isModerator || this.props.username === match.author}
+      />
+    );
   })
 
   onRemovalReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => this.props.updateReason(e.target.value);
@@ -77,8 +107,8 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
           Refresh
         </Button>
 
-        <MatchModerationPageComponent.Error loading={this.props.fetching} error={this.props.error} />
-        <MatchModerationPageComponent.Loader loading={this.props.fetching} />
+        <Error loading={this.props.fetching} error={this.props.error} />
+        <Loader loading={this.props.fetching} />
         {this.renderMatches()}
 
         <Overlay
@@ -124,8 +154,12 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
   }
 }
 
-function mapStateToProps(state: ApplicationState): MatchModerationState {
-  return state.matchModeration;
+function mapStateToProps(state: ApplicationState): MatchModerationPageStateProps {
+  return {
+    ...state.matchModeration,
+    isModerator: contains('moderator', state.authentication.data!.accessTokenClaims.permissions),
+    username: state.authentication.data!.accessTokenClaims.username,
+  };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchModerationPageDispatchProps {
@@ -139,7 +173,7 @@ function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchModerati
 }
 
 export const MatchModerationPage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<MatchModerationState, MatchModerationPageDispatchProps, RouteComponentProps<any>>(
+  connect<MatchModerationPageStateProps, MatchModerationPageDispatchProps, RouteComponentProps<any>>(
     mapStateToProps,
     mapDispatchToProps,
   )(MatchModerationPageComponent);
