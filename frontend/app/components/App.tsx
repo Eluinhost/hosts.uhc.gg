@@ -4,13 +4,14 @@ import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
-import { omit } from 'ramda';
+import { omit, any, equals, either, contains } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
 import { MatchModerationPage } from './MatchModerationPage';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
+import { isString } from 'util';
 
 const HostFormPage: React.SFC<RouteComponentProps<any>> = () => <HostForm />;
 const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
@@ -20,9 +21,13 @@ const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
   />
 );
 
+type PermissionCheckFn = {
+  (perms: string[]): boolean;
+};
+
 type AuthedRouteProps = {
   permissions: string[];
-  required: string;
+  required: string | PermissionCheckFn;
 } & RouteProps;
 
 const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) => (
@@ -35,15 +40,19 @@ const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) =>
 );
 
 const AuthedRoute: React.SFC<AuthedRouteProps> = (props) => {
-  if (!props.permissions.some(perm => perm === props.required))
-    return <Route component={NoPermissionRoute} />;
+  const fn: PermissionCheckFn = isString(props.required) ? contains<string>(props.required) : props.required;
 
-  return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
+  if (fn(props.permissions))
+    return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
+
+  return <Route component={NoPermissionRoute} />;
 };
 
 type RoutesStateProps = {
   permissions: string[];
 };
+
+const matchesPagePermissions: PermissionCheckFn = any(either(equals('moderator'), equals('host')));
 
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
@@ -51,7 +60,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
     <AuthedRoute
       path="/moderate/matches"
       component={MatchModerationPage}
-      required="moderator"
+      required={matchesPagePermissions}
       permissions={permissions}
     />
     <Route path="/login" component={LoginPage} />
