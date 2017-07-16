@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Username } from './Username';
 import { HostForm } from './HostForm';
-import { Button, NonIdealState } from '@blueprintjs/core';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { NonIdealState } from '@blueprintjs/core';
+import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { omit } from 'ramda';
@@ -11,55 +10,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
 import { MatchModerationPage } from './MatchModerationPage';
 import { LoginButton } from './LoginButton';
-
-type NavBarButtonProps = {
-  readonly text: string;
-  readonly icon: string;
-  readonly to: string;
-};
-const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<any>> =
-  ({ text, icon, to, location }) => (
-    <Link to={to}>
-      <Button
-        className="pt-minimal"
-        iconName={icon}
-        active={location.pathname.startsWith(to)}
-      >
-        {text}
-      </Button>
-    </Link>
-  );
-const NavbarButton: React.ComponentClass<NavBarButtonProps> = withRouter<NavBarButtonProps>(NavBarButtonComponent);
-
-const NavBar: React.SFC = () => (
-  <nav className="pt-navbar">
-    <div className="pt-navbar-group">
-      <Link to="/">
-        <div className="pt-navbar-heading">uhc.gg hosting</div>
-      </Link>
-    </div>
-    <div className="pt-navbar-group">
-      <NavbarButton
-        to="/host"
-        text="Host"
-        icon="cloud-upload"
-      />
-      <NavbarButton
-        to="/moderate/matches"
-        text="Moderate"
-        icon="confirm"
-      />
-      <NavbarButton
-        to="/moderate/users"
-        text="Admin"
-        icon="take-action"
-      />
-    </div>
-    <div className="pt-navbar-group">
-      <Username />
-    </div>
-  </nav>
-);
+import { Navbar } from './Navbar';
 
 const HostFormPage: React.SFC<RouteComponentProps<any>> = () => <HostForm />;
 const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
@@ -122,7 +73,7 @@ const Routes = withRouter<{}>(
 export const App: React.SFC = () => (
   <BrowserRouter>
     <div className="pt-dark">
-      <NavBar />
+      <Navbar />
       <div className="app-container">
         <Routes />
       </div>
