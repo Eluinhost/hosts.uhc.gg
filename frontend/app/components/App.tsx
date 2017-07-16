@@ -111,7 +111,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
 
 function mapStateToProps(state: ApplicationState): RoutesStateProps {
   return {
-    permissions: state.authentication.loggedIn ? state.authentication.data!.claims.permissions : [],
+    permissions: state.authentication.loggedIn ? state.authentication.data!.accessTokenClaims.permissions : [],
   };
 }
 

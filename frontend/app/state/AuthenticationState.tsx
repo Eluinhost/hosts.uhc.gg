@@ -1,20 +1,43 @@
-import { createAction } from 'redux-actions';
+import { Action, createAction } from 'redux-actions';
 import { buildReducer } from './buildReducer';
 import { Reducer } from 'redux';
 import { storage } from '../storage';
 import * as decodeJwt from 'jwt-decode';
+import * as moment from 'moment';
+import { ThunkAction } from 'redux-thunk';
+import { ApplicationState } from './ApplicationState';
 
 const storageKey = 'authentication';
 
-export type Claims = {
+type RawClaims = {
+  readonly iat: number;
+  readonly exp: number;
+};
+
+type RawRefreshTokenClaims = RawClaims & {
+  readonly username: string;
+};
+
+type RawAccessTokenClaims = RawClaims & {
   readonly username: string;
   readonly permissions: string[];
 };
 
+export type AccessTokenClaims = {
+  readonly expires: moment.Moment;
+  readonly username: string;
+  readonly permissions: string[];
+};
+
+export type RefreshTokenClaims = {
+  readonly expires: moment.Moment;
+};
+
 export type AuthenticationData = {
-  readonly accessToken: string;
-  readonly refreshToken: string;
-  readonly claims: Claims;
+  readonly rawAccessToken: string;
+  readonly rawRefreshToken: string;
+  readonly accessTokenClaims: AccessTokenClaims;
+  readonly refreshTokenClaims: RefreshTokenClaims;
 };
 
 export type AuthenticationState = {
@@ -22,8 +45,34 @@ export type AuthenticationState = {
   readonly data?: AuthenticationData;
 };
 
+export type LoginPayload = {
+  readonly accessToken: string;
+  readonly refreshToken: string;
+};
+
+const setLoggedInData = createAction<AuthenticationData>('SET_LOGGED_IN_DATA');
+
 export const AuthenticationActions = {
-  login: createAction<AuthenticationData>('LOGIN'),
+  login(payload: LoginPayload): ThunkAction<boolean, ApplicationState, LoginPayload> {
+    return (dispatch) => {
+      try {
+        const accessTokenClaims = parseAccessTokenClaims(payload.accessToken);
+        const refreshTokenClaims = parseAccessTokenClaims(payload.accessToken);
+
+        const nextState: AuthenticationData = {
+          accessTokenClaims,
+          refreshTokenClaims,
+          rawAccessToken: payload.accessToken,
+          rawRefreshToken: payload.refreshToken,
+        };
+
+        dispatch(setLoggedInData(nextState));
+        return true;
+      } catch (err) {
+        return false;
+      }
+    };
+  },
   logout: createAction('LOGOUT'),
 };
 
@@ -32,9 +81,9 @@ const notLoggedIn: AuthenticationState = {
 };
 
 export const reducer: Reducer<AuthenticationState> = buildReducer<AuthenticationState>()
-  .handle(AuthenticationActions.login, (state, action) => {
-    storage.setItem(`${storageKey}.accessToken`, action.payload!.accessToken);
-    storage.setItem(`${storageKey}.refrsehToken`, action.payload!.refreshToken);
+  .handle(setLoggedInData, (state, action: Action<AuthenticationData>) => {
+    storage.setItem(`${storageKey}.accessToken`, action.payload!.rawAccessToken);
+    storage.setItem(`${storageKey}.refrsehToken`, action.payload!.rawRefreshToken);
 
     return {
       loggedIn: true,
@@ -48,25 +97,41 @@ export const reducer: Reducer<AuthenticationState> = buildReducer<Authentication
   })
   .done();
 
-export function parseJwt(token: string): Claims {
-  return decodeJwt<Claims>(token);
+export function parseAccessTokenClaims(token: string): AccessTokenClaims {
+  const decoded = decodeJwt<RawAccessTokenClaims>(token);
+
+  return {
+    username: decoded.username,
+    permissions: decoded.permissions,
+    expires: moment(decoded.exp, 'X'),
+  };
+}
+
+export function parseRefreshTokenClaims(token: string): RefreshTokenClaims {
+  const decoded = decodeJwt<RawRefreshTokenClaims>(token);
+
+  return {
+    expires: moment(decoded.exp, 'X'),
+  };
 }
 
 export async function initialValues(): Promise<AuthenticationState> {
   try {
-    const accessToken = await storage.getItem<string>(`${storageKey}.accessToken`);
-    const refreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
+    const rawAccessToken = await storage.getItem<string>(`${storageKey}.accessToken`);
+    const rawRefreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
 
-    if (!accessToken || !refreshToken)
+    if (!rawAccessToken || !rawRefreshToken)
       return notLoggedIn;
 
-    const parsed = parseJwt(accessToken);
+    const accessTokenClaims = parseAccessTokenClaims(rawAccessToken);
+    const refreshTokenClaims = parseRefreshTokenClaims(rawRefreshToken);
 
     return {
       data: {
-        accessToken,
-        refreshToken,
-        claims: parsed,
+        rawAccessToken,
+        rawRefreshToken,
+        accessTokenClaims,
+        refreshTokenClaims,
       },
       loggedIn: true,
     };

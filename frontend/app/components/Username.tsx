@@ -31,7 +31,7 @@ const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProp
       return (
         <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
           <span className="pt-button pt-minimal pt-icon-user">
-            {authentication.data!.claims.username}
+            {authentication.data!.accessTokenClaims.username}
           </span>
         </Popover>
       );

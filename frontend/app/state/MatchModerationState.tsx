@@ -92,7 +92,7 @@ export const MatchModerationActions = {
       const reason = state.matchModeration.removal.reason;
       const authentication = state.authentication;
 
-      dispatch(startRemoval({ id, reason, user: state.authentication.data!.claims.username }));
+      dispatch(startRemoval({ id, reason, user: state.authentication.data!.accessTokenClaims.username }));
 
       return removeMatch(id, reason, authentication)
         .then(data => dispatch(endRemoval()))

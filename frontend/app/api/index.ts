@@ -39,7 +39,7 @@ export function removeMatch(id: number, reason: string, authentication: Authenti
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authentication.data!.accessToken}`,
+      Authorization: `Bearer ${authentication.data!.rawAccessToken}`,
     },
     body: JSON.stringify({ reason }),
   }).then(verifyStatus(204)).then(_ => undefined);
@@ -64,7 +64,7 @@ export function createMatch(data: CreateMatchData, authentication: Authenticatio
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authentication.data!.accessToken}`,
+      Authorization: `Bearer ${authentication.data!.rawAccessToken}`,
     },
     body: JSON.stringify(data),
   }).then(verifyStatus(201)).then(_ => undefined);
