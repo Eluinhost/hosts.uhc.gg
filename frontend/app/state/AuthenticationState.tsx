@@ -82,17 +82,24 @@ export const AuthenticationActions = {
     return (dispatch, getState) => {
       const state = getState();
 
-      if (!state.authentication.loggedIn)
+      console.log('Checking authentication token refresh status');
+
+      if (!state.authentication.loggedIn) {
+        console.log('Not logged in');
         return Promise.resolve(false);
+      }
 
       const now = moment();
 
       // If the access token still has time left do nothing
-      if (state.authentication.data!.accessTokenClaims.expires.isAfter(now.add(5 , 'minutes')))
+      if (state.authentication.data!.accessTokenClaims.expires.isAfter(now.add(5 , 'minutes'))) {
+        console.log('Authentication token not stale');
         return Promise.resolve(false);
+      }
 
       // If the refresh token has expired too just log the client out
       if (state.authentication.data!.refreshTokenClaims.expires.isBefore(now.subtract(5, 'minutes'))) {
+        console.log('Authentication + Refresh token stale, logging out');
         dispatch(AuthenticationActions.logout());
         return Promise.resolve(true);
       }
@@ -100,7 +107,10 @@ export const AuthenticationActions = {
       // Get new tokens from the API
       return refreshTokens(state.authentication.data!.rawRefreshToken)
         .then(data => dispatch(AuthenticationActions.login(data)))
-        .then(_ => true)
+        .then(() => {
+          console.log('Authentication tokens refreshed');
+          return true;
+        })
         .catch((err) => {
           console.error(err);
 
@@ -187,6 +197,6 @@ export async function initialValues(): Promise<AuthenticationState> {
 export function postInit(store: Store<ApplicationState>): void {
   // check every minute if we need to refresh our authentication tokens
   const recheck = () => store.dispatch(AuthenticationActions.refreshIfRequired());
-  setTimeout(recheck, 1000 * 60);
+  setInterval(recheck, 1000 * 60);
   recheck();
 }
