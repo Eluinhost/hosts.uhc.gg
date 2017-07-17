@@ -1,5 +1,5 @@
 import { HostFormData, minDate } from '../components/HostForm';
-import { buildReducer } from './buildReducer';
+import { ReducerBuilder } from './ReducerBuilder';
 import { storage } from '../storage';
 import { Regions } from '../Regions';
 import { TeamStyles } from '../TeamStyles';
@@ -13,7 +13,7 @@ export type HostingState = {
   formInitialState: HostingFormInitialState;
 };
 
-export const reducer = buildReducer().done(); // Do nothing
+export const reducer = new ReducerBuilder<HostingState>().build(); // Do nothing
 
 const defaultData: HostingFormInitialState = {
   opens: minDate,

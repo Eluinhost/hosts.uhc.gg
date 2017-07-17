@@ -1,17 +1,17 @@
 import { Action, createAction } from 'redux-actions';
-import { buildReducer } from './buildReducer';
-import { Reducer } from 'redux';
+import { ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../Match';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
 import {
-  ApiError,
   fetchUpcomingMatches,
   ForbiddenError,
   NotAuthenticatedError,
   removeMatch,
   UnexpectedResponseError,
 } from '../api/index';
+import { always, T, F, evolve, propEq, map, ifElse, identity } from 'ramda';
+import { Reducer } from 'redux';
 
 export type MatchRemovalModelState = {
   readonly isModalOpen: boolean;
@@ -40,7 +40,11 @@ type StartRemovalPayload = {
 };
 const startRemoval = createAction<StartRemovalPayload>('MATCH_MODERATION_START_REMOVAL');
 const endRemoval = createAction('MATCH_MODERATION_END_REMOVAL');
-const removalError = createAction<string>('MATCH_MODERATION_REMOVAL_ERROR');
+type RemovalErrorPayload = {
+  id: number;
+  error: string;
+};
+const removalError = createAction<RemovalErrorPayload>('MATCH_MODERATION_REMOVAL_ERROR');
 
 const setRemovalTarget = createAction<number>('MATCH_MODERATION_SET_REMOVAL_TARGET');
 const openModal = createAction('MATCH_MODERATION_OPEN_MODAL');
@@ -95,15 +99,15 @@ export const MatchModerationActions = {
         .then(data => dispatch(endRemoval()))
         .catch((err) => {
           if (err instanceof NotAuthenticatedError)
-            return dispatch(removalError('You are not logged in')); // TODO some kind of 'relogin' action
+            return dispatch(removalError({ id, error: 'You are not logged in' })); // TODO some kind of 'relogin' action
 
           if (err instanceof ForbiddenError)
-            return dispatch(removalError('You do not have permissions to use this'));
+            return dispatch(removalError({ id, error: 'You do not have permissions to use this' }));
 
           if (err instanceof UnexpectedResponseError)
-            return dispatch(removalError('Unexpected response from the server'));
+            return dispatch(removalError({ id, error: 'Unexpected response from the server' }));
 
-          return dispatch(removalError('Unable to remove item from server'));
+          return dispatch(removalError({ id, error: 'Unable to remove item from server' }));
         });
     };
   },
@@ -115,126 +119,83 @@ export const MatchModerationActions = {
 };
 
 export const reducer: Reducer<MatchModerationState> =
-  buildReducer<MatchModerationState>()
-    .handle(startFetch, (state) => {
-      return {
-        ...state,
-        fetching: true,
-        error: undefined,
-      };
+  new ReducerBuilder<MatchModerationState>()
+    .handleEvolve(startFetch, {
+      fetching: T,
+      error: always(undefined),
     })
-    .handle(endFetch, (state, action) => {
-      return {
-        ...state,
-        fetching: false,
-        error: undefined,
-        matches: action.payload,
-      };
+    .handleEvolve(endFetch, (action: Action<Match[]>) => ({
+      fetching: F,
+      matches: always(action.payload),
+      error: always(undefined),
+    }))
+    .handleEvolve(fetchError, (action: Action<string>) => ({
+      fetching: F,
+      error: always(action.payload),
+    }))
+    .handleEvolve(setRemovalTarget, (action: Action<number>) => ({
+      removal: {
+        targettedId: always(action.payload),
+      },
+    }))
+    .handleEvolve(openModal, {
+      removal: {
+        isModalOpen: T,
+      },
     })
-    .handle(fetchError, (state, action) => {
-      return {
-        ...state,
-        fetching: false,
-        error: action.payload,
-      };
+    .handleEvolve(MatchModerationActions.closeModal, {
+      removal: {
+        isModalOpen: F,
+      },
     })
-    .handle(setRemovalTarget, (state, action) => {
-      return {
-        ...state,
-        removal: {
-          ...state.removal,
-          targettedId: action.payload!,
-        },
-      };
+    .handleEvolve(startRemoval, (action: Action<StartRemovalPayload>) => ({
+      matches: map(
+        ifElse(
+          propEq('id', action.payload!.id),
+          evolve({
+            removed: T,
+            removedBy: always(action.payload!.user),
+            removedReason: always(action.payload!.reason),
+          }),
+          identity,
+        ),
+      ),
+      removal: {
+        fetching: T,
+        error: always(undefined),
+      },
+    }))
+    .handleEvolve(endRemoval, {
+      removal: {
+        fetching: F,
+        error: always(undefined),
+        isModalOpen: F,
+      },
     })
-    .handle(openModal, (state) => {
-      return {
-        ...state,
-        removal: {
-          ...state.removal,
-          isModalOpen: true,
-        },
-      };
-    })
-    .handle(MatchModerationActions.closeModal, (state) => {
-      return {
-        ...state,
-        removal: {
-          ...state.removal,
-          isModalOpen: false,
-        },
-      };
-    })
-    .handle(startRemoval, (state, action: Action<StartRemovalPayload>) => {
-      const { id, reason, user } = action.payload!;
-
-      return {
-        ...state,
-        matches: state.matches.map((match) => {
-          if (match.id === id) {
-            return {
-              ...match,
-              removed: true,
-              removedBy: user,
-              removedReason: reason,
-            };
-          }
-
-          return match;
-        }),
-        removal: {
-          ...state.removal,
-          fetching: true,
-          error: undefined,
-        },
-      };
-    })
-    .handle(endRemoval, (state) => {
-      return {
-        ...state,
-        removal: {
-          ...state.removal,
-          fetching: false,
-          error: undefined,
-          isModalOpen: false,
-        },
-      };
-    })
-    .handle(removalError, (state, action) => {
-      const id = state.removal.targettedId;
-
-      return {
-        ...state,
-        matches: state.matches.map((match) => {
-          if (match.id === id) {
-            return {
-              ...match,
-              removed: false,
-              removedReason: null,
-              removedBy: null,
-            };
-          }
-
-          return match;
-        }),
-        removal: {
-          ...state.removal,
-          fetching: false,
-          error: action.payload!,
-        },
-      };
-    })
-    .handle(MatchModerationActions.updateReason, (state, action) => {
-      return {
-        ...state,
-        removal: {
-          ...state.removal,
-          reason: action.payload,
-          validReason: action.payload!.trim().length > 0,
-        },
-      };
-    })
-    .done();
+    .handleEvolve(removalError, (action: Action<RemovalErrorPayload>) => ({
+      matches: map(
+        ifElse(
+          propEq('id', action.payload!.id),
+          evolve({
+            removed: T,
+            removedBy: always(null),
+            removedReason: always(null),
+          }),
+          identity,
+        ),
+      ),
+      removal: {
+        fetching: F,
+        error: always(action.payload!.error),
+      },
+    }))
+    .handleEvolve(MatchModerationActions.updateReason, (action: Action<string>) => ({
+      removal: {
+        reason: always(action.payload),
+        validReason: always(action.payload!.trim().length > 0),
+      },
+    }))
+    .build();
 
 export async function initialValues(): Promise<MatchModerationState> {
   return {

@@ -1,11 +1,12 @@
 import { Action, createAction } from 'redux-actions';
-import { buildReducer } from './buildReducer';
+import { ReducerBuilder } from './ReducerBuilder';
 import { Reducer } from 'redux';
 import { storage } from '../storage';
 import * as decodeJwt from 'jwt-decode';
 import * as moment from 'moment';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
+import { T, F, always } from 'ramda';
 
 const storageKey = 'authentication';
 
@@ -76,27 +77,26 @@ export const AuthenticationActions = {
   logout: createAction('LOGOUT'),
 };
 
-const notLoggedIn: AuthenticationState = {
-  loggedIn: false,
-};
-
-export const reducer: Reducer<AuthenticationState> = buildReducer<AuthenticationState>()
-  .handle(setLoggedInData, (state, action: Action<AuthenticationData>) => {
+export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
+  .handleEvolve(setLoggedInData, (action: Action<AuthenticationData>) => {
     storage.setItem(`${storageKey}.accessToken`, action.payload!.rawAccessToken);
     storage.setItem(`${storageKey}.refreshToken`, action.payload!.rawRefreshToken);
 
     return {
-      loggedIn: true,
-      data: action.payload,
+      loggedIn: T,
+      data: always(action.payload),
     };
   })
-  .handle(AuthenticationActions.logout, () => {
+  .handleEvolve(AuthenticationActions.logout, () => {
     storage.removeItem(`${storageKey}.accessToken`);
     storage.removeItem(`${storageKey}.refreshToken`);
 
-    return notLoggedIn;
+    return {
+      loggedIn: F,
+      data: always(undefined),
+    };
   })
-  .done();
+  .build();
 
 export function parseAccessTokenClaims(token: string): AccessTokenClaims {
   const decoded = decodeJwt<RawAccessTokenClaims>(token);
@@ -122,7 +122,7 @@ export async function initialValues(): Promise<AuthenticationState> {
     const rawRefreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
 
     if (!rawAccessToken || !rawRefreshToken)
-      return notLoggedIn;
+      return { loggedIn: false };
 
     const accessTokenClaims = parseAccessTokenClaims(rawAccessToken);
     const refreshTokenClaims = parseRefreshTokenClaims(rawRefreshToken);
@@ -138,6 +138,6 @@ export async function initialValues(): Promise<AuthenticationState> {
     };
   } catch (err) {
     console.error(err);
-    return notLoggedIn;
+    return { loggedIn: false };
   }
 }
