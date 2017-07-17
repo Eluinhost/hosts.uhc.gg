@@ -36,6 +36,7 @@ export async function createReduxStore(): Promise<Store<ApplicationState>> {
   );
 
   Hosting.postInit(store);
+  Authentication.postInit(store);
 
   return store;
 }

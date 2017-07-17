@@ -15,9 +15,9 @@ import { Reducer } from 'redux';
 
 export type MatchRemovalModelState = {
   readonly isModalOpen: boolean;
-  readonly targettedId?: number;
+  readonly targettedId: number | null;
   readonly fetching: boolean;
-  readonly error?: string;
+  readonly error: string | null;
   readonly reason: string;
   readonly validReason: boolean;
 };
@@ -25,7 +25,7 @@ export type MatchRemovalModelState = {
 export type MatchModerationState = {
   readonly matches: Match[];
   readonly fetching: boolean;
-  readonly error?: string;
+  readonly error: string | null;
   readonly removal: MatchRemovalModelState;
 };
 
@@ -122,12 +122,12 @@ export const reducer: Reducer<MatchModerationState> =
   new ReducerBuilder<MatchModerationState>()
     .handleEvolve(startFetch, {
       fetching: T,
-      error: always(undefined),
+      error: always(null),
     })
     .handleEvolve(endFetch, (action: Action<Match[]>) => ({
       fetching: F,
       matches: always(action.payload),
-      error: always(undefined),
+      error: always(null),
     }))
     .handleEvolve(fetchError, (action: Action<string>) => ({
       fetching: F,
@@ -162,13 +162,13 @@ export const reducer: Reducer<MatchModerationState> =
       ),
       removal: {
         fetching: T,
-        error: always(undefined),
+        error: always(null),
       },
     }))
     .handleEvolve(endRemoval, {
       removal: {
         fetching: F,
-        error: always(undefined),
+        error: always(null),
         isModalOpen: F,
       },
     })
@@ -201,7 +201,10 @@ export async function initialValues(): Promise<MatchModerationState> {
   return {
     matches: [],
     fetching: false,
+    error: null,
     removal: {
+      targettedId: null,
+      error: null,
       isModalOpen: false,
       fetching: false,
       reason: '',

@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
 import { Match } from '../Match';
-import { Spinner, NonIdealState, Alert, Intent, Button, Overlay } from '@blueprintjs/core';
+import { Spinner, NonIdealState, Intent, Button, Overlay } from '@blueprintjs/core';
 import { MatchModerationActions, MatchModerationState } from '../state/MatchModerationState';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
@@ -43,7 +43,7 @@ const MatchRow: React.SFC<MatchRowProps> = props => (
   </div>
 );
 
-const Error: React.SFC<{ loading: boolean, error?: string }> = ({ loading, error }) => {
+const Error: React.SFC<{ loading: boolean, error: string | null }> = ({ loading, error }) => {
   if (loading || !error)
     return null;
 

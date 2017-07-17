@@ -1,12 +1,13 @@
 import { Action, createAction } from 'redux-actions';
 import { ReducerBuilder } from './ReducerBuilder';
-import { Reducer } from 'redux';
+import { Reducer, Store } from 'redux';
 import { storage } from '../storage';
 import * as decodeJwt from 'jwt-decode';
 import * as moment from 'moment';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
 import { T, F, always } from 'ramda';
+import { ForbiddenError, NotAuthenticatedError, refreshTokens } from '../api/index';
 
 const storageKey = 'authentication';
 
@@ -32,6 +33,7 @@ export type AccessTokenClaims = {
 
 export type RefreshTokenClaims = {
   readonly expires: moment.Moment;
+  readonly username: string;
 };
 
 export type AuthenticationData = {
@@ -43,7 +45,7 @@ export type AuthenticationData = {
 
 export type AuthenticationState = {
   readonly loggedIn: boolean;
-  readonly data?: AuthenticationData;
+  readonly data: AuthenticationData | null;
 };
 
 export type LoginPayload = {
@@ -58,7 +60,7 @@ export const AuthenticationActions = {
     return (dispatch) => {
       try {
         const accessTokenClaims = parseAccessTokenClaims(payload.accessToken);
-        const refreshTokenClaims = parseAccessTokenClaims(payload.accessToken);
+        const refreshTokenClaims = parseRefreshTokenClaims(payload.refreshToken);
 
         const nextState: AuthenticationData = {
           accessTokenClaims,
@@ -70,21 +72,60 @@ export const AuthenticationActions = {
         dispatch(setLoggedInData(nextState));
         return true;
       } catch (err) {
+        dispatch(AuthenticationActions.logout());
         return false;
       }
     };
   },
   logout: createAction('LOGOUT'),
+  refreshIfRequired(): ThunkAction<Promise<boolean>, ApplicationState, {}> {
+    return (dispatch, getState) => {
+      const state = getState();
+
+      if (!state.authentication.loggedIn)
+        return Promise.resolve(false);
+
+      const now = moment();
+
+      // If the access token still has time left do nothing
+      if (state.authentication.data!.accessTokenClaims.expires.isAfter(now.add(5 , 'minutes')))
+        return Promise.resolve(false);
+
+      // If the refresh token has expired too just log the client out
+      if (state.authentication.data!.refreshTokenClaims.expires.isBefore(now.subtract(5, 'minutes'))) {
+        dispatch(AuthenticationActions.logout());
+        return Promise.resolve(true);
+      }
+
+      // Get new tokens from the API
+      return refreshTokens(state.authentication.data!.rawRefreshToken)
+        .then(data => dispatch(AuthenticationActions.login(data)))
+        .then(_ => true)
+        .catch((err) => {
+          console.error(err);
+
+          // force log them out if refresh token is broken
+          if (err instanceof ForbiddenError || err instanceof NotAuthenticatedError) {
+            dispatch(AuthenticationActions.logout());
+            return Promise.resolve(false);
+          }
+
+          return Promise.reject(err);
+        });
+    };
+  },
 };
 
 export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
   .handleEvolve(setLoggedInData, (action: Action<AuthenticationData>) => {
-    storage.setItem(`${storageKey}.accessToken`, action.payload!.rawAccessToken);
-    storage.setItem(`${storageKey}.refreshToken`, action.payload!.rawRefreshToken);
+    const data: AuthenticationData = action.payload!;
+
+    storage.setItem(`${storageKey}.accessToken`, data.rawAccessToken);
+    storage.setItem(`${storageKey}.refreshToken`, data.rawRefreshToken);
 
     return {
       loggedIn: T,
-      data: always(action.payload),
+      data: always(data),
     };
   })
   .handleEvolve(AuthenticationActions.logout, () => {
@@ -93,7 +134,7 @@ export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<Authenti
 
     return {
       loggedIn: F,
-      data: always(undefined),
+      data: always(null),
     };
   })
   .build();
@@ -113,6 +154,7 @@ export function parseRefreshTokenClaims(token: string): RefreshTokenClaims {
 
   return {
     expires: moment(decoded.exp, 'X'),
+    username: decoded.username,
   };
 }
 
@@ -122,7 +164,7 @@ export async function initialValues(): Promise<AuthenticationState> {
     const rawRefreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
 
     if (!rawAccessToken || !rawRefreshToken)
-      return { loggedIn: false };
+      return { loggedIn: false, data: null };
 
     const accessTokenClaims = parseAccessTokenClaims(rawAccessToken);
     const refreshTokenClaims = parseRefreshTokenClaims(rawRefreshToken);
@@ -138,6 +180,13 @@ export async function initialValues(): Promise<AuthenticationState> {
     };
   } catch (err) {
     console.error(err);
-    return { loggedIn: false };
+    return { loggedIn: false, data: null };
   }
+}
+
+export function postInit(store: Store<ApplicationState>): void {
+  // check every minute if we need to refresh our authentication tokens
+  const recheck = () => store.dispatch(AuthenticationActions.refreshIfRequired());
+  setTimeout(recheck, 1000 * 60);
+  recheck();
 }

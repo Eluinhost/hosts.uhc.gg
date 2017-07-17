@@ -69,3 +69,20 @@ export function createMatch(data: CreateMatchData, authentication: Authenticatio
     body: JSON.stringify(data),
   }).then(verifyStatus(201)).then(_ => undefined);
 }
+
+export type RefreshTokenResponse = {
+  readonly accessToken: string;
+  readonly refreshToken: string;
+};
+
+export function refreshTokens(refreshToken: String): Promise<RefreshTokenResponse> {
+  return fetch('/authenticate/refresh', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${refreshToken}`,
+    },
+  })
+    .then(verifyStatus(200))
+    .then(response => toJson<RefreshTokenResponse>(response));
+}
