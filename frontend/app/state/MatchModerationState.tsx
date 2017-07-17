@@ -10,7 +10,7 @@ import {
   removeMatch,
   UnexpectedResponseError,
 } from '../api/index';
-import { always, T, F, evolve, propEq, map, ifElse, identity } from 'ramda';
+import { always, T, F, evolve, propEq, map, when } from 'ramda';
 import { Reducer } from 'redux';
 
 export type MatchRemovalModelState = {
@@ -150,14 +150,13 @@ export const reducer: Reducer<MatchModerationState> =
     })
     .handleEvolve(startRemoval, (action: Action<StartRemovalPayload>) => ({
       matches: map(
-        ifElse(
+        when(
           propEq('id', action.payload!.id),
           evolve({
             removed: T,
             removedBy: always(action.payload!.user),
             removedReason: always(action.payload!.reason),
           }),
-          identity,
         ),
       ),
       removal: {
@@ -174,14 +173,13 @@ export const reducer: Reducer<MatchModerationState> =
     })
     .handleEvolve(removalError, (action: Action<RemovalErrorPayload>) => ({
       matches: map(
-        ifElse(
+        when(
           propEq('id', action.payload!.id),
           evolve({
             removed: T,
             removedBy: always(null),
             removedReason: always(null),
           }),
-          identity,
         ),
       ),
       removal: {
