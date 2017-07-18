@@ -1,15 +1,11 @@
 import { Redirect, RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import {
-  AuthenticationData,
-  AuthenticationActions,
-  parseAccessTokenClaims,
-  parseRefreshTokenClaims,
-  LoginPayload,
-} from '../state/AuthenticationState';
+import { AuthenticationActions, LoginPayload } from '../state/AuthenticationState';
 import { connect } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
 import { parse } from 'query-string';
+import { always } from 'ramda';
+import { Dispatch } from 'redux';
 
 export type LoginPageDispatchProps = {
   readonly login: (data: LoginPayload) => boolean;
@@ -37,9 +33,10 @@ export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageD
     }
   };
 
-export const LoginPage = connect<{}, LoginPageDispatchProps, RouteComponentProps<any>>(
-  () => ({}),
-  dispatch => ({
-    login: data => dispatch(AuthenticationActions.login(data)),
-  }) as LoginPageDispatchProps,
-)(LoginPageComponent);
+export const LoginPage: React.ComponentClass<RouteComponentProps<any>> =
+  connect<{}, LoginPageDispatchProps, RouteComponentProps<any>>(
+    always({}),
+    (dispatch: Dispatch<any>) => ({
+      login: data => dispatch(AuthenticationActions.login(data)),
+    }) as LoginPageDispatchProps,
+  )(LoginPageComponent);
