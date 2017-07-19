@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@blueprintjs/core": "^1.21.0",
+    "@blueprintjs/core": "^1.22.0",
     "@blueprintjs/labs": "^0.3.0",
     "@types/jwt-decode": "^2.2.1",
     "@types/query-string": "^4.3.1",
