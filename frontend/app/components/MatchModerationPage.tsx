@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { contains } from 'ramda';
+import { TeamStyles } from '../TeamStyles';
 
 type MatchRowProps = {
   readonly match: Match;
@@ -14,30 +15,83 @@ type MatchRowProps = {
   readonly canRemove: boolean;
 };
 
-const RemoveMatchButton: React.SFC<MatchRowProps> = ({ onRemovePress, match }) => (
+const RemoveMatchButton: React.SFC<MatchRowProps> = ({ onRemovePress }) => (
   <Button
     onClick={onRemovePress}
-    disabled={match.removed}
     intent={Intent.DANGER}
     iconName="delete"
+    className="match-remove-button"
   >
-    {match.removed ? 'Removed' : 'Remove'}
+    Remove
   </Button>
 );
 
 const MatchRemovedReason: React.SFC<MatchRowProps> = ({ match }) => (
-  <span className="removed-reason">
-    {match.removedReason} - /u/{match.removedBy}
-  </span>
+  <div className="removed-reason">
+    <div className="removed-reason-reason">Removed: {match.removedReason}</div>
+    <div className="removed-reason-remover">/u/{match.removedBy}</div>
+  </div>
 );
 
-const MatchRow: React.SFC<MatchRowProps> = props => (
-  <div className="pt-card match-moderation-match">
-    <strong>ID:{props.match.id}</strong>
-    {props.match.author}'s #{props.match.count}
+const Tag: React.SFC<{ tag: string }> = ({ tag }) => (
+  <span className="pt-tag pt-intent-warning pt-large" title="Tag">{tag}</span>
+);
+const renderTags = (tags: string[]) => tags.map((tag, index) => <Tag key={index} tag={tag}/>);
 
+const Scenario: React.SFC<{ scenario: string }> = ({ scenario }) => (
+  <span className="pt-tag pt-intent-danger pt-large" title="Scenario">{scenario}</span>
+);
+const renderScenarios = (scenarios: string[]) => scenarios.map((scenario, index) =>
+  <Scenario key={index} scenario={scenario}/>,
+);
+
+const TeamStyle: React.SFC<{ style: string, size: number | null, custom: string | null }> =
+  ({ style, size, custom }) => {
+    const lookup = TeamStyles.find(it => it.value === style);
+    let render: string;
+
+    if (!lookup) {
+      render = `UNKNOWN STYLE: ${style}`;
+    } else if (lookup.value === 'custom') {
+      render = custom || 'Custom style not provided';
+    } else {
+      render = lookup.display;
+
+      if (lookup.requiresTeamSize) {
+        render = `${render} To${size}`;
+      }
+    }
+
+    return <span>{render}</span>;
+  };
+
+const MatchRow: React.SFC<MatchRowProps> = props => (
+  <div className={`pt-card match-moderation-match ${props.match.removed ? 'pt-intent-danger' : ''}`}>
+    <span className="match-id pt-tag pt-large pt-intent-success">
+      <span title="Unique ID" className="pt-text-muted">{props.match.id}</span>
+      <span className="match-opens">{props.match.opens.format('MMM DD HH:mm')}</span>
+      <span className="match-region">- {props.match.region}</span>
+    </span>
+    <div className="match-content">
+      <h4 className="match-title">
+        <span>{props.match.author}</span>
+        <span>#{props.match.count}</span>
+        <span>-</span>
+        <TeamStyle size={props.match.size} style={props.match.teams} custom={props.match.customStyle} />
+      </h4>
+      <div className="match-tags">
+        {renderTags(props.match.tags)}
+        {renderScenarios(props.match.scenarios)}
+      </div>
+      <div className="match-addresses">
+        <span className="pt-tag pt-minimal pt-intent-primary pt-large" title="Server Address">
+          {props.match.ip}
+          {props.match.address && <span> / {props.match.address}</span>}
+        </span>
+      </div>
+    </div>
     <div className="match-moderation-actions">
-      {props.canRemove && <RemoveMatchButton {...props}/>}
+      {(props.canRemove && !props.match.removed) && <RemoveMatchButton {...props}/>}
       {props.match.removed && <MatchRemovedReason {...props}/>}
     </div>
   </div>
