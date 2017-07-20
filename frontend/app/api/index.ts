@@ -2,6 +2,7 @@ import { Match } from '../Match';
 import { AuthenticationState } from '../state/AuthenticationState';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
+import { map, evolve } from 'ramda';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -28,10 +29,17 @@ function toJson<T>(response: Response): Promise<T> {
   return response.json();
 }
 
+const convertUnixToMoment: (x: string) => moment.Moment = x => moment(x, 'X');
+
+const convertMatchTimes: (m: Match) => Match = evolve<Match>({
+  opens: convertUnixToMoment,
+});
+
 export function fetchUpcomingMatches(): Promise<Match[]> {
   return fetch('/api/matches')
     .then(verifyStatus(200))
-    .then(response => toJson<Match[]>(response));
+    .then(response => toJson<Match[]>(response))
+    .then(map(convertMatchTimes));
 }
 
 export function removeMatch(id: number, reason: string, authentication: AuthenticationState): Promise<void> {
