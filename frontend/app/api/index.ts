@@ -29,7 +29,7 @@ function toJson<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-const convertUnixToMoment: (x: string) => moment.Moment = x => moment(x, 'X');
+const convertUnixToMoment: (x: string) => moment.Moment = x => moment(x);
 
 const convertMatchTimes: (m: Match) => Match = evolve<Match>({
   opens: convertUnixToMoment,
