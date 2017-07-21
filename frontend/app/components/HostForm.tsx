@@ -205,8 +205,8 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
 
     if (!values.opens) {
       errors.opens = 'Must provide an opening time';
-    } else if (values.opens.get('minute') % 5 !== 0) {
-      errors.opens = 'Must be on 5 minute intervals like xx:05, xx:10 e.t.c.';
+    } else if (values.opens.get('minute') % 15 !== 0) {
+      errors.opens = 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
     } else if (values.opens.isBefore(moment().add(30, 'minutes'))) {
       errors.opens = 'Must be at least 30 minutes in advance';
     }
