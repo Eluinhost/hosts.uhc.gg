@@ -14,6 +14,7 @@ trait RouteModule extends DatabaseModule with RedditModule {
   lazy val authEndpoint: Authenticate = wire[Authenticate]
   lazy val authCallbackEndpoint: AuthenticateCallback = wire[AuthenticateCallback]
   lazy val authRefreshEndpoint: AuthenticateRefresh = wire[AuthenticateRefresh]
+  lazy val timeSync: TimeSync = wire[TimeSync]
 
   lazy val routes: Routes = wire[Routes]
 }

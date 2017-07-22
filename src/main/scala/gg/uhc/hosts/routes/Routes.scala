@@ -12,14 +12,17 @@ class Routes(
     removeMatches: RemoveMatch,
     auth: Authenticate,
     authCallback: AuthenticateCallback,
-    authRefresh: AuthenticateRefresh) {
+    authRefresh: AuthenticateRefresh,
+    timeSync: TimeSync) {
 
   val api: Route = pathPrefix("api") {
     pathPrefix("matches") {
       pathEndOrSingleSlash {
         get(listMatches.route) ~ post(createMatches.route)
       } ~ delete(removeMatches.route)
-    } ~ complete(StatusCodes.NotFound)
+    } ~
+      pathPrefix("sync")(timeSync.route) ~
+      complete(StatusCodes.NotFound)
   }
 
   val frontend: Route =
