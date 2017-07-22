@@ -127,6 +127,14 @@ export type MatchModerationPageStateProps = {
 type MatchModerationPageProps =
   MatchModerationPageStateProps & MatchModerationPageDispatchProps & RouteComponentProps<any>;
 
+const NoMatches: React.SFC = () => (
+  <NonIdealState
+    title="Nothing to see!"
+    visual="geosearch"
+    description="There are currently no matches in the queue"
+  />
+);
+
 class MatchModerationPageComponent extends React.Component<MatchModerationPageProps> {
   componentDidMount() {
     this.props.refetch();
@@ -163,7 +171,7 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
 
         <Error loading={this.props.fetching} error={this.props.error} />
         <Loader loading={this.props.fetching} />
-        {this.renderMatches()}
+        {this.props.matches.length ? this.renderMatches() : <NoMatches/>}
 
         <Overlay
           isOpen={this.props.removal.isModalOpen}
