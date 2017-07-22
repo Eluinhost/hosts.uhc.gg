@@ -12,7 +12,7 @@ module.exports = {
   entry: [path.join(__dirname, 'app', 'index.tsx'), path.join(__dirname, 'app', 'main.sass')],
   output: {
     filename: '[name].bundle.js',
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, '..', 'assets'),
     publicPath: '/assets'
   },
   devtool: 'eval',

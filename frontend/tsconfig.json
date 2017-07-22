@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
-    "outDir": "./build",
     "sourceMap": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
-    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "pretty": true,
     "removeComments": true,

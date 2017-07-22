@@ -7,12 +7,12 @@ import akkahttptwirl.TwirlSupport._
 import gg.uhc.hosts.routes.endpoints._
 
 class Routes(
-              listMatches: ListMatches,
-              createMatches: CreateMatch,
-              removeMatches: RemoveMatch,
-              auth: Authenticate,
-              authCallback: AuthenticateCallback,
-              authRefresh: AuthenticateRefresh) {
+    listMatches: ListMatches,
+    createMatches: CreateMatch,
+    removeMatches: RemoveMatch,
+    auth: Authenticate,
+    authCallback: AuthenticateCallback,
+    authRefresh: AuthenticateRefresh) {
 
   val api: Route = pathPrefix("api") {
     pathPrefix("matches") {
@@ -33,7 +33,7 @@ class Routes(
   }
 
   val assets: Route = pathPrefix("assets") {
-    getFromDirectory("frontend/build")
+    getFromDirectory("assets")
   }
 
   val all: Route = (logRequest("server") & logResult("server")) {
