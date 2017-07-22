@@ -1,7 +1,8 @@
 const path = require('path');
 const { CheckerPlugin } = require('awesome-typescript-loader');
-const { optimize, NamedModulesPlugin } = require('webpack');
+const { optimize, NamedModulesPlugin, ContextReplacementPlugin } = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const extractCss = new ExtractTextPlugin({
   filename: "[name].css",
@@ -15,7 +16,7 @@ module.exports = {
     path: path.join(__dirname, '..', 'assets'),
     publicPath: '/assets'
   },
-  devtool: 'eval',
+  devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
   },
@@ -61,6 +62,8 @@ module.exports = {
       minChunks: module => module.context && module.context.indexOf('node_modules') !== -1
     }),
     extractCss,
-    new NamedModulesPlugin()
+    new NamedModulesPlugin(),
+    new ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
+    // new BundleAnalyzerPlugin()
   ]
 };
