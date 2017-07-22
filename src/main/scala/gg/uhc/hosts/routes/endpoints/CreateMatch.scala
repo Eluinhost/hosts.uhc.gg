@@ -8,6 +8,7 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.Database
+import gg.uhc.hosts.database.Queries.MatchRow
 import gg.uhc.hosts.routes.{CustomDirectives, DatabaseErrorRejection}
 
 /**
@@ -16,6 +17,19 @@ import gg.uhc.hosts.routes.{CustomDirectives, DatabaseErrorRejection}
 class CreateMatch(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import customDirectives._
+
+  case class CreateMatchPayload(
+      opens: Instant,
+      address: Option[String],
+      ip: String,
+      scenarios: List[String],
+      tags: List[String],
+      teams: String,
+      size: Option[Int],
+      customStyle: Option[String],
+      count: Int,
+      content: String,
+      region: String)
 
   private[this] val teamStyles: Map[String, Boolean] = Map(
     "ffa"      → false,
@@ -31,68 +45,82 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
 
   private[this] val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
 
-  private[this] def validateAndConvertToRow(provided: CreateMatchModel, author: String): Directive1[MatchRow] = {
-    var m = provided
-      .copy(
-        scenarios = provided.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // remove duplicates
-        tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList // remove duplicates
-      )
-      .toRow(author = author)
+  private[this] def validateAndConvertToRow(provided: CreateMatchPayload, author: String): Directive1[MatchRow] = {
+    var row = MatchRow(
+      address = provided.address,
+      content = provided.content,
+      count = provided.count,
+      customStyle = provided.customStyle,
+      ip = provided.ip,
+      opens = provided.opens,
+      region = provided.region,
+      teams = provided.teams,
+      size = provided.size,
+      scenarios = provided.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
+      tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
+      // non-user provided vars below
+      id = -1,
+      created = Instant.now(),
+      author = author,
+      removed = false,
+      removedBy = None,
+      removedReason = None
+    )
 
-    if (m.opens.isBefore(Instant.now().plus(30, ChronoUnit.MINUTES)))
+    if (row.opens.isBefore(Instant.now().plus(30, ChronoUnit.MINUTES)))
       return reject(ValidationRejection("Must be at least 30 minutes in advance"))
 
-    if (m.opens.isAfter(Instant.now().plus(30, ChronoUnit.DAYS)))
+    if (row.opens.isAfter(Instant.now().plus(30, ChronoUnit.DAYS)))
       return reject(ValidationRejection("Must be at most 30 days in advance"))
 
-    if (m.opens.atOffset(ZoneOffset.UTC).getMinute % 15 != 0)
+    if (row.opens.atOffset(ZoneOffset.UTC).getMinute % 15 != 0)
       return reject(ValidationRejection("Minutes must be xx:00 xx:15 xx:30 or xx:45"))
 
-    if ("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(m.ip).isEmpty)
+    if ("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isEmpty)
       return reject(ValidationRejection("Invalid IP address supplied"))
 
-    if (m.scenarios.isEmpty)
+    if (row.scenarios.isEmpty)
       return reject(ValidationRejection("Must supply at least 1 scenario"))
 
-    if (m.scenarios.length > 25)
+    if (row.scenarios.length > 25)
       return reject(ValidationRejection("Must supply at most 25 scenarios"))
 
-    if (m.tags.length > 5)
+    if (row.tags.length > 5)
       return reject(ValidationRejection("Must supply at most 5 tags"))
 
-    if (!teamStyles.contains(m.teams))
+    if (!teamStyles.contains(row.teams))
       return reject(ValidationRejection("Unknown team style"))
 
-    if (m.content.length == 0)
+    if (row.content.length == 0)
       return reject(ValidationRejection("Must provide some post content"))
 
-    if (!regions.contains(m.region))
+    if (!regions.contains(row.region))
       return reject(ValidationRejection("Invalid region supplied"))
 
-    val requiresSize = teamStyles(m.teams)
+    val requiresSize = teamStyles(row.teams)
 
     if (requiresSize) {
-      if (m.size.isEmpty) {
+      if (row.size.isEmpty) {
         return reject(ValidationRejection("Size is required for this team style"))
       }
     } else {
-      m = m.copy(size = None) // remove size from data
+      row = row.copy(size = None) // remove size from data
     }
 
-    if (m.teams == "custom") {
-      if (m.customStyle.isEmpty) {
+    if (row.teams == "custom") {
+      if (row.customStyle.isEmpty) {
         return reject(ValidationRejection("A custom style must be given when 'custom' is picked"))
       }
     } else {
-      m = m.copy(customStyle = None) // remove custom style
+      row = row.copy(customStyle = None) // remove custom style
     }
 
-    if (m.count < 1)
+    if (row.count < 1)
       return reject(ValidationRejection("Count must be at least 1"))
 
     // TODO check database for overhost conflicts
 
-    provide(m)
+    provide(row)
   }
 
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
@@ -106,7 +134,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       requireAuthentication { session ⇒
         requirePermission("host", session.username) {
           // parse the entity
-          entity(as[CreateMatchModel]) { entity ⇒
+          entity(as[CreateMatchPayload]) { entity ⇒
             validateAndConvertToRow(entity, session.username) { validated ⇒
               requireInsertMatch(validated) {
                 complete(StatusCodes.Created → validated)

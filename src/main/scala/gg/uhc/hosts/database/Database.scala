@@ -3,7 +3,7 @@ package gg.uhc.hosts.database
 import akka.actor.ActorSystem
 import doobie.hikari.hikaritransactor.HikariTransactor
 import doobie.imports._
-import gg.uhc.hosts.MatchRow
+import gg.uhc.hosts.database.Queries.MatchRow
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -12,7 +12,6 @@ class Database(transactor: HikariTransactor[IOLite]) {
   implicit val ec: ExecutionContext = system.dispatcher
 
   val logHandler: LogHandler = LogHandler.jdkLogHandler
-
   def listMatches: ConnectionIO[List[MatchRow]] =
     Queries.listMathes.list
 

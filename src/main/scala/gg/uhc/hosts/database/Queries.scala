@@ -5,9 +5,27 @@ import java.time.temporal.ChronoUnit
 
 import doobie.imports._
 import doobie.postgres.imports._
-import gg.uhc.hosts.MatchRow
 
 object Queries {
+  case class MatchRow(
+      id: Int,
+      author: String,
+      opens: Instant,
+      address: Option[String],
+      ip: String,
+      scenarios: List[String],
+      tags: List[String],
+      teams: String,
+      size: Option[Int],
+      customStyle: Option[String],
+      count: Int,
+      content: String,
+      region: String,
+      removed: Boolean,
+      removedBy: Option[String],
+      removedReason: Option[String],
+      created: Instant)
+
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
       UPDATE matches
