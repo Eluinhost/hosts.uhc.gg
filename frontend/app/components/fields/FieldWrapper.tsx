@@ -20,10 +20,7 @@ export const errorClasses = (meta: WrappedFieldMetaProps<any>) => {
   return '';
 };
 
-export const renderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ touched, error, warning }) => {
-  if (!touched)
-    return null;
-
+export const RenderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ touched, error, warning }) => {
   if (error)
     return <div className="pt-form-helper-text">{error}</div>;
 
@@ -49,7 +46,7 @@ export const FieldWrapper: React.SFC<FieldWrapperProps> = props => (
     {renderLabel(props)}
     <div className="pt-form-content">
       {props.children}
-      {!props.hideErrors && renderErrors(props.meta)}
+      {!props.hideErrors && <RenderErrors {...props.meta} />}
     </div>
   </div>
 );

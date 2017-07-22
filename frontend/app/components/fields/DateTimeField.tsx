@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, renderErrors } from './FieldWrapper';
+import { FieldWrapper, RenderErrors } from './FieldWrapper';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 
@@ -31,7 +31,7 @@ const renderDateTimePicker: React.SFC<WrappedFieldProps<any> & DateTimeFieldProp
           disabled={props.disabled}
         />
 
-        {renderErrors(props.meta)}
+        <RenderErrors {...props.meta} />
       </div>
     </DatePicker>
   </FieldWrapper>
