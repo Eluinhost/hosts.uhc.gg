@@ -248,7 +248,9 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
   },
   onSubmit: (values, dispatch, props) => {
     return createMatch(values, props.authentication)
-      .then(_ => alert('Created'))
+      .then(() => {
+        props.history.push('/matches');
+      })
       .catch((err) => {
         if (err instanceof BadDataError)
           return alert(`Bad data: ${err.message}`);
@@ -260,7 +262,7 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
         }
 
         if (err instanceof ForbiddenError) {
-          alert('You do not have hosting permission');
+          alert('You no longer have hosting permission');
           // force log them out
           props.logout();
           props.history.push('/');
