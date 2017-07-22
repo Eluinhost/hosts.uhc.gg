@@ -6,7 +6,11 @@ import java.time.temporal.ChronoUnit
 import doobie.imports._
 import doobie.postgres.imports._
 
+import scalaz.NonEmptyList
+
 object Queries {
+  implicit val logHandler: LogHandler = LogHandler.jdkLogHandler
+
   case class MatchRow(
       id: Int,
       author: String,
@@ -25,6 +29,8 @@ object Queries {
       removedBy: Option[String],
       removedReason: Option[String],
       created: Instant)
+
+  case class PermissionSet(username: String, permissions: List[String])
 
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
@@ -118,4 +124,14 @@ object Queries {
       WHERE
         username = $username
      """.asInstanceOf[Fragment].query[String]
+
+  def getPermissions(usernames: NonEmptyList[String]): Query0[PermissionSet] =
+    (
+      sql"SELECT username, array_agg(type) FROM permissions ".asInstanceOf[Fragment] ++
+        Fragments.whereAnd(
+          Fragments.in(fr"username".asInstanceOf[Fragment], usernames)
+        ) ++
+        fr"GROUP BY username".asInstanceOf[Fragment]
+    ).query[PermissionSet]
+
 }
