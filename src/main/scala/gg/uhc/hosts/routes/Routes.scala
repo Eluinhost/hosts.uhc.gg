@@ -1,5 +1,6 @@
 package gg.uhc.hosts.routes
 
+import akka.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -16,13 +17,15 @@ class Routes(
     timeSync: TimeSync) {
 
   val api: Route = pathPrefix("api") {
-    pathPrefix("matches") {
-      pathEndOrSingleSlash {
-        get(listMatches.route) ~ post(createMatches.route)
-      } ~ delete(removeMatches.route)
-    } ~
-      pathPrefix("sync")(timeSync.route) ~
-      complete(StatusCodes.NotFound)
+    respondWithHeader(`Access-Control-Allow-Origin`.*) {
+      pathPrefix("matches") {
+        pathEndOrSingleSlash {
+          get(listMatches.route) ~ post(createMatches.route)
+        } ~ delete(removeMatches.route)
+      } ~
+        pathPrefix("sync")(timeSync.route) ~
+        complete(StatusCodes.NotFound)
+    }
   }
 
   val frontend: Route =
