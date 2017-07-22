@@ -33,7 +33,7 @@ class Routes(
   }
 
   val assets: Route = pathPrefix("assets") {
-    getFromDirectory("assets")
+    getFromDirectory("assets") ~ complete(StatusCodes.NotFound)
   }
 
   val all: Route = (logRequest("server") & logResult("server")) {
