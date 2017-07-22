@@ -93,6 +93,7 @@ const CustomTeamStyle: React.SFC<{ teamStyle?: TeamStyle, submitting?: boolean }
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>) => {
   if (e.key === 'Enter') {
+    e.preventDefault();
     e.stopPropagation();
   }
 };
