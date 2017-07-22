@@ -29,7 +29,9 @@ class Routes(
   }
 
   val frontend: Route =
-    complete(html.frontend.render())
+    path("favicon.png") {
+      getFromResource("favicon.png")
+    } ~ complete(html.frontend.render())
 
   val authenticate: Route = pathPrefix("authenticate") {
     pathEndOrSingleSlash(auth.route) ~
