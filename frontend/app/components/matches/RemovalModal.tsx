@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Intent, Overlay } from '@blueprintjs/core';
+import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { FormErrors, FormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { TextField } from '../fields/TextField';
@@ -20,36 +20,38 @@ type RemovalModalStateProps = {
 const RemovalModalComponent:
   React.SFC<RemovalModalStateProps & RemovalModalDispatchProps & FormProps<RemovalModalData, {}, ApplicationState>> =
   ({ handleSubmit, submitting, invalid, close, isOpen }) => (
-    <Overlay
+    <Dialog
+      iconName="delete"
       isOpen={isOpen}
-      autoFocus
-      canEscapeKeyClose
-      canOutsideClickClose
-      hasBackdrop
-      inline={false}
       onClose={close}
+      title="Remove match"
+      className="pt-dark"
     >
-      <form className="pt-card pt-elevation-4 remove-match-modal" onSubmit={handleSubmit}>
-        <h3>Are you sure you want to remove this game? This cannot be undone</h3>
-
-        <TextField name="reason" label="Reason" required disabled={submitting} />
-
-        <Button
-          onClick={close}
-          iconName="arrow-left"
-        >
-          Cancel
-        </Button>
-        <Button
-          intent={Intent.DANGER}
-          onClick={handleSubmit}
-          disabled={invalid || submitting}
-          iconName="delete"
-        >
-          Remove
-        </Button>
-      </form>
-    </Overlay>
+      <div className="pt-dialog-body remove-modal-body">
+        <form onSubmit={handleSubmit}>
+          <TextField name="reason" label="Reason" required disabled={submitting} className="pt-fill"/>
+          <h5>This cannot be undone once confirmed</h5>
+        </form>
+      </div>
+      <div className="pt-dialog-footer">
+        <div className="pt-dialog-footer-actions">
+          <Button
+            onClick={close}
+            iconName="arrow-left"
+          >
+            Cancel
+          </Button>
+          <Button
+            intent={Intent.DANGER}
+            onClick={handleSubmit}
+            disabled={invalid || submitting}
+            iconName="delete"
+          >
+            Confirm Removal
+          </Button>
+        </div>
+      </div>
+    </Dialog>
   );
 
 export const RemovalModal: React.SFC<RemovalModalStateProps & RemovalModalDispatchProps> =
