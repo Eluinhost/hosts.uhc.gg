@@ -127,6 +127,37 @@ declare module 'snuownd' {
   export = value;
 }
 
+declare module 'markup-js' {
+  type MarkConfiguration = {
+    readonly includes: {
+      [key: string]: string;
+    },
+    readonly globals: {
+      [key: string]: any;
+    },
+    delimiter: string;
+    compact: boolean;
+    readonly pipes: {
+      [key: string]: Function;
+    };
+  };
+
+  type Mark = {
+    readonly includes: {
+      [key: string]: string;
+    },
+    readonly globals: {
+      [key: string]: any;
+    },
+    delimiter: string;
+    compact: boolean;
+    up(template: string, context: object, options?: Partial<MarkConfiguration>): string;
+  };
+
+  const value: Mark;
+  export = value;
+}
+
 interface PromiseConstructor
 {
   all<T1, T2>(values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Promise<[T1, T2]>;

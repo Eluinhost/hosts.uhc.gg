@@ -2,17 +2,19 @@ import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, renderLabel } from './FieldWrapper';
 import * as Snuownd from 'snuownd';
+import * as Mark from 'markup-js';
 
 const parser = Snuownd.getParser();
 
-export interface MarkdownFieldProps extends BaseFieldProps {
+export interface TemplateFieldProps extends BaseFieldProps {
   readonly label: string;
   readonly required: boolean;
   readonly disabled?: boolean;
   readonly className?: string;
+  readonly context: any;
 }
 
-const renderMarkdown: React.SFC<WrappedFieldProps<any> & MarkdownFieldProps> = props => (
+const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = props => (
   <FieldWrapper meta={props.meta} required={props.required} hideErrors>
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
       <div>
@@ -21,15 +23,15 @@ const renderMarkdown: React.SFC<WrappedFieldProps<any> & MarkdownFieldProps> = p
       </div>
       <div>
         {renderLabel({ label: 'Preview', required: false })}
-        <pre dangerouslySetInnerHTML={{ __html: parser.render(props.input!.value) }} />
+        <pre dangerouslySetInnerHTML={{ __html: parser.render(Mark.up(props.input!.value, props.context)) }} />
       </div>
     </div>
   </FieldWrapper>
 );
 
-export const MarkdownField: React.SFC<MarkdownFieldProps> = props => (
+export const TemplateField: React.SFC<TemplateFieldProps> = props => (
   <Field
     {...props}
-    component={renderMarkdown}
+    component={renderTemplateField}
   />
 );

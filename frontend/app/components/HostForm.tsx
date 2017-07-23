@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Config, FormErrors, FormProps, formValueSelector, reduxForm } from 'redux-form';
+import { Config, FormErrors, FormProps, formValueSelector, getFormValues, reduxForm } from 'redux-form';
 import * as moment from 'moment';
 import { Regions } from '../Regions';
 import { TeamStyle, TeamStyles } from '../TeamStyles';
@@ -10,15 +10,16 @@ import { range } from 'ramda';
 import { TextField } from './fields/TextField';
 import { SelectField } from './fields/SelectField';
 import { connect, Dispatch } from 'react-redux';
-import { MarkdownField } from './fields/MarkdownField';
 import { TagsField } from './fields/TagsField';
 import { ApplicationState } from '../state/ApplicationState';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { AuthenticationActions, AuthenticationState } from '../state/AuthenticationState';
 import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../api/index';
+import { TemplateField } from './fields/TemplateField';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
+  readonly formValues: HostFormData;
   readonly initialValues: HostFormData;
   readonly authentication: AuthenticationState;
 };
@@ -99,7 +100,7 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
 };
 
 const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
-  ({ submitting, handleSubmit, teamStyle, valid }) => (
+  ({ submitting, handleSubmit, teamStyle, valid, formValues }) => (
     <form onSubmit={handleSubmit}>
       <div className="opening-time">
         <DateTimeField
@@ -249,12 +250,13 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         </div>
       </fieldset>
 
-      <MarkdownField
+      <TemplateField
         name="content"
         label="Extra game information"
         required
         className="host-form-row"
         disabled={submitting}
+        context={formValues}
       />
 
       <Button
@@ -380,6 +382,7 @@ const selector = formValueSelector('host');
 
 function mapStateToProps(state: ApplicationState): HostFormStateProps {
   return {
+    formValues: getFormValues<HostFormData>('host')(state),
     teamStyle: TeamStyles.find(t => t.value === selector(state, 'teams')),
     initialValues: state.host.formInitialState,
     authentication: state.authentication,
