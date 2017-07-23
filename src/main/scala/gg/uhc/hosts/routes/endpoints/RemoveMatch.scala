@@ -18,8 +18,11 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
   case class RemoveMatchPayload(reason: String)
 
   def validate(data: RemoveMatchPayload): Directive[Unit] = {
-    if (data.reason.length == 0)
-      return reject(ValidationRejection("Must provide a reason for removal"))
+    if (data.reason.length < 3)
+      return reject(ValidationRejection("Reason must be at least 3 characters"))
+
+    if (data.reason.length > 256)
+      return reject(ValidationRejection("Reason must be at most 256 characters"))
 
     pass
   }

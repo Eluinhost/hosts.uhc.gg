@@ -12,16 +12,16 @@ function mapStateToProps(state: ApplicationState): MatchesPageStateProps {
     ...state.matches,
     isModerator: contains('moderator', state.authentication.data!.accessTokenClaims.permissions),
     username: state.authentication.data!.accessTokenClaims.username,
+    isModalOpen: state.matches.removal.isModalOpen,
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchesPageDispatchProps {
   return {
     refetch: () => dispatch(MatchesActions.refetch()),
-    confirmRemove: () => dispatch(MatchesActions.confirmRemove()),
-    updateReason: (reason: string) => dispatch(MatchesActions.updateReason(reason)),
     closeModal: () => dispatch(MatchesActions.closeModal()),
-    askForReason: (id: number) => dispatch(MatchesActions.askForReason(id)),
+    openModal: (id: number) => dispatch(MatchesActions.askForReason(id)),
+    submitRemoval: (reason: string) => dispatch(MatchesActions.confirmRemove(reason)),
   };
 }
 

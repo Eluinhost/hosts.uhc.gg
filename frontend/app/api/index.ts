@@ -42,12 +42,12 @@ export function fetchUpcomingMatches(): Promise<Match[]> {
     .then(map(convertMatchTimes));
 }
 
-export function removeMatch(id: number, reason: string, authentication: AuthenticationState): Promise<void> {
+export function removeMatch(id: number, reason: string, accessToken: string): Promise<void> {
   return fetch(`/api/matches/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authentication.data!.rawAccessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({ reason }),
   }).then(verifyStatus(204)).then(_ => undefined);

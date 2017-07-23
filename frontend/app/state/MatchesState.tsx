@@ -12,14 +12,11 @@ import {
 } from '../api/index';
 import { always, T, F, evolve, propEq, map, when } from 'ramda';
 import { Reducer } from 'redux';
+import { AuthenticationActions } from './AuthenticationState';
 
 export type MatchRemovalModelState = {
   readonly isModalOpen: boolean;
   readonly targettedId: number | null;
-  readonly fetching: boolean;
-  readonly error: string | null;
-  readonly reason: string;
-  readonly validReason: boolean;
 };
 
 export type MatchesState = {
@@ -40,11 +37,7 @@ type StartRemovalPayload = {
 };
 const startRemoval = createAction<StartRemovalPayload>('MATCHES_START_REMOVAL');
 const endRemoval = createAction('MATCHES_END_REMOVAL');
-type RemovalErrorPayload = {
-  id: number;
-  error: string;
-};
-const removalError = createAction<RemovalErrorPayload>('MATCHES_REMOVAL_ERROR');
+const removalError = createAction<number>('MATCHES_REMOVAL_ERROR');
 
 const setRemovalTarget = createAction<number>('MATCHES_SET_REMOVAL_TARGET');
 const openModal = createAction('MATCHES_OPEN_MODAL');
@@ -85,29 +78,24 @@ export const MatchesActions = {
   /**
    * Sends actual deletion request
    */
-  confirmRemove(): ThunkAction<Promise<any>, ApplicationState, {}> {
+  confirmRemove(reason: string): ThunkAction<Promise<any>, ApplicationState, {}> {
     return (dispatch, getState) => {
       const state = getState();
 
       const id = state.matches.removal.targettedId!;
-      const reason = state.matches.removal.reason;
-      const authentication = state.authentication;
 
       dispatch(startRemoval({ id, reason, user: state.authentication.data!.accessTokenClaims.username }));
 
-      return removeMatch(id, reason, authentication)
+      return removeMatch(id, reason, state.authentication.data!.rawAccessToken)
         .then(data => dispatch(endRemoval()))
         .catch((err) => {
-          if (err instanceof NotAuthenticatedError)
-            return dispatch(removalError({ id, error: 'You are not logged in' })); // TODO some kind of 'relogin' action
+          dispatch(removalError(id));
 
-          if (err instanceof ForbiddenError)
-            return dispatch(removalError({ id, error: 'You do not have permissions to use this' }));
+          if (err instanceof NotAuthenticatedError || err instanceof ForbiddenError) {
+            dispatch(AuthenticationActions.logout());
+          }
 
-          if (err instanceof UnexpectedResponseError)
-            return dispatch(removalError({ id, error: 'Unexpected response from the server' }));
-
-          return dispatch(removalError({ id, error: 'Unable to remove item from server' }));
+          return Promise.reject(err);
         });
     };
   },
@@ -159,39 +147,18 @@ export const reducer: Reducer<MatchesState> =
           }),
         ),
       ),
-      removal: {
-        fetching: T,
-        error: always(null),
-      },
     }))
-    .handleEvolve(endRemoval, {
-      removal: {
-        fetching: F,
-        error: always(null),
-        isModalOpen: F,
-      },
-    })
-    .handleEvolve(removalError, (action: Action<RemovalErrorPayload>) => ({
+    .handleEvolve(removalError, (action: Action<number>) => ({
       matches: map(
         when(
-          propEq('id', action.payload!.id),
+          propEq('id', action.payload!),
           evolve({
-            removed: T,
+            removed: F,
             removedBy: always(null),
             removedReason: always(null),
           }),
         ),
       ),
-      removal: {
-        fetching: F,
-        error: always(action.payload!.error),
-      },
-    }))
-    .handleEvolve(MatchesActions.updateReason, (action: Action<string>) => ({
-      removal: {
-        reason: always(action.payload),
-        validReason: always(action.payload!.trim().length > 0),
-      },
     }))
     .build();
 
@@ -202,11 +169,7 @@ export async function initialValues(): Promise<MatchesState> {
     error: null,
     removal: {
       targettedId: null,
-      error: null,
       isModalOpen: false,
-      fetching: false,
-      reason: '',
-      validReason: false,
     },
   };
 }
