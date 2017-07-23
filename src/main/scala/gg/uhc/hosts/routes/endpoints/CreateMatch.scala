@@ -29,7 +29,14 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       customStyle: Option[String],
       count: Int,
       content: String,
-      region: String)
+      region: String,
+      location: String,
+      version: String,
+      slots: Int,
+      length: Int,
+      mapSizeX: Int,
+      mapSizeZ: Int,
+      pvpEnabledAt: Int)
 
   private[this] val teamStyles: Map[String, Boolean] = Map(
     "ffa"      → false,
@@ -56,8 +63,15 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       region = provided.region,
       teams = provided.teams,
       size = provided.size,
+      location = provided.location,
+      version = provided.version,
+      slots = provided.slots,
+      length = provided.length,
+      mapSizeX = provided.mapSizeX,
+      mapSizeZ = provided.mapSizeZ,
+      pvpEnabledAt = provided.pvpEnabledAt,
       scenarios = provided.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
-      tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
+      tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList,           // removes duplicates
       // non-user provided vars below
       id = -1,
       created = Instant.now(),
@@ -78,6 +92,27 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
 
     if ("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isEmpty)
       return reject(ValidationRejection("Invalid IP address supplied"))
+
+    if (row.location.length == 0)
+      return reject(ValidationRejection("Must supply a location"))
+
+    if (row.version.length == 0)
+      return reject(ValidationRejection("Must supply a version"))
+
+    if (row.slots < 2)
+      return reject(ValidationRejection("Slots must be at least 2"))
+
+    if (row.length < 30)
+      return reject(ValidationRejection("Matches must be at least 30 minutes"))
+
+    if (row.mapSizeX < 0)
+      return reject(ValidationRejection("X must be positive"))
+
+    if (row.mapSizeZ < 0)
+      return reject(ValidationRejection("Z must be positive"))
+
+    if (row.pvpEnabledAt < 0)
+      return reject(ValidationRejection("PVP enabled at must be positive"))
 
     if (row.scenarios.isEmpty)
       return reject(ValidationRejection("Must supply at least 1 scenario"))

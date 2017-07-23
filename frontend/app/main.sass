@@ -53,7 +53,10 @@ body
 .rc-time-picker-panel-inner
   width: 100%
 
-.game-information, .server-details, .teams-styles, .scenarios-and-tags
+.opening-time
+  text-align: center
+
+.host-form-row
   display: flex
 
   > *
@@ -70,6 +73,8 @@ body
 .removed-reason
   text-align: center
   color: $light-gray3
+  border-top: 1px solid
+  margin-top: 10px
 
   div
     padding-top: 5px
@@ -82,46 +87,33 @@ body
   justify-content: space-between
 
 .match-moderation-actions
-  border-top: 1px solid
-  margin-top: 10px
-  padding-top: 10px
-  text-align: right
+  position: absolute
+  right: -10px
+  top: -13px
 
 .match-row
   position: relative
-  margin-top: 10px
+  margin-top: 20px
   text-align: center
 
   .match-content
     margin-left: 20px
 
-  .match-id
+  .match-top-left-ribbon
     position: absolute
-    top: 0
-    left: 0
+    top: -13px
+    left: -10px
 
-  .match-opens
+  .match-opens, .match-region
     font-weight: bold
-    margin-left: 10px
-
-  .match-region
-    margin-left: 5px
-    font-weight: bold
-
-  .match-title
-    > span
-      margin-right: 4px
 
   .match-tags
     padding-top: 7px
     padding-bottom: 7px
 
-  .match-tags .pt-tag, .match-scenarios .pt-tag
+  .match-tags .pt-tag, .match-scenarios .pt-tag, .server-tags .pt-tag, .match-top-left-ribbon .pt-tag
     margin-right: 10px
 
 .pt-card.pt-intent-danger
   background-color: $red1
   opacity: .8
-
-.match-remove-button
-  margin-top: 10px

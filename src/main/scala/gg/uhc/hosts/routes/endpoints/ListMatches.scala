@@ -31,34 +31,49 @@ class ListMatches(directives: CustomDirectives, database: Database) {
       removedBy: Option[String],
       removedReason: Option[String],
       created: Instant,
-      roles: List[String])
+      roles: List[String],
+      location: String,
+      version: String,
+      slots: Int,
+      length: Int,
+      mapSizeX: Int,
+      mapSizeZ: Int,
+      pvpEnabledAt: Int)
 
   def listingQuery: ConnectionIO[List[MatchRowResponse]] =
     for {
       matches ← database.listMatches
-      perms ← database.getPermissions(matches.map(_.author))
-    } yield matches.map { row ⇒
-      MatchRowResponse(
-        id = row.id,
-        author = row.author,
-        opens = row.opens,
-        address = row.address,
-        ip = row.ip,
-        scenarios = row.scenarios,
-        tags = row.tags,
-        teams = row.teams,
-        size = row.size,
-        customStyle = row.customStyle,
-        count = row.count,
-        content = row.content,
-        region = row.region,
-        removed = row.removed,
-        removedBy = row.removedBy,
-        removedReason = row.removedReason,
-        created = row.created,
-        roles = perms.getOrElse(row.author, List.empty)
-      )
-    }
+      perms   ← database.getPermissions(matches.map(_.author))
+    } yield
+      matches.map { row ⇒
+        MatchRowResponse(
+          id = row.id,
+          author = row.author,
+          opens = row.opens,
+          address = row.address,
+          ip = row.ip,
+          scenarios = row.scenarios,
+          tags = row.tags,
+          teams = row.teams,
+          size = row.size,
+          customStyle = row.customStyle,
+          count = row.count,
+          content = row.content,
+          region = row.region,
+          removed = row.removed,
+          removedBy = row.removedBy,
+          removedReason = row.removedReason,
+          created = row.created,
+          location = row.location,
+          version = row.version,
+          slots = row.slots,
+          length = row.length,
+          mapSizeX = row.mapSizeX,
+          mapSizeZ = row.mapSizeZ,
+          pvpEnabledAt = row.pvpEnabledAt,
+          roles = perms.getOrElse(row.author, List.empty)
+        )
+      }
 
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {

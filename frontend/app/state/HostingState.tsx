@@ -21,12 +21,19 @@ const defaultData: HostingFormInitialState = {
   teams: TeamStyles[0].value,
   scenarios: ['Vanilla+'],
   tags: [],
-  size: 3,
+  size: null,
   customStyle: '',
   address: '',
   content: 'Enter **markdown** content here',
   ip: '',
   count: 1,
+  location: '',
+  length: 90,
+  version: '1.8.8',
+  mapSizeX: 1500,
+  mapSizeZ: 1500,
+  pvpEnabledAt: 20,
+  slots: 80,
 };
 
 export async function initialValues(): Promise<HostingState> {
@@ -35,7 +42,8 @@ export async function initialValues(): Promise<HostingState> {
 
     return {
       formInitialState: {
-        ...(hostFormInitialData || defaultData),
+        ...defaultData,
+        ...hostFormInitialData,
         opens: minDate,
       },
     };

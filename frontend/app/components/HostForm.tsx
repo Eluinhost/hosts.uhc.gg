@@ -101,85 +101,159 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
 const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
   ({ submitting, handleSubmit, teamStyle, valid }) => (
     <form onSubmit={handleSubmit}>
-
-      <NumberField
-        name="count"
-        label="Game #"
-        className="pt-fill"
-        min={1}
-        required
-        disabled={submitting}
-      />
-
-      <DateTimeField
-        name="opens"
-        label="Opening Time"
-        required
-        disabled={submitting}
-        datePickerProps={openingDateProps}
-        timePickerProps={openingTimeProps}
-      />
-
-      <div className="server-details">
-        <TextField
-          name="address"
-          className="pt-fill"
-          disabled={submitting}
-          label="Server Address"
-          required={false}
-        />
-        <TextField
-          name="ip"
-          className="pt-fill"
-          disabled={submitting}
-          label="Server IP Address"
+      <div className="opening-time">
+        <DateTimeField
+          name="opens"
+          label="Opening Time"
           required
-        />
-        <SelectField
-          name="region"
-          className="pt-fill"
           disabled={submitting}
-          label="Region"
-          required
-          options={Regions}
+          datePickerProps={openingDateProps}
+          timePickerProps={openingTimeProps}
         />
       </div>
+      <fieldset>
+        <legend>Game Details</legend>
+        <div className="host-form-row">
+          <NumberField
+            name="count"
+            label="Game Number"
+            className="pt-fill"
+            min={1}
+            required
+            disabled={submitting}
+          />
+          <TextField
+            name="version"
+            label="Game version"
+            className="pt-fill"
+            required
+            disabled={submitting}
+          />
+        </div>
+        <div className="host-form-row">
+          <NumberField
+            name="mapSizeX"
+            label="Map size (X)"
+            className="pt-fill"
+            min={1}
+            required
+            disabled={submitting}
+          />
+          <NumberField
+            name="mapSizeZ"
+            label="Map size (Z)"
+            className="pt-fill"
+            min={1}
+            required
+            disabled={submitting}
+          />
+        </div>
+        <div className="host-form-row">
+          <NumberField
+            name="length"
+            label="Game length (minutes)"
+            className="pt-fill"
+            min={30}
+            required
+            disabled={submitting}
+          />
+          <NumberField
+            name="pvpEnabledAt"
+            label="PVP Enabled (minutes)"
+            className="pt-fill"
+            min={0}
+            required
+            disabled={submitting}
+          />
+        </div>
+      </fieldset>
 
-      <div className="teams-styles">
-        <SelectField
-          name="teams"
-          className="pt-fill"
-          disabled={submitting}
-          label="Team Style"
-          required
-          options={TeamStyles}
-        />
+      <fieldset>
+        <legend>Scenarios + Teams</legend>
+        <div className="host-form-row" onKeyPress={stopEnterSubmit}>
+          <TagsField
+            name="scenarios"
+            label="Scenarios"
+            required
+            disabled={submitting}
+          />
+        </div>
+        <div className="host-form-row">
+          <SelectField
+            name="teams"
+            className="pt-fill"
+            disabled={submitting}
+            label="Team Style"
+            required
+            options={TeamStyles}
+          />
 
-        <TeamSize teamStyle={teamStyle} submitting={submitting} />
-        <CustomTeamStyle teamStyle={teamStyle} submitting={submitting} />
-      </div>
+          <TeamSize teamStyle={teamStyle} submitting={submitting} />
+          <CustomTeamStyle teamStyle={teamStyle} submitting={submitting} />
+        </div>
+      </fieldset>
 
-      <div className="scenarios-and-tags" onKeyPress={stopEnterSubmit}>
-        <TagsField
-          name="scenarios"
-          label="Scenarios"
-          required
-          disabled={submitting}
-        />
+      <fieldset>
+        <legend>Server Details</legend>
 
-        <TagsField
-          name="tags"
-          label="Tags"
-          required={false}
-          disabled={submitting}
-        />
-      </div>
+        <div className="host-form-row">
+          <TextField
+            name="ip"
+            className="pt-fill"
+            disabled={submitting}
+            label="Server IP Address"
+            required
+          />
+          <TextField
+            name="address"
+            className="pt-fill"
+            disabled={submitting}
+            label="Server Address"
+            required={false}
+          />
+        </div>
+        <div className="host-form-row">
+          <SelectField
+            name="region"
+            className="pt-fill"
+            disabled={submitting}
+            label="Region"
+            required
+            options={Regions}
+          />
+          <TextField
+            name="location"
+            className="pt-fill"
+            disabled={submitting}
+            label="Location"
+            required
+          />
+        </div>
+        <div className="host-form-row">
+          <NumberField
+            name="slots"
+            className="pt-fill"
+            disabled={submitting}
+            label="Available Slots"
+            required
+            min={2}
+          />
+          <div onKeyPress={stopEnterSubmit}>
+            <TagsField
+              name="tags"
+              label="Tags"
+              required={false}
+              disabled={submitting}
+            />
+          </div>
+        </div>
+      </fieldset>
 
       <MarkdownField
         name="content"
-        label="Game Information"
+        label="Extra game information"
         required
-        className="game-information"
+        className="host-form-row"
         disabled={submitting}
       />
 
@@ -242,6 +316,34 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
 
     if (!values.scenarios || !values.scenarios.length) {
       errors.scenarios = 'Must provide at least 1 scenario';
+    }
+
+    if (!values.location || !values.location.length) {
+      errors.location = 'Must provide a location';
+    }
+
+    if (!values.version || !values.version.length) {
+      errors.version = 'Must provide a version';
+    }
+
+    if (!values.slots || values.slots < 2) {
+      errors.slots = 'Slots must be at least 2';
+    }
+
+    if (!values.length || values.length < 30) {
+      errors.length = 'Must be at least 30 minutes';
+    }
+
+    if (!values.mapSizeX || values.mapSizeX < 0) {
+      errors.mapSizeX = 'Must be positive';
+    }
+
+    if (!values.mapSizeZ || values.mapSizeZ < 0) {
+      errors.mapSizeZ = 'Must be positive';
+    }
+
+    if (!values.pvpEnabledAt || values.pvpEnabledAt < 0) {
+      errors.pvpEnabledAt = 'Must be positive';
     }
 
     return errors;

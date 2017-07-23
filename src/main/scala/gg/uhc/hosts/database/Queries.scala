@@ -28,7 +28,14 @@ object Queries {
       removed: Boolean,
       removedBy: Option[String],
       removedReason: Option[String],
-      created: Instant)
+      created: Instant,
+      location: String,
+      version: String,
+      slots: Int,
+      length: Int,
+      mapSizeX: Int,
+      mapSizeZ: Int,
+      pvpEnabledAt: Int)
 
   case class PermissionSet(username: String, permissions: List[String])
 
@@ -61,7 +68,14 @@ object Queries {
         removed,
         removedBy,
         removedReason,
-        created
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSizeX,
+        mapSizeZ,
+        pvpEnabledAt
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
@@ -85,7 +99,14 @@ object Queries {
         removed,
         removedBy,
         removedReason,
-        created
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSizeX,
+        mapSizeZ,
+        pvpEnabledAt
       ) VALUES (
         ${m.author},
         ${m.opens},
@@ -102,7 +123,14 @@ object Queries {
         ${m.removed},
         ${m.removedBy},
         ${m.removedReason},
-        ${m.created}
+        ${m.created},
+        ${m.location},
+        ${m.version},
+        ${m.slots},
+        ${m.length},
+        ${m.mapSizeX},
+        ${m.mapSizeZ},
+        ${m.pvpEnabledAt}
       );""".asInstanceOf[Fragment].update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =

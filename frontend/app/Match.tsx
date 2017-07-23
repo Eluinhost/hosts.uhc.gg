@@ -18,4 +18,11 @@ export type Match = {
   removedBy: string | null;
   removedReason: string | null;
   created: moment.Moment;
+  location: string;
+  version: string;
+  slots: number;
+  length: number;
+  mapSizeX: number;
+  mapSizeZ: number;
+  pvpEnabledAt: number;
 };

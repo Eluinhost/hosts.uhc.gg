@@ -54,17 +54,24 @@ export function removeMatch(id: number, reason: string, accessToken: string): Pr
 }
 
 export type CreateMatchData = {
-  address?: string;
+  opens: moment.Moment;
+  address: string | null;
   ip: string;
   scenarios: string[];
-  opens: moment.Moment;
-  region: string;
-  content: string;
   tags: string[];
-  size: number;
   teams: string;
-  customStyle?: string;
+  size: number | null;
+  customStyle: string | null;
   count: number;
+  content: string;
+  region: string;
+  location: string;
+  version: string;
+  slots: number;
+  length: number;
+  mapSizeX: number;
+  mapSizeZ: number;
+  pvpEnabledAt: number;
 };
 
 export function createMatch(data: CreateMatchData, authentication: AuthenticationState): Promise<void> {
