@@ -7,7 +7,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 module.exports = function(env) {
     const extractCss = new ExtractTextPlugin({
         filename: "[name].bundle.css",
-        disable: !env.production,
+        disable: false,
     });
 
     return {
