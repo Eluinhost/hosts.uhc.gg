@@ -28,7 +28,7 @@ export const MatchRow: React.SFC<MatchRowProps> = props => (
       </h4>
       <div className="match-tags">
         {renderTagList(Intent.WARNING, 'tags', props.match.tags)}
-        {renderTagList(Intent.DANGER, 'scenarios', props.match.tags)}
+        {renderTagList(Intent.DANGER, 'scenarios', props.match.scenarios)}
       </div>
       <div className="match-addresses">
         <span className="pt-tag pt-minimal pt-intent-primary pt-large" title="Server Address">
