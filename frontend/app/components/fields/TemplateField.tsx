@@ -28,7 +28,7 @@ const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
       <div>
         {renderLabel(props)}
-        <textarea {...props.input} disabled={props.disabled} className="pt-fill pt-input"/>
+        <textarea {...props.input} disabled={props.disabled} className="pt-fill pt-input" rows={15}/>
       </div>
       <div>
         {renderLabel({ label: 'Preview', required: false })}
