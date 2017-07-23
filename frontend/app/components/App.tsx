@@ -8,7 +8,7 @@ import { omit, any, equals, either, contains } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
-import { MatchesPage } from './MatchesPage';
+import { MatchesPage } from './matches';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { isString } from 'util';
