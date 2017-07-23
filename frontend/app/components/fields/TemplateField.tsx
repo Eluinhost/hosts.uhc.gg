@@ -3,6 +3,7 @@ import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, renderLabel } from './FieldWrapper';
 import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
+import * as moment from 'moment';
 
 const parser = Snuownd.getParser();
 
@@ -14,6 +15,14 @@ export interface TemplateFieldProps extends BaseFieldProps {
   readonly context: any;
 }
 
+const renderText = (template: string, context: any) => ({
+  __html: parser.render(Mark.up(template, context, {
+    pipes: {
+      moment: (date: moment.Moment, format: string) => date.utc().format(format),
+    },
+  })),
+});
+
 const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = props => (
   <FieldWrapper meta={props.meta} required={props.required} hideErrors>
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
@@ -23,7 +32,7 @@ const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps
       </div>
       <div>
         {renderLabel({ label: 'Preview', required: false })}
-        <pre dangerouslySetInnerHTML={{ __html: parser.render(Mark.up(props.input!.value, props.context)) }} />
+        <pre dangerouslySetInnerHTML={renderText(props.input!.value, props.context)} />
       </div>
     </div>
   </FieldWrapper>
