@@ -40,7 +40,7 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
         )
     }
 
-  val route: Route = path(IntNumber) { id ⇒
+  def route(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { authentication ⇒
         (requirePermission("moderator", authentication.username) | requireOwner(id, authentication.username)) {
@@ -55,5 +55,4 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
         }
       }
     }
-  }
 }

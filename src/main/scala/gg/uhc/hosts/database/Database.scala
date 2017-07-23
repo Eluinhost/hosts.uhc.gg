@@ -16,6 +16,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def listMatches: ConnectionIO[List[MatchRow]] =
     Queries.listMathes.list
 
+  def matchById(id: Int): ConnectionIO[Option[MatchRow]] =
+    Queries.matchById(id).option
+
   def insertMatch(m: MatchRow): ConnectionIO[Int] =
     Queries.insertMatch(m).run
 
@@ -30,9 +33,10 @@ class Database(transactor: HikariTransactor[IOLite]) {
 
   def getPermissions(usernames: Seq[String]): ConnectionIO[Map[String, List[String]]] = usernames match {
     // if at least one item run the query
-    case a +: as ⇒ Queries.getPermissions(NonEmptyList(a, as: _*)).list.map { response ⇒
-      response.map(permissionSet ⇒ permissionSet.username → permissionSet.permissions).toMap
-    }
+    case a +: as ⇒
+      Queries.getPermissions(NonEmptyList(a, as: _*)).list.map { response ⇒
+        response.map(permissionSet ⇒ permissionSet.username → permissionSet.permissions).toMap
+      }
     // otherwise don't run anything and use an empty map instead
     case _ ⇒ raw(_ ⇒ Map.empty[String, List[String]])
   }

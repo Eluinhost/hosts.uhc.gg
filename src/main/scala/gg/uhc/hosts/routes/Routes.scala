@@ -11,6 +11,7 @@ class Routes(
     listMatches: ListMatches,
     createMatches: CreateMatch,
     removeMatches: RemoveMatch,
+    showMatch: ShowMatch,
     auth: Authenticate,
     authCallback: AuthenticateCallback,
     authRefresh: AuthenticateRefresh,
@@ -21,7 +22,9 @@ class Routes(
       pathPrefix("matches") {
         pathEndOrSingleSlash {
           get(listMatches.route) ~ post(createMatches.route)
-        } ~ delete(removeMatches.route)
+        } ~ path(IntNumber) { id ⇒
+          get(showMatch.route(id)) ~ delete(removeMatches.route(id))
+        }
       } ~
         pathPrefix("sync")(timeSync.route) ~
         complete(StatusCodes.NotFound)

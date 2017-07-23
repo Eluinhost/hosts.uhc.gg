@@ -8,11 +8,9 @@ import doobie.imports._
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.routes.CustomDirectives
+import gg.uhc.hosts.routes.endpoints.ListMatches.MatchRowResponse
 
-class ListMatches(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
-
+object ListMatches {
   case class MatchRowResponse(
       id: Int,
       author: String,
@@ -39,6 +37,11 @@ class ListMatches(directives: CustomDirectives, database: Database) {
       mapSizeX: Int,
       mapSizeZ: Int,
       pvpEnabledAt: Int)
+}
+
+class ListMatches(directives: CustomDirectives, database: Database) {
+  import CustomJsonCodec._
+  import directives._
 
   def listingQuery: ConnectionIO[List[MatchRowResponse]] =
     for {

@@ -81,6 +81,37 @@ object Queries {
        ORDER BY opens ASC
     """.asInstanceOf[Fragment].query[MatchRow]
 
+  def matchById(id: Int): Query0[MatchRow] =
+    sql"""
+       SELECT
+        id,
+        author,
+        opens,
+        address,
+        ip,
+        scenarios,
+        tags,
+        teams,
+        size,
+        customStyle,
+        count,
+        content,
+        region,
+        removed,
+        removedBy,
+        removedReason,
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSizeX,
+        mapSizeZ,
+        pvpEnabledAt
+       FROM matches
+       WHERE id = $id
+    """.asInstanceOf[Fragment].query[MatchRow]
+
   def insertMatch(m: MatchRow): Update0 =
     sql"""
       INSERT INTO matches (
