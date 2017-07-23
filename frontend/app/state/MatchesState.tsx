@@ -22,34 +22,34 @@ export type MatchRemovalModelState = {
   readonly validReason: boolean;
 };
 
-export type MatchModerationState = {
+export type MatchesState = {
   readonly matches: Match[];
   readonly fetching: boolean;
   readonly error: string | null;
   readonly removal: MatchRemovalModelState;
 };
 
-const startFetch = createAction('MATCH_MODERATION_START_FETCH');
-const endFetch = createAction<Match[]>('MATCH_MODERATION_END_FETCH');
-const fetchError = createAction<string>('MATCH_MODERATION_FETCH_ERROR');
+const startFetch = createAction('MATCHES_START_FETCH');
+const endFetch = createAction<Match[]>('MATCHES_END_FETCH');
+const fetchError = createAction<string>('MATCHES_FETCH_ERROR');
 
 type StartRemovalPayload = {
   id: number;
   reason: string;
   user: string;
 };
-const startRemoval = createAction<StartRemovalPayload>('MATCH_MODERATION_START_REMOVAL');
-const endRemoval = createAction('MATCH_MODERATION_END_REMOVAL');
+const startRemoval = createAction<StartRemovalPayload>('MATCHES_START_REMOVAL');
+const endRemoval = createAction('MATCHES_END_REMOVAL');
 type RemovalErrorPayload = {
   id: number;
   error: string;
 };
-const removalError = createAction<RemovalErrorPayload>('MATCH_MODERATION_REMOVAL_ERROR');
+const removalError = createAction<RemovalErrorPayload>('MATCHES_REMOVAL_ERROR');
 
-const setRemovalTarget = createAction<number>('MATCH_MODERATION_SET_REMOVAL_TARGET');
-const openModal = createAction('MATCH_MODERATION_OPEN_MODAL');
+const setRemovalTarget = createAction<number>('MATCHES_SET_REMOVAL_TARGET');
+const openModal = createAction('MATCHES_OPEN_MODAL');
 
-export const MatchModerationActions = {
+export const MatchesActions = {
   /**
    * Refetches match list
    */
@@ -89,8 +89,8 @@ export const MatchModerationActions = {
     return (dispatch, getState) => {
       const state = getState();
 
-      const id = state.matchModeration.removal.targettedId!;
-      const reason = state.matchModeration.removal.reason;
+      const id = state.matches.removal.targettedId!;
+      const reason = state.matches.removal.reason;
       const authentication = state.authentication;
 
       dispatch(startRemoval({ id, reason, user: state.authentication.data!.accessTokenClaims.username }));
@@ -114,12 +114,12 @@ export const MatchModerationActions = {
   /**
    * Simply closes the removal modal, a 'cancel' action
    */
-  closeModal: createAction('MATCH_MODERATION_CLOSE_MODAL'),
-  updateReason: createAction<string>('MATCH_MODERATION_UPDATE_REASON'),
+  closeModal: createAction('MATCHES_CLOSE_MODAL'),
+  updateReason: createAction<string>('MATCHES_UPDATE_REASON'),
 };
 
-export const reducer: Reducer<MatchModerationState> =
-  new ReducerBuilder<MatchModerationState>()
+export const reducer: Reducer<MatchesState> =
+  new ReducerBuilder<MatchesState>()
     .handleEvolve(startFetch, {
       fetching: T,
       error: always(null),
@@ -143,7 +143,7 @@ export const reducer: Reducer<MatchModerationState> =
         isModalOpen: T,
       },
     })
-    .handleEvolve(MatchModerationActions.closeModal, {
+    .handleEvolve(MatchesActions.closeModal, {
       removal: {
         isModalOpen: F,
       },
@@ -187,7 +187,7 @@ export const reducer: Reducer<MatchModerationState> =
         error: always(action.payload!.error),
       },
     }))
-    .handleEvolve(MatchModerationActions.updateReason, (action: Action<string>) => ({
+    .handleEvolve(MatchesActions.updateReason, (action: Action<string>) => ({
       removal: {
         reason: always(action.payload),
         validReason: always(action.payload!.trim().length > 0),
@@ -195,7 +195,7 @@ export const reducer: Reducer<MatchModerationState> =
     }))
     .build();
 
-export async function initialValues(): Promise<MatchModerationState> {
+export async function initialValues(): Promise<MatchesState> {
   return {
     matches: [],
     fetching: false,

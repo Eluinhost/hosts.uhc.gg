@@ -2,7 +2,7 @@ import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
 import { Match } from '../Match';
 import { Spinner, NonIdealState, Intent, Button, Overlay } from '@blueprintjs/core';
-import { MatchModerationActions, MatchModerationState } from '../state/MatchModerationState';
+import { MatchesActions, MatchesState } from '../state/MatchesState';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
@@ -66,7 +66,7 @@ const TeamStyle: React.SFC<{ style: string, size: number | null, custom: string 
   };
 
 const MatchRow: React.SFC<MatchRowProps> = props => (
-  <div className={`pt-card match-moderation-match ${props.match.removed ? 'pt-intent-danger' : ''}`}>
+  <div className={`pt-card match-row ${props.match.removed ? 'pt-intent-danger' : ''}`}>
     <span className="match-id pt-tag pt-large pt-intent-success">
       <span title="Unique ID" className="pt-text-muted">{props.match.id}</span>
       <span className="match-opens">{props.match.opens.format('MMM DD HH:mm')}</span>
@@ -111,7 +111,7 @@ const Loader: React.SFC<{ loading: boolean }> = ({ loading }) => {
   return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 };
 
-export type MatchModerationPageDispatchProps = {
+export type MatchesPageDispatchProps = {
   readonly refetch: () => any;
   readonly askForReason: (id: number) => any;
   readonly updateReason: (reason: string) => any;
@@ -119,13 +119,13 @@ export type MatchModerationPageDispatchProps = {
   readonly confirmRemove: () => any;
 };
 
-export type MatchModerationPageStateProps = {
+export type MatchesPageStateProps = {
   readonly isModerator: boolean;
   readonly username: string;
-} & MatchModerationState;
+} & MatchesState;
 
-type MatchModerationPageProps =
-  MatchModerationPageStateProps & MatchModerationPageDispatchProps & RouteComponentProps<any>;
+type MatchesPageProps =
+  MatchesPageStateProps & MatchesPageDispatchProps & RouteComponentProps<any>;
 
 const NoMatches: React.SFC = () => (
   <NonIdealState
@@ -135,7 +135,7 @@ const NoMatches: React.SFC = () => (
   />
 );
 
-class MatchModerationPageComponent extends React.Component<MatchModerationPageProps> {
+class MatchesPageComponent extends React.Component<MatchesPageProps> {
   componentDidMount() {
     this.props.refetch();
   }
@@ -216,26 +216,26 @@ class MatchModerationPageComponent extends React.Component<MatchModerationPagePr
   }
 }
 
-function mapStateToProps(state: ApplicationState): MatchModerationPageStateProps {
+function mapStateToProps(state: ApplicationState): MatchesPageStateProps {
   return {
-    ...state.matchModeration,
+    ...state.matches,
     isModerator: contains('moderator', state.authentication.data!.accessTokenClaims.permissions),
     username: state.authentication.data!.accessTokenClaims.username,
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchModerationPageDispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchesPageDispatchProps {
   return {
-    refetch: () => dispatch(MatchModerationActions.refetch()),
-    confirmRemove: () => dispatch(MatchModerationActions.confirmRemove()),
-    updateReason: (reason: string) => dispatch(MatchModerationActions.updateReason(reason)),
-    closeModal: () => dispatch(MatchModerationActions.closeModal()),
-    askForReason: (id: number) => dispatch(MatchModerationActions.askForReason(id)),
+    refetch: () => dispatch(MatchesActions.refetch()),
+    confirmRemove: () => dispatch(MatchesActions.confirmRemove()),
+    updateReason: (reason: string) => dispatch(MatchesActions.updateReason(reason)),
+    closeModal: () => dispatch(MatchesActions.closeModal()),
+    askForReason: (id: number) => dispatch(MatchesActions.askForReason(id)),
   };
 }
 
-export const MatchModerationPage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<MatchModerationPageStateProps, MatchModerationPageDispatchProps, RouteComponentProps<any>>(
+export const MatchesPage: React.ComponentClass<RouteComponentProps<any>> =
+  connect<MatchesPageStateProps, MatchesPageDispatchProps, RouteComponentProps<any>>(
     mapStateToProps,
     mapDispatchToProps,
-  )(MatchModerationPageComponent);
+  )(MatchesPageComponent);

@@ -8,7 +8,7 @@ import { omit, any, equals, either, contains } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
-import { MatchModerationPage } from './MatchModerationPage';
+import { MatchesPage } from './MatchesPage';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { isString } from 'util';
@@ -59,7 +59,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
     <AuthedRoute path="/host" component={HostFormPage} required="host" permissions={permissions} />
     <AuthedRoute
       path="/matches"
-      component={MatchModerationPage}
+      component={MatchesPage}
       required={matchesPagePermissions}
       permissions={permissions}
     />
