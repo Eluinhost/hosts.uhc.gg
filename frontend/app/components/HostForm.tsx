@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Config, FormErrors, FormProps, formValueSelector, getFormValues, reduxForm } from 'redux-form';
+import { Config, FormErrors, FormProps, getFormValues, reduxForm } from 'redux-form';
 import * as moment from 'moment';
 import { Regions } from '../Regions';
-import { TeamStyle, TeamStyles } from '../TeamStyles';
+import { renderTeamStyle, TeamStyle, TeamStyles } from '../TeamStyles';
 import { Button, Intent } from '@blueprintjs/core';
 import { NumberField } from './fields/NumberField';
 import { DateTimeField } from './fields/DateTimeField';
@@ -19,7 +19,7 @@ import { TemplateField } from './fields/TemplateField';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
-  readonly formValues: HostFormData;
+  readonly templateContext: any;
   readonly initialValues: HostFormData;
   readonly authentication: AuthenticationState;
 };
@@ -100,7 +100,7 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
 };
 
 const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
-  ({ submitting, handleSubmit, teamStyle, valid, formValues }) => (
+  ({ submitting, handleSubmit, teamStyle, valid, templateContext }) => (
     <form onSubmit={handleSubmit}>
       <div className="opening-time">
         <DateTimeField
@@ -255,7 +255,7 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         label="Extra game information"
         required
         disabled={submitting}
-        context={formValues}
+        context={templateContext}
       />
 
       <Button
@@ -377,12 +377,18 @@ const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProp
   },
 };
 
-const selector = formValueSelector('host');
-
 function mapStateToProps(state: ApplicationState): HostFormStateProps {
+  const formValues = getFormValues<HostFormData>('host')(state) || state.host.formInitialState;
+  const teams = TeamStyles.find(t => t.value === formValues.teams);
+
   return {
-    formValues: getFormValues<HostFormData>('host')(state),
-    teamStyle: TeamStyles.find(t => t.value === selector(state, 'teams')),
+    templateContext: {
+      ...formValues,
+      // overwite teams value with rendered version
+      teams: renderTeamStyle(teams!, formValues.size, formValues.customStyle),
+      teamStyle: teams!.value,
+    },
+    teamStyle: teams,
     initialValues: state.host.formInitialState,
     authentication: state.authentication,
   };
