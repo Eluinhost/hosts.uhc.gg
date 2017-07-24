@@ -254,7 +254,6 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         name="content"
         label="Extra game information"
         required
-        className="host-form-row"
         disabled={submitting}
         context={formValues}
       />
