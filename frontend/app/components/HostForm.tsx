@@ -35,14 +35,12 @@ type HostFormDispatchProps = {
 export type HostFormData = CreateMatchData;
 
 function nextSlot(): moment.Moment {
-  const time = moment().add(30, 'minute');
+  const in30 = moment.utc().add(30, 'minute');
 
-  const minute = time.get('minute');
-  const next15 = Math.ceil(minute / 15) * 15;
+  const targetMinute = in30.get('minute');
+  const diffToNext15 = (Math.ceil(targetMinute / 15) * 15) - targetMinute;
 
-  const diff = next15 - minute;
-
-  return time.add(diff, 'minute');
+  return in30.add(diffToNext15, 'minute');
 }
 
 export const minDate = nextSlot();
@@ -52,7 +50,7 @@ const disabledMinutes = range(0, 60).filter(m => m % 15 !== 0);
 const openingDateProps: Partial<ReactDatePickerProps> = {
   minDate,
   fixedHeight: true,
-  maxDate: moment().add(30, 'd'),
+  maxDate: moment().add(30, 'd').utc(),
   isClearable: false,
   monthsShown: 2,
 };
@@ -111,12 +109,15 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         <legend>Timing</legend>
         <DateTimeField
           name="opens"
-          label="Match opens at:"
           required
           disabled={submitting}
           datePickerProps={openingDateProps}
           timePickerProps={openingTimeProps}
         />
+        <div className="pt-callout pt-intent-warning">
+          <h5>Note</h5>
+          All times must be entered in the <a href="https://time.is/compare/UTC" target="_blank">UTC</a> timezone.
+        </div>
       </fieldset>
       <fieldset>
         <legend>Game Details</legend>
@@ -300,7 +301,7 @@ const validationSpec: Spec<HostFormData> = {
     if (opens.get('minute') % 15 !== 0) // TODO handle as UTC specifically
       return 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
 
-    if (opens.isBefore(moment().add(30, 'minutes')))
+    if (opens.isBefore(moment.utc().add(30, 'minutes')))
       return 'Must be at least 30 minutes in advance';
 
     return undefined;
@@ -388,7 +389,7 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
       removed: false,
       removedBy: null,
       removedReason: null,
-      created: moment(),
+      created: moment.utc(),
     },
     templateContext: {
       ...formValues,

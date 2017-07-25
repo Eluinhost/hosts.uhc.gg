@@ -2,7 +2,7 @@ import * as React from 'react';
 import { WrappedFieldMetaProps } from 'redux-form';
 
 export type FieldWrapperProps = {
-  readonly label?: string;
+  readonly label?: string | React.ReactElement<any>;
   readonly required?: boolean;
   readonly meta: WrappedFieldMetaProps<any>;
   readonly hideErrors?: boolean

@@ -20,7 +20,7 @@ export const MatchRow: React.SFC<MatchRowProps> = props => (
   <div className={`pt-card match-row ${props.match.removed ? 'pt-intent-danger' : ''}`}>
     <div className="match-top-left-ribbon">
       <span className="pt-tag pt-large pt-intent-success match-opens" title="Opens">
-        {props.match.opens.format('MMM DD HH:mm')}
+        {props.match.opens.format('MMM DD HH:mm z')}
       </span>
       <span className="pt-tag pt-large pt-intent-success match-region" title="Region">
         {props.match.region}

@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 
 export interface DateTimeFieldProps extends BaseFieldProps {
-  readonly label: string;
+  readonly label?: string | React.ReactElement<any>;
   readonly required: boolean;
   readonly disabled?: boolean;
   readonly datePickerProps?: Partial<ReactDatePickerProps>;
