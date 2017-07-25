@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Config, FormErrors, FormProps, getFormValues, reduxForm } from 'redux-form';
+import { Config, FormProps, getFormValues, reduxForm } from 'redux-form';
 import * as moment from 'moment';
 import { Regions } from '../Regions';
 import { renderTeamStyle, TeamStyle, TeamStyles } from '../TeamStyles';
@@ -18,6 +18,7 @@ import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenti
 import { TemplateField } from './fields/TemplateField';
 import { MatchRow } from './matches/MatchRow';
 import { Match } from '../Match';
+import { Spec, validate } from '../validate';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
@@ -290,85 +291,63 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
     </form>
   );
 
+const validationSpec: Spec<HostFormData> = {
+  count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,
+  opens: (opens) => {
+    if (!opens)
+      return 'Must provide an opening time';
+
+    if (opens.get('minute') % 15 !== 0) // TODO handle as UTC specifically
+      return 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
+
+    if (opens.isBefore(moment().add(30, 'minutes')))
+      return 'Must be at least 30 minutes in advance';
+
+    return undefined;
+  },
+  ip: (ip) => {
+    if (!ip)
+      return 'A direct IP address is required';
+
+    // TODO handle octets properly
+    if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$/.test(ip))
+      return 'Invalid IP adress, expected formatted like 123.123.123.123:12345';
+
+    return undefined;
+  },
+  region: region => region ? undefined : 'You must select a region',
+  teams: (teams, obj) => {
+    if (!teams)
+      return 'You must select a team style';
+
+    const style = TeamStyles.find(i => i.value === teams);
+
+    if (style!.requiresTeamSize && (!obj.size || obj.size < 1))
+      return 'Must provide a valid team size with this scenario';
+
+    if (style!.value === 'custom' && !obj.customStyle)
+      return 'Must provide a custom style if \'custom\' is selected';
+
+    return undefined;
+  },
+  content: content => content ? undefined : 'Must provide some content for the post',
+  scenarios: scenarios => scenarios && scenarios.length ? undefined : 'Must provide at least 1 scenario',
+  location: location => location ? undefined : 'Must provide a location',
+  version: version => version && version.length ? undefined :  'Must provide a version',
+  slots: slots => slots && slots > 1 ? undefined : 'Slots must be at least 2',
+  length: length => length && length >= 30 ? undefined : 'Must be at least 30 minutes',
+  mapSizeX: mapSizeX => mapSizeX && mapSizeX > 0 ? undefined : 'Must be positive',
+  mapSizeZ: mapSizeZ => mapSizeZ && mapSizeZ > 0 ? undefined : 'Must be positive',
+  pvpEnabledAt: pvpEnabledAt => pvpEnabledAt && pvpEnabledAt >= 0 ? undefined : 'Must be positive',
+  address: address => undefined,
+  tags: tags => undefined,
+  size: size => undefined,
+  customStyle: customStyle => undefined,
+};
+
 const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProps & RouteComponentProps<any>, {}> = {
   form: 'host',
-  validate: (values) => {
-    const errors: FormErrors<HostFormData> = {};
-
-    if (!values.count || values.count < 1) {
-      errors.count = 'Must provide a valid game #';
-    }
-
-    if (!values.opens) {
-      errors.opens = 'Must provide an opening time';
-    } else if (values.opens.get('minute') % 15 !== 0) {
-      errors.opens = 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
-    } else if (values.opens.isBefore(moment().add(30, 'minutes'))) {
-      errors.opens = 'Must be at least 30 minutes in advance';
-    }
-
-    if (!values.ip) {
-      errors.ip = 'A direct IP address is required';
-    } else if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$/.test(values.ip)) {
-      errors.ip = 'Invalid IP adress, expected formatted like 123.123.123.123:12345';
-    }
-
-    if (!values.region) {
-      errors.region = 'You must select a region';
-    }
-
-    if (!values.teams) {
-      errors.teams = 'You must select a team style';
-    } else {
-      const style = TeamStyles.find(i => i.value === values.teams);
-
-      if (style!.requiresTeamSize && !values.size) {
-        errors.size = 'Must provide a team size with this scenario';
-      }
-
-      if (style!.value === 'custom' && !values.customStyle) {
-        errors.customStyle = 'Must provide a custom style if \'custom\' is selected';
-      }
-    }
-
-    if (!values.content) {
-      errors.content = 'Must provide some content for the post';
-    }
-
-    if (!values.scenarios || !values.scenarios.length) {
-      errors.scenarios = 'Must provide at least 1 scenario';
-    }
-
-    if (!values.location || !values.location.length) {
-      errors.location = 'Must provide a location';
-    }
-
-    if (!values.version || !values.version.length) {
-      errors.version = 'Must provide a version';
-    }
-
-    if (!values.slots || values.slots < 2) {
-      errors.slots = 'Slots must be at least 2';
-    }
-
-    if (!values.length || values.length < 30) {
-      errors.length = 'Must be at least 30 minutes';
-    }
-
-    if (!values.mapSizeX || values.mapSizeX < 0) {
-      errors.mapSizeX = 'Must be positive';
-    }
-
-    if (!values.mapSizeZ || values.mapSizeZ < 0) {
-      errors.mapSizeZ = 'Must be positive';
-    }
-
-    if (!values.pvpEnabledAt || values.pvpEnabledAt < 0) {
-      errors.pvpEnabledAt = 'Must be positive';
-    }
-
-    return errors;
-  },
+  validate: validate(validationSpec),
   onSubmit: (values, dispatch, props) => {
     return createMatch(values, props.authentication)
       .then(() => {

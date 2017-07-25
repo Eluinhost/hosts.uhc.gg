@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
-import { FormErrors, FormProps, reduxForm, SubmissionError } from 'redux-form';
+import { FormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { TextField } from '../fields/TextField';
+import { Spec, validate } from '../../validate';
 
 type RemovalModalData = {
   reason: string;
@@ -54,21 +55,25 @@ const RemovalModalComponent:
     </Dialog>
   );
 
+const validationSpec: Spec<RemovalModalData> = {
+  reason: (reason) => {
+    if (!reason)
+      return 'This field is required';
+
+    if (reason.length < 3)
+      return 'Must be at least 3 characters long';
+
+    if (reason.length > 256)
+      return 'Must be at most 256 characters long';
+
+    return undefined;
+  },
+};
+
 export const RemovalModal: React.SFC<RemovalModalStateProps & RemovalModalDispatchProps> =
   reduxForm<RemovalModalData, RemovalModalStateProps & RemovalModalDispatchProps, ApplicationState>({
     form: 'removal-reason',
-    validate: (values) => {
-      const errors: FormErrors<RemovalModalData> = {};
-
-      if (!values.reason)
-        errors.reason = 'This field is required';
-      else if (values.reason.length < 3)
-        errors.reason = 'Must be at least 3 characters long';
-      else if (values.reason.length > 256)
-        errors.reason = 'Must be at most 256 characters long';
-
-      return errors;
-    },
+    validate: validate(validationSpec),
     onSubmit: (values, dispatch, props) => props.confirm(values.reason)
       .then(() => props.close())
       .catch(() => Promise.reject(
