@@ -8,7 +8,7 @@ import { RemoveMatchButton } from './RemoveMatchButton';
 
 export type MatchRowProps = {
   readonly match: Match;
-  readonly onRemovePress: () => any;
+  readonly onRemovePress?: () => any;
   readonly canRemove: boolean;
 };
 
@@ -33,7 +33,7 @@ export const MatchRow: React.SFC<MatchRowProps> = props => (
       </span>
     </div>
     <div className="match-moderation-actions">
-      {(props.canRemove && !props.match.removed) && <RemoveMatchButton onPress={props.onRemovePress} />}
+      {(props.canRemove && !props.match.removed) && <RemoveMatchButton onPress={props.onRemovePress!} />}
     </div>
     <div className="match-content">
       <h4>

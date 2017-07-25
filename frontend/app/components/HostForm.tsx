@@ -16,10 +16,13 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { AuthenticationActions, AuthenticationState } from '../state/AuthenticationState';
 import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../api/index';
 import { TemplateField } from './fields/TemplateField';
+import { MatchRow } from './matches/MatchRow';
+import { Match } from '../Match';
 
 type HostFormStateProps = {
   readonly teamStyle?: TeamStyle;
   readonly templateContext: any;
+  readonly preview: Match;
   readonly initialValues: HostFormData;
   readonly authentication: AuthenticationState;
 };
@@ -100,18 +103,20 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
 };
 
 const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
-  ({ submitting, handleSubmit, teamStyle, valid, templateContext }) => (
-    <form onSubmit={handleSubmit}>
-      <div className="opening-time">
+  ({ submitting, handleSubmit, teamStyle, valid, templateContext, preview }) => (
+    <form className="host-form" onSubmit={handleSubmit}>
+
+      <fieldset className="opening-time">
+        <legend>Timing</legend>
         <DateTimeField
           name="opens"
-          label="Opening Time"
+          label="Match opens at:"
           required
           disabled={submitting}
           datePickerProps={openingDateProps}
           timePickerProps={openingTimeProps}
         />
-      </div>
+      </fieldset>
       <fieldset>
         <legend>Game Details</legend>
         <div className="host-form-row">
@@ -250,23 +255,38 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
         </div>
       </fieldset>
 
-      <TemplateField
-        name="content"
-        label="Extra game information"
-        required
-        disabled={submitting}
-        context={templateContext}
-      />
+      <fieldset>
+        <legend>Extra Information</legend>
 
-      <Button
-        type="submit"
-        disabled={submitting || !valid}
-        iconName="cloud-upload"
-        loading={submitting}
-        intent={valid ? Intent.SUCCESS : Intent.WARNING}
-      >
-        {submitting ? 'Creating...' : 'Create Match'}
-      </Button>
+        <TemplateField
+          name="content"
+          label="Template"
+          required
+          disabled={submitting}
+          context={templateContext}
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>Game preview</legend>
+
+        <MatchRow
+          match={preview}
+          canRemove={false}
+        />
+      </fieldset>
+
+      <div className="host-form-actions">
+        <Button
+          type="submit"
+          disabled={submitting || !valid}
+          iconName="cloud-upload"
+          loading={submitting}
+          intent={valid ? Intent.SUCCESS : Intent.WARNING}
+        >
+          {submitting ? 'Creating...' : 'Create Match'}
+        </Button>
+      </div>
     </form>
   );
 
@@ -382,6 +402,15 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
   const teams = TeamStyles.find(t => t.value === formValues.teams);
 
   return {
+    preview: {
+      ...formValues,
+      id: 0,
+      author: state.authentication.data!.accessTokenClaims.username,
+      removed: false,
+      removedBy: null,
+      removedReason: null,
+      created: moment(),
+    },
     templateContext: {
       ...formValues,
       // overwite teams value with rendered version
