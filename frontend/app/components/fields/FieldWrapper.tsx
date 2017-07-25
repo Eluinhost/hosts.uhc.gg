@@ -20,7 +20,7 @@ export const errorClasses = (meta: WrappedFieldMetaProps<any>) => {
   return '';
 };
 
-export const RenderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ touched, error, warning }) => {
+export const RenderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
   if (error)
     return <div className="pt-form-helper-text">{error}</div>;
 

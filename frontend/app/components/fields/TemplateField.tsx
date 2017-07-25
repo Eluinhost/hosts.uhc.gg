@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, renderLabel } from './FieldWrapper';
+import { FieldWrapper, RenderErrors, renderLabel } from './FieldWrapper';
 import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
@@ -35,6 +35,7 @@ const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps
         <pre dangerouslySetInnerHTML={renderText(props.input!.value, props.context)} />
       </div>
     </div>
+    <RenderErrors {...props.meta} />
   </FieldWrapper>
 );
 
