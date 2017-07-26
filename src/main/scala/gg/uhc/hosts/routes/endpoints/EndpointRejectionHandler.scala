@@ -12,6 +12,7 @@ object EndpointRejectionHandler {
       case DatabaseErrorRejection(t) ⇒ // when database explodes
         extractActorSystem { system ⇒
           system.log.error("DB error", t)
+          t.printStackTrace()
           complete(StatusCodes.InternalServerError)
         }
       case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _) ⇒ // when no perms

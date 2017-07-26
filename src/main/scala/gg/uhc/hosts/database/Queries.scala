@@ -39,6 +39,14 @@ object Queries {
 
   case class PermissionSet(username: String, permissions: List[String])
 
+  case class PermissionModerationLogRow(
+      id: Int,
+      modifier: String,
+      username: String,
+      at: Instant,
+      permission: String,
+      added: Boolean)
+
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
       UPDATE matches
@@ -192,5 +200,36 @@ object Queries {
         ) ++
         fr"GROUP BY username".asInstanceOf[Fragment]
     ).query[PermissionSet]
+
+  def addPermission(username: String, permission: String): Update0 =
+    sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING"""
+      .asInstanceOf[Fragment]
+      .update
+
+  def removePermission(username: String, permission: String): Update0 =
+    sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission"""
+      .asInstanceOf[Fragment]
+      .update
+
+  def addPermissionModerationLog(username: String, permission: String, modifier: String, added: Boolean): Update0 =
+    sql"""
+    INSERT INTO
+      permission_moderation_log (modifier, username, at, permission, added)
+    VALUES (
+      $modifier,
+      $username,
+      ${Instant.now()},
+      $permission,
+      $added
+    )""".asInstanceOf[Fragment].update
+
+  def getPermissionModerationLog(after: Option[Int], count: Int): Query0[PermissionModerationLogRow] =
+    (
+      sql"SELECT id, modifier, username, at, permission, added FROM permission_moderation_log ".asInstanceOf[Fragment]
+        ++ Fragments.whereAndOpt(
+          after.map(id ⇒ fr"id < $id".asInstanceOf[Fragment])
+        )
+        ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
+    ).query[PermissionModerationLogRow]
 
 }
