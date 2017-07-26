@@ -262,7 +262,6 @@ const HostFormComponent: React.SFC<FormProps<HostFormData, {}, any> & HostFormSt
 
         <TemplateField
           name="content"
-          label="Template"
           required
           disabled={submitting}
           context={templateContext}
@@ -396,6 +395,7 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
       // overwite teams value with rendered version
       teams: renderTeamStyle(teams!, formValues.size, formValues.customStyle),
       teamStyle: teams!.value,
+      author: state.authentication.data!.accessTokenClaims.username,
     },
     teamStyle: teams,
     initialValues: state.host.formInitialState,
