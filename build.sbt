@@ -8,5 +8,24 @@ scalaVersion := Settings.versions.scala
 scalacOptions ++= Settings.scalacOptions
 resolvers += "Bartek's repo at Bintray" at "https://dl.bintray.com/btomala/maven"
 libraryDependencies ++= Settings.dependencies.value
+
+// include frontend assets in build
 mappings in Universal ++= directory(baseDirectory.value / "assets")
+
+// copy reference config to conf folder for viewing when making an application.conf
+mappings in Universal += {
+  ((resourceDirectory in Compile).value / "reference.conf") → "conf/reference.conf"
+}
+
+// Dont' package in zip in subdir
+topLevelDirectory := None
+
+// Don't generate javadocs
+mappings in (Compile, packageDoc) := Seq()
+
+// Look in conf folder for custom app configuration
+bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf""""
+batScriptExtraDefines += """set _JAVA_OPTS=%_JAVA_OPTS% -Dconfig.file=%HOSTS_HOME%\\conf\\application.conf"""
+javaOptions in reStart += "-Dconfig.file=conf/application.conf"
+
 enablePlugins(JavaAppPackaging, SbtTwirl)

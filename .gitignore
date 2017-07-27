@@ -1,6 +1,6 @@
 /assets
 /frontend/node_modules
 target
-/src/main/resources/application.conf
+/conf/application.conf
 /.idea
 *.iml
