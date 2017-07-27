@@ -74,6 +74,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def getPermissionModerationLog(after: Option[Int], count: Int): ConnectionIO[List[PermissionModerationLogRow]] =
     Queries.getPermissionModerationLog(after, count).list
 
+  def getAllPermissions: ConnectionIO[Map[String, List[String]]] =
+    Queries.getAllRoleMembers.list.map(_.toMap)
+
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
   }

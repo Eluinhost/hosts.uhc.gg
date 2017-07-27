@@ -232,4 +232,8 @@ object Queries {
         ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
     ).query[PermissionModerationLogRow]
 
+  val getAllRoleMembers: Query0[(String, List[String])] =
+    sql"SELECT type, array_agg(username) FROM permissions GROUP BY type"
+      .asInstanceOf[Fragment]
+      .query[(String, List[String])]
 }

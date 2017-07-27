@@ -18,6 +18,7 @@ class Routes(
     addPermission: AddPermission,
     removePermission: RemovePermission,
     permissionModerationLog: PermissionModerationLog,
+    listPermissions: ListPermissions,
     timeSync: TimeSync) {
 
   val api: Route = pathPrefix("api") {
@@ -31,11 +32,13 @@ class Routes(
       } ~
         pathPrefix("sync")(timeSync.route) ~
         pathPrefix("permissions") {
-          (get & path("log") & pathEndOrSingleSlash)(permissionModerationLog.route) ~
-            path(Segments(2)) { segments ⇒
-              post(addPermission.route(segments.head, segments.last)) ~
-                delete(removePermission.route(segments.head, segments.last))
-            }
+          get {
+            pathEndOrSingleSlash(listPermissions.route) ~
+              (path("log") & pathEndOrSingleSlash)(permissionModerationLog.route)
+          } ~ path(Segments(2)) { segments ⇒
+            post(addPermission.route(segments.head, segments.last)) ~
+              delete(removePermission.route(segments.head, segments.last))
+          }
         } ~
         complete(StatusCodes.NotFound)
     }
