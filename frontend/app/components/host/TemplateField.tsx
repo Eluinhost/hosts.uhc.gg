@@ -4,7 +4,7 @@ import { FieldWrapper, RenderErrors, renderLabel } from '../fields/FieldWrapper'
 import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
-import { Tab2, Tabs2 } from '@blueprintjs/core';
+import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
 
 const parser = Snuownd.getParser();
 
@@ -14,6 +14,7 @@ export interface TemplateFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
   readonly className?: string;
   readonly context: any;
+  readonly changeTemplate: (value: string) => () => void;
 }
 
 const renderText = (template: string, context: any) => ({
@@ -88,6 +89,19 @@ const HelpTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input
   </div>
 );
 
+const presets = ['test', 'test2'];
+
+const PresetButton: React.SFC<{ readonly onClick: () => void; readonly id: string }> =
+  ({ onClick, id }) => (
+    <Button onClick={onClick} intent={Intent.PRIMARY} className="pt-large">{id}</Button>
+  );
+
+const PresetsTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ changeTemplate }) => (
+  <div className="pt-callout pt-intent-primary">
+    {presets.map((p, i) => <PresetButton key={i} onClick={changeTemplate(p)} id={`Template ${i + 1}`}/>)}
+  </div>
+);
+
 const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = props => (
   <FieldWrapper meta={props.meta} required={props.required} hideErrors>
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
@@ -96,6 +110,7 @@ const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps
         <Tab2 id="host-from-template-tab-template" title="Template" panel={<TemplateTab {...props} />}/>
         <Tab2 id="host-form-template-tab-preview" title="Preview" panel={<PreviewTab {...props} />}/>
         <Tab2 id="host-form-template-tab-help" title="Help" panel={<HelpTab {...props} />}/>
+        <Tab2 id="host-form-template-tab-presets" title="Presets" panel={<PresetsTab {...props} />}/>
       </Tabs2>
     </div>
     <RenderErrors {...props.meta} />

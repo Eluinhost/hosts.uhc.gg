@@ -25,6 +25,10 @@ export type HostFormStateProps = {
   readonly authentication: AuthenticationState;
 };
 
+export type HostFormDispatchProps = {
+  readonly changeTemplate: (value: string) => () => void;
+};
+
 export const minDate = nextAvailableSlot();
 
 const openingDateProps: Partial<ReactDatePickerProps> = {
@@ -73,8 +77,8 @@ const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent
   }
 };
 
-export const HostForm: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps> =
-  ({ submitting, handleSubmit, teamStyle, valid, templateContext, preview }) => (
+export const HostForm: React.SFC<FormProps<HostFormData, {}, any> & HostFormStateProps & HostFormDispatchProps> =
+  ({ submitting, handleSubmit, teamStyle, valid, templateContext, preview, changeTemplate }) => (
     <form className="host-form" onSubmit={handleSubmit}>
 
       <fieldset className="opening-time">
@@ -237,6 +241,7 @@ export const HostForm: React.SFC<FormProps<HostFormData, {}, any> & HostFormStat
           required
           disabled={submitting}
           context={templateContext}
+          changeTemplate={changeTemplate}
         />
       </fieldset>
 

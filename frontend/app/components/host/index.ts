@@ -1,5 +1,5 @@
 import { ApplicationState } from '../../state/ApplicationState';
-import { Config, getFormValues, reduxForm } from 'redux-form';
+import { change, Config, getFormValues, reduxForm } from 'redux-form';
 import { renderTeamStyle, TeamStyles } from '../../TeamStyles';
 import * as moment from 'moment';
 import { AuthenticationActions } from '../../state/AuthenticationState';
@@ -9,9 +9,10 @@ import { BadDataError, createMatch, ForbiddenError, NotAuthenticatedError } from
 import { validate } from '../../validate';
 import { validation } from './validation';
 import { HostFormData } from './HostFormData';
-import { HostFormStateProps, HostForm as HostFormComponent } from './HostForm';
+import { HostFormStateProps, HostForm as HostFormComponent, HostFormDispatchProps } from './HostForm';
+import { Dispatch } from 'redux';
 
-const formConfig: Config<HostFormData, HostFormStateProps & RouteComponentProps<any>, {}> = {
+const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProps & RouteComponentProps<any>, {}> = {
   form: 'host',
   validate: validate(validation),
   onSubmit: (values, dispatch, props) => {
@@ -69,9 +70,16 @@ function mapStateToProps(state: ApplicationState): HostFormStateProps {
   };
 }
 
+function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): HostFormDispatchProps {
+  return {
+    // TODO change tabs to controlled mode so we can switch tab to preview when using presets
+    changeTemplate: value => () => dispatch(change('host', 'content', value)),
+  };
+}
+
 export const HostForm =
   withRouter<{}>(
-    connect<HostFormStateProps, {}, RouteComponentProps<any>>(mapStateToProps)(
+    connect<HostFormStateProps, HostFormDispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(
       reduxForm(formConfig)(
         HostFormComponent,
       ),
