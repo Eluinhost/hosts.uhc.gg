@@ -82,18 +82,21 @@ export const HostForm: React.SFC<FormProps<HostFormData, {}, any> & HostFormStat
     <form className="host-form" onSubmit={handleSubmit}>
 
       <fieldset className="opening-time">
-        <legend>Timing</legend>
+        <legend>Opening Time</legend>
         <DateTimeField
           name="opens"
           required
           disabled={submitting}
           datePickerProps={openingDateProps}
           timePickerProps={openingTimeProps}
-        />
-        <div className="pt-callout pt-intent-warning">
-          <h5>Note</h5>
-          All times must be entered in the <a href="https://time.is/compare/UTC" target="_blank">UTC</a> timezone.
-        </div>
+        >
+          <div className="pt-callout pt-intent-danger pt-icon-warning-sign">
+            <h5>
+              <span> All times must be entered as </span>
+              <a href="https://time.is/compare/UTC" target="_blank">UTC</a>
+            </h5>
+          </div>
+        </DateTimeField>
       </fieldset>
       <fieldset>
         <legend>Game Details</legend>

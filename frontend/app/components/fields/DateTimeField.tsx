@@ -32,6 +32,8 @@ const renderDateTimePicker: React.SFC<WrappedFieldProps<any> & DateTimeFieldProp
         />
 
         <RenderErrors {...props.meta} />
+
+        {props.children}
       </div>
     </DatePicker>
   </FieldWrapper>
