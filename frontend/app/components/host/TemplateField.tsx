@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, RenderErrors, renderLabel } from './FieldWrapper';
+import { FieldWrapper, RenderErrors, renderLabel } from '../fields/FieldWrapper';
 import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';

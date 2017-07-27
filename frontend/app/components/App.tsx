@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HostForm } from './HostForm';
+import { HostForm } from './host';
 import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';

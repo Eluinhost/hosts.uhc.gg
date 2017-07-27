@@ -1,4 +1,3 @@
-import { HostFormData, minDate } from '../components/HostForm';
 import { ReducerBuilder } from './ReducerBuilder';
 import { storage } from '../storage';
 import { Regions } from '../Regions';
@@ -6,6 +5,8 @@ import { TeamStyles } from '../TeamStyles';
 import { Store } from 'redux';
 import { ApplicationState } from './ApplicationState';
 import { omit } from 'ramda';
+import { HostFormData } from '../components/host/HostFormData';
+import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
 
 export type HostingFormInitialState = HostFormData;
 
@@ -14,6 +15,8 @@ export type HostingState = {
 };
 
 export const reducer = new ReducerBuilder<HostingState>().build(); // Do nothing
+
+const minDate = nextAvailableSlot();
 
 const defaultData: HostingFormInitialState = {
   opens: minDate,
