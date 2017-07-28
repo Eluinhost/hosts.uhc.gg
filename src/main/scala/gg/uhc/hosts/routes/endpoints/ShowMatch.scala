@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Route
 import doobie.imports._
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.database.Queries.MatchRow
+import gg.uhc.hosts.database.MatchRow
 import gg.uhc.hosts.routes.CustomDirectives
 import gg.uhc.hosts.routes.endpoints.ListMatches.MatchRowResponse
 

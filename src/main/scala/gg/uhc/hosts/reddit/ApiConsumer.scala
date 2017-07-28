@@ -7,7 +7,6 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy, QueueOfferResult, ThrottleMode}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 class ApiConsumer(actorSystemName: String, host: String, queueSize: Int) {
@@ -21,7 +20,7 @@ class ApiConsumer(actorSystemName: String, host: String, queueSize: Int) {
 
   private[this] val queue = Source
     .queue[(HttpRequest, Promise[HttpResponse])](queueSize, OverflowStrategy.dropNew)
-    .throttle(30, 1 minute, 1, ThrottleMode.Shaping)
+    .throttle(30, 1.minute, 1, ThrottleMode.Shaping)
     .via(pool)
     .toMat(Sink.foreach({
       case ((Success(response), promise))  ⇒ promise.success(response)

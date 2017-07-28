@@ -28,4 +28,4 @@ bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/applicat
 batScriptExtraDefines += """set _JAVA_OPTS=%_JAVA_OPTS% -Dconfig.file=%HOSTS_HOME%\\conf\\application.conf"""
 javaOptions in reStart += "-Dconfig.file=conf/application.conf"
 
-enablePlugins(JavaAppPackaging, SbtTwirl)
+enablePlugins(JavaAppPackaging)

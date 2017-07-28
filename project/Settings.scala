@@ -23,7 +23,6 @@ object Settings {
     val flyway        = "4.2.0"
     val hikaricp      = "2.6.3"
     val logback       = "1.2.3"
-    val akkaHttpTwirl = "1.2.0"
     val jwtCirce      = "0.14.0"
     val macwire       = "2.3.0"
   }
@@ -41,7 +40,6 @@ object Settings {
       "ch.qos.logback"           % "logback-classic"  % versions.logback,
       "io.circe"                 %% "circe-generic"   % versions.circe,
       "io.circe"                 %% "circe-java8"     % versions.circe,
-      "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl,
       "org.flywaydb"             % "flyway-core"      % versions.flyway,
       "com.pauldijou"            %% "jwt-circe"       % versions.jwtCirce,
       "com.softwaremill.macwire" %% "macros"          % versions.macwire % Provided,

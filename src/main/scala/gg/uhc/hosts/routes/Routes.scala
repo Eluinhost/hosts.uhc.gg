@@ -4,7 +4,6 @@ import akka.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akkahttptwirl.TwirlSupport._
 import gg.uhc.hosts.routes.endpoints._
 
 class Routes(
@@ -47,7 +46,7 @@ class Routes(
   val frontend: Route =
     path("favicon.png") {
       getFromResource("favicon.png")
-    } ~ complete(html.frontend.render())
+    } ~ getFromResource("frontend.html")
 
   val authenticate: Route = pathPrefix("authenticate") {
     pathEndOrSingleSlash(auth.route) ~

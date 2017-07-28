@@ -8,44 +8,8 @@ import doobie.postgres.imports._
 
 import scalaz.NonEmptyList
 
-object Queries {
-  implicit val logHandler: LogHandler = LogHandler.jdkLogHandler
-
-  case class MatchRow(
-      id: Int,
-      author: String,
-      opens: Instant,
-      address: Option[String],
-      ip: String,
-      scenarios: List[String],
-      tags: List[String],
-      teams: String,
-      size: Option[Int],
-      customStyle: Option[String],
-      count: Int,
-      content: String,
-      region: String,
-      removed: Boolean,
-      removedBy: Option[String],
-      removedReason: Option[String],
-      created: Instant,
-      location: String,
-      version: String,
-      slots: Int,
-      length: Int,
-      mapSizeX: Int,
-      mapSizeZ: Int,
-      pvpEnabledAt: Int)
-
-  case class PermissionSet(username: String, permissions: List[String])
-
-  case class PermissionModerationLogRow(
-      id: Int,
-      modifier: String,
-      username: String,
-      at: Instant,
-      permission: String,
-      added: Boolean)
+class Queries(logger: LogHandler) {
+  private[this] implicit val logHandler: LogHandler = logger
 
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
@@ -192,14 +156,14 @@ object Queries {
         username = $username
      """.asInstanceOf[Fragment].query[String]
 
-  def getPermissions(usernames: NonEmptyList[String]): Query0[PermissionSet] =
+  def getPermissions(usernames: NonEmptyList[String]): Query0[PermissionSetRow] =
     (
       sql"SELECT username, array_agg(type) FROM permissions ".asInstanceOf[Fragment] ++
         Fragments.whereAnd(
           Fragments.in(fr"username".asInstanceOf[Fragment], usernames)
         ) ++
         fr"GROUP BY username".asInstanceOf[Fragment]
-    ).query[PermissionSet]
+    ).query[PermissionSetRow]
 
   def addPermission(username: String, permission: String): Update0 =
     sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING"""

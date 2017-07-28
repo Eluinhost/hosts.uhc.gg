@@ -42,6 +42,6 @@ class AuthenticateCallback(authenticationApi: RedditAuthenticationApi, oauthApi:
 
   val route: Route =
     parameter('error)(error) ~                 // Check for error paramter first
-      parameters('code, 'state ? "/")(valid) ~ // Then check for code parameter
+      parameters(('code, 'state ? "/"))(valid) ~ // Then check for code parameter
       error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
 }

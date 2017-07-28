@@ -12,7 +12,7 @@ class PermissionModerationLog(directives: CustomDirectives, database: Database) 
   import directives._
 
   def route: Route =
-    parameters('after.as[Int].?, 'count ? 20) { (after, count) ⇒
+    parameters(('after.as[Int].?, 'count ? 20)) { (after, count) ⇒
       // TODO limit count 1-50
       requireSucessfulQuery(database.getPermissionModerationLog(after, count)) { log ⇒
         complete(log)

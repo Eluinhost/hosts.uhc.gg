@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.database.Queries.MatchRow
+import gg.uhc.hosts.database.MatchRow
 import gg.uhc.hosts.routes.{CustomDirectives, DatabaseErrorRejection}
 
 /**

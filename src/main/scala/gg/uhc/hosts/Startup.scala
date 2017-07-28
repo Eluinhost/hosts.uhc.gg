@@ -43,7 +43,7 @@ class Startup(routes: Routes, flyway: Flyway, transactor: HikariTransactor[IOLit
               t ← system.terminate()
               _ = system.log.info("Shut down actor system")
             } yield t,
-            1 minute
+            1.minute
           )
         }
       }
