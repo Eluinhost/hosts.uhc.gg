@@ -3,6 +3,8 @@ import { AuthenticationState } from '../state/AuthenticationState';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
 import { map, evolve } from 'ramda';
+import { PermissionsMap } from '../PermissionsMap';
+import { ModLogEntry } from '../ModLogEntry';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -101,3 +103,18 @@ export function refreshTokens(refreshToken: String): Promise<RefreshTokenRespons
     .then(verifyStatus(200))
     .then(response => toJson<RefreshTokenResponse>(response));
 }
+
+export const fetchPermissions = (): Promise<PermissionsMap> =>
+  fetch('/api/permissions')
+    .then(verifyStatus(200))
+    .then(response => toJson<PermissionsMap>(response));
+
+const convertModLogTimes: (m: ModLogEntry) => ModLogEntry = evolve<ModLogEntry>({
+  at: convertUnixToMoment,
+});
+
+export const fetchModLog = (): Promise<ModLogEntry[]> =>
+  fetch('/api/permissions/log')
+    .then(verifyStatus(200))
+    .then(response => toJson<ModLogEntry[]>(response))
+    .then(map(convertModLogTimes));

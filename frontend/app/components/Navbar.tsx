@@ -44,9 +44,9 @@ export const Navbar: React.SFC = () => (
         icon="confirm"
       />
       <NavbarButton
-        to="/moderate/users"
-        text="Admin"
-        icon="take-action"
+        to="/members"
+        text="Members"
+        icon="user"
       />
     </div>
     <div className="pt-navbar-group">

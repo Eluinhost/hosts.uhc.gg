@@ -12,6 +12,7 @@ import { MatchesPage } from './matches';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { isString } from 'util';
+import { MembersPage } from './members';
 
 const HostFormPage: React.SFC<RouteComponentProps<any>> = () => <HostForm />;
 const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
@@ -63,6 +64,7 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
       required={matchesPagePermissions}
       permissions={permissions}
     />
+    <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
