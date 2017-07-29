@@ -14,7 +14,7 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
       requireAuthentication { session ⇒
         requirePermission("moderator", session.username) {
           requireSucessfulQuery(database.addPermission(username, permission, "test account")) {
-            case true  ⇒ complete(StatusCodes.NoContent)
+            case true  ⇒ complete(StatusCodes.Created)
             case false ⇒ complete(StatusCodes.BadRequest)
           }
         }
