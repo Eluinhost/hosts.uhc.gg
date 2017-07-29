@@ -13,7 +13,7 @@ class RemovePermission(customDirectives: CustomDirectives, database: Database) {
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
         requirePermission("moderator", session.username) {
-          requireSucessfulQuery(database.removePermission(username, permission, "test account")) {
+          requireSucessfulQuery(database.removePermission(username, permission, session.username)) {
             case true  ⇒ complete(StatusCodes.NoContent)
             case false ⇒ complete(StatusCodes.BadRequest)
           }

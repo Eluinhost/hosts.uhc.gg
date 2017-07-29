@@ -13,7 +13,7 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
         requirePermission("moderator", session.username) {
-          requireSucessfulQuery(database.addPermission(username, permission, "test account")) {
+          requireSucessfulQuery(database.addPermission(username, permission, session.username)) {
             case true  ⇒ complete(StatusCodes.Created)
             case false ⇒ complete(StatusCodes.BadRequest)
           }
