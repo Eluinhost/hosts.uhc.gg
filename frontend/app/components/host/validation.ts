@@ -34,7 +34,7 @@ export const validation: Spec<HostFormData> = {
 
     const style = TeamStyles.find(i => i.value === teams);
 
-    if (style!.requiresTeamSize && (!obj.size || obj.size < 1))
+    if (style!.requiresTeamSize && (!obj.size || obj.size < 1 || obj.size > 32767))
       return 'Must provide a valid team size with this scenario';
 
     if (style!.value === 'custom' && !obj.customStyle)

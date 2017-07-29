@@ -134,12 +134,12 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
 
     val requiresSize = teamStyles(row.teams)
 
-    if (requiresSize) {
-      if (row.size.isEmpty) {
-        return reject(ValidationRejection("Size is required for this team style"))
-      }
-    } else {
+    if (!requiresSize) {
       row = row.copy(size = None) // remove size from data
+    } else if (row.size.isEmpty) {
+      return reject(ValidationRejection("Size is required for this team style"))
+    } else if (row.size.map(size ⇒ size < 1 || size > 32767).get) {
+      return reject(ValidationRejection("Invalid value for size"))
     }
 
     if (row.teams == "custom") {
