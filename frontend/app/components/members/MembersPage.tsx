@@ -11,7 +11,9 @@ export type MembersPageDispatchProps = {
   readonly togglePermissionExpanded: (perm: string) => void;
 };
 
-export type MembersPageStateProps = MembersState;
+export type MembersPageStateProps = MembersState & {
+  readonly canModify: boolean;
+};
 
 const capitalise = compose(
   join(''),
@@ -28,6 +30,7 @@ export class MembersPage
   generateMemberNode = (permission: string, username: string): ITreeNode => ({
     iconName: 'user',
     label: username,
+    className: this.props.canModify ? 'permission-node' : '',
     id: `${permission}-${username}`,
   })
 
@@ -35,6 +38,7 @@ export class MembersPage
     iconName: 'folder-close',
     hasCaret: true,
     id: permission,
+    className: this.props.canModify ? 'permission-folder' : '',
     label: capitalise(permission) + 's',
     isExpanded: contains(permission, this.props.permissions.expandedPermissions),
     childNodes: compose(

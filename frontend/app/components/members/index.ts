@@ -5,9 +5,16 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import * as React from 'react';
 import { MembersActions } from '../../state/MembersState';
+import { contains } from 'ramda';
 
 function mapStateToProps(state: ApplicationState): MembersPageStateProps {
-  return state.members;
+  return {
+    ...state.members,
+    canModify: state.authentication.loggedIn && contains(
+      'moderator',
+      state.authentication.data!.accessTokenClaims.permissions,
+    ),
+  };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps {

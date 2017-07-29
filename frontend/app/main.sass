@@ -161,3 +161,13 @@ body
 
 .members-page button
   margin-top: 15px
+
+.permission-node:hover
+  > div > span.pt-tree-node-icon:before
+    content: $pt-icon-remove
+    color: $pt-intent-danger
+
+.permission-folder:hover
+  > div > span.pt-tree-node-icon:before
+    content: $pt-icon-add
+    color: $pt-intent-success
