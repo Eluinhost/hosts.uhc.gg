@@ -118,3 +118,25 @@ export const fetchModLog = (): Promise<ModLogEntry[]> =>
     .then(verifyStatus(200))
     .then(response => toJson<ModLogEntry[]>(response))
     .then(map(convertModLogTimes));
+
+export const addPermission = (permission: string, username: string, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/permissions/${username}/${permission}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(201)).then(_ => undefined);
+
+export const removePermission = (permission: string, username: string, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/permissions/${username}/${permission}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(204)).then(_ => undefined);

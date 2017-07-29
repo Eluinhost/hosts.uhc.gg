@@ -4,11 +4,15 @@ import { map, sortBy, toLower, contains, toPairs, compose, nth, join, toUpper, h
 import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree, Tag } from '@blueprintjs/core';
 import { MembersState } from '../../state/MembersState';
 import { ModLogEntry } from '../../ModLogEntry';
+import { AddPermissionDialog } from './AddPermissionDialog';
+import { RemovePermissionDialog } from './RemovePermissionDialog';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
   readonly fetchModerationLog: () => void;
   readonly togglePermissionExpanded: (perm: string) => void;
+  readonly openAddPermission: (perm: string) => () => void;
+  readonly openRemovePermission: (perm: string, username: string) => () => void;
 };
 
 export type MembersPageStateProps = MembersState & {
@@ -29,7 +33,7 @@ export class MembersPage
 
   generateMemberNode = (permission: string, username: string): ITreeNode => ({
     iconName: 'user',
-    label: username,
+    label: <span onClick={this.props.openRemovePermission(permission, username)}>{username}</span>,
     className: this.props.canModify ? 'permission-node' : '',
     id: `${permission}-${username}`,
   })
@@ -39,7 +43,7 @@ export class MembersPage
     hasCaret: true,
     id: permission,
     className: this.props.canModify ? 'permission-folder' : '',
-    label: capitalise(permission) + 's',
+    label: <span onClick={this.props.openAddPermission(permission)}>{capitalise(permission) + 's'}</span>,
     isExpanded: contains(permission, this.props.permissions.expandedPermissions),
     childNodes: compose(
       map<string, ITreeNode>(member => this.generateMemberNode(permission, member)),
@@ -124,6 +128,8 @@ export class MembersPage
       <div className="members-page">
         {this.renderPermissionsTree()}
         {this.renderModerationLog()}
+
+        {this.props.canModify && <div><AddPermissionDialog /><RemovePermissionDialog /></div>}
       </div>
     );
   }

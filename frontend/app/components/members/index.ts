@@ -22,6 +22,11 @@ function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MembersPageDi
     fetchPermissionList: () => dispatch(MembersActions.refetchPermissions()),
     fetchModerationLog: () => dispatch(MembersActions.refetchModerationLog()),
     togglePermissionExpanded: (perm: string) => dispatch(MembersActions.togglePermissionExpanded(perm)),
+    openAddPermission: (perm: string) => () => dispatch(MembersActions.openAddPermissionDialog(perm)),
+    openRemovePermission: (perm: string, username: string) => () => dispatch(MembersActions.openRemovePermissionDialog({
+      username,
+      permission: perm,
+    })),
   };
 }
 
