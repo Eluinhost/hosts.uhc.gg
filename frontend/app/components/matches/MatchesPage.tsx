@@ -18,7 +18,7 @@ export type MatchesPageDispatchProps = {
 export type MatchesPageStateProps = {
   readonly isModalOpen: boolean;
   readonly isModerator: boolean;
-  readonly username: string;
+  readonly username: string | null;
 } & MatchesState;
 
 export class MatchesPage

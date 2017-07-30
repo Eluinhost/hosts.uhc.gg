@@ -57,12 +57,7 @@ const matchesPagePermissions: PermissionCheckFn = any(either(equals('moderator')
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
     <AuthedRoute path="/host" component={HostingPage} required="host" permissions={permissions} />
-    <AuthedRoute
-      path="/matches"
-      component={MatchesPage}
-      required={matchesPagePermissions}
-      permissions={permissions}
-    />
+    <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
     <Route path="/" exact component={HomePage}/>

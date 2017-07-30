@@ -8,10 +8,19 @@ import { contains } from 'ramda';
 import * as React from 'react';
 
 function mapStateToProps(state: ApplicationState): MatchesPageStateProps {
+  if (state.authentication.loggedIn) {
+    return {
+      ...state.matches,
+      isModerator: contains('moderator', state.authentication.data!.accessTokenClaims.permissions),
+      username: state.authentication.data!.accessTokenClaims.username,
+      isModalOpen: state.matches.removal.isModalOpen,
+    };
+  }
+
   return {
     ...state.matches,
-    isModerator: contains('moderator', state.authentication.data!.accessTokenClaims.permissions),
-    username: state.authentication.data!.accessTokenClaims.username,
+    isModerator: false,
+    username: null,
     isModalOpen: state.matches.removal.isModalOpen,
   };
 }
