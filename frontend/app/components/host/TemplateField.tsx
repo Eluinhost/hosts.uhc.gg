@@ -5,6 +5,7 @@ import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
 import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
+import { presets } from './presets';
 
 const parser = Snuownd.getParser();
 
@@ -90,8 +91,6 @@ const HelpTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input
   </div>
 );
 
-const presets = ['test', 'test2'];
-
 const PresetButton: React.SFC<{ readonly onClick: () => void; readonly id: string }> =
   ({ onClick, id }) => (
     <Button onClick={onClick} intent={Intent.PRIMARY} className="pt-large">{id}</Button>
@@ -99,7 +98,7 @@ const PresetButton: React.SFC<{ readonly onClick: () => void; readonly id: strin
 
 const PresetsTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ changeTemplate }) => (
   <div className="pt-callout pt-intent-primary">
-    {presets.map((p, i) => <PresetButton key={i} onClick={changeTemplate(p)} id={`Template ${i + 1}`}/>)}
+    {presets.map(p => <PresetButton key={p.name} onClick={changeTemplate(p.template)} id={p.name}/>)}
   </div>
 );
 

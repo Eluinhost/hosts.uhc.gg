@@ -12,6 +12,7 @@ import { storage } from '../../storage';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { omit } from 'ramda';
 import { renderToMarkdown } from './TemplateField';
+import { presets } from './presets';
 
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
@@ -49,7 +50,7 @@ class HostingPageComponent extends React.Component<
     size: null,
     customStyle: '',
     address: '',
-    content: 'Enter **markdown** content here',
+    content: presets[0].template,
     ip: '',
     count: 1,
     location: '',
