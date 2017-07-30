@@ -56,8 +56,8 @@ const samples = [
   ['{{pvpEnabledAt}}', 'When PVP turns on'],
 ];
 
-const renderSamples = (context: any): React.ReactElement<any>[] => samples.map(sample => (
-  <tr>
+const renderSamples = (context: any): React.ReactElement<any>[] => samples.map((sample, index) => (
+  <tr key={index}>
     <td className="pt-monospace-text">{sample[0]}</td>
     <td>{sample[1]}</td>
     <td>{Mark.up(sample[0], context)}</td>
