@@ -17,20 +17,21 @@ export interface TemplateFieldProps extends BaseFieldProps {
   readonly changeTemplate: (value: string) => () => void;
 }
 
-const renderText = (template: string, context: any) => ({
-  __html: parser.render(Mark.up(template, context, {
-    pipes: {
-      moment: (date: moment.Moment, format: string) => date.utc().format(format),
-    },
-  })),
+export const renderToMarkdown = (template: string, context: any): string => Mark.up(template, context, {
+  pipes: {
+    moment: (date: moment.Moment, format: string): string => date.utc().format(format),
+  },
 });
+
+export const renderToHtml = (template: string, context: any): string =>
+  parser.render(renderToMarkdown(template, context));
 
 const TemplateTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, disabled }) => (
   <textarea {...input} disabled={disabled} className="pt-fill pt-input" rows={15}/>
 );
 
 const PreviewTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, context }) => (
-  <pre dangerouslySetInnerHTML={renderText(input!.value, context)} />
+  <pre dangerouslySetInnerHTML={{ __html: renderToHtml(input!.value, context) }} />
 );
 
 const samples = [

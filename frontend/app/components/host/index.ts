@@ -5,18 +5,24 @@ import * as moment from 'moment';
 import { AuthenticationActions } from '../../state/AuthenticationState';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { connect } from 'react-redux';
-import { BadDataError, createMatch, ForbiddenError, NotAuthenticatedError } from '../../api/index';
+import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../../api/index';
 import { validate } from '../../validate';
 import { validation } from './validation';
 import { HostFormData } from './HostFormData';
 import { HostFormStateProps, HostForm as HostFormComponent, HostFormDispatchProps } from './HostForm';
 import { Dispatch } from 'redux';
+import { renderToMarkdown } from './TemplateField';
 
 const formConfig: Config<HostFormData, HostFormStateProps & HostFormDispatchProps & RouteComponentProps<any>, {}> = {
   form: 'host',
   validate: validate(validation),
   onSubmit: (values, dispatch, props) => {
-    return createMatch(values, props.authentication)
+    const submitVals: CreateMatchData = {
+      ...values,
+      content: renderToMarkdown(values.content, props.templateContext),
+    };
+
+    return createMatch(submitVals, props.authentication)
       .then(() => {
         props.history.push('/matches');
       })
