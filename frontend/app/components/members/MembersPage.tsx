@@ -125,10 +125,11 @@ export class MembersPage
 
   render() {
     return (
-      <div className="members-page">
-        {this.renderPermissionsTree()}
-        {this.renderModerationLog()}
-
+      <div>
+        <div className="members-page">
+          {this.renderPermissionsTree()}
+          {this.renderModerationLog()}
+        </div>
         {this.props.canModify && <div><AddPermissionDialog /><RemovePermissionDialog /></div>}
       </div>
     );
