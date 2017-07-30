@@ -18,6 +18,7 @@ import { Button, Intent } from '@blueprintjs/core';
 import { validate } from '../../validate';
 import { validation } from './validation';
 import { CreateMatchData } from '../../api/index';
+import { HostingRules } from '../HostingRules';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -101,6 +102,8 @@ const CreateMatchFormComponent:
 
     return (
       <form className="host-form" onSubmit={handleSubmit(createMatch)}>
+
+        <HostingRules />
 
         <fieldset className="opening-time">
           <legend>Opening Time</legend>

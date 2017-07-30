@@ -1,20 +1,17 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
+import { HostingRules } from './HostingRules';
 
 export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
   <div className="home-page">
-    <h1>uhc.gg Hosting Portal</h1>
-
-    <pre style={{ minHeight: 400 }}>
-      Some rules here maybe?
-    </pre>
+    <HostingRules />
 
     <Link to="/host">
       <div className="pt-card pt-interactive">
         <h4>Create a match</h4>
         <p>
-          Some text about creating a match
+          Create a new match post
         </p>
       </div>
     </Link>
@@ -23,16 +20,16 @@ export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
       <div className="pt-card pt-interactive">
         <h4>Matches</h4>
         <p>
-          Some text about matches
+          View a list of upcoming + removed matches
         </p>
       </div>
     </Link>
 
-    <Link to="/mod/hosts">
+    <Link to="/members">
       <div className="pt-card pt-interactive">
-        <h4>Moderate hosts</h4>
+        <h4>Members</h4>
         <p>
-          Some text about moderating hosts
+          View member roles and member moderation log
         </p>
       </div>
     </Link>
