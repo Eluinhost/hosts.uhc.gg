@@ -105,6 +105,11 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
     if (row.length < 30)
       return reject(ValidationRejection("Matches must be at least 30 minutes"))
 
+    // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it
+    if (row.length < 45 && !row.scenarios.exists(_.toLowerCase == "rush")) {
+      row = row.copy(scenarios = row.scenarios :+ "Rush")
+    }
+
     if (row.mapSizeX < 0)
       return reject(ValidationRejection("X must be positive"))
 

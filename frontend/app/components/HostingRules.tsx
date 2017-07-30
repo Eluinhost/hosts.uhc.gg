@@ -58,23 +58,19 @@ scenarios and the same team size.
 - Ore multiplying gamemodes with smelted ores will not conflict with Cutclean games unless meats drop
 smelted.
 
-#### Rule #8: Match Length
-
-Matches that are 44 minutes or less in length must be labelled as Rush
-
-#### Rule #9: Game Count
+#### Rule #8: Game Count
 
 The game count can only increase from a publically advertised and hosted matches and is a per-user count
 
 Tournaments must use a separate counter than the usual match counter.
 
-#### Rule #10: Host Names
+#### Rule #9: Host Names
 
 Hosting under a name that is deemed offensive or could be interpreted as an insult is not allowed.
 
 Hosting under a copy-cat or "fake" name is not allowed.
 
-#### Rule #11: Banned Scenarios
+#### Rule #10: Banned Scenarios
 
 Any scenario that acts like a PvP arena is not a match and cannot be advertised. For example, Last Man Standing (LMS).
 
