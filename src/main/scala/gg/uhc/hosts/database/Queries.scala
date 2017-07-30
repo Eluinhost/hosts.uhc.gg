@@ -1,5 +1,6 @@
 package gg.uhc.hosts.database
 
+import java.net.InetAddress
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -200,4 +201,17 @@ class Queries(logger: LogHandler) {
     sql"SELECT type, array_agg(username) FROM permissions GROUP BY type"
       .asInstanceOf[Fragment]
       .query[(String, List[String])]
+
+  def updateAuthenticationLog(username: String, ip: InetAddress): Update0 =
+    sql"""
+      INSERT INTO authentication_log (username, ip, lastToken)
+      VALUES ($username, $ip, now())
+      ON CONFLICT (username, ip) DO
+        UPDATE
+          SET lastToken = now()
+        WHERE
+          authentication_log.username = $username
+          AND
+          authentication_log.ip = $ip
+    """.asInstanceOf[Fragment].update
 }

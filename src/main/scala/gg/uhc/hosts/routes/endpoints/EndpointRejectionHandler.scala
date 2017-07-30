@@ -3,12 +3,14 @@ package gg.uhc.hosts.routes.endpoints
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{complete, extractActorSystem}
 import akka.http.scaladsl.server.{AuthenticationFailedRejection, RejectionHandler, ValidationRejection}
-import gg.uhc.hosts.routes.DatabaseErrorRejection
+import gg.uhc.hosts.routes.{DatabaseErrorRejection, MissingIpErrorRejection}
 
 object EndpointRejectionHandler {
   val handler: RejectionHandler = RejectionHandler
     .newBuilder()
     .handle {
+      case MissingIpErrorRejection() ⇒
+        complete(StatusCodes.InternalServerError → "Unable to find client IP address")
       case DatabaseErrorRejection(t) ⇒ // when database explodes
         extractActorSystem { system ⇒
           system.log.error("DB error", t)

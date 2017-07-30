@@ -1,5 +1,7 @@
 package gg.uhc.hosts.database
 
+import java.net.InetAddress
+
 import akka.actor.ActorSystem
 import doobie.free.connection.raw
 import doobie.hikari.hikaritransactor.HikariTransactor
@@ -107,6 +109,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
 
   def getAllPermissions: ConnectionIO[Map[String, List[String]]] =
     queries.getAllRoleMembers.list.map(_.toMap)
+
+  def updateAuthenticationLog(username: String, ip: InetAddress): ConnectionIO[Unit] =
+    queries.updateAuthenticationLog(username, ip).run.map(_ ⇒ Unit)
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO

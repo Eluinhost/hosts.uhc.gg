@@ -1,7 +1,10 @@
 package gg.uhc.hosts.routes
 
+import java.net.InetAddress
+
+import akka.http.scaladsl.model.RemoteAddress
 import akka.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2BearerToken}
-import akka.http.scaladsl.server.Directives.{onComplete, optionalHeaderValuePF, pass, provide, reject}
+import akka.http.scaladsl.server.Directives.{extractClientIP, onComplete, optionalHeaderValuePF, pass, provide, reject}
 import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
 import doobie.imports._
 import gg.uhc.hosts.authentication.Session.{Authenticated, RefreshToken}
@@ -10,6 +13,12 @@ import gg.uhc.hosts.database.Database
 import scala.util.{Failure, Success}
 
 class CustomDirectives(database: Database) {
+  def requireRemoteIp: Directive1[InetAddress] =
+    extractClientIP flatMap {
+      case RemoteAddress.Unknown ⇒ reject(MissingIpErrorRejection())
+      case RemoteAddress.IP(ip, _) ⇒ provide(ip)
+    }
+
   def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
     requireSucessfulQuery(database.getPermissions(username)).flatMap {
       case l if l.contains(permission) ⇒ provide(true)
