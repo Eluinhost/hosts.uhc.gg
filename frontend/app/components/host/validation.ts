@@ -1,9 +1,9 @@
 import { Spec } from '../../validate';
 import * as moment from 'moment';
 import { TeamStyles } from '../../TeamStyles';
-import { HostFormData } from './HostFormData';
+import { CreateMatchData } from '../../api/index';
 
-export const validation: Spec<HostFormData> = {
+export const validation: Spec<CreateMatchData> = {
   count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,
   opens: (opens) => {
     if (!opens)

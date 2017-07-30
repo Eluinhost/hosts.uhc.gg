@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { HostForm } from './host';
+import { HostingPage } from './host';
 import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
@@ -14,7 +14,6 @@ import { Navbar } from './Navbar';
 import { isString } from 'util';
 import { MembersPage } from './members';
 
-const HostFormPage: React.SFC<RouteComponentProps<any>> = () => <HostForm />;
 const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
   <NonIdealState
     title="Not Found"
@@ -57,7 +56,7 @@ const matchesPagePermissions: PermissionCheckFn = any(either(equals('moderator')
 
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
-    <AuthedRoute path="/host" component={HostFormPage} required="host" permissions={permissions} />
+    <AuthedRoute path="/host" component={HostingPage} required="host" permissions={permissions} />
     <AuthedRoute
       path="/matches"
       component={MatchesPage}

@@ -76,12 +76,12 @@ export type CreateMatchData = {
   pvpEnabledAt: number;
 };
 
-export function createMatch(data: CreateMatchData, authentication: AuthenticationState): Promise<void> {
+export function createMatch(data: CreateMatchData, accessToken: string): Promise<void> {
   return fetch('/api/matches', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authentication.data!.rawAccessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
   }).then(verifyStatus(201)).then(_ => undefined);
