@@ -5,7 +5,8 @@ import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
 import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
-import { presets } from './presets';
+import { Preset, presets } from './presets';
+import { memoize } from 'ramda';
 
 const parser = Snuownd.getParser();
 
@@ -15,7 +16,7 @@ export interface TemplateFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
   readonly className?: string;
   readonly context: any;
-  readonly changeTemplate: (value: string) => () => void;
+  readonly changeTemplate: (value: string) => void;
 }
 
 export const renderToMarkdown = (template: string, context: any): string => Mark.up(template, context, {
@@ -96,30 +97,60 @@ const PresetButton: React.SFC<{ readonly onClick: () => void; readonly id: strin
     <Button onClick={onClick} intent={Intent.PRIMARY} className="pt-large">{id}</Button>
   );
 
-const PresetsTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ changeTemplate }) => (
+const PresetsTab: React.SFC<{ readonly onPresetClick: (p: Preset) => () => void }> = ({ onPresetClick }) => (
   <div className="pt-callout pt-intent-primary">
-    {presets.map(p => <PresetButton key={p.name} onClick={changeTemplate(p.template)} id={p.name}/>)}
+    {presets.map(p => <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name}/>)}
   </div>
 );
 
-const renderTemplateField: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = props => (
-  <FieldWrapper meta={props.meta} required={props.required} hideErrors>
-    <div className={`markdown-field-wrapper ${props.className || ''}`}>
-      {renderLabel(props)}
-      <Tabs2 id="host-form-template-tabs">
-        <Tab2 id="host-from-template-tab-template" title="Template" panel={<TemplateTab {...props} />}/>
-        <Tab2 id="host-form-template-tab-preview" title="Preview" panel={<PreviewTab {...props} />}/>
-        <Tab2 id="host-form-template-tab-help" title="Help" panel={<HelpTab {...props} />}/>
-        <Tab2 id="host-form-template-tab-presets" title="Presets" panel={<PresetsTab {...props} />}/>
-      </Tabs2>
-    </div>
-    <RenderErrors {...props.meta} />
-  </FieldWrapper>
-);
+type TemplateFieldComponentState = {
+  readonly currentTabId: string | number;
+};
+
+class TemplateFieldComponent
+  extends React.Component<WrappedFieldProps<any> & TemplateFieldProps, TemplateFieldComponentState> {
+  state = {
+    currentTabId: 'host-from-template-tab-template',
+  };
+
+  onTabChange = (newTabId: string | number, prevTabId: string | number, event: React.MouseEvent<HTMLElement>): void =>
+    this.setState({
+      currentTabId: newTabId,
+    })
+
+  onPresetClick: (p: Preset) => () => void = memoize((p: Preset) => () => {
+    this.props.changeTemplate(p.template);
+    this.setState({
+      currentTabId: 'host-from-template-tab-template',
+    });
+  });
+
+  render() {
+    const Template = <TemplateTab {...this.props} />;
+    const Preview = <PreviewTab {...this.props} />;
+    const Help = <HelpTab {...this.props} />;
+    const Presets = <PresetsTab onPresetClick={this.onPresetClick} />;
+
+    return (
+      <FieldWrapper meta={this.props.meta} required={this.props.required} hideErrors>
+        <div className={`markdown-field-wrapper ${this.props.className || ''}`}>
+          {renderLabel(this.props)}
+          <Tabs2 id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
+            <Tab2 id="host-from-template-tab-template" title="Template" panel={Template}/>
+            <Tab2 id="host-form-template-tab-preview" title="Preview" panel={Preview}/>
+            <Tab2 id="host-form-template-tab-help" title="Help" panel={Help}/>
+            <Tab2 id="host-form-template-tab-presets" title="Presets" panel={Presets}/>
+          </Tabs2>
+        </div>
+        <RenderErrors {...this.props.meta} />
+      </FieldWrapper>
+    );
+  }
+}
 
 export const TemplateField: React.SFC<TemplateFieldProps> = props => (
   <Field
     {...props}
-    component={renderTemplateField}
+    component={TemplateFieldComponent}
   />
 );

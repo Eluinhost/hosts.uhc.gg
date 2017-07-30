@@ -21,7 +21,7 @@ export type HostingPageStateProps = {
 };
 
 export type HostingPageDispatchProps = {
-  readonly changeTemplate: (newTemplate: string) => () => void;
+  readonly changeTemplate: (newTemplate: string) => void;
 };
 
 export type HostingPageState = {
@@ -166,6 +166,6 @@ export const HostingPage = connect<HostingPageStateProps, HostingPageDispatchPro
     accessToken: state.authentication.data!.rawAccessToken,
   }),
   (dispatch: Dispatch<ApplicationState>): HostingPageDispatchProps => ({
-    changeTemplate: (newTemplate: string) => () => dispatch(change(formKey, 'content', newTemplate)),
+    changeTemplate: (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
   }),
 )(HostingPageComponent);

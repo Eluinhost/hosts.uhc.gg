@@ -24,7 +24,7 @@ export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
   readonly templateContext: any;
   readonly username: string;
-  readonly changeTemplate: (newTemplate: string) => () => void;
+  readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => Promise<void>;
 };
 
