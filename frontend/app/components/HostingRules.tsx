@@ -1,8 +1,8 @@
 import * as React from 'react';
-import * as snuownd from 'snuownd';
 import { Collapse } from '@blueprintjs/core';
+import { Markdown } from './Markdown';
 
-const rules = snuownd.getParser().render(`
+const rules = `
 #### Rule #1: Redos
 
 Setting random teams again in random team matches or settings powers again in Superheroes
@@ -78,7 +78,7 @@ Gamemodes where ores drop four times or more the usual amount are banned. Triple
 
 Ops vs The World is banned. If you wish to host it, you may modmail us gamemode specifics such as player slots, what 
 items the OP team will have, and the size of the OP team.
-`);
+`;
 
 type HostingRulesState = {
   readonly isRulesOpen: boolean;
@@ -103,10 +103,9 @@ export class HostingRules extends React.Component<{}, HostingRulesState> {
       >
         <h3>Hosting Rules</h3>
         <Collapse isOpen={this.state.isRulesOpen}>
-          <div
-            dangerouslySetInnerHTML={{ __html: rules }}
-            onClick={this.stopPropagation}
-          />
+          <div onClick={this.stopPropagation}>
+            <Markdown markdown={rules}/>
+          </div>
         </Collapse>
       </div>
     );
