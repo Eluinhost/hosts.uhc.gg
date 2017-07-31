@@ -1,8 +1,7 @@
 import { Match } from '../Match';
-import { AuthenticationState } from '../state/AuthenticationState';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
-import { map, evolve } from 'ramda';
+import { map, evolve, always } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
 
@@ -12,48 +11,49 @@ export class ForbiddenError extends ApiError {}
 export class UnexpectedResponseError extends ApiError {}
 export class BadDataError extends ApiError {}
 
-const verifyStatus = (expected: number) => function (response: Response): Promise<Response> {
+const verifyStatus = (expected: number) => async (response: Response): Promise<Response> => {
   switch (response.status) {
     case expected:
-      return Promise.resolve(response);
+      return response;
     case 400:
-      return response.text().then(text => Promise.reject(new BadDataError(text)));
+      const error = await response.text();
+      throw new BadDataError(error);
     case 401:
-      return Promise.reject(new NotAuthenticatedError());
+      throw new NotAuthenticatedError();
     case 403:
-      return Promise.reject(new ForbiddenError());
+      throw new ForbiddenError();
     default:
-      return Promise.reject(new UnexpectedResponseError());
+      throw new UnexpectedResponseError();
   }
 };
 
-function toJson<T>(response: Response): Promise<T> {
-  return response.json();
-}
+const toJson = <T>() => (response: Response): Promise<T> => response.json();
 
-const convertUnixToMoment: (x: string) => moment.Moment = x => moment(x).utc();
+const convertUnixToMoment = (x: string): moment.Moment => moment(x).utc();
 
-const convertMatchTimes: (m: Match) => Match = evolve<Match>({
+const convertMatchTimes = (m: Match): Match => evolve<Match>({
   opens: convertUnixToMoment,
-});
+}, m);
 
-export function fetchUpcomingMatches(): Promise<Match[]> {
-  return fetch('/api/matches')
+export const fetchUpcomingMatches = (): Promise<Match[]> =>
+  fetch('/api/matches')
     .then(verifyStatus(200))
-    .then(response => toJson<Match[]>(response))
+    .then(toJson<Match[]>())
     .then(map(convertMatchTimes));
-}
 
-export function removeMatch(id: number, reason: string, accessToken: string): Promise<void> {
-  return fetch(`/api/matches/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+export const removeMatch = (id: number, reason: string, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/matches/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ reason }),
     },
-    body: JSON.stringify({ reason }),
-  }).then(verifyStatus(204)).then(_ => undefined);
-}
+  ).then(verifyStatus(204))
+    .then(always(undefined));
 
 export type CreateMatchData = {
   opens: moment.Moment;
@@ -76,47 +76,51 @@ export type CreateMatchData = {
   pvpEnabledAt: number;
 };
 
-export function createMatch(data: CreateMatchData, accessToken: string): Promise<void> {
-  return fetch('/api/matches', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+export const createMatch = (data: CreateMatchData, accessToken: string): Promise<void> =>
+  fetch(
+    '/api/matches',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  }).then(verifyStatus(201)).then(_ => undefined);
-}
+  ).then(verifyStatus(201))
+    .then(always(undefined));
 
 export type RefreshTokenResponse = {
   readonly accessToken: string;
   readonly refreshToken: string;
 };
 
-export function refreshTokens(refreshToken: String): Promise<RefreshTokenResponse> {
-  return fetch('/authenticate/refresh', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${refreshToken}`,
+export const refreshTokens = (refreshToken: String): Promise<RefreshTokenResponse> =>
+  fetch(
+    '/authenticate/refresh',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refreshToken}`,
+      },
     },
-  })
-    .then(verifyStatus(200))
-    .then(response => toJson<RefreshTokenResponse>(response));
-}
+  ).then(verifyStatus(200))
+    .then(toJson<RefreshTokenResponse>());
 
 export const fetchPermissions = (): Promise<PermissionsMap> =>
   fetch('/api/permissions')
     .then(verifyStatus(200))
-    .then(response => toJson<PermissionsMap>(response));
+    .then(toJson<PermissionsMap>());
 
-const convertModLogTimes: (m: ModLogEntry) => ModLogEntry = evolve<ModLogEntry>({
+const convertModLogTimes = (m: ModLogEntry): ModLogEntry => evolve<ModLogEntry>({
   at: convertUnixToMoment,
-});
+}, m);
 
 export const fetchModLog = (): Promise<ModLogEntry[]> =>
   fetch('/api/permissions/log')
     .then(verifyStatus(200))
-    .then(response => toJson<ModLogEntry[]>(response))
+    .then(toJson<ModLogEntry[]>())
     .then(map(convertModLogTimes));
 
 export const addPermission = (permission: string, username: string, accessToken: string): Promise<void> =>
@@ -128,7 +132,8 @@ export const addPermission = (permission: string, username: string, accessToken:
         Authorization: `Bearer ${accessToken}`,
       },
     },
-  ).then(verifyStatus(201)).then(_ => undefined);
+  ).then(verifyStatus(201))
+    .then(always(undefined));
 
 export const removePermission = (permission: string, username: string, accessToken: string): Promise<void> =>
   fetch(
@@ -139,4 +144,5 @@ export const removePermission = (permission: string, username: string, accessTok
         Authorization: `Bearer ${accessToken}`,
       },
     },
-  ).then(verifyStatus(204)).then(_ => undefined);
+  ).then(verifyStatus(204))
+    .then(always(undefined));
