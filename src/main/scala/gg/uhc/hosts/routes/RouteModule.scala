@@ -20,6 +20,7 @@ trait RouteModule extends DatabaseModule with RedditModule {
   lazy val addPermission: AddPermission                     = wire[AddPermission]
   lazy val permissionModerationLog: PermissionModerationLog = wire[PermissionModerationLog]
   lazy val listPermissions: ListPermissions                 = wire[ListPermissions]
+  lazy val checkConflicts: CheckConflicts                   = wire[CheckConflicts]
 
   lazy val routes: Routes = wire[Routes]
 }

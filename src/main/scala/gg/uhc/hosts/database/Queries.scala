@@ -214,4 +214,15 @@ class Queries(logger: LogHandler) {
           AND
           authentication_log.ip = $ip
     """.asInstanceOf[Fragment].update
+
+  def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): Query0[MatchRow] =
+    sql"""
+      SELECT
+        *
+      FROM matches
+      WHERE
+        region = $region
+        AND
+        opens BETWEEN $start AND $end
+      """.asInstanceOf[Fragment].query[MatchRow]
 }

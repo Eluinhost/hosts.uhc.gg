@@ -1,10 +1,14 @@
 package gg.uhc.hosts.routes
 
+import java.time.Instant
+
 import akka.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{PathMatcher1, Route}
 import gg.uhc.hosts.routes.endpoints._
+
+import scala.util.Try
 
 class Routes(
     listMatches: ListMatches,
@@ -18,7 +22,19 @@ class Routes(
     removePermission: RemovePermission,
     permissionModerationLog: PermissionModerationLog,
     listPermissions: ListPermissions,
-    timeSync: TimeSync) {
+    timeSync: TimeSync,
+    checkConflicts: CheckConflicts) {
+
+  implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
+    def asInstant: PathMatcher1[Instant] =
+      segment.flatMap { string ⇒
+        Try {
+          System.out.println(string)
+          System.out.println(Instant.parse(string))
+          Instant.parse(string)
+        }.toOption
+      }
+  }
 
   val api: Route = pathPrefix("api") {
     respondWithHeader(`Access-Control-Allow-Origin`.*) {
@@ -27,7 +43,9 @@ class Routes(
           get(listMatches.route) ~ post(createMatches.route)
         } ~ path(IntNumber) { id ⇒
           get(showMatch.route(id)) ~ delete(removeMatches.route(id))
-        }
+        } ~ (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant) & pathEndOrSingleSlash)(
+          checkConflicts.route
+        )
       } ~
         pathPrefix("sync")(timeSync.route) ~
         pathPrefix("permissions") {

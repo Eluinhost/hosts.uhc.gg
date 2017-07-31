@@ -1,6 +1,7 @@
 package gg.uhc.hosts.database
 
 import java.net.InetAddress
+import java.time.Instant
 
 import akka.actor.ActorSystem
 import doobie.free.connection.raw
@@ -112,6 +113,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
 
   def updateAuthenticationLog(username: String, ip: InetAddress): ConnectionIO[Unit] =
     queries.updateAuthenticationLog(username, ip).run.map(_ ⇒ Unit)
+
+  def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): ConnectionIO[List[MatchRow]] =
+    queries.getMatchesInDateRangeAndRegion(start, end, region).list
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
