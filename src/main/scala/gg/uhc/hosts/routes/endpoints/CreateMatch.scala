@@ -87,8 +87,15 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
     if (row.opens.isAfter(Instant.now().plus(30, ChronoUnit.DAYS)))
       return reject(ValidationRejection("Must be at most 30 days in advance"))
 
-    if (row.opens.atOffset(ZoneOffset.UTC).getMinute % 15 != 0)
-      return reject(ValidationRejection("Minutes must be xx:00 xx:15 xx:30 or xx:45"))
+    val offsetDateTime = row.opens
+      .atOffset(ZoneOffset.UTC) // assume UTC
+      .withSecond(0) // strip sub-minute accuracy out of the timestamp if provided
+      .withNano(0)
+
+    if (offsetDateTime.getMinute % 15 != 0)
+      return reject(ValidationRejection("Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour"))
+
+    row = row.copy(opens = offsetDateTime.toInstant)
 
     if ("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isEmpty)
       return reject(ValidationRejection("Invalid IP address supplied"))
