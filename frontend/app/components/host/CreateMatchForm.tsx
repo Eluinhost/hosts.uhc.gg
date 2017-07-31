@@ -20,6 +20,8 @@ import { validation } from './validation';
 import { CreateMatchData } from '../../api/index';
 import { HostingRules } from '../HostingRules';
 
+const noop = (): void => {};
+
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
   readonly templateContext: any;
@@ -278,6 +280,7 @@ const CreateMatchFormComponent:
           <MatchRow
             match={preview}
             canRemove={false}
+            onRemovePress={noop}
           />
         </fieldset>
 

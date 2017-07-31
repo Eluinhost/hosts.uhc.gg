@@ -1,16 +1,14 @@
-import { Button, Intent } from '@blueprintjs/core';
+import { Button, IButtonProps, Intent } from '@blueprintjs/core';
 import * as React from 'react';
 
-export type RemoveMatchButtonProps = {
-  readonly onPress: () => any;
-};
+export type RemoveMatchButtonProps = IButtonProps;
 
-export const RemoveMatchButton: React.SFC<RemoveMatchButtonProps> = ({ onPress }) => (
+export const RemoveMatchButton: React.SFC<RemoveMatchButtonProps> = props => (
   <Button
-    onClick={onPress}
     intent={Intent.DANGER}
     rightIconName="delete"
     className="match-remove-button"
+    {...props}
   >
     Remove
   </Button>

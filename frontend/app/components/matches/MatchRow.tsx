@@ -9,7 +9,7 @@ import { Markdown } from '../Markdown';
 
 export type MatchRowProps = {
   readonly match: Match;
-  readonly onRemovePress?: () => any;
+  readonly onRemovePress: () => void;
   readonly canRemove: boolean;
 };
 
@@ -28,8 +28,13 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
 
   onClick = () => this.setState(prev => ({ isOpen: !prev.isOpen }));
 
+  onRemovePress = (event: React.MouseEvent<HTMLElement>): void => {
+    event.stopPropagation();
+    this.props.onRemovePress();
+  }
+
   render() {
-    const { match, canRemove, onRemovePress } = this.props;
+    const { match, canRemove } = this.props;
 
     return (
       <div className={`pt-card match-row ${match.removed ? 'pt-intent-danger' : ''}`} onClick={this.onClick}>
@@ -48,7 +53,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
           </span>
         </div>
         <div className="match-moderation-actions">
-          {(canRemove && !match.removed) && <RemoveMatchButton onPress={onRemovePress!}/>}
+          {(canRemove && !match.removed) && <RemoveMatchButton onClick={this.onRemovePress}/>}
         </div>
         <div className="match-content">
           <h4>
