@@ -23,7 +23,9 @@ class Routes(
     permissionModerationLog: PermissionModerationLog,
     listPermissions: ListPermissions,
     timeSync: TimeSync,
-    checkConflicts: CheckConflicts) {
+    checkConflicts: CheckConflicts,
+    getApiKey: GetApiKey,
+    regenerateApiKey: RegenerateApiKey) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
@@ -36,26 +38,29 @@ class Routes(
       }
   }
 
+  val matches: Route = pathEndOrSingleSlash {
+    get(listMatches.route) ~ post(createMatches.route)
+  } ~ path(IntNumber) { id ⇒
+    get(showMatch.route(id)) ~ delete(removeMatches.route(id))
+  } ~ (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant) & pathEndOrSingleSlash)(
+    checkConflicts.route
+  )
+
+  val permissions: Route = get {
+    pathEndOrSingleSlash(listPermissions.route) ~
+      (path("log") & pathEndOrSingleSlash)(permissionModerationLog.route)
+  } ~ path(Segments(2)) { segments ⇒
+    post(addPermission.route(segments.head, segments.last)) ~
+      delete(removePermission.route(segments.head, segments.last))
+  }
+
   val api: Route = pathPrefix("api") {
     respondWithHeader(`Access-Control-Allow-Origin`.*) {
-      pathPrefix("matches") {
-        pathEndOrSingleSlash {
-          get(listMatches.route) ~ post(createMatches.route)
-        } ~ path(IntNumber) { id ⇒
-          get(showMatch.route(id)) ~ delete(removeMatches.route(id))
-        } ~ (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant) & pathEndOrSingleSlash)(
-          checkConflicts.route
-        )
-      } ~
+      pathPrefix("matches")(matches) ~
         pathPrefix("sync")(timeSync.route) ~
-        pathPrefix("permissions") {
-          get {
-            pathEndOrSingleSlash(listPermissions.route) ~
-              (path("log") & pathEndOrSingleSlash)(permissionModerationLog.route)
-          } ~ path(Segments(2)) { segments ⇒
-            post(addPermission.route(segments.head, segments.last)) ~
-              delete(removePermission.route(segments.head, segments.last))
-          }
+        pathPrefix("permissions")(permissions) ~
+        pathPrefix("key") {
+          get(getApiKey.route) ~ post(regenerateApiKey.route)
         } ~
         complete(StatusCodes.NotFound)
     }

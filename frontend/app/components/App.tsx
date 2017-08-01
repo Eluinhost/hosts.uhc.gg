@@ -13,6 +13,7 @@ import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { isString } from 'util';
 import { MembersPage } from './members';
+import { ProfilePage } from './profile/index';
 
 const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
   <NonIdealState
@@ -52,12 +53,15 @@ type RoutesStateProps = {
   permissions: string[];
 };
 
+const allowAny: PermissionCheckFn = () => true;
+
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
     <AuthedRoute path="/host" component={HostingPage} required="host" permissions={permissions} />
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
+    <AuthedRoute path="/profile" component={ProfilePage} required={allowAny} permissions={permissions} />
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>

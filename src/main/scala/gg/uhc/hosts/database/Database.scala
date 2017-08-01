@@ -2,6 +2,7 @@ package gg.uhc.hosts.database
 
 import java.net.InetAddress
 import java.time.Instant
+import java.util.UUID
 
 import akka.actor.ActorSystem
 import doobie.free.connection.raw
@@ -116,6 +117,15 @@ class Database(transactor: HikariTransactor[IOLite]) {
 
   def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): ConnectionIO[List[MatchRow]] =
     queries.getMatchesInDateRangeAndRegion(start, end, region).list
+
+  def getUserApiKey(username: String): ConnectionIO[Option[String]] =
+    queries.getUserApiKey(username).option
+
+  def regnerateApiKey(username: String): ConnectionIO[String] = {
+    val key = (UUID.randomUUID().toString + UUID.randomUUID().toString + UUID.randomUUID().toString).replaceAll("-", "")
+
+    queries.setUserApiKey(username, key).run.map(_ ⇒ key)
+  }
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO

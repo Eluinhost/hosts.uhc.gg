@@ -6,6 +6,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LoginButton } from './LoginButton';
+import { Link } from 'react-router-dom';
 
 type UsernameComponentProps = {
   readonly authentication: AuthenticationState;
@@ -17,8 +18,16 @@ type UsernameDispatchProps = {
 
 const UserMenu: React.SFC<UsernameDispatchProps> = ({ logout }) => (
   <Menu>
+    <Link
+      to="/profile"
+    >
+      <MenuItem
+        iconName="cog"
+        text="Profile"
+      />
+    </Link>
     <MenuItem
-      iconName="logout"
+      iconName="log-out"
       onClick={logout}
       text="Logout"
     />

@@ -1,7 +1,7 @@
 import { Match } from '../Match';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
-import { map, evolve, always } from 'ramda';
+import { map, evolve, always, prop } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
 
@@ -146,3 +146,29 @@ export const removePermission = (permission: string, username: string, accessTok
     },
   ).then(verifyStatus(204))
     .then(always(undefined));
+
+export const getApiKey = (accessToken: string): Promise<string | null> =>
+  fetch(
+    `/api/key`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(200))
+    .then(toJson<{ readonly key: string | null }>())
+    .then(prop('key'));
+
+export const regenerateApiKey = (accessToken: string): Promise<string> =>
+  fetch(
+    `/api/key`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(200))
+    .then(toJson<{ readonly key: string }>())
+    .then(prop('key'));

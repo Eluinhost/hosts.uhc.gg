@@ -225,4 +225,18 @@ class Queries(logger: LogHandler) {
         AND
         opens BETWEEN $start AND $end
       """.asInstanceOf[Fragment].query[MatchRow]
+
+  def getUserApiKey(username: String): Query0[String] =
+    sql"SELECT apiKey FROM user_api_keys WHERE username = $username".asInstanceOf[Fragment].query[String]
+
+  def setUserApiKey(username: String, key: String): Update0 =
+    sql"""
+      INSERT INTO user_api_keys (username, apiKey)
+      VALUES ($username, $key)
+      ON CONFLICT (username) DO
+        UPDATE
+          SET apiKey = $key
+        WHERE
+          user_api_keys.username = $username
+       """.asInstanceOf[Fragment].update
 }
