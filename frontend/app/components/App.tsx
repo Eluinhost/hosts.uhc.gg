@@ -23,10 +23,11 @@ const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
 );
 
 type PermissionCheckFn = {
-  (perms: string[]): boolean;
+  (loggedIn: boolean, perms: string[]): boolean;
 };
 
 type AuthedRouteProps = {
+  loggedIn: boolean;
   permissions: string[];
   required: string | PermissionCheckFn;
 } & RouteProps;
@@ -41,33 +42,37 @@ const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) =>
 );
 
 const AuthedRoute: React.SFC<AuthedRouteProps> = (props) => {
-  const fn: PermissionCheckFn = isString(props.required) ? contains<string>(props.required) : props.required;
+  const fn: PermissionCheckFn = isString(props.required)
+    ? (loggedIn, perms) => contains<string>(props.required as string, perms)
+    : props.required;
 
-  if (fn(props.permissions))
+  if (fn(props.loggedIn, props.permissions))
     return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
 
   return <Route component={NoPermissionRoute} />;
 };
 
 type RoutesStateProps = {
-  permissions: string[];
+  readonly loggedIn: boolean;
+  readonly permissions: string[];
 };
 
-const allowAny: PermissionCheckFn = () => true;
+const allowAny: PermissionCheckFn = (loggedIn: boolean) => loggedIn;
 
-const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
+const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = props => (
   <Switch>
-    <AuthedRoute path="/host" component={HostingPage} required="host" permissions={permissions} />
+    <AuthedRoute path="/host" component={HostingPage} required="host" {...props}/>
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
-    <AuthedRoute path="/profile" component={ProfilePage} required={allowAny} permissions={permissions} />
+    <AuthedRoute path="/profile" component={ProfilePage} required={allowAny} {...props}/>
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>
 );
 
 const mapStateToProps = (state: ApplicationState): RoutesStateProps => ({
+  loggedIn: state.authentication.loggedIn,
   permissions: state.authentication.loggedIn ? state.authentication.data!.accessTokenClaims.permissions : [],
 });
 

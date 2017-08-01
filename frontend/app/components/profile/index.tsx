@@ -5,12 +5,14 @@ import { ProfileActions, ProfileState } from '../../state/ProfileState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { Loader } from '../matches/Loader';
-import { Button, NonIdealState } from '@blueprintjs/core';
+import { Button, Intent, NonIdealState } from '@blueprintjs/core';
+import { storage } from '../../storage';
 
 export type ProfilePageStateProps = ProfileState;
 export type ProfilePageDispatchProps = {
   readonly refreshApiKey: () => Promise<void>;
   readonly regenerateApiKey: () => Promise<void>;
+  readonly resetStorage: () => void;
 };
 
 class Component extends React.Component<ProfilePageStateProps & ProfilePageDispatchProps & RouteComponentProps<any>> {
@@ -19,7 +21,7 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
   }
 
   render() {
-    const { apiKey: { fetching, error, key }, refreshApiKey, regenerateApiKey } = this.props;
+    const { apiKey: { fetching, error, key }, refreshApiKey, regenerateApiKey, resetStorage } = this.props;
 
     if (fetching)
       return <Loader loading/>;
@@ -40,6 +42,7 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
         <pre>
           CURRENT KEY: {key ? key : 'NO API KEY GENERATED YET'}
         </pre>
+        <Button intent={Intent.DANGER} onClick={resetStorage}>Reset All Data</Button>
       </div>
     );
   }
@@ -52,6 +55,10 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): ProfilePageDi
   },
   regenerateApiKey: async (): Promise<void> => {
     await dispatch(ProfileActions.regenerateApiKey());
+  },
+  resetStorage: async (): Promise<void> => {
+    await storage.clear();
+    window.location.reload(true);
   },
 });
 
