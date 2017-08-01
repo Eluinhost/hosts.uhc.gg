@@ -26,7 +26,7 @@ const capitalise = compose(
 
 export class MembersPage
   extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
-  componentDidMount() {
+  componentDidMount(): void {
     this.props.fetchPermissionList();
     this.props.fetchModerationLog();
   }
@@ -61,7 +61,7 @@ export class MembersPage
 
   onToggle = (node: ITreeNode): void => this.props.togglePermissionExpanded('' + node.id);
 
-  RenderError: React.SFC<{ message: string}> = ({ message }) => (
+  RenderError: React.SFC<{ message: string }> = ({ message }) => (
     <div className="pt-callout pt-intent-danger"><h5>{message}</h5></div>
   )
 

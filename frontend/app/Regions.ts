@@ -1,6 +1,6 @@
 export type Region = {
-  display: string;
-  value: string;
+  readonly display: string;
+  readonly value: string;
 };
 
 export const Regions: Region[] = [

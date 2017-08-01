@@ -14,7 +14,7 @@ export type ApplicationState = {
 
 const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export async function createReduxStore(): Promise<Store<ApplicationState>> {
+export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const authenticationState = await Authentication.initialValues();
   const matchesState = await Matches.initialValues();
   const membersState = await Members.initialValues();
@@ -38,4 +38,4 @@ export async function createReduxStore(): Promise<Store<ApplicationState>> {
   Authentication.postInit(store);
 
   return store;
-}
+};

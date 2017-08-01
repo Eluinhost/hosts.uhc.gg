@@ -14,7 +14,7 @@ type AddPermissionDialogData = {
 
 type AddPermissionDialogDispatchProps = {
   readonly close: () => void;
-  readonly confirm: (usern: string) => Promise<any>;
+  readonly confirm: (usern: string) => Promise<void>;
 };
 
 type AddPermissionDialogStateProps = {
@@ -83,29 +83,30 @@ const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPerm
   >({
     form: 'add-permission-form',
     validate: validate(validationSpec),
-    onSubmit: (values, dispatch, props) => props.confirm(values.username)
-      .then(() => props.close())
-      .catch(() => Promise.reject(
-        new SubmissionError({ reason: 'Unexpected response from the server' }),
-      )),
+    onSubmit: async (values, dispatch, props): Promise<void> => {
+      try {
+        await props.confirm(values.username);
+        props.close();
+      } catch (err) {
+        throw new SubmissionError({ reason: 'Unexpected response from the server' });
+      }
+    },
   })(AddPermissionDialogComponent);
 
-function mapStateToProps(state: ApplicationState): AddPermissionDialogStateProps {
-  return {
-    permission: state.members.dialogs.add.permission,
-    isOpen: state.members.dialogs.add.isOpen,
-  };
-}
+const mapStateToProps = (state: ApplicationState): AddPermissionDialogStateProps => ({
+  permission: state.members.dialogs.add.permission,
+  isOpen: state.members.dialogs.add.isOpen,
+});
 
-function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): AddPermissionDialogDispatchProps {
-  return {
-    close: () => dispatch(MembersActions.closeAddPermissionDialog()),
-    confirm: (username: string) => {
-      dispatch(MembersActions.closeAddPermissionDialog());
-      return dispatch(MembersActions.addPermission(username));
-    },
-  };
-}
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): AddPermissionDialogDispatchProps => ({
+  close: (): void => {
+    dispatch(MembersActions.closeAddPermissionDialog());
+  },
+  confirm: (username: string): Promise<void> => {
+    dispatch(MembersActions.closeAddPermissionDialog());
+    return dispatch(MembersActions.addPermission(username));
+  },
+});
 
 export const AddPermissionDialog: React.ComponentClass =
   connect<AddPermissionDialogStateProps, AddPermissionDialogDispatchProps, {}>(

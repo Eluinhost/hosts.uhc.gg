@@ -2,15 +2,14 @@ import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 
-export interface TextFieldProps extends BaseFieldProps {
+export type TextFieldProps = BaseFieldProps & {
   readonly label: string;
   readonly required: boolean;
   readonly placeholder?: string;
   readonly isPassword?: string;
   readonly disabled?: boolean;
   readonly className?: string;
-}
-
+};
 
 const renderField: React.SFC<WrappedFieldProps<any> & TextFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>

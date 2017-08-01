@@ -26,7 +26,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
     isOpen: false,
   };
 
-  onClick = () => this.setState(prev => ({ isOpen: !prev.isOpen }));
+  onClick = (): void => this.setState(prev => ({ isOpen: !prev.isOpen }));
 
   onRemovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();

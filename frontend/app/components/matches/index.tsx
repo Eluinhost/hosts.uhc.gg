@@ -7,7 +7,7 @@ import { MatchesActions } from '../../state/MatchesState';
 import { contains } from 'ramda';
 import * as React from 'react';
 
-function mapStateToProps(state: ApplicationState): MatchesPageStateProps {
+const mapStateToProps = (state: ApplicationState): MatchesPageStateProps => {
   if (state.authentication.loggedIn) {
     return {
       ...state.matches,
@@ -23,17 +23,14 @@ function mapStateToProps(state: ApplicationState): MatchesPageStateProps {
     username: null,
     isModalOpen: state.matches.removal.isModalOpen,
   };
-}
+};
 
-function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MatchesPageDispatchProps {
-  return {
-    refetch: () => dispatch(MatchesActions.refetch()),
-    closeModal: () => dispatch(MatchesActions.closeModal()),
-    openModal: (id: number) => dispatch(MatchesActions.askForReason(id)),
-    submitRemoval: (reason: string) => dispatch(MatchesActions.confirmRemove(reason)),
-  };
-}
-
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): MatchesPageDispatchProps => ({
+  refetch: () => dispatch(MatchesActions.refetch()),
+  closeModal: () => dispatch(MatchesActions.closeModal()),
+  openModal: (id: number) => dispatch(MatchesActions.askForReason(id)),
+  submitRemoval: (reason: string) => dispatch(MatchesActions.confirmRemove(reason)),
+});
 
 export const MatchesPage: React.ComponentClass<RouteComponentProps<any>> =
   connect<MatchesPageStateProps, MatchesPageDispatchProps, RouteComponentProps<any>>(

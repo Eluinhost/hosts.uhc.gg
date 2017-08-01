@@ -89,11 +89,11 @@ export class HostingRules extends React.Component<{}, HostingRulesState> {
     isRulesOpen: false,
   };
 
-  iconClasses = () => `pt-icon-chevron-${this.state.isRulesOpen ? 'up' : 'down'}`;
+  iconClasses = (): string => `pt-icon-chevron-${this.state.isRulesOpen ? 'up' : 'down'}`;
 
-  toggleRules = () => this.setState(prev => ({ isRulesOpen: !prev.isRulesOpen }));
+  toggleRules = (): void => this.setState(prev => ({ isRulesOpen: !prev.isRulesOpen }));
 
-  stopPropagation = (e: React.MouseEvent<any>) => e.stopPropagation();
+  stopPropagation = (e: React.MouseEvent<any>): void => e.stopPropagation();
 
   render() {
     return (

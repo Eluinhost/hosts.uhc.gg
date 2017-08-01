@@ -10,14 +10,14 @@ import { memoize } from 'ramda';
 
 const parser = Snuownd.getParser();
 
-export interface TemplateFieldProps extends BaseFieldProps {
+export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement<any> | string;
   readonly required: boolean;
   readonly disabled?: boolean;
   readonly className?: string;
   readonly context: any;
   readonly changeTemplate: (value: string) => void;
-}
+};
 
 export const renderToMarkdown = (template: string, context: any): string => Mark.up(template, context, {
   pipes: {
@@ -118,7 +118,7 @@ class TemplateFieldComponent
       currentTabId: newTabId,
     })
 
-  onPresetClick: (p: Preset) => () => void = memoize((p: Preset) => () => {
+  onPresetClick: (p: Preset) => () => void = memoize((p: Preset) => (): void => {
     this.props.changeTemplate(p.template);
     this.setState({
       currentTabId: 'host-from-template-tab-template',

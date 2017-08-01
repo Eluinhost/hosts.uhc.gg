@@ -12,10 +12,10 @@ type UsernameComponentProps = {
 };
 
 type UsernameDispatchProps = {
-  readonly logout: () => any;
+  readonly logout: () => void;
 };
 
-const UserMenu: React.SFC<{ logout: () => any }> = ({ logout }) => (
+const UserMenu: React.SFC<UsernameDispatchProps> = ({ logout }) => (
   <Menu>
     <MenuItem
       iconName="logout"
@@ -40,22 +40,19 @@ const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProp
     return <LoginButton />;
   };
 
-function mapStateToProps(state: ApplicationState): UsernameComponentProps {
-  return {
-    authentication: state.authentication,
-  };
-}
+const mapStateToProps = (state: ApplicationState): UsernameComponentProps => ({
+  authentication: state.authentication,
+});
 
-function mapDispatchToProps(dispatch: Dispatch<any>, ownProps: RouteComponentProps<any>): UsernameDispatchProps {
-  return {
-    logout: () => {
+const mapDispatchToProps =
+  (dispatch: Dispatch<ApplicationState>, ownProps: RouteComponentProps<any>): UsernameDispatchProps => ({
+    logout: (): void => {
       dispatch(AuthenticationActions.logout());
       ownProps.history.push('/');
     },
-  };
-}
+  });
 
-export const Username = withRouter<{}>(
+export const Username: React.ComponentClass = withRouter<{}>(
   connect<UsernameComponentProps, UsernameDispatchProps, RouteComponentProps<any>>(
     mapStateToProps,
     mapDispatchToProps,

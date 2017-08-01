@@ -7,28 +7,25 @@ import * as React from 'react';
 import { MembersActions } from '../../state/MembersState';
 import { contains } from 'ramda';
 
-function mapStateToProps(state: ApplicationState): MembersPageStateProps {
-  return {
-    ...state.members,
-    canModify: state.authentication.loggedIn && contains(
-      'moderator',
-      state.authentication.data!.accessTokenClaims.permissions,
-    ),
-  };
-}
+const mapStateToProps = (state: ApplicationState): MembersPageStateProps => ({
+  ...state.members,
+  canModify: state.authentication.loggedIn && contains(
+    'moderator',
+    state.authentication.data!.accessTokenClaims.permissions,
+  ),
+});
 
-function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps {
-  return {
-    fetchPermissionList: () => dispatch(MembersActions.refetchPermissions()),
-    fetchModerationLog: () => dispatch(MembersActions.refetchModerationLog()),
-    togglePermissionExpanded: (perm: string) => dispatch(MembersActions.togglePermissionExpanded(perm)),
-    openAddPermission: (perm: string) => () => dispatch(MembersActions.openAddPermissionDialog(perm)),
-    openRemovePermission: (perm: string, username: string) => () => dispatch(MembersActions.openRemovePermissionDialog({
-      username,
-      permission: perm,
-    })),
-  };
-}
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps => ({
+  fetchPermissionList: (): Promise<void> => dispatch(MembersActions.refetchPermissions()),
+  fetchModerationLog: (): Promise<void> => dispatch(MembersActions.refetchModerationLog()),
+  togglePermissionExpanded: (perm: string): void => dispatch(MembersActions.togglePermissionExpanded(perm)),
+  openAddPermission: (perm: string) => (): void => {
+    dispatch(MembersActions.openAddPermissionDialog(perm));
+  },
+  openRemovePermission: (permission: string, username: string) => (): void => {
+    dispatch(MembersActions.openRemovePermissionDialog({ username, permission }));
+  },
+});
 
 export const MembersPage: React.ComponentClass<RouteComponentProps<any>> =
   connect<MembersPageStateProps, MembersPageDispatchProps, RouteComponentProps<any>>(

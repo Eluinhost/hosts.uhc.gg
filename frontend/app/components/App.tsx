@@ -4,7 +4,7 @@ import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
-import { omit, any, equals, either, contains } from 'ramda';
+import { omit, contains } from 'ramda';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
@@ -52,8 +52,6 @@ type RoutesStateProps = {
   permissions: string[];
 };
 
-const matchesPagePermissions: PermissionCheckFn = any(either(equals('moderator'), equals('host')));
-
 const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = ({ permissions }) => (
   <Switch>
     <AuthedRoute path="/host" component={HostingPage} required="host" permissions={permissions} />
@@ -65,13 +63,11 @@ const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> =
   </Switch>
 );
 
-function mapStateToProps(state: ApplicationState): RoutesStateProps {
-  return {
-    permissions: state.authentication.loggedIn ? state.authentication.data!.accessTokenClaims.permissions : [],
-  };
-}
+const mapStateToProps = (state: ApplicationState): RoutesStateProps => ({
+  permissions: state.authentication.loggedIn ? state.authentication.data!.accessTokenClaims.permissions : [],
+});
 
-const Routes = withRouter<{}>(
+const Routes: React.ComponentClass<{}> = withRouter<{}>(
   connect<RoutesStateProps, {}, RouteComponentProps<any>>(mapStateToProps)(RoutesComponent),
 );
 

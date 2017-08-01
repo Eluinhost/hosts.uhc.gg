@@ -69,7 +69,7 @@ class HostingPageComponent extends React.Component<
     }
   }
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     // when mounting we want to register for page unloads + load the stored values from local storage
     window.addEventListener('beforeunload', this.onUnload);
 
@@ -87,7 +87,7 @@ class HostingPageComponent extends React.Component<
     });
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     // remove the listener and fire the manual unload
     window.removeEventListener('beforeunload', this.onUnload);
     this.onUnload();
@@ -105,7 +105,7 @@ class HostingPageComponent extends React.Component<
     };
   }
 
-  handleCreateMatch = async (values: CreateMatchData): Promise<any> => {
+  handleCreateMatch = async (values: CreateMatchData): Promise<void> => {
     const withRenderedTemplate = {
       ...values,
       // we convert the template to markdown only, we don't want to send HTML

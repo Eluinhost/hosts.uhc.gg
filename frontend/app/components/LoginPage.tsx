@@ -6,6 +6,7 @@ import { NonIdealState } from '@blueprintjs/core';
 import { parse } from 'query-string';
 import { always } from 'ramda';
 import { Dispatch } from 'redux';
+import { ApplicationState } from '../state/ApplicationState';
 
 export type LoginPageDispatchProps = {
   readonly login: (data: LoginPayload) => boolean;
@@ -36,7 +37,7 @@ export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageD
 export const LoginPage: React.ComponentClass<RouteComponentProps<any>> =
   connect<{}, LoginPageDispatchProps, RouteComponentProps<any>>(
     always({}),
-    (dispatch: Dispatch<any>) => ({
+    (dispatch: Dispatch<ApplicationState>) => ({
       login: data => dispatch(AuthenticationActions.login(data)),
     }) as LoginPageDispatchProps,
   )(LoginPageComponent);

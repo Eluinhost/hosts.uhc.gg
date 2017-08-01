@@ -9,10 +9,10 @@ import { RouteComponentProps } from 'react-router';
 import { RemovalModal } from './RemovalModal';
 
 export type MatchesPageDispatchProps = {
-  readonly refetch: () => any;
-  readonly openModal: (id: number) => any;
-  readonly closeModal: () => any;
-  readonly submitRemoval: (reason: string) => Promise<any>;
+  readonly refetch: () => void;
+  readonly openModal: (id: number) => void;
+  readonly closeModal: () => void;
+  readonly submitRemoval: (reason: string) => Promise<void>;
 };
 
 export type MatchesPageStateProps = {
@@ -23,11 +23,11 @@ export type MatchesPageStateProps = {
 
 export class MatchesPage
   extends React.Component<MatchesPageStateProps & MatchesPageDispatchProps & RouteComponentProps<any>> {
-  componentDidMount() {
+  componentDidMount(): void {
     this.props.refetch();
   }
 
-  renderMatches = () => this.props.matches.map((match) => {
+  renderMatches = (): React.ReactElement<any>[] => this.props.matches.map((match) => {
     const onRemovePress = () => this.props.openModal(match.id);
 
     return (

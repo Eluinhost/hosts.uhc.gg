@@ -68,48 +68,52 @@ export const MembersActions = {
   /**
    * Refetches permissions set
    */
-  refetchPermissions(): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch) => {
-      dispatch(startPermissionsFetch());
+  refetchPermissions: (): ThunkAction<Promise<void>, ApplicationState, {}> => async (dispatch): Promise<void> => {
+    dispatch(startPermissionsFetch());
 
-      return fetchPermissions()
-        .then(data => dispatch(endPermissionsFetch(data)))
-        .catch((err) => {
-          if (err instanceof NotAuthenticatedError)
-            return dispatch(fetchPermissionsError('You are not logged in'));
+    try {
+      const data = await fetchPermissions();
 
-          if (err instanceof ForbiddenError)
-            return dispatch(fetchPermissionsError('You do not have permissions to do this'));
+      dispatch(endPermissionsFetch(data));
+    } catch (err) {
+      if (err instanceof NotAuthenticatedError)
+        dispatch(fetchPermissionsError('You are not logged in'));
 
-          if (err instanceof UnexpectedResponseError)
-            return dispatch(fetchPermissionsError('Uexpected response from the server'));
+      if (err instanceof ForbiddenError)
+        dispatch(fetchPermissionsError('You do not have permissions to do this'));
 
-          return dispatch(fetchPermissionsError('Unable to fetch list from server'));
-        });
-    };
+      if (err instanceof UnexpectedResponseError)
+        dispatch(fetchPermissionsError('Uexpected response from the server'));
+
+      dispatch(fetchPermissionsError('Unable to fetch list from server'));
+
+      throw err;
+    }
   },
-  refetchModerationLog(): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch) => {
-      dispatch(startModLogFetch());
+  refetchModerationLog: (): ThunkAction<Promise<void>, ApplicationState, {}> => async (dispatch): Promise<void> => {
+    dispatch(startModLogFetch());
 
-      return fetchModLog()
-        .then(data => dispatch(endModLogFetch(data)))
-        .catch((err) => {
-          if (err instanceof NotAuthenticatedError)
-            return dispatch(fetchModLogError('You are not logged in'));
+    try {
+      const data = await fetchModLog();
 
-          if (err instanceof ForbiddenError)
-            return dispatch(fetchModLogError('You do not have permissions to do this'));
+      dispatch(endModLogFetch(data));
+    } catch (err) {
+      if (err instanceof NotAuthenticatedError)
+        dispatch(fetchModLogError('You are not logged in'));
 
-          if (err instanceof UnexpectedResponseError)
-            return dispatch(fetchModLogError('Uexpected response from the server'));
+      if (err instanceof ForbiddenError)
+        dispatch(fetchModLogError('You do not have permissions to do this'));
 
-          return dispatch(fetchModLogError('Unable to fetch list from server'));
-        });
-    };
+      if (err instanceof UnexpectedResponseError)
+        dispatch(fetchModLogError('Uexpected response from the server'));
+
+      dispatch(fetchModLogError('Unable to fetch list from server'));
+
+      throw err;
+    }
   },
-  togglePermissionExpanded(perm: string): ThunkAction<void, ApplicationState, {}> {
-    return (dispatch, getState) => dispatch(
+  togglePermissionExpanded: (perm: string): ThunkAction<void, ApplicationState, {}> => (dispatch, getState): void => {
+    dispatch(
       contains(perm, getState().members.permissions.expandedPermissions)
         ? collapsePermssion(perm)
         : expandPermission(perm),
@@ -120,37 +124,34 @@ export const MembersActions = {
   openRemovePermissionDialog:
     createAction<{ username: string, permission: string }>('OPEN_REMOVE_PERMISSION_DIALOG'),
   closeRemovePermissionDialog: createAction('CLOSE_REMOVE_PERMISSION_DIALOG'),
-  addPermission(username: string): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch, getState) => {
+  addPermission: (username: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
+    async (dispatch, getState): Promise<void> => {
       dispatch(startPermisssionAdd());
       
       const state = getState();
-      
-      return addPermission(state.members.dialogs.add.permission, username, state.authentication.data!.rawAccessToken)
-        .then(() => {
-          dispatch(permissionAddSuccess());
-          dispatch(MembersActions.refetchModerationLog());
-          dispatch(MembersActions.refetchPermissions());
-        });
-    };
-  },
-  removePermission(): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch, getState) => {
+
+      await addPermission(state.members.dialogs.add.permission, username, state.authentication.data!.rawAccessToken);
+
+      dispatch(permissionAddSuccess());
+      dispatch(MembersActions.refetchModerationLog());
+      dispatch(MembersActions.refetchPermissions());
+    },
+  removePermission: (): ThunkAction<Promise<void>, ApplicationState, {}> =>
+    async (dispatch, getState): Promise<void> => {
       dispatch(startPermisssionRemove());
 
       const state = getState();
 
-      return removePermission(
+      await removePermission(
         state.members.dialogs.remove.permission, 
         state.members.dialogs.remove.username, 
         state.authentication.data!.rawAccessToken,
-      ).then(() => {
-        dispatch(permissionRemoveSuccess());
-        dispatch(MembersActions.refetchModerationLog());
-        dispatch(MembersActions.refetchPermissions());
-      });
-    };
-  },
+      );
+
+      dispatch(permissionRemoveSuccess());
+      dispatch(MembersActions.refetchModerationLog());
+      dispatch(MembersActions.refetchPermissions());
+    },
 };
 
 export const reducer = new ReducerBuilder<MembersState>()
@@ -238,29 +239,27 @@ export const reducer = new ReducerBuilder<MembersState>()
   })
   .build();
 
-export async function initialValues(): Promise<MembersState> {
-  return {
-    permissions: {
-      fetching: false,
-      error: null,
-      permissions: {},
-      expandedPermissions: [],
+export const initialValues = async (): Promise<MembersState> => ({
+  permissions: {
+    fetching: false,
+    error: null,
+    permissions: {},
+    expandedPermissions: [],
+  },
+  moderationLog: {
+    error: null,
+    log: [],
+    fetching: false,
+  },
+  dialogs: {
+    add: {
+      isOpen: false,
+      permission: '',
     },
-    moderationLog: {
-      error: null,
-      log: [],
-      fetching: false,
+    remove: {
+      isOpen: false,
+      permission: '',
+      username: '',
     },
-    dialogs: {
-      add: {
-        isOpen: false,
-        permission: '',
-      },
-      remove: {
-        isOpen: false,
-        permission: '',
-        username: '',
-      },
-    },
-  };
-}
+  },
+});

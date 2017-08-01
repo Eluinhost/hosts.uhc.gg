@@ -2,15 +2,13 @@ import * as React from 'react';
 import { FormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
-import { TextField } from '../fields/TextField';
-import { Spec, validate } from '../../validate';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { MembersActions } from '../../state/MembersState';
 
 type RemovePermissionDialogDispatchProps = {
   readonly close: () => void;
-  readonly confirm: () => Promise<any>;
+  readonly confirm: () => Promise<void>;
 };
 
 type RemovePermissionDialogStateProps = {
@@ -63,30 +61,31 @@ const RemovePermissionDialogForm: React.SFC<RemovePermissionDialogStateProps & R
     ApplicationState
   >({
     form: 'remove-permission-form',
-    onSubmit: (values, dispatch, props) => props.confirm()
-      .then(() => props.close())
-      .catch(() => Promise.reject(
-        new SubmissionError({ __error: 'Unexpected response from the server' }),
-      )),
+    onSubmit: async (values, dispatch, props): Promise<void> => {
+      try {
+        await props.confirm();
+        props.close();
+      } catch (err) {
+        throw new SubmissionError({ __error: 'Unexpected response from the server' });
+      }
+    },
   })(RemovePermissionDialogComponent);
 
-function mapStateToProps(state: ApplicationState): RemovePermissionDialogStateProps {
-  return {
-    username: state.members.dialogs.remove.username,
-    permission: state.members.dialogs.remove.permission,
-    isOpen: state.members.dialogs.remove.isOpen,
-  };
-}
+const mapStateToProps = (state: ApplicationState): RemovePermissionDialogStateProps => ({
+  username: state.members.dialogs.remove.username,
+  permission: state.members.dialogs.remove.permission,
+  isOpen: state.members.dialogs.remove.isOpen,
+});
 
-function mapDispatchToProps(dispatch: Dispatch<ApplicationState>): RemovePermissionDialogDispatchProps {
-  return {
-    close: () => dispatch(MembersActions.closeRemovePermissionDialog()),
-    confirm: () => {
-      dispatch(MembersActions.closeRemovePermissionDialog());
-      return dispatch(MembersActions.removePermission());
-    },
-  };
-}
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): RemovePermissionDialogDispatchProps => ({
+  close: (): void => {
+    dispatch(MembersActions.closeRemovePermissionDialog());
+  },
+  confirm: (): Promise<void> => {
+    dispatch(MembersActions.closeRemovePermissionDialog());
+    return dispatch(MembersActions.removePermission());
+  },
+});
 
 export const RemovePermissionDialog: React.ComponentClass =
   connect<RemovePermissionDialogStateProps, RemovePermissionDialogDispatchProps, {}>(

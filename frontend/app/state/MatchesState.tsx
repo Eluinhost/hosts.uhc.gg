@@ -46,59 +46,60 @@ export const MatchesActions = {
   /**
    * Refetches match list
    */
-  refetch(): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch) => {
-      dispatch(startFetch());
+  refetch: (): ThunkAction<Promise<void>, ApplicationState, {}> => async (dispatch): Promise<void> => {
+    dispatch(startFetch());
 
-      return fetchUpcomingMatches()
-        .then(data => dispatch(endFetch(data)))
-        .catch((err) => {
-          if (err instanceof NotAuthenticatedError)
-            return dispatch(fetchError('You are not logged in'));
+    try {
+      const data = await fetchUpcomingMatches();
 
-          if (err instanceof ForbiddenError)
-            return dispatch(fetchError('You do not have permissions to do this'));
+      dispatch(endFetch(data));
+    } catch (err) {
+      if (err instanceof NotAuthenticatedError)
+        dispatch(fetchError('You are not logged in'));
 
-          if (err instanceof UnexpectedResponseError)
-            return dispatch(fetchError('Uexpected response from the server'));
+      if (err instanceof ForbiddenError)
+        dispatch(fetchError('You do not have permissions to do this'));
 
-          return dispatch(fetchError('Unable to fetch list from server'));
-        });
-    };
+      if (err instanceof UnexpectedResponseError)
+        dispatch(fetchError('Uexpected response from the server'));
+
+      dispatch(fetchError('Unable to fetch list from server'));
+
+      throw err;
+    }
   },
   /**
    * Shows modal for confirmation
    */
-  askForReason(id: number): ThunkAction<void, ApplicationState, {}> {
-    return (dispatch) => {
-      dispatch(setRemovalTarget(id));
-      dispatch(openModal());
-    };
+  askForReason: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
+    dispatch(setRemovalTarget(id));
+    dispatch(openModal());
   },
   /**
    * Sends actual deletion request
    */
-  confirmRemove(reason: string): ThunkAction<Promise<any>, ApplicationState, {}> {
-    return (dispatch, getState) => {
+  confirmRemove: (reason: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
+    async (dispatch, getState): Promise<void> => {
       const state = getState();
 
       const id = state.matches.removal.targettedId!;
 
       dispatch(startRemoval({ id, reason, user: state.authentication.data!.accessTokenClaims.username }));
 
-      return removeMatch(id, reason, state.authentication.data!.rawAccessToken)
-        .then(data => dispatch(endRemoval()))
-        .catch((err) => {
-          dispatch(removalError(id));
+      try {
+        await removeMatch(id, reason, state.authentication.data!.rawAccessToken);
 
-          if (err instanceof NotAuthenticatedError || err instanceof ForbiddenError) {
-            dispatch(AuthenticationActions.logout());
-          }
+        dispatch(endRemoval());
+      } catch (err) {
+        dispatch(removalError(id));
 
-          return Promise.reject(err);
-        });
-    };
-  },
+        if (err instanceof NotAuthenticatedError || err instanceof ForbiddenError) {
+          dispatch(AuthenticationActions.logout());
+        }
+
+        throw err;
+      }
+    },
   /**
    * Simply closes the removal modal, a 'cancel' action
    */
@@ -162,14 +163,12 @@ export const reducer: Reducer<MatchesState> =
     }))
     .build();
 
-export async function initialValues(): Promise<MatchesState> {
-  return {
-    matches: [],
-    fetching: false,
-    error: null,
-    removal: {
-      targettedId: null,
-      isModalOpen: false,
-    },
-  };
-}
+export const initialValues = async (): Promise<MatchesState> => ({
+  matches: [],
+  fetching: false,
+  error: null,
+  removal: {
+    targettedId: null,
+    isModalOpen: false,
+  },
+});

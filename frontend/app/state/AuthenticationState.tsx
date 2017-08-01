@@ -56,37 +56,35 @@ export type LoginPayload = {
 const setLoggedInData = createAction<AuthenticationData>('SET_LOGGED_IN_DATA');
 
 export const AuthenticationActions = {
-  login(payload: LoginPayload): ThunkAction<boolean, ApplicationState, LoginPayload> {
-    return (dispatch) => {
-      try {
-        const accessTokenClaims = parseAccessTokenClaims(payload.accessToken);
-        const refreshTokenClaims = parseRefreshTokenClaims(payload.refreshToken);
+  login: (payload: LoginPayload): ThunkAction<boolean, ApplicationState, LoginPayload> => (dispatch): boolean => {
+    try {
+      const accessTokenClaims = parseAccessTokenClaims(payload.accessToken);
+      const refreshTokenClaims = parseRefreshTokenClaims(payload.refreshToken);
 
-        const nextState: AuthenticationData = {
-          accessTokenClaims,
-          refreshTokenClaims,
-          rawAccessToken: payload.accessToken,
-          rawRefreshToken: payload.refreshToken,
-        };
+      const nextState: AuthenticationData = {
+        accessTokenClaims,
+        refreshTokenClaims,
+        rawAccessToken: payload.accessToken,
+        rawRefreshToken: payload.refreshToken,
+      };
 
-        dispatch(setLoggedInData(nextState));
-        return true;
-      } catch (err) {
-        dispatch(AuthenticationActions.logout());
-        return false;
-      }
-    };
+      dispatch(setLoggedInData(nextState));
+      return true;
+    } catch (err) {
+      dispatch(AuthenticationActions.logout());
+      return false;
+    }
   },
   logout: createAction('LOGOUT'),
-  refreshIfRequired(): ThunkAction<Promise<boolean>, ApplicationState, {}> {
-    return (dispatch, getState) => {
+  refreshIfRequired: (): ThunkAction<Promise<boolean>, ApplicationState, {}> =>
+    async (dispatch, getState): Promise<boolean> => {
       const state = getState();
 
       console.log('Checking authentication token refresh status');
 
       if (!state.authentication.loggedIn) {
         console.log('Not logged in');
-        return Promise.resolve(false);
+        return false;
       }
 
       const now = moment();
@@ -94,36 +92,34 @@ export const AuthenticationActions = {
       // If the access token still has time left do nothing
       if (state.authentication.data!.accessTokenClaims.expires.isAfter(now.add(5 , 'minutes'))) {
         console.log('Authentication token not stale');
-        return Promise.resolve(false);
+        return false;
       }
 
       // If the refresh token has expired too just log the client out
       if (state.authentication.data!.refreshTokenClaims.expires.isBefore(now.subtract(5, 'minutes'))) {
         console.log('Authentication + Refresh token stale, logging out');
         dispatch(AuthenticationActions.logout());
-        return Promise.resolve(true);
+        return true;
       }
 
-      // Get new tokens from the API
-      return refreshTokens(state.authentication.data!.rawRefreshToken)
-        .then(data => dispatch(AuthenticationActions.login(data)))
-        .then(() => {
-          console.log('Authentication tokens refreshed');
-          return true;
-        })
-        .catch((err) => {
-          console.error(err);
+      try {
+        const data = await refreshTokens(state.authentication.data!.rawRefreshToken);
+        dispatch(AuthenticationActions.login(data));
 
-          // force log them out if refresh token is broken
-          if (err instanceof ForbiddenError || err instanceof NotAuthenticatedError) {
-            dispatch(AuthenticationActions.logout());
-            return Promise.resolve(false);
-          }
+        console.log('Authentication tokens refreshed');
+        return true;
+      } catch (err) {
+        console.error(err);
 
-          return Promise.reject(err);
-        });
-    };
-  },
+        // force log them out if refresh token is broken
+        if (err instanceof ForbiddenError || err instanceof NotAuthenticatedError) {
+          dispatch(AuthenticationActions.logout());
+          return false;
+        }
+
+        throw err;
+      }
+    },
 };
 
 export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
@@ -149,7 +145,7 @@ export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<Authenti
   })
   .build();
 
-export function parseAccessTokenClaims(token: string): AccessTokenClaims {
+export const parseAccessTokenClaims = (token: string): AccessTokenClaims => {
   const decoded = decodeJwt<RawAccessTokenClaims>(token);
 
   return {
@@ -157,18 +153,18 @@ export function parseAccessTokenClaims(token: string): AccessTokenClaims {
     permissions: decoded.permissions,
     expires: moment(decoded.exp, 'X'),
   };
-}
+};
 
-export function parseRefreshTokenClaims(token: string): RefreshTokenClaims {
+export const parseRefreshTokenClaims = (token: string): RefreshTokenClaims => {
   const decoded = decodeJwt<RawRefreshTokenClaims>(token);
 
   return {
     expires: moment(decoded.exp, 'X'),
     username: decoded.username,
   };
-}
+};
 
-export async function initialValues(): Promise<AuthenticationState> {
+export const initialValues = async (): Promise<AuthenticationState> => {
   try {
     const rawAccessToken = await storage.getItem<string>(`${storageKey}.accessToken`);
     const rawRefreshToken = await storage.getItem<string>(`${storageKey}.refreshToken`);
@@ -192,11 +188,14 @@ export async function initialValues(): Promise<AuthenticationState> {
     console.error(err);
     return { loggedIn: false, data: null };
   }
-}
+};
 
-export function postInit(store: Store<ApplicationState>): void {
+export const postInit = (store: Store<ApplicationState>): void  => {
   // check every minute if we need to refresh our authentication tokens
-  const recheck = () => store.dispatch(AuthenticationActions.refreshIfRequired());
+  const recheck = (): void => {
+    store.dispatch(AuthenticationActions.refreshIfRequired());
+  };
+
   setInterval(recheck, 1000 * 60);
   recheck();
-}
+};

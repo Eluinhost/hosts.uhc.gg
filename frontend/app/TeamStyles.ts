@@ -1,6 +1,6 @@
-export const renderTeamStyle = (style: TeamStyle, size: number | null, custom: string | null) => {
+export const renderTeamStyle = (style: TeamStyle, size: number | null, custom: string | null): string => {
   if (style.value === 'custom')
-    return custom;
+    return custom!;
 
   if (style.requiresTeamSize)
     return `${style.display} To${size}`;

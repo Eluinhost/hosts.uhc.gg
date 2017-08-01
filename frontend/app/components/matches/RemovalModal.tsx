@@ -10,8 +10,8 @@ type RemovalModalData = {
 };
 
 type RemovalModalDispatchProps = {
-  readonly close: () => any;
-  readonly confirm: (reason: string) => Promise<any>;
+  readonly close: () => void;
+  readonly confirm: (reason: string) => Promise<void>;
 };
 
 type RemovalModalStateProps = {
@@ -74,9 +74,10 @@ export const RemovalModal: React.SFC<RemovalModalStateProps & RemovalModalDispat
   reduxForm<RemovalModalData, RemovalModalStateProps & RemovalModalDispatchProps, ApplicationState>({
     form: 'removal-reason',
     validate: validate(validationSpec),
-    onSubmit: (values, dispatch, props) => props.confirm(values.reason)
-      .then(() => props.close())
-      .catch(() => Promise.reject(
-        new SubmissionError({ reason: 'Unexpected response from the server' }),
-      )),
+    onSubmit: (values, dispatch, props): Promise<void> =>
+      props.confirm(values.reason)
+        .then(() => props.close())
+        .catch(() => Promise.reject(
+          new SubmissionError({ reason: 'Unexpected response from the server' }),
+        )),
   })(RemovalModalComponent);

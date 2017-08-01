@@ -3,14 +3,14 @@ import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from
 import { FieldWrapper } from './FieldWrapper';
 import { TagInput } from '@blueprintjs/labs';
 
-export interface TagsFieldProps extends BaseFieldProps {
+export type TagsFieldProps = BaseFieldProps & {
   readonly label: string;
   readonly required: boolean;
   readonly disabled?: boolean;
   readonly className?: string;
-}
+};
 
-const onAdd = (input?: WrappedFieldInputProps) => (newValue: string) => {
+const onAdd = (input?: WrappedFieldInputProps) => (newValue: string): void => {
   if (!input)
     return;
 
@@ -28,7 +28,7 @@ const onAdd = (input?: WrappedFieldInputProps) => (newValue: string) => {
   }
 };
 
-const onRemove = (input?: WrappedFieldInputProps) => (removed: string) => {
+const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => {
   if (!input)
     return;
 

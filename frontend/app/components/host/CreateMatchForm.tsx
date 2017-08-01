@@ -40,7 +40,7 @@ const openingTimeProps: Partial<RcTimePickerProps> = {
   showSecond: false,
 };
 
-const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>) => {
+const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
   if (e.key === 'Enter') {
     e.preventDefault();
     e.stopPropagation();
