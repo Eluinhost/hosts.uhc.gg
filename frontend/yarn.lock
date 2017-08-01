@@ -2,20 +2,7 @@
 # yarn lockfile v1
 
 
-"@blueprintjs/core@^1.18.0":
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.22.0.tgz#5da642fcc4d614d90c1b0f1864b30e3da9c08a9f"
-  dependencies:
-    "@types/dom4" "^1.5.20"
-    "@types/tether" "^1.1.27"
-    classnames "^2.2"
-    dom4 "^1.8"
-    normalize.css "4.1.1"
-    pure-render-decorator "^1.1"
-    tether "^1.4"
-    tslib "^1.5.0"
-
-"@blueprintjs/core@^1.23.0":
+"@blueprintjs/core@^1.18.0", "@blueprintjs/core@^1.23.0":
   version "1.23.1"
   resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-1.23.1.tgz#0b2880ad142549f07e0fd3d626bbd9b51ed32419"
   dependencies:
@@ -108,8 +95,8 @@
   resolved "https://registry.yarnpkg.com/@types/redux-actions/-/redux-actions-1.2.6.tgz#cfdeea3271ebdabf23cdc237080e752b07171069"
 
 "@types/redux-form@^6.6.7":
-  version "6.6.7"
-  resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-6.6.7.tgz#28faf023ab8692ae3b735b843b89c22d3dbe0bf3"
+  version "6.6.9"
+  resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-6.6.9.tgz#8e3a561628dda8ab53776231d754829b1d457968"
   dependencies:
     "@types/react" "*"
     redux "^3.6.0"
@@ -1798,9 +1785,9 @@ hoist-non-react-statics@^1.0.3, hoist-non-react-statics@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
 
-hoist-non-react-statics@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.2.0.tgz#b099ca82f3640b1244309c8a526a2bd60ad9d7d9"
+hoist-non-react-statics@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.2.1.tgz#a7e41c760121d0abfc7a2339b331d29a26389e52"
 
 hosted-git-info@^2.1.4:
   version "2.5.0"
@@ -3482,12 +3469,12 @@ redux-actions@^2.0.3:
     reduce-reducers "^0.1.0"
 
 redux-form@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-7.0.0.tgz#6ef9eb72c1df1ee676139d74b5e7503f9ce0f0cb"
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-7.0.3.tgz#80157d01df7de6c8eb2297ad1fbbb092bafa34f5"
   dependencies:
     deep-equal "^1.0.1"
     es6-error "^4.0.0"
-    hoist-non-react-statics "^2.0.0"
+    hoist-non-react-statics "^2.2.1"
     invariant "^2.2.2"
     is-promise "^2.1.0"
     lodash "^4.17.3"

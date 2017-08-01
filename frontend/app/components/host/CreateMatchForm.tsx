@@ -16,7 +16,7 @@ import { MatchRow } from '../matches/MatchRow';
 import { Match } from '../../Match';
 import { Button, Intent } from '@blueprintjs/core';
 import { validate } from '../../validate';
-import { validation } from './validation';
+import { asyncValidation, validation } from './validation';
 import { CreateMatchData } from '../../api/index';
 import { HostingRules } from '../HostingRules';
 
@@ -72,16 +72,19 @@ const CustomStyleField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled
 const CreateMatchFormComponent:
   React.SFC<StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> =
   ({
-     handleSubmit,
-     submitting,
-     currentValues,
-     templateContext,
-     username,
-     changeTemplate,
-     valid,
-     createMatch,
-     error,
+    handleSubmit,
+    submitting,
+    currentValues,
+    templateContext,
+    username,
+    changeTemplate,
+    valid,
+    createMatch,
+    error,
+    asyncValidating,
   }) => {
+    const disabledAsync = submitting || (asyncValidating !== false); // asyncvalidating is string | boolean
+
     const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
   
     const openingDateProps: Partial<ReactDatePickerProps> = {
@@ -112,7 +115,7 @@ const CreateMatchFormComponent:
           <DateTimeField
             name="opens"
             required
-            disabled={submitting}
+            disabled={disabledAsync}
             datePickerProps={openingDateProps}
             timePickerProps={openingTimeProps}
           >
@@ -229,7 +232,7 @@ const CreateMatchFormComponent:
             <SelectField
               name="region"
               className="pt-fill"
-              disabled={submitting}
+              disabled={disabledAsync}
               label="Region"
               required
               options={Regions}
@@ -288,7 +291,7 @@ const CreateMatchFormComponent:
         <div className="host-form-actions">
           <Button
             type="submit"
-            disabled={submitting || !valid}
+            disabled={disabledAsync || !valid}
             iconName="cloud-upload"
             loading={submitting}
             intent={valid ? Intent.SUCCESS : Intent.WARNING}
@@ -303,6 +306,8 @@ const CreateMatchFormComponent:
 const CreateMatchWithForm: React.SFC<FormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> =
   reduxForm<CreateMatchData, CreateMatchFormProps>({
     validate: validate(validation),
+    asyncValidate: asyncValidation,
+    asyncBlurFields: ['opens', 'region'],
   })(CreateMatchFormComponent);
 
 export const CreateMatchForm = CreateMatchWithForm;

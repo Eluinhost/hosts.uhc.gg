@@ -172,3 +172,10 @@ export const regenerateApiKey = (accessToken: string): Promise<string> =>
   ).then(verifyStatus(200))
     .then(toJson<{ readonly key: string }>())
     .then(prop('key'));
+
+export const getPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
+  fetch(`/api/matches/conflicts/${region}/${time.format()}`)
+    .then(verifyStatus(200))
+    .then(response => toJson<Match[]>(response))
+    .then(map(convertMatchTimes));
+

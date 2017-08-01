@@ -6,6 +6,7 @@ export type FieldWrapperProps = {
   readonly required?: boolean;
   readonly meta: WrappedFieldMetaProps<any>;
   readonly hideErrors?: boolean
+  readonly className?: string;
 };
 
 export const errorClasses = (meta: WrappedFieldMetaProps<any>) => {
@@ -42,7 +43,7 @@ export const renderLabel: React.SFC<{ label?: string, required?: boolean }> = ({
 };
 
 export const FieldWrapper: React.SFC<FieldWrapperProps> = props => (
-  <div className={`pt-form-group ${errorClasses(props.meta)}`}>
+  <div className={`pt-form-group ${errorClasses(props.meta)} ${props.className ? props.className : ''}`}>
     {renderLabel(props)}
     <div className="pt-form-content">
       {props.children}
