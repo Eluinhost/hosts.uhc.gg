@@ -13,7 +13,7 @@ class GetApiKey(directives: CustomDirectives, database: Database) {
   case class Response(key: Option[String])
 
   def route: Route = handleRejections(EndpointRejectionHandler()) {
-    requireAuthentication { authentication ⇒
+    requireJwtAuthentication { authentication ⇒
       requireSucessfulQuery(database.getUserApiKey(authentication.username)) { key ⇒
         complete(Response(key))
       }
