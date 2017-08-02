@@ -68,8 +68,6 @@ const findConflict: CurriedFunction2<moment.Moment, Match[], Match | undefined> 
 export const asyncValidation = async (values: CreateMatchData): Promise<void> => {
   const potentials = await getPotentialConflicts(values.region, values.opens);
 
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
   const conflict = findConflict(values.opens, potentials);
 
   if (conflict) {
