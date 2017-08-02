@@ -176,6 +176,6 @@ export const regenerateApiKey = (accessToken: string): Promise<string> =>
 export const getPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
   fetch(`/api/matches/conflicts/${region}/${time.format()}`)
     .then(verifyStatus(200))
-    .then(response => toJson<Match[]>(response))
+    .then(toJson<Match[]>())
     .then(map(convertMatchTimes));
 
