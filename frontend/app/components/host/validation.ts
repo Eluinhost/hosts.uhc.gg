@@ -79,9 +79,4 @@ export const asyncValidation = async (values: CreateMatchData): Promise<void> =>
       region: message,
     });
   }
-
-  return Promise.reject({
-    opens: undefined,
-    region: undefined,
-  });
 };
