@@ -1,5 +1,6 @@
 package gg.uhc.hosts.routes.endpoints
 
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneOffset}
 
@@ -165,9 +166,13 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
     if (row.count < 1)
       return reject(ValidationRejection("Count must be at least 1"))
 
-    // TODO check database for overhost conflicts
-
-    provide(row)
+    requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region))
+      .flatMap {
+        case c if c.isEmpty ⇒ provide(row)
+        case _ ⇒ reject(ValidationRejection(
+          s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - ${offsetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))})")
+        )
+      }
   }
 
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
