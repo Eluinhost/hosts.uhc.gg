@@ -39,6 +39,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       mapSizeZ: Int,
       pvpEnabledAt: Int)
 
+  // map of style -> requires size
   private[this] val teamStyles: Map[String, Boolean] = Map(
     "ffa"      → false,
     "chosen"   → true,
@@ -51,29 +52,34 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
     "custom"   → false
   )
 
+  // allowed regions
   private[this] val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
 
-  private[this] def validateAndConvertToRow(provided: CreateMatchPayload, author: String): Directive1[MatchRow] = {
+  /**
+    * Converts the payload into an insertable MatchRow, does not validate any input
+    */
+  private[this] def convertPayload(payload: CreateMatchPayload, author: String): Directive1[MatchRow] = {
     var row = MatchRow(
-      address = provided.address,
-      content = provided.content,
-      count = provided.count,
-      customStyle = provided.customStyle,
-      ip = provided.ip,
-      opens = provided.opens,
-      region = provided.region,
-      teams = provided.teams,
-      size = provided.size,
-      location = provided.location,
-      version = provided.version,
-      slots = provided.slots,
-      length = provided.length,
-      mapSizeX = provided.mapSizeX,
-      mapSizeZ = provided.mapSizeZ,
-      pvpEnabledAt = provided.pvpEnabledAt,
-      scenarios = provided.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
-      tags = provided.tags.groupBy(_.toLowerCase).map(_._2.head).toList,           // removes duplicates
-      // non-user provided vars below
+      address = payload.address,
+      content = payload.content,
+      count = payload.count,
+      customStyle = if (payload.teams == "custom") payload.customStyle else None, // remove if not custom
+      ip = payload.ip,
+      // Replace time with the UTC offset and set everything sub-minute accuracy to 0
+      opens = payload.opens.atOffset(ZoneOffset.UTC).withSecond(0).withNano(0).toInstant,
+      region = payload.region,
+      teams = payload.teams,
+      size = if (teamStyles.getOrElse(payload.teams, false)) payload.size else None, // remove size if not required
+      location = payload.location,
+      version = payload.version,
+      slots = payload.slots,
+      length = payload.length,
+      mapSizeX = payload.mapSizeX,
+      mapSizeZ = payload.mapSizeZ,
+      pvpEnabledAt = payload.pvpEnabledAt,
+      scenarios = payload.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
+      tags = payload.tags.groupBy(_.toLowerCase).map(_._2.head).toList,           // removes duplicates
+      // non-user payload.vars below
       id = -1,
       created = Instant.now(),
       author = author,
@@ -82,97 +88,67 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       removedReason = None
     )
 
-    if (row.opens.isBefore(Instant.now().plus(30, ChronoUnit.MINUTES)))
-      return reject(ValidationRejection("Must be at least 30 minutes in advance"))
-
-    if (row.opens.isAfter(Instant.now().plus(30, ChronoUnit.DAYS)))
-      return reject(ValidationRejection("Must be at most 30 days in advance"))
-
-    val offsetDateTime = row.opens
-      .atOffset(ZoneOffset.UTC) // assume UTC
-      .withSecond(0) // strip sub-minute accuracy out of the timestamp if provided
-      .withNano(0)
-
-    if (offsetDateTime.getMinute % 15 != 0)
-      return reject(ValidationRejection("Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour"))
-
-    row = row.copy(opens = offsetDateTime.toInstant)
-
-    if ("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isEmpty)
-      return reject(ValidationRejection("Invalid IP address supplied"))
-
-    if (row.location.length == 0)
-      return reject(ValidationRejection("Must supply a location"))
-
-    if (row.version.length == 0)
-      return reject(ValidationRejection("Must supply a version"))
-
-    if (row.slots < 2)
-      return reject(ValidationRejection("Slots must be at least 2"))
-
-    if (row.length < 30)
-      return reject(ValidationRejection("Matches must be at least 30 minutes"))
-
     // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it
     if (row.length < 45 && !row.scenarios.exists(_.toLowerCase == "rush")) {
       row = row.copy(scenarios = row.scenarios :+ "Rush")
     }
 
-    if (row.mapSizeX < 0)
-      return reject(ValidationRejection("X must be positive"))
+    provide(row)
+  }
+  
+  /**
+    * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
+    * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
+    */
+  private[this] def validateRow(row: MatchRow): Directive0 = {
+    // Validation directives
+    val validations =
+      validate(
+        row.opens.isAfter(Instant.now().plus(30, ChronoUnit.MINUTES)),
+        "Must be at least 30 minutes in advance"
+      ) &
+        validate(row.opens.isBefore(Instant.now().plus(30, ChronoUnit.DAYS)), "Must be at most 30 days in advance") &
+        validate(
+          row.opens.atOffset(ZoneOffset.UTC).getMinute % 15 == 0,
+          "Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour (UTC)"
+        ) &
+        validate(
+          """^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isDefined,
+          "Invalid IP address supplied"
+        ) & // TODO validate octets
+        validate(row.location.nonEmpty, "Must supply a location") &
+        validate(row.version.nonEmpty, "Must supply a version") &
+        validate(row.slots >= 2, "Slots must be at least 2") &
+        validate(row.length >= 30, "Matches must be at least 30 minutes") &
+        validate(row.mapSizeX > 0, "X must be positive") &
+        validate(row.mapSizeZ > 0, "Z must be positive") &
+        validate(row.pvpEnabledAt >= 0, "PVP enabled at must be positive") &
+        validate(row.scenarios.nonEmpty, "Must supply at least 1 scenario") &
+        validate(row.scenarios.length <= 25, "Must supply at most 25 scenarios") &
+        validate(row.tags.length <= 5, "Must supply at most 5 tags") &
+        validate(teamStyles.contains(row.teams), "Unknown team style") &
+        validate(row.content.nonEmpty, "Must provide some post content") &
+        validate(regions.contains(row.region), "Invalid region supplied") &
+        validate(
+          // either doesn't require size or size is within range
+          !teamStyles(row.teams) || row.size.exists(size ⇒ size >= 1 && size <= 32767),
+          "Invalid value for size"
+        ) &
+        validate(
+          row.teams != "custom" || row.customStyle.exists(_.nonEmpty),
+          "A custom style must be given when 'custom' is picked"
+        ) &
+        validate(row.count >= 1, "Count must be at least 1") &
+        requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region))
 
-    if (row.mapSizeZ < 0)
-      return reject(ValidationRejection("Z must be positive"))
+    validations.flatMap {
+      case conflicts if conflicts.isEmpty ⇒
+        pass
+      case _ ⇒
+        val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
 
-    if (row.pvpEnabledAt < 0)
-      return reject(ValidationRejection("PVP enabled at must be positive"))
-
-    if (row.scenarios.isEmpty)
-      return reject(ValidationRejection("Must supply at least 1 scenario"))
-
-    if (row.scenarios.length > 25)
-      return reject(ValidationRejection("Must supply at most 25 scenarios"))
-
-    if (row.tags.length > 5)
-      return reject(ValidationRejection("Must supply at most 5 tags"))
-
-    if (!teamStyles.contains(row.teams))
-      return reject(ValidationRejection("Unknown team style"))
-
-    if (row.content.length == 0)
-      return reject(ValidationRejection("Must provide some post content"))
-
-    if (!regions.contains(row.region))
-      return reject(ValidationRejection("Invalid region supplied"))
-
-    val requiresSize = teamStyles(row.teams)
-
-    if (!requiresSize) {
-      row = row.copy(size = None) // remove size from data
-    } else if (row.size.isEmpty) {
-      return reject(ValidationRejection("Size is required for this team style"))
-    } else if (row.size.map(size ⇒ size < 1 || size > 32767).get) {
-      return reject(ValidationRejection("Invalid value for size"))
+        reject(ValidationRejection(s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - $hours)"))
     }
-
-    if (row.teams == "custom") {
-      if (row.customStyle.isEmpty) {
-        return reject(ValidationRejection("A custom style must be given when 'custom' is picked"))
-      }
-    } else {
-      row = row.copy(customStyle = None) // remove custom style
-    }
-
-    if (row.count < 1)
-      return reject(ValidationRejection("Count must be at least 1"))
-
-    requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region))
-      .flatMap {
-        case c if c.isEmpty ⇒ provide(row)
-        case _ ⇒ reject(ValidationRejection(
-          s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - ${offsetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))})")
-        )
-      }
   }
 
   private[this] def requireInsertMatch(m: MatchRow): Directive0 =
@@ -187,9 +163,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
         requirePermission("host", session.username) {
           // parse the entity
           entity(as[CreateMatchPayload]) { entity ⇒
-            validateAndConvertToRow(entity, session.username) { validated ⇒
-              requireInsertMatch(validated) {
-                complete(StatusCodes.Created → validated)
+            convertPayload(entity, session.username) { row ⇒
+              (validateRow(row) & requireInsertMatch(row)) {
+                complete(StatusCodes.Created → row)
               }
             }
           }
