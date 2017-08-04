@@ -19,8 +19,9 @@ import { validate } from '../../validate';
 import { asyncValidation, validation } from './validation';
 import { CreateMatchData } from '../../api/index';
 import { HostingRules } from '../HostingRules';
+import { PotentialConflicts } from './PotentialConflicts';
 
-const noop = (): void => {};
+const noop = (): void => undefined;
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -28,6 +29,7 @@ export type CreateMatchFormProps = {
   readonly username: string;
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => Promise<void>;
+  readonly recheckConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
 };
 
 const disabledMinutes = range(0, 60).filter(m => m % 15 !== 0);
@@ -69,24 +71,32 @@ const CustomStyleField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled
   />
 );
 
-const CreateMatchFormComponent:
-  React.SFC<StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> =
-  ({
-    handleSubmit,
-    submitting,
-    currentValues,
-    templateContext,
-    username,
-    changeTemplate,
-    valid,
-    createMatch,
-    error,
-    asyncValidating,
-  }) => {
+class CreateMatchFormComponent
+  extends React.Component<StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> {
+
+  componentWillMount() {
+    // update the conflicts when form first loads
+    this.props.recheckConflicts(this.props.currentValues.region, this.props.currentValues.opens);
+  }
+
+  render() {
+    const {
+      handleSubmit,
+      submitting,
+      currentValues,
+      templateContext,
+      username,
+      changeTemplate,
+      valid,
+      createMatch,
+      error,
+      asyncValidating,
+    } = this.props;
+
     const disabledAsync = submitting || (asyncValidating !== false); // asyncvalidating is string | boolean
 
     const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
-  
+
     const openingDateProps: Partial<ReactDatePickerProps> = {
       minDate: nextAvailableSlot(),
       fixedHeight: true,
@@ -94,7 +104,7 @@ const CreateMatchFormComponent:
       isClearable: false,
       monthsShown: 2,
     };
-    
+
     const preview: Match = {
       ...currentValues,
       id: 0,
@@ -108,7 +118,7 @@ const CreateMatchFormComponent:
     return (
       <form className="host-form" onSubmit={handleSubmit(createMatch)}>
 
-        <HostingRules />
+        <HostingRules/>
 
         <fieldset className="opening-time">
           <legend>Opening Time</legend>
@@ -204,8 +214,8 @@ const CreateMatchFormComponent:
               options={TeamStyles}
             />
 
-            {teamStyle.requiresTeamSize && <TeamSizeField disabled={submitting} />}
-            {teamStyle.value === 'custom' && <CustomStyleField disabled={submitting} />}
+            {teamStyle.requiresTeamSize && <TeamSizeField disabled={submitting}/>}
+            {teamStyle.value === 'custom' && <CustomStyleField disabled={submitting}/>}
           </div>
         </fieldset>
 
@@ -287,6 +297,15 @@ const CreateMatchFormComponent:
           />
         </fieldset>
 
+        <fieldset>
+          <legend>Potential Conflicts</legend>
+          <p>
+            Here you can see all games in the region +- 15 minutes of the chosen time. Please review any conflicts to
+            avoid your game being removed
+          </p>
+          <PotentialConflicts/>
+        </fieldset>
+
         {error && <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>}
         <div className="host-form-actions">
           <Button
@@ -301,13 +320,13 @@ const CreateMatchFormComponent:
         </div>
       </form>
     );
-  };
+  }
+}
 
-const CreateMatchWithForm: React.SFC<FormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> =
+export const CreateMatchForm:
+  React.ComponentClass<CreateMatchFormProps & FormProps<CreateMatchData, {}, ApplicationState>> =
   reduxForm<CreateMatchData, CreateMatchFormProps>({
     validate: validate(validation),
     asyncValidate: asyncValidation,
     asyncBlurFields: ['opens', 'region'],
   })(CreateMatchFormComponent);
-
-export const CreateMatchForm = CreateMatchWithForm;

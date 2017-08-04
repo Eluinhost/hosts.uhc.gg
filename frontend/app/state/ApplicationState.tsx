@@ -6,6 +6,7 @@ import * as Matches from './MatchesState';
 import * as Members from './MembersState';
 import * as Profile from './ProfileState';
 import * as HostingRules from './HostingRulesState';
+import * as HostForm from './HostFormState';
 
 export type ApplicationState = {
   readonly authentication: Authentication.AuthenticationState,
@@ -14,6 +15,7 @@ export type ApplicationState = {
   readonly members: Members.MembersState;
   readonly profile: Profile.ProfileState;
   readonly rules: HostingRules.HostingRulesState;
+  readonly hostForm: HostForm.HostFormState;
 };
 
 const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -24,6 +26,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const membersState = await Members.initialValues();
   const profileState = await Profile.initialValues();
   const hostingRulesState = await HostingRules.initialValues();
+  const hostFormState = await HostForm.initialValues();
 
   const store = createStore<ApplicationState>(
     combineReducers<ApplicationState>({
@@ -33,6 +36,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       members: Members.reducer,
       profile: Profile.reducer,
       rules: HostingRules.reducer,
+      hostForm: HostForm.reducer,
     }),
     {
       authentication: authenticationState,
@@ -41,6 +45,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       members: membersState,
       profile: profileState,
       rules: hostingRulesState,
+      hostForm: hostFormState,
     },
     composeEnhancers(applyMiddleware(thunkMiddleware)),
   );

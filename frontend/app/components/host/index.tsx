@@ -13,6 +13,9 @@ import { change, getFormValues, SubmissionError } from 'redux-form';
 import { omit } from 'ramda';
 import { renderToMarkdown } from './TemplateField';
 import { presets } from './presets';
+import { Match } from '../../Match';
+import { HostFormActions } from '../../state/HostFormState';
+import * as moment from 'moment';
 
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
@@ -22,6 +25,7 @@ export type HostingPageStateProps = {
 
 export type HostingPageDispatchProps = {
   readonly changeTemplate: (newTemplate: string) => void;
+  readonly getConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
 };
 
 export type HostingPageState = {
@@ -154,6 +158,7 @@ class HostingPageComponent extends React.Component<
         username={this.props.username}
         changeTemplate={this.props.changeTemplate}
         createMatch={this.handleCreateMatch}
+        recheckConflicts={this.props.getConflicts}
       />
     );
   }
@@ -167,5 +172,6 @@ export const HostingPage = connect<HostingPageStateProps, HostingPageDispatchPro
   }),
   (dispatch: Dispatch<ApplicationState>): HostingPageDispatchProps => ({
     changeTemplate: (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
+    getConflicts: (region: string, opens: moment.Moment) => dispatch(HostFormActions.getConflicts(region, opens)),
   }),
 )(HostingPageComponent);
