@@ -28,24 +28,30 @@ class Database(transactor: HikariTransactor[IOLite]) {
         """.stripMargin)
 
     case ProcessingFailure(s, a, e1, e2, t) =>
-      system.log.error(t, s"""Failed Resultset Processing:
+      system.log.error(
+        t,
+        s"""Failed Resultset Processing:
         |
         |  ${s.lines.dropWhile(_.trim.isEmpty).mkString("\n  ")}
         |
         | arguments = [${a.mkString(", ")}]
         |   elapsed = ${e1.toMillis} ms exec + ${e2.toMillis} ms processing (failed) (${(e1 + e2).toMillis} ms total)
         |   failure = ${t.getMessage}
-        """.stripMargin)
+        """.stripMargin
+      )
 
     case ExecFailure(s, a, e1, t) =>
-      system.log.error(t, s"""Failed Statement Execution:
+      system.log.error(
+        t,
+        s"""Failed Statement Execution:
         |
         |  ${s.lines.dropWhile(_.trim.isEmpty).mkString("\n  ")}
         |
         | arguments = [${a.mkString(", ")}]
         |   elapsed = ${e1.toMillis} ms exec (failed)
         |   failure = ${t.getMessage}
-        """.stripMargin)
+        """.stripMargin
+      )
   })
 
   def listMatches: ConnectionIO[List[MatchRow]] =
@@ -122,10 +128,17 @@ class Database(transactor: HikariTransactor[IOLite]) {
     queries.getUserApiKey(username).option
 
   def regnerateApiKey(username: String): ConnectionIO[String] = {
-    val key = (UUID.randomUUID().toString + UUID.randomUUID().toString + UUID.randomUUID().toString).replaceAll("-", "")
+    val key =
+      (UUID.randomUUID().toString + UUID.randomUUID().toString + UUID.randomUUID().toString).replaceAll("-", "")
 
     queries.setUserApiKey(username, key).run.map(_ ⇒ key)
   }
+
+  def getLatestRules: ConnectionIO[RulesRow] =
+    queries.getLatestRules.unique
+
+  def setRules(author: String, content: String): ConnectionIO[Unit] =
+    queries.setRules(author, content).run.map(_ ⇒ Unit)
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO

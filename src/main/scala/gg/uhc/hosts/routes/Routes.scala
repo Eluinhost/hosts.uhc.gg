@@ -25,7 +25,9 @@ class Routes(
     timeSync: TimeSync,
     checkConflicts: CheckConflicts,
     getApiKey: GetApiKey,
-    regenerateApiKey: RegenerateApiKey) {
+    regenerateApiKey: RegenerateApiKey,
+    getLatestRules: GetLatestRules,
+    setRules: SetRules) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
@@ -54,15 +56,25 @@ class Routes(
       delete(removePermission.route(segments.head, segments.last))
   }
 
+  val key: Route = pathEndOrSingleSlash {
+    get(getApiKey.route) ~ post(regenerateApiKey.route)
+  }
+
+  val rules: Route = pathEndOrSingleSlash {
+    get(getLatestRules.route) ~ post(setRules.route)
+  }
+
+  val sync: Route = (get & pathEndOrSingleSlash)(timeSync.route)
+
   val api: Route = pathPrefix("api") {
     respondWithHeader(`Access-Control-Allow-Origin`.*) {
-      pathPrefix("matches")(matches) ~
-        pathPrefix("sync")(timeSync.route) ~
-        pathPrefix("permissions")(permissions) ~
-        pathPrefix("key") {
-          get(getApiKey.route) ~ post(regenerateApiKey.route)
-        } ~
-        complete(StatusCodes.NotFound)
+      concat(
+        pathPrefix("sync")(sync),
+        pathPrefix("rules")(rules),
+        pathPrefix("matches")(matches),
+        pathPrefix("permissions")(permissions),
+        pathPrefix("key")(key)
+      ) ~ complete(StatusCodes.NotFound)
     }
   }
 

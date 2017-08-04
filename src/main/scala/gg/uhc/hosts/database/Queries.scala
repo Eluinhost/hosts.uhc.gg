@@ -239,4 +239,25 @@ class Queries(logger: LogHandler) {
         WHERE
           user_api_keys.username = $username
        """.asInstanceOf[Fragment].update
+
+  val getLatestRules: Query0[RulesRow] =
+    sql"""
+      SELECT
+        id,
+        author,
+        modified,
+        content
+      FROM rules
+      ORDER BY id DESC
+      LIMIT 1
+      """.asInstanceOf[Fragment].query[RulesRow]
+
+  def setRules(author: String, content: String): Update0 =
+    sql"""
+      INSERT INTO rules (author, modified, content) VALUES (
+        $author,
+        NOW(),
+        $content
+      )
+      """.asInstanceOf[Fragment].update
 }

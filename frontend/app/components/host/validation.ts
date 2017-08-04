@@ -15,7 +15,7 @@ import {
   view,
   lensIndex,
   ifElse,
-  T
+  T,
 } from 'ramda';
 import { Match } from '../../Match';
 import { isUndefined } from 'util';

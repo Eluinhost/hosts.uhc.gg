@@ -4,7 +4,7 @@ import { Evolver, evolve, clone } from 'ramda';
 import { isFunction } from 'util';
 
 export type EvolveReducerTransformFn<TState, TPayload> = {
-  (action: Action<TPayload>): Evolver<TState>;
+  (action: Action<TPayload>, state: TState): Evolver<TState>;
 };
 export type EvolveReducerTransformObj<TState> = Evolver<TState>;
 export type EvolveReducerTransformArg<TState, TPayload> =
@@ -41,7 +41,7 @@ export class ReducerBuilder<TState> {
     const fn = ReducerBuilder.isTransformerFunction(transform) ? transform : (action: Action<any>) => transform;
 
     const reducer: Reducer<TState, TPayload> = (state, action) => {
-      return evolve<TState>(fn(action), state) as any as TState;
+      return evolve<TState>(fn(action, state), state) as any as TState;
     };
 
     return this.handle<TPayload>(creator, reducer);

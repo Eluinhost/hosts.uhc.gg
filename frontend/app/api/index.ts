@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { map, evolve, always, prop } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
+import { HostingRules } from '../state/HostingRulesState';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -179,3 +180,26 @@ export const getPotentialConflicts = (region: string, time: moment.Moment): Prom
     .then(toJson<Match[]>())
     .then(map(convertMatchTimes));
 
+const convertHostingRules = (r: HostingRules): HostingRules => evolve<HostingRules>({
+  modified: convertUnixToMoment,
+}, r);
+
+export const getHostingRules = (): Promise<HostingRules> =>
+  fetch('/api/rules')
+    .then(verifyStatus(200))
+    .then(toJson<HostingRules>())
+    .then(convertHostingRules);
+
+export const setHostingRules = (content: string, accessToken: string): Promise<void> =>
+  fetch(
+    '/api/rules',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(content),
+    },
+  ).then(verifyStatus(201))
+    .then(_ => undefined);

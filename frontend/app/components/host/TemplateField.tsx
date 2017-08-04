@@ -110,7 +110,7 @@ type TemplateFieldComponentState = {
 class TemplateFieldComponent
   extends React.Component<WrappedFieldProps<any> & TemplateFieldProps, TemplateFieldComponentState> {
   state = {
-    currentTabId: 'host-from-template-tab-template',
+    currentTabId: 'host-form-template-tab-template',
   };
 
   onTabChange = (newTabId: string | number, prevTabId: string | number, event: React.MouseEvent<HTMLElement>): void =>
@@ -121,7 +121,7 @@ class TemplateFieldComponent
   onPresetClick: (p: Preset) => () => void = memoize((p: Preset) => (): void => {
     this.props.changeTemplate(p.template);
     this.setState({
-      currentTabId: 'host-from-template-tab-template',
+      currentTabId: 'host-form-template-tab-template',
     });
   });
 
@@ -136,7 +136,7 @@ class TemplateFieldComponent
         <div className={`markdown-field-wrapper ${this.props.className || ''}`}>
           {renderLabel(this.props)}
           <Tabs2 id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
-            <Tab2 id="host-from-template-tab-template" title="Template" panel={Template}/>
+            <Tab2 id="host-form-template-tab-template" title="Template" panel={Template}/>
             <Tab2 id="host-form-template-tab-preview" title="Preview" panel={Preview}/>
             <Tab2 id="host-form-template-tab-help" title="Help" panel={Help}/>
             <Tab2 id="host-form-template-tab-presets" title="Presets" panel={Presets}/>
