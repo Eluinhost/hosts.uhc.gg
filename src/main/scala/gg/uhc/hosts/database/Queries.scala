@@ -188,11 +188,11 @@ class Queries(logger: LogHandler) {
       $added
     )""".asInstanceOf[Fragment].update
 
-  def getPermissionModerationLog(after: Option[Int], count: Int): Query0[PermissionModerationLogRow] =
+  def getPermissionModerationLog(before: Option[Int], count: Int): Query0[PermissionModerationLogRow] =
     (
       sql"SELECT id, modifier, username, at, permission, added FROM permission_moderation_log ".asInstanceOf[Fragment]
         ++ Fragments.whereAndOpt(
-          after.map(id ⇒ fr"id < $id".asInstanceOf[Fragment])
+          before.map(id ⇒ fr"id < $id".asInstanceOf[Fragment])
         )
         ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
     ).query[PermissionModerationLogRow]

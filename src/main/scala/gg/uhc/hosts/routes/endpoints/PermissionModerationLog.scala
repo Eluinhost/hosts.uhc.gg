@@ -6,16 +6,18 @@ import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.routes.CustomDirectives
 
-
 class PermissionModerationLog(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import directives._
 
   def route: Route =
-    parameters(('after.as[Int].?, 'count ? 20)) { (after, count) ⇒
-      // TODO limit count 1-50
-      requireSucessfulQuery(database.getPermissionModerationLog(after, count)) { log ⇒
-        complete(log)
+    parameters(('before.as[Int].?, 'count ? 20)) { (before, count) ⇒
+      handleRejections(EndpointRejectionHandler()) {
+        validate(count >= 1 && count <= 50, "Count must be between 1-50") {
+          requireSucessfulQuery(database.getPermissionModerationLog(before, count)) { log ⇒
+            complete(log)
+          }
+        }
       }
     }
 }

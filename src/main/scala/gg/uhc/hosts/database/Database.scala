@@ -106,8 +106,8 @@ class Database(transactor: HikariTransactor[IOLite]) {
       else raw(_ ⇒ Unit)
     } yield removed
 
-  def getPermissionModerationLog(after: Option[Int], count: Int): ConnectionIO[List[PermissionModerationLogRow]] =
-    queries.getPermissionModerationLog(after, count).list
+  def getPermissionModerationLog(before: Option[Int], count: Int): ConnectionIO[List[PermissionModerationLogRow]] =
+    queries.getPermissionModerationLog(before, count).list
 
   def getAllPermissions: ConnectionIO[Map[String, List[String]]] =
     queries.getAllRoleMembers.list.map(_.toMap)
