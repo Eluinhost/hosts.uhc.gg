@@ -2,8 +2,23 @@ import { Spec } from '../../validate';
 import * as moment from 'moment';
 import { TeamStyles } from '../../TeamStyles';
 import { CreateMatchData, getPotentialConflicts } from '../../api/index';
-import { find, propSatisfies, curry, CurriedFunction2 } from 'ramda';
+import {
+  find,
+  propSatisfies,
+  curry,
+  CurriedFunction2,
+  all,
+  map,
+  take,
+  compose,
+  drop,
+  view,
+  lensIndex,
+  ifElse,
+  T
+} from 'ramda';
 import { Match } from '../../Match';
+import { isUndefined } from 'util';
 
 export const validation: Spec<CreateMatchData> = {
   count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,
@@ -23,9 +38,39 @@ export const validation: Spec<CreateMatchData> = {
     if (!ip)
       return 'A direct IP address is required';
 
-    // TODO handle octets properly
-    if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$/.test(ip))
-      return 'Invalid IP adress, expected formatted like 123.123.123.123:12345';
+    const matches: RegExpMatchArray | null =
+      ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
+
+    const asInt = (x: string): number => Number.parseInt(x, 10);
+
+    const validPort = (matches: string[]): boolean => compose(
+      // it is valid if it doesn't exist or if the port is a number and within the range
+      ifElse(
+        isUndefined,
+        T,
+        compose(
+          (x: number): boolean => x <= 65535 && x >= 1,
+          asInt,
+        ),
+      ),
+      view(lensIndex(5)), // if it exists it will be at index 5
+    )(matches);
+
+    const validOctets = (matches: string[]): boolean => compose(
+      all((x: number): boolean => x <= 255 && x >= 0), // make sure valid octet
+      map(asInt), // convert to numbers
+      take(4), // just the 4 octet matches
+      drop(1), // skip full match from regex
+    )(matches);
+
+    if (matches == null)
+      return 'Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123';
+
+    if (!validPort(matches))
+      return 'Port must be between 1-65535';
+
+    if (!validOctets(matches))
+      return 'Segments in an IP must be between 0-255';
 
     return undefined;
   },

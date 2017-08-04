@@ -95,7 +95,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
 
     provide(row)
   }
-  
+
   /**
     * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
     * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
@@ -113,9 +113,14 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
           "Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour (UTC)"
         ) &
         validate(
-          """^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d{1,5})?$""".r.findFirstIn(row.ip).isDefined,
+          """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(row.ip).exists { m ⇒
+            val octets = (1 to 4).map(m.group).map(_.toInt).forall(i ⇒ i >= 0 && i <= 255)
+            val port = Option(m.group(5)).map(_.toInt)
+
+            octets && port.isEmpty || port.exists(p => p<= 65535 && p >= 1)
+          },
           "Invalid IP address supplied"
-        ) & // TODO validate octets
+        ) &
         validate(row.location.nonEmpty, "Must supply a location") &
         validate(row.version.nonEmpty, "Must supply a version") &
         validate(row.slots >= 2, "Slots must be at least 2") &
