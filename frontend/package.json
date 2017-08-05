@@ -37,7 +37,7 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^8.0.13",
     "@types/prop-types": "^15.5.1",
-    "@types/ramda": "^0.24.4",
+    "@types/ramda": "types/npm-ramda",
     "@types/react": "^15.0.38",
     "@types/react-dom": "^15.5.0",
     "@types/react-redux": "^4.4.46",

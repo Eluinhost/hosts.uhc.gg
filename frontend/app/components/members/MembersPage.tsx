@@ -1,11 +1,11 @@
 import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import { map, sortBy, toLower, contains, toPairs, compose, nth, join, toUpper, head, tail, juxt } from 'ramda';
+import { map, sortBy, toLower, contains, toPairs, pipe, concat, toUpper, head, tail, converge } from 'ramda';
 import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree, Tag } from '@blueprintjs/core';
 import { MembersState } from '../../state/MembersState';
-import { ModLogEntry } from '../../ModLogEntry';
 import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
+import { PermissionsMap } from '../../PermissionsMap';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
@@ -19,10 +19,7 @@ export type MembersPageStateProps = MembersState & {
   readonly canModify: boolean;
 };
 
-const capitalise = compose(
-  join(''),
-  juxt([compose(toUpper, head), tail]),
-);
+const capitalise = (word: string): string => converge<string>(concat, [pipe(head, toUpper), tail])(word);
 
 export class MembersPage
   extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
@@ -45,18 +42,21 @@ export class MembersPage
     className: this.props.canModify ? 'permission-folder' : '',
     label: <span onClick={this.props.openAddPermission(permission)}>{capitalise(permission) + 's'}</span>,
     isExpanded: contains(permission, this.props.permissions.expandedPermissions),
-    childNodes: compose(
-      map<string, ITreeNode>(member => this.generateMemberNode(permission, member)),
+    childNodes: pipe(
       sortBy(toLower),
+      map<string, ITreeNode>(member => this.generateMemberNode(permission, member)),
     )(members),
   })
 
-  generateTree = (): ITreeNode[] => compose(
-    map<[string, string[]], ITreeNode>(([permission, members]) =>
-      this.generatePermissionNode(permission, members),
-    ), // map each entry to a tree node
-    sortBy(compose(toLower, nth(0))), // sort by permission name lower case
-    toPairs, // convert into [key, value][]
+  generateTree = (): ITreeNode[] => pipe(
+    toPairs as (p: PermissionsMap) => [string, string[]][],
+    sortBy<[string, string[]]>(
+      pipe(
+        head,
+        toLower,
+      ),
+    ),
+    map(([permission, members]) => this.generatePermissionNode(permission, members)),
   )(this.props.permissions.permissions)
 
   onToggle = (node: ITreeNode): void => this.props.togglePermissionExpanded('' + node.id);
@@ -65,7 +65,7 @@ export class MembersPage
     <div className="pt-callout pt-intent-danger"><h5>{message}</h5></div>
   )
 
-  renderModLog = (): React.ReactElement<any>[] => map<ModLogEntry, React.ReactElement<any>>(
+  renderModLog = (): React.ReactElement<any>[] => map(
     entry => (
       <Tag
         key={entry.id}
@@ -79,7 +79,8 @@ export class MembersPage
         <span className="moderation-log-entry-affected">/u/{entry.username}</span>
       </Tag>
     ),
-  )(this.props.moderationLog.log)
+    this.props.moderationLog.log,
+  )
 
   renderPermissionsTree = (): React.ReactElement<any> => {
     if (this.props.permissions.fetching)

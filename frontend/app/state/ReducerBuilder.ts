@@ -1,12 +1,14 @@
 import { ActionCreator } from 'react-redux';
 import { Action, Reducer } from 'redux-actions';
-import { Evolver, evolve, clone } from 'ramda';
+import { evolve, clone, NestedObj } from 'ramda';
 import { isFunction } from 'util';
 
+type Evolver = NestedObj<(v: any) => any>;
+
 export type EvolveReducerTransformFn<TState, TPayload> = {
-  (action: Action<TPayload>, state: TState): Evolver<TState>;
+  (action: Action<TPayload>, state: TState): Evolver;
 };
-export type EvolveReducerTransformObj<TState> = Evolver<TState>;
+export type EvolveReducerTransformObj<TState> = Evolver;
 export type EvolveReducerTransformArg<TState, TPayload> =
   EvolveReducerTransformFn<TState, TPayload> | EvolveReducerTransformObj<TState>;
 

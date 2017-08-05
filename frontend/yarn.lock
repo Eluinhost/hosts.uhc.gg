@@ -54,9 +54,9 @@
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@types/query-string/-/query-string-4.3.1.tgz#59ea5c75d425817370158789aa4f6197e5abd987"
 
-"@types/ramda@^0.24.4":
-  version "0.24.4"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.24.4.tgz#dff311f298d471f03c1dc11e52c2abecd14d5cc3"
+"@types/ramda@types/npm-ramda":
+  version "0.23.0-RC1"
+  resolved "https://codeload.github.com/types/npm-ramda/tar.gz/14ff6db59fe91e4486af24ee545515460528d3e1"
 
 "@types/react-dom@^15.5.0":
   version "15.5.1"

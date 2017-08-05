@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Button, Collapse, Intent } from '@blueprintjs/core';
 import { Markdown } from '../Markdown';
 import { SetRulesDialog } from './SetRulesDialog';
+import { WithPermission } from '../WithPermission';
 
 export type DropdownStateProps = {
-  readonly canEdit: boolean;
   readonly rules: HostingRulesState;
 };
 
@@ -69,9 +69,13 @@ export class Dropdown extends React.Component<DropdownStateProps & DropdownDispa
         <h3>Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small></h3>
         <Collapse isOpen={this.state.areRulesOpen}>
           <div onClick={this.stopPropagation}>
-            {this.props.canEdit && <Button intent={Intent.WARNING} text="Edit Rules" onClick={this.props.startEdit}/>}
+            <WithPermission permission="moderator">
+              <div>
+                <Button intent={Intent.WARNING} text="Edit Rules" onClick={this.props.startEdit} />
+                <SetRulesDialog />
+              </div>
+            </WithPermission>
             {this.props.rules.error && <div className="pt-callout pt-intent-danger">{this.props.rules.error}</div>}
-            <SetRulesDialog />
             {rules && <Markdown markdown={rules} />}
           </div>
         </Collapse>

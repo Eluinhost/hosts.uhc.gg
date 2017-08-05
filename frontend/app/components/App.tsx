@@ -4,35 +4,22 @@ import { NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
-import { omit, contains } from 'ramda';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../state/ApplicationState';
 import { HomePage } from './HomePage';
 import { MatchesPage } from './matches';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
-import { isString } from 'util';
 import { MembersPage } from './members';
 import { ProfilePage } from './profile/index';
+import { WithPermission } from './WithPermission';
 
-const NotFoundPage: React.SFC<RouteComponentProps<any>> = () => (
+const NotFoundPage: React.SFC = () => (
   <NonIdealState
     title="Not Found"
     visual="geosearch"
   />
 );
 
-type PermissionCheckFn = {
-  (loggedIn: boolean, perms: string[]): boolean;
-};
-
-type AuthedRouteProps = {
-  loggedIn: boolean;
-  permissions: string[];
-  required: string | PermissionCheckFn;
-} & RouteProps;
-
-const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) => (
+const NoPermission: React.SFC = () => (
   <NonIdealState
     title="Forbidden"
     description="You do not have permission to use this. You may attempt to login with an authorised account below"
@@ -41,44 +28,37 @@ const NoPermissionRoute: React.SFC<RouteComponentProps<any>> = ({ location }) =>
   />
 );
 
-const AuthedRoute: React.SFC<AuthedRouteProps> = (props) => {
-  const fn: PermissionCheckFn = isString(props.required)
-    ? (loggedIn, perms) => contains<string>(props.required as string, perms)
-    : props.required;
+type AuthenticatedRouteProps = {
+  readonly permission: string | string[];
+} & RouteProps;
 
-  if (fn(props.loggedIn, props.permissions))
-    return <Route {...omit(['permissions', 'required'], props) as RouteProps} />;
+const AuthenticatedRoute: React.SFC<AuthenticatedRouteProps> = (props) => {
+  const { permission, ...routeProps } = props;
 
-  return <Route component={NoPermissionRoute} />;
+  const Component: React.ComponentType<RouteComponentProps<any> | undefined> = props.component!;
+
+  const component: React.SFC<RouteComponentProps<any>> = props => (
+    <WithPermission permission={permission} alternative={NoPermission}>
+      <Component {...props}/>
+    </WithPermission>
+  );
+
+  return <Route {...routeProps} component={component}/>;
 };
 
-type RoutesStateProps = {
-  readonly loggedIn: boolean;
-  readonly permissions: string[];
-};
-
-const allowAny: PermissionCheckFn = (loggedIn: boolean) => loggedIn;
-
-const RoutesComponent : React.SFC<RoutesStateProps & RouteComponentProps<any>> = props => (
+const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
   <Switch>
-    <AuthedRoute path="/host" component={HostingPage} required="host" {...props}/>
+    <AuthenticatedRoute path="/host" component={HostingPage} permission="host" {...props}/>
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
-    <AuthedRoute path="/profile" component={ProfilePage} required={allowAny} {...props}/>
+    <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...props}/>
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>
 );
 
-const mapStateToProps = (state: ApplicationState): RoutesStateProps => ({
-  loggedIn: state.authentication.loggedIn,
-  permissions: state.authentication.loggedIn ? state.authentication.data!.accessTokenClaims.permissions : [],
-});
-
-const Routes: React.ComponentClass<{}> = withRouter<{}>(
-  connect<RoutesStateProps, {}, RouteComponentProps<any>>(mapStateToProps)(RoutesComponent),
-);
+const Routes: React.ComponentClass<{}> = withRouter<{}>(RoutesComponent);
 
 export const App: React.SFC = () => (
   <BrowserRouter>

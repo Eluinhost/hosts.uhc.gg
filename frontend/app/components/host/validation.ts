@@ -10,12 +10,19 @@ import {
   all,
   map,
   take,
-  compose,
+  pipe,
   drop,
   view,
   lensIndex,
   ifElse,
   T,
+  both,
+  flip,
+  gte,
+  lte,
+  cond,
+  complement,
+  always,
 } from 'ramda';
 import { Match } from '../../Match';
 import { isUndefined } from 'util';
@@ -45,37 +52,39 @@ export const validation: Spec<CreateMatchData> = {
       ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
 
     const asInt = (x: string): number => Number.parseInt(x, 10);
+    const between = (l: number, r: number) => (a: number) => both(flip(gte)(l), flip(lte)(r))(a);
 
-    const validPort = (matches: string[]): boolean => compose(
+    const validMatches = (matches: string[] | null): boolean => matches !== null;
+
+    const validPort = (matches: string[]): boolean => pipe(
+      view(lensIndex(5)), // if it exists it will be at index 5
       // it is valid if it doesn't exist or if the port is a number and within the range
       ifElse(
         isUndefined,
         T,
-        compose(
-          (x: number): boolean => x <= 65535 && x >= 1,
+        pipe(
           asInt,
+          between(1, 65535),
         ),
       ),
-      view(lensIndex(5)), // if it exists it will be at index 5
     )(matches);
 
-    const validOctets = (matches: string[]): boolean => compose(
-      all((x: number): boolean => x <= 255 && x >= 0), // make sure valid octet
-      map(asInt), // convert to numbers
-      take(4), // just the 4 octet matches
+    const validOctets = (matches: string[]): boolean => pipe(
       drop(1), // skip full match from regex
+      take(4), // just the 4 octet matches
+      map(asInt), // convert to numbers
+      all(between(0, 255)), // make sure valid octet
     )(matches);
 
-    if (matches == null)
-      return 'Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123';
-
-    if (!validPort(matches))
-      return 'Port must be between 1-65535';
-
-    if (!validOctets(matches))
-      return 'Segments in an IP must be between 0-255';
-
-    return undefined;
+    return cond([
+      [
+        complement(validMatches),
+        always('Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123'),
+      ],
+      [complement(validPort), always('Port must be 1-65535')],
+      [complement(validOctets), always('Segments in an IP must be between 0-255')],
+      [T, always(undefined)],
+    ])(matches);
   },
   region: region => region ? undefined : 'You must select a region',
   teams: (teams, obj) => {
