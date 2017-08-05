@@ -41,7 +41,7 @@ export const Navbar: React.SFC = () => (
       <NavbarButton
         to="/matches"
         text="Matches"
-        icon="confirm"
+        icon="numbered-list"
       />
       <NavbarButton
         to="/members"
