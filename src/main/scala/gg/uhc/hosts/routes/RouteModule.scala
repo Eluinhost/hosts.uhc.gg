@@ -25,6 +25,7 @@ trait RouteModule extends DatabaseModule with RedditModule {
   lazy val regenerateApiKey: RegenerateApiKey               = wire[RegenerateApiKey]
   lazy val getLatestRules: GetLatestRules                   = wire[GetLatestRules]
   lazy val setRules: SetRules                               = wire[SetRules]
+  lazy val approveMatch: ApproveMatch                       = wire[ApproveMatch]
 
   lazy val routes: Routes = wire[Routes]
 }

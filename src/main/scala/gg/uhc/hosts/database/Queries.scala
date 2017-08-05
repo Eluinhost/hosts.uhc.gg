@@ -48,7 +48,8 @@ class Queries(logger: LogHandler) {
         length,
         mapSizeX,
         mapSizeZ,
-        pvpEnabledAt
+        pvpEnabledAt,
+        approvedBy
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
@@ -80,7 +81,8 @@ class Queries(logger: LogHandler) {
         length,
         mapSizeX,
         mapSizeZ,
-        pvpEnabledAt
+        pvpEnabledAt,
+        approvedBy
        FROM matches
        WHERE id = $id
     """.asInstanceOf[Fragment].query[MatchRow]
@@ -110,7 +112,8 @@ class Queries(logger: LogHandler) {
         length,
         mapSizeX,
         mapSizeZ,
-        pvpEnabledAt
+        pvpEnabledAt,
+        approvedBy
       ) VALUES (
         ${m.author},
         ${m.opens},
@@ -134,7 +137,8 @@ class Queries(logger: LogHandler) {
         ${m.length},
         ${m.mapSizeX},
         ${m.mapSizeZ},
-        ${m.pvpEnabledAt}
+        ${m.pvpEnabledAt},
+        ${m.approvedBy}
       );""".asInstanceOf[Fragment].update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =
@@ -259,5 +263,14 @@ class Queries(logger: LogHandler) {
         NOW(),
         $content
       )
+      """.asInstanceOf[Fragment].update
+
+  def approveMatch(id: Long, approver: String): Update0 =
+    sql"""
+      UPDATE matches
+      SET
+        approvedBy = $approver
+      WHERE
+        id = $id
       """.asInstanceOf[Fragment].update
 }

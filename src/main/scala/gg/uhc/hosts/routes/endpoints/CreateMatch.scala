@@ -85,7 +85,8 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       author = author,
       removed = false,
       removedBy = None,
-      removedReason = None
+      removedReason = None,
+      approvedBy = None
     )
 
     // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it

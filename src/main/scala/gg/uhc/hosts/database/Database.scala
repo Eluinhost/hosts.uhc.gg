@@ -140,6 +140,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def setRules(author: String, content: String): ConnectionIO[Unit] =
     queries.setRules(author, content).run.map(_ ⇒ Unit)
 
+  def approveMatch(id: Long, approver: String): ConnectionIO[Boolean] =
+    queries.approveMatch(id, approver).run.map(_ > 0)
+
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
   }

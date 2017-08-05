@@ -112,6 +112,7 @@ class CreateMatchFormComponent
       removed: false,
       removedBy: null,
       removedReason: null,
+      approvedBy: null,
       created: moment(),
     };
 

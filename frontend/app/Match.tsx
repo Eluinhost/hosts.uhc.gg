@@ -25,4 +25,5 @@ export type Match = {
   mapSizeX: number;
   mapSizeZ: number;
   pvpEnabledAt: number;
+  approvedBy: string | null;
 };

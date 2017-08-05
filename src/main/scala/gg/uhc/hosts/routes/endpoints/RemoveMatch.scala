@@ -42,7 +42,7 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
 
   def route(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireJwtAuthentication { authentication ⇒
+      requireAuthentication { authentication ⇒
         (requirePermission("moderator", authentication.username) | requireOwner(id, authentication.username)) {
           entity(as[RemoveMatchPayload]) { data ⇒
             validate(data) {

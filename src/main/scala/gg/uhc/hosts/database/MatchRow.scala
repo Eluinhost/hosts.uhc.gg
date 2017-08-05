@@ -26,4 +26,5 @@ case class MatchRow(
     length: Int,
     mapSizeX: Int,
     mapSizeZ: Int,
-    pvpEnabledAt: Int)
+    pvpEnabledAt: Int,
+    approvedBy: Option[String])

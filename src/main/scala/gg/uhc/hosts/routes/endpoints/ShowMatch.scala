@@ -50,6 +50,7 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
         mapSizeX = row.mapSizeX,
         mapSizeZ = row.mapSizeZ,
         pvpEnabledAt = row.pvpEnabledAt,
+        approvedBy = row.approvedBy,
         roles = perms
       )).run
 

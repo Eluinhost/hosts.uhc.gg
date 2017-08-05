@@ -27,7 +27,8 @@ class Routes(
     getApiKey: GetApiKey,
     regenerateApiKey: RegenerateApiKey,
     getLatestRules: GetLatestRules,
-    setRules: SetRules) {
+    setRules: SetRules,
+    approveMatch: ApproveMatch) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
@@ -42,8 +43,12 @@ class Routes(
 
   val matches: Route = pathEndOrSingleSlash {
     get(listMatches.route) ~ post(createMatches.route)
-  } ~ path(IntNumber) { id ⇒
-    get(showMatch.route(id)) ~ delete(removeMatches.route(id))
+  } ~ pathPrefix(IntNumber) { id ⇒
+    concat(
+      (post & path("approve"))(approveMatch.route(id)),
+      (get & pathEndOrSingleSlash)(showMatch.route(id)),
+      (delete & pathEndOrSingleSlash)(removeMatches.route(id))
+    )
   } ~ (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant) & pathEndOrSingleSlash)(
     checkConflicts.route
   )

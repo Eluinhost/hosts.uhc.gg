@@ -36,7 +36,8 @@ object ListMatches {
       length: Int,
       mapSizeX: Int,
       mapSizeZ: Int,
-      pvpEnabledAt: Int)
+      pvpEnabledAt: Int,
+      approvedBy: Option[String])
 }
 
 class ListMatches(directives: CustomDirectives, database: Database) {
@@ -74,6 +75,7 @@ class ListMatches(directives: CustomDirectives, database: Database) {
           mapSizeX = row.mapSizeX,
           mapSizeZ = row.mapSizeZ,
           pvpEnabledAt = row.pvpEnabledAt,
+          approvedBy = row.approvedBy,
           roles = perms.getOrElse(row.author, List.empty)
         )
       }
