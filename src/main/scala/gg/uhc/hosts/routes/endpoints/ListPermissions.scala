@@ -10,10 +10,18 @@ class ListPermissions(customDirectives: CustomDirectives, database: Database) {
   import customDirectives._
   import CustomJsonCodec._
 
+  def addPermIfNotExists(perm: String, m: Map[String, List[String]]): Map[String, List[String]] =
+    if (m.contains(perm)) m else m + (perm → List.empty)
+
+  val basePerms: List[String] = "host" :: "moderator" :: "trial host" :: Nil
+
+  def addBasePerms: (Map[String, List[String]]) ⇒ Map[String, List[String]] =
+    basePerms.foldRight[Map[String, List[String]]](_)(addPermIfNotExists)
+
   def route: Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getAllPermissions) { perms ⇒
-        complete(perms)
+        complete(addBasePerms(perms))
       }
     }
 }
