@@ -5,7 +5,6 @@ import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 import * as moment from 'moment';
 import { Overlay } from '@blueprintjs/core';
-import { Loader } from '../matches/Loader';
 
 export interface DateTimeFieldProps extends BaseFieldProps {
   readonly label?: string | React.ReactElement<any>;
@@ -24,7 +23,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
       return;
 
     this.props.input!.onChange(date, undefined, undefined);
-    this.triggerBlur(date);
+    setTimeout(() => this.triggerBlur(this.props.input!.value), 0);
   }
 
   onTimeChange = (date: moment.Moment): void => {
