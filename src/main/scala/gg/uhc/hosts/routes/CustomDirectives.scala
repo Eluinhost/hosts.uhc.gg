@@ -23,14 +23,17 @@ class CustomDirectives(database: Database) {
       case RemoteAddress.IP(ip, _) ⇒ provide(ip)
     }
 
-  def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
+  def checkHasAtLeastOnePermission(permissions: List[String], username: String): Directive1[Boolean] =
     requireSucessfulQuery(database.getPermissions(username)).flatMap {
-      case l if l.contains(permission) ⇒ provide(true)
-      case _                           ⇒ provide(false)
+      case l if l.intersect(permissions).nonEmpty ⇒ provide(true)
+      case _                                      ⇒ provide(false)
     }
 
-  def requirePermission(permission: String, username: String): Directive0 =
-    checkHasPermission(permission, username) flatMap {
+  def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
+    checkHasAtLeastOnePermission(permission :: Nil, username)
+
+  def requireAtLeastOnePermission(permissions: List[String], username: String): Directive0 =
+    checkHasAtLeastOnePermission(permissions, username) flatMap {
       case true ⇒ pass
       case false ⇒
         reject(
@@ -40,6 +43,9 @@ class CustomDirectives(database: Database) {
           )
         )
     }
+
+  def requirePermission(permission: String, username: String): Directive0 =
+    requireAtLeastOnePermission(permission :: Nil, username)
 
   /**
     * Checks for an OAuth2 bearer token header with a valid non-expired JWT token.
@@ -126,13 +132,13 @@ class CustomDirectives(database: Database) {
   def requireAuthentication: Directive1[Authenticated] =
     optionalJwtAuthentication.flatMap {
       case Some(a) ⇒ provide(a)
-      case None ⇒ requireApiTokenAuthentication
+      case None    ⇒ requireApiTokenAuthentication
     }
 
   def optionalAuthentication: Directive1[Option[Authenticated]] =
     optionalJwtAuthentication.flatMap {
       case a @ Some(_) ⇒ provide(a)
-      case None ⇒ optionalApiTokenAuthentication
+      case None        ⇒ optionalApiTokenAuthentication
     }
 
   /**
