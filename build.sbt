@@ -24,7 +24,10 @@ topLevelDirectory := None
 mappings in (Compile, packageDoc) := Seq()
 
 // Look in conf folder for custom app configuration
-bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/application.conf -Duser.timezone=UTC""""
+bashScriptExtraDefines ++= Seq(
+  "addJava \"-Dconfig.file=${app_home}/../conf/application.conf\"",
+  "addJava \"-Duser.timezone=UTC\""
+)
 batScriptExtraDefines += """set _JAVA_OPTS=%_JAVA_OPTS% -Dconfig.file=%HOSTS_HOME%\\conf\\application.conf -Duser.timezone=UTC"""
 javaOptions in reStart ++= Seq("-Dconfig.file=conf/application.conf", "-Duser.timezone=UTC")
 
