@@ -48,7 +48,7 @@ const AuthenticatedRoute: React.SFC<AuthenticatedRouteProps> = (props) => {
 
 const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
   <Switch>
-    <AuthenticatedRoute path="/host" component={HostingPage} permission="host" {...props}/>
+    <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...props}/>
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
