@@ -166,7 +166,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
-        requirePermission("host", session.username) {
+        requireAtLeastOnePermission("host" :: "trial host" :: Nil, session.username) {
           // parse the entity
           entity(as[CreateMatchPayload]) { entity ⇒
             convertPayload(entity, session.username) { row ⇒
