@@ -16,9 +16,11 @@ export type WithPermissionProps = {
 };
 
 const WithPermissionComponent: React.SFC<StateProps & WithPermissionProps> =
-  ({ show, alternative, children }) => {
-    return <If predicate={show} alternative={alternative}>{children}</If>;
-  };
+  ({ show, alternative, children }) => (
+    <If condition={show} alternative={alternative}>
+      {children}
+    </If>
+  );
 
 const memoizedStateSelector = memoize(
   (perms: string | string[]) => createSelector(

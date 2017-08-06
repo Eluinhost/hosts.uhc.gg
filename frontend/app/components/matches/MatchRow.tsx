@@ -6,6 +6,7 @@ import { Dialog, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { RemoveMatchButton } from './RemoveMatchButton';
 import { Markdown } from '../Markdown';
+import { If } from '../If';
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -52,9 +53,21 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             {match.id}
           </span>
         </div>
-        <div className="match-moderation-actions">
-          {(canRemove && !match.removed) && <RemoveMatchButton onClick={this.onRemovePress}/>}
-        </div>
+        <If condition={canRemove && !match.removed}>
+          <div className="match-moderation-actions">
+            <RemoveMatchButton onClick={this.onRemovePress}/>
+            <Dialog
+              isOpen={this.state.isOpen}
+              onClose={this.onClick}
+              title={`${match.author}'s #${match.count}`}
+              className="match-row-dialog pt-dark"
+            >
+              <div className="pt-dialog-body">
+                <Markdown markdown={match.content} />
+              </div>
+            </Dialog>
+          </div>
+        </If>
         <div className="match-content">
           <h4>
             <span>{match.author}</span>
@@ -75,22 +88,15 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
           </div>
           <div className="server-tags">
             <ServerTag title="Server IP" text={match.ip}/>
-            {match.address && <ServerTag title="Server Address" text={match.address}/>}
+            <If condition={!!match.address}>
+              <ServerTag title="Server Address" text={match.address!}/>
+            </If>
             <ServerTag title="slots" text={`${match.slots} Slots`}/>
           </div>
         </div>
-        {match.removed && <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>}
-
-        <Dialog
-          isOpen={this.state.isOpen}
-          onClose={this.onClick}
-          title={`${match.author}'s #${match.count}`}
-          className="match-row-dialog pt-dark"
-        >
-          <div className="pt-dialog-body">
-            <Markdown markdown={match.content} />
-          </div>
-        </Dialog>
+        <If condition={match.removed}>
+          <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>
+        </If>
       </div>
     );
   }

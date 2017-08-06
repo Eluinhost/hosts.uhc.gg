@@ -1,26 +1,37 @@
 import * as React from 'react';
 import { isFunction } from 'util';
-import { pipe, when, ifElse, call, always, equals, Alternative } from 'ramda';
+import { pipe, when, ifElse, call, always, equals } from 'ramda';
 
 export type IfProps = {
-  readonly predicate: boolean | (() => boolean);
-  readonly alternative?:  React.ComponentType;
+  readonly condition: boolean | (() => boolean);
+  readonly alternative?:  React.ComponentType | React.ReactElement<any>;
 };
 
 const ifElseFromBool = <U,V>(onTrue: () => U, onFalse: () => V): ((v: boolean) => U|V) =>
   ifElse<boolean, U, V>(equals(true), onTrue, onFalse);
 
-const renderAlternative = (Alternative: React.ComponentType = (() => null)) => <Alternative />;
+const RenderAlternative: React.SFC<IfProps> = ({ alternative }) => {
+  if (!alternative)
+    return null;
 
-export const If: React.SFC<IfProps> = ({ predicate, children, alternative }) => pipe(
+  if (React.isValidElement(alternative)) {
+    return alternative;
+  }
+
+  const Alt = alternative as React.ComponentType;
+
+  return <Alt />;
+};
+
+export const If: React.SFC<IfProps> = props => pipe(
   when(
     isFunction,
     call,
   ),
   ifElseFromBool(
     // if true render children
-    always(React.Children.only(children)),
+    always(React.Children.only(props.children)),
     // otherwise render alternative/fallback element
-    always(renderAlternative(alternative)),
+    always(<RenderAlternative {...props}/>),
   ),
-)(predicate);
+)(props.condition);

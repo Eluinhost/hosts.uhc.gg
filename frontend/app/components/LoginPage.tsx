@@ -8,6 +8,7 @@ import { parse } from 'query-string';
 import { Dispatch } from 'redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
+import { If } from './If';
 
 type StateProps = {
   readonly loggedIn: boolean;
@@ -42,10 +43,11 @@ export class LoginPageComponent extends React.Component<RouteComponentProps<any>
   }
 
   render() {
-    if (this.props.loggedIn)
-      return <Redirect to={this.state.redirectPath || '/'} />;
-
-    return <InvalidToken />;
+    return (
+      <If condition={this.props.loggedIn} alternative={<InvalidToken/>}>
+        <Redirect to={this.state.redirectPath || '/'}/>
+      </If>
+    );
   }
 }
 

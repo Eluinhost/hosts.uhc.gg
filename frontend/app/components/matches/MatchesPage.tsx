@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { MatchesState } from '../../state/MatchesState';
-import { FetchError } from './FetchError';
-import { Button, Intent } from '@blueprintjs/core';
+import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { NoMatches } from './NoMatches';
 import { MatchRow } from './MatchRow';
-import { Loader } from './Loader';
 import { RouteComponentProps } from 'react-router';
 import { RemovalModal } from './RemovalModal';
+import { If } from '../If';
 
 export type MatchesPageDispatchProps = {
   readonly refetch: () => void;
@@ -52,9 +51,19 @@ export class MatchesPage
           Refresh
         </Button>
 
-        <FetchError loading={this.props.fetching} error={this.props.error} />
-        <Loader loading={this.props.fetching} />
-        {this.props.matches.length ? this.renderMatches() : <NoMatches/>}
+        <If condition={!this.props.fetching && !!this.props.error}>
+          <div className="pt-callout pt-intent-danger"><h5>{this.props.error}</h5></div>
+        </If>
+
+        <If condition={this.props.fetching}>
+          <NonIdealState visual={<Spinner/>} title="Loading..."/>
+        </If>
+
+        <If condition={this.props.matches.length > 0} alternative={NoMatches}>
+          <div>
+            {this.renderMatches()}
+          </div>
+        </If>
 
         <RemovalModal
           isOpen={this.props.isModalOpen}

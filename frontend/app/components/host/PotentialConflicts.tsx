@@ -1,7 +1,6 @@
 import { HostFormConflicts } from '../../state/HostFormState';
 import * as React from 'react';
-import { Loader } from '../matches/Loader';
-import { NonIdealState } from '@blueprintjs/core';
+import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { map } from 'ramda';
 import { Match } from '../../Match';
 import { MatchRow } from '../matches/MatchRow';
@@ -21,7 +20,7 @@ const renderConflict = (m: Match) => (
 
 const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching }) => {
   if (fetching)
-    return <Loader loading />;
+    return <NonIdealState visual={<Spinner />} title="Checking..." />;
 
   if (error)
     return <NonIdealState visual="warning-sign" title="Failed to check for potentical conflicts" />;

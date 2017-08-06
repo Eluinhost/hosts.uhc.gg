@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { WrappedFieldMetaProps } from 'redux-form';
+import { If } from '../If';
 
 export type FieldWrapperProps = {
   readonly label?: string | React.ReactElement<any>;
@@ -31,23 +32,28 @@ export const RenderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ error, war
   return null;
 };
 
-export const renderLabel: React.SFC<{ label?: string, required?: boolean }> = ({ label, required }) => {
-  if (!label)
-    return null;
-
-  return (
+export const RenderLabel: React.SFC<{ label: string | React.ReactElement<any>, required?: boolean }> =
+  ({ label, required = false }) => (
     <label className="pt-label">
-      {label}{required && <span className="required-star">*</span>}
+      {label}
+      <If condition={required}>
+        <span className="required-star">*</span>
+      </If>
     </label>
   );
-};
 
 export const FieldWrapper: React.SFC<FieldWrapperProps> = props => (
   <div className={`pt-form-group ${errorClasses(props.meta)} ${props.className ? props.className : ''}`}>
-    {renderLabel(props)}
+    <If condition={!!props.label}>
+      <RenderLabel label={props.label!} required={props.required} />
+    </If>
+
     <div className="pt-form-content">
       {props.children}
-      {!props.hideErrors && <RenderErrors {...props.meta} />}
+
+      <If condition={!props.hideErrors}>
+        <RenderErrors {...props.meta} />
+      </If>
     </div>
   </div>
 );

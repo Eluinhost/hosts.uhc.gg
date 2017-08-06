@@ -4,6 +4,7 @@ import { Button, Collapse, Intent } from '@blueprintjs/core';
 import { Markdown } from '../Markdown';
 import { SetRulesDialog } from './SetRulesDialog';
 import { WithPermission } from '../WithPermission';
+import { If } from '../If';
 
 export type DropdownStateProps = {
   readonly rules: HostingRulesState;
@@ -75,8 +76,12 @@ export class Dropdown extends React.Component<DropdownStateProps & DropdownDispa
                 <SetRulesDialog />
               </div>
             </WithPermission>
-            {this.props.rules.error && <div className="pt-callout pt-intent-danger">{this.props.rules.error}</div>}
-            {rules && <Markdown markdown={rules} />}
+            <If condition={!!this.props.rules.error}>
+              <div className="pt-callout pt-intent-danger">{this.props.rules.error}</div>
+            </If>
+            <If condition={!!rules}>
+              <Markdown markdown={rules!} />
+            </If>
           </div>
         </Collapse>
       </div>

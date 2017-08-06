@@ -6,6 +6,7 @@ import { MembersState } from '../../state/MembersState';
 import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
 import { PermissionsMap } from '../../PermissionsMap';
+import { If } from '../If';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
@@ -90,7 +91,9 @@ export class MembersPage
       <div className="permissions-tree">
         <h2>All members</h2>
         <Tree contents={this.generateTree()} onNodeCollapse={this.onToggle} onNodeExpand={this.onToggle} />
-        {this.props.permissions.error && <this.RenderError message={this.props.permissions.error} />}
+        <If condition={!!this.props.permissions.error}>
+          <this.RenderError message={this.props.permissions.error!} />
+        </If>
         <Button
           disabled={this.props.permissions.fetching}
           onClick={this.props.fetchPermissionList}
@@ -111,7 +114,9 @@ export class MembersPage
       <div className="moderation-log">
         <h2>Moderation Log</h2>
         {this.renderModLog()}
-        {this.props.moderationLog.error && <this.RenderError message={this.props.moderationLog.error} />}
+        <If condition={!!this.props.moderationLog.error}>
+          <this.RenderError message={this.props.moderationLog.error!} />
+        </If>
         <Button
           disabled={this.props.moderationLog.fetching}
           onClick={this.props.fetchModerationLog}
@@ -131,7 +136,12 @@ export class MembersPage
           {this.renderPermissionsTree()}
           {this.renderModerationLog()}
         </div>
-        {this.props.canModify && <div><AddPermissionDialog /><RemovePermissionDialog /></div>}
+        <If condition={this.props.canModify}>
+          <div>
+            <AddPermissionDialog />
+            <RemovePermissionDialog />
+          </div>
+        </If>
       </div>
     );
   }

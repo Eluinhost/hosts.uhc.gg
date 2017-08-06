@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, RenderErrors, renderLabel } from '../fields/FieldWrapper';
+import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
 import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
 import { memoize } from 'ramda';
+import { If } from '../If';
 
 const parser = Snuownd.getParser();
 
@@ -134,7 +135,9 @@ class TemplateFieldComponent
     return (
       <FieldWrapper meta={this.props.meta} required={this.props.required} hideErrors>
         <div className={`markdown-field-wrapper ${this.props.className || ''}`}>
-          {renderLabel(this.props)}
+          <If condition={!!this.props.label}>
+            <RenderLabel label={this.props.label!} required={this.props.required} />
+          </If>
           <Tabs2 id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
             <Tab2 id="host-form-template-tab-template" title="Template" panel={Template}/>
             <Tab2 id="host-form-template-tab-preview" title="Preview" panel={Preview}/>

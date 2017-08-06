@@ -5,6 +5,7 @@ import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { MembersActions } from '../../state/MembersState';
+import { If } from '../If';
 
 type RemovePermissionDialogDispatchProps = {
   readonly close: () => void;
@@ -31,7 +32,9 @@ const RemovePermissionDialogComponent: React.SFC<
     >
       <div className="pt-dialog-body remove-permission-body">
         <h5>Are you sure you want to remove '{permission}' from /u/{username}</h5>
-        {error && <span className="pt-intent-danger pt-callout">{error}</span>}
+        <If condition={!!error}>
+          <span className="pt-intent-danger pt-callout">{error}</span>
+        </If>
       </div>
       <div className="pt-dialog-footer">
         <div className="pt-dialog-footer-actions">

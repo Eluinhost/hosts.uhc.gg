@@ -20,6 +20,7 @@ import { asyncValidation, validation } from './validation';
 import { CreateMatchData } from '../../api/index';
 import { HostingRules } from '../HostingRules';
 import { PotentialConflicts } from './PotentialConflicts';
+import { If } from '../If';
 
 const noop = (): void => undefined;
 
@@ -215,8 +216,12 @@ class CreateMatchFormComponent
               options={TeamStyles}
             />
 
-            {teamStyle.requiresTeamSize && <TeamSizeField disabled={submitting}/>}
-            {teamStyle.value === 'custom' && <CustomStyleField disabled={submitting}/>}
+            <If condition={teamStyle.requiresTeamSize}>
+              <TeamSizeField disabled={submitting}/>
+            </If>
+            <If condition={teamStyle.value === 'custom'}>
+              <CustomStyleField disabled={submitting}/>
+            </If>
           </div>
         </fieldset>
 
@@ -307,7 +312,10 @@ class CreateMatchFormComponent
           <PotentialConflicts/>
         </fieldset>
 
-        {error && <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>}
+        <If condition={!!error}>
+          <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>
+        </If>
+
         <div className="host-form-actions">
           <Button
             type="submit"

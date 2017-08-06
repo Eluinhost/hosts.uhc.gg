@@ -4,9 +4,9 @@ import * as React from 'react';
 import { ProfileActions, ProfileState } from '../../state/ProfileState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
-import { Loader } from '../matches/Loader';
-import { Button, Intent, NonIdealState } from '@blueprintjs/core';
+import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { storage } from '../../storage';
+import { If } from '../If';
 
 export type ProfilePageStateProps = ProfileState;
 export type ProfilePageDispatchProps = {
@@ -24,7 +24,7 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
     const { apiKey: { fetching, error, key }, refreshApiKey, regenerateApiKey, resetStorage } = this.props;
 
     if (fetching)
-      return <Loader loading/>;
+      return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 
     if (error)
       return (
@@ -40,7 +40,10 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
         <Button onClick={refreshApiKey}>Refresh</Button>
         <Button onClick={regenerateApiKey}>Regenerate</Button>
         <pre>
-          CURRENT KEY: {key ? key : 'NO API KEY GENERATED YET'}
+          <span>CURRENT KEY: </span>
+          <If condition={!!key} alternative={<span>NO API KEY GENERATED YET</span>}>
+            {key}
+          </If>
         </pre>
         <Button intent={Intent.DANGER} onClick={resetStorage}>Reset All Data</Button>
       </div>

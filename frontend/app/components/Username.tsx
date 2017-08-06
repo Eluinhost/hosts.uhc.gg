@@ -9,6 +9,7 @@ import { LoginButton } from './LoginButton';
 import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { getUsername, isLoggedIn } from '../state/Selectors';
+import { If } from './If';
 
 type StateProps = {
   readonly isLoggedIn: boolean;
@@ -37,19 +38,15 @@ const UserMenu: React.SFC<DispatchProps> = ({ logout }) => (
   </Menu>
 );
 
-const UsernameComponent: React.SFC<StateProps & DispatchProps> =
-  ({ logout, username, isLoggedIn }) => {
-    if (isLoggedIn)
-      return (
-        <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
+const UsernameComponent: React.SFC<StateProps & DispatchProps> = ({ logout, username, isLoggedIn }) => (
+  <If condition={isLoggedIn} alternative={LoginButton}>
+    <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
           <span className="pt-button pt-minimal pt-icon-user">
             {username}
           </span>
-        </Popover>
-      );
-
-    return <LoginButton />;
-  };
+    </Popover>
+  </If>
+);
 
 const stateSelector = createSelector<ApplicationState, boolean, string | null, StateProps>(
   isLoggedIn,
