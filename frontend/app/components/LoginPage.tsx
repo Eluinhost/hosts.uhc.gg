@@ -32,13 +32,15 @@ export class LoginPageComponent extends React.Component<RouteComponentProps<any>
   componentDidMount() {
     const { path, token, refresh } = parse(location.search);
 
-    if (!path || !token || !refresh || !path.startsWith('/')) {
+    if (path && token && refresh && path.startsWith('/')) {
       this.props.login({
         accessToken: token,
         refreshToken: refresh,
       });
 
       this.setState(p => ({ redirectPath: path }));
+    } else {
+      console.error('Invalid token parameters', path, token, refresh);
     }
   }
 
