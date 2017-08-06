@@ -228,6 +228,8 @@ class Queries(logger: LogHandler) {
         region = $region
         AND
         opens BETWEEN $start AND $end
+        AND
+        removed = false
       """.asInstanceOf[Fragment].query[MatchRow]
 
   def getUserApiKey(username: String): Query0[String] =
