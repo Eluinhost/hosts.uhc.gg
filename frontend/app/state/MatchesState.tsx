@@ -13,6 +13,7 @@ import {
 import { always, T, F, evolve, propEq, map, when } from 'ramda';
 import { Reducer } from 'redux';
 import { AuthenticationActions } from './AuthenticationState';
+import { getAccessToken, getUsername } from './Selectors';
 
 export type MatchRemovalModelState = {
   readonly isModalOpen: boolean;
@@ -84,10 +85,10 @@ export const MatchesActions = {
 
       const id = state.matches.removal.targettedId!;
 
-      dispatch(startRemoval({ id, reason, user: state.authentication.data!.accessTokenClaims.username }));
+      dispatch(startRemoval({ id, reason, user: getUsername(state) || 'ERROR NO USERNAME IN STATE' }));
 
       try {
-        await removeMatch(id, reason, state.authentication.data!.rawAccessToken);
+        await removeMatch(id, reason, getAccessToken(state) || 'ERROR NO AUTHENTICATION TOKEN IN STATE');
 
         dispatch(endRemoval());
       } catch (err) {

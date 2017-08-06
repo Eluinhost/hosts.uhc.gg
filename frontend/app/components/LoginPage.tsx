@@ -1,43 +1,67 @@
 import { Redirect, RouteComponentProps } from 'react-router';
 import * as React from 'react';
 import { AuthenticationActions, LoginPayload } from '../state/AuthenticationState';
+import { isLoggedIn } from '../state/Selectors';
 import { connect } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
 import { parse } from 'query-string';
-import { always } from 'ramda';
 import { Dispatch } from 'redux';
 import { ApplicationState } from '../state/ApplicationState';
+import { createSelector } from 'reselect';
 
-export type LoginPageDispatchProps = {
-  readonly login: (data: LoginPayload) => boolean;
+type StateProps = {
+  readonly loggedIn: boolean;
+};
+
+type DispatchProps = {
+  readonly login: (data: LoginPayload) => void;
+};
+
+type State = {
+  readonly redirectPath: string | null;
 };
 
 const InvalidToken: React.SFC = () => <NonIdealState title="Invalid login token" visual="warning-sign" />;
 
-export const LoginPageComponent: React.SFC<RouteComponentProps<any> & LoginPageDispatchProps> =
-  ({ location, login }) => {
-    const { path, token, refresh } = parse(location.search);
-
-    if (!path || !token || !refresh || !path.startsWith('/'))
-      return <InvalidToken />;
-
-
-    const loggedIn = login({
-      accessToken: token,
-      refreshToken: refresh,
-    });
-
-    if (loggedIn) {
-      return <Redirect to={path} />;
-    } else {
-      return <InvalidToken />;
-    }
+export class LoginPageComponent extends React.Component<RouteComponentProps<any> & StateProps & DispatchProps, State> {
+  state = {
+    redirectPath: null,
   };
 
+  componentDidMount() {
+    const { path, token, refresh } = parse(location.search);
+
+    if (!path || !token || !refresh || !path.startsWith('/')) {
+      this.props.login({
+        accessToken: token,
+        refreshToken: refresh,
+      });
+
+      this.setState(p => ({ redirectPath: path }));
+    }
+  }
+
+  render() {
+    if (this.props.loggedIn)
+      return <Redirect to={this.state.redirectPath || '/'} />;
+
+    return <InvalidToken />;
+  }
+}
+
+const stateSelector = createSelector<ApplicationState, boolean, StateProps>(
+  isLoggedIn,
+  loggedIn => ({
+    loggedIn,
+  }),
+);
+
 export const LoginPage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<{}, LoginPageDispatchProps, RouteComponentProps<any>>(
-    always({}),
-    (dispatch: Dispatch<ApplicationState>) => ({
-      login: data => dispatch(AuthenticationActions.login(data)),
-    }) as LoginPageDispatchProps,
+  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
+    stateSelector,
+    (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+      login: (data: LoginPayload) => {
+        dispatch(AuthenticationActions.login(data));
+      },
+    }),
   )(LoginPageComponent);

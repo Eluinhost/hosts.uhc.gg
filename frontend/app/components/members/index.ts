@@ -4,31 +4,31 @@ import { MembersPageDispatchProps, MembersPageStateProps, MembersPage as Compone
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import * as React from 'react';
-import { MembersActions } from '../../state/MembersState';
-import { contains } from 'ramda';
+import { MembersActions, MembersState } from '../../state/MembersState';
+import { matchesPermissions } from '../../state/Selectors';
+import { createSelector } from 'reselect';
 
-const mapStateToProps = (state: ApplicationState): MembersPageStateProps => ({
-  ...state.members,
-  canModify: state.authentication.loggedIn && contains(
-    'moderator',
-    state.authentication.data!.accessTokenClaims.permissions,
-  ),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps => ({
-  fetchPermissionList: (): Promise<void> => dispatch(MembersActions.refetchPermissions()),
-  fetchModerationLog: (): Promise<void> => dispatch(MembersActions.refetchModerationLog()),
-  togglePermissionExpanded: (perm: string): void => dispatch(MembersActions.togglePermissionExpanded(perm)),
-  openAddPermission: (perm: string) => (): void => {
-    dispatch(MembersActions.openAddPermissionDialog(perm));
-  },
-  openRemovePermission: (permission: string, username: string) => (): void => {
-    dispatch(MembersActions.openRemovePermissionDialog({ username, permission }));
-  },
-});
+const stateSelector = createSelector<ApplicationState, boolean, MembersState, MembersPageStateProps>(
+  matchesPermissions('moderator'),
+  state => state.members,
+  (canModify, members) => ({
+    ...members,
+    canModify,
+  }),
+);
 
 export const MembersPage: React.ComponentClass<RouteComponentProps<any>> =
   connect<MembersPageStateProps, MembersPageDispatchProps, RouteComponentProps<any>>(
-    mapStateToProps,
-    mapDispatchToProps,
+    stateSelector,
+    (dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps => ({
+      fetchPermissionList: (): Promise<void> => dispatch(MembersActions.refetchPermissions()),
+      fetchModerationLog: (): Promise<void> => dispatch(MembersActions.refetchModerationLog()),
+      togglePermissionExpanded: (perm: string): void => dispatch(MembersActions.togglePermissionExpanded(perm)),
+      openAddPermission: (perm: string) => (): void => {
+        dispatch(MembersActions.openAddPermissionDialog(perm));
+      },
+      openRemovePermission: (permission: string, username: string) => (): void => {
+        dispatch(MembersActions.openRemovePermissionDialog({ username, permission }));
+      },
+    }),
   )(Component);

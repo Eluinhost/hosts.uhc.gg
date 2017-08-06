@@ -11,6 +11,7 @@ import {
 import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always } from 'ramda';
 import * as moment from 'moment';
+import { getAccessToken, getUsername, isLoggedIn } from './Selectors';
 
 export type HostingRules = {
   readonly content: string;
@@ -54,25 +55,25 @@ export const HostingRulesActions = {
     },
   setRules: (content: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<void> => {
-      const authState = getState().authentication;
+      const state = getState();
 
-      if (!authState.loggedIn) {
+      if (!isLoggedIn(state)) {
         dispatch(setRulesFetchError('User is not logged in'));
         throw new Error('User is not logged in');
       }
 
-      const accessToken = authState.data!.rawAccessToken;
+      const accessToken = getAccessToken(state);
 
       const optimistic: HostingRules = {
         content,
-        author: authState.data!.accessTokenClaims.username,
+        author: getUsername(state) || 'ERROR NO USERNAME IN STATE',
         modified: moment().utc(),
       };
 
       dispatch(startSetRulesFetch(optimistic));
 
       try {
-        await setHostingRules(content, accessToken);
+        await setHostingRules(content, accessToken || 'ERROR NO ACCESS TOKEN IN STATE');
 
         dispatch(endSetRulesFetch());
       } catch (err) {

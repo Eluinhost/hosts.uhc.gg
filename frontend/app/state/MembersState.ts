@@ -13,6 +13,7 @@ import {
 import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always, contains, concat, without } from 'ramda';
 import { ModLogEntry } from '../ModLogEntry';
+import { getAccessToken } from './Selectors';
 
 export type AddPermissionDialogState = {
   readonly permission: string;
@@ -130,7 +131,11 @@ export const MembersActions = {
       
       const state = getState();
 
-      await addPermission(state.members.dialogs.add.permission, username, state.authentication.data!.rawAccessToken);
+      await addPermission(
+        state.members.dialogs.add.permission,
+        username,
+        getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
+      );
 
       dispatch(permissionAddSuccess());
       dispatch(MembersActions.refetchModerationLog());
@@ -145,7 +150,7 @@ export const MembersActions = {
       await removePermission(
         state.members.dialogs.remove.permission, 
         state.members.dialogs.remove.username, 
-        state.authentication.data!.rawAccessToken,
+        getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
       );
 
       dispatch(permissionRemoveSuccess());

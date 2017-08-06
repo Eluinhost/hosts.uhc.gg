@@ -1,22 +1,25 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
-import { AuthenticationState, AuthenticationActions } from '../state/AuthenticationState';
+import { AuthenticationActions } from '../state/AuthenticationState';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LoginButton } from './LoginButton';
 import { Link } from 'react-router-dom';
+import { createSelector } from 'reselect';
+import { getUsername, isLoggedIn } from '../state/Selectors';
 
-type UsernameComponentProps = {
-  readonly authentication: AuthenticationState;
+type StateProps = {
+  readonly isLoggedIn: boolean;
+  readonly username: string | null;
 };
 
-type UsernameDispatchProps = {
+type DispatchProps = {
   readonly logout: () => void;
 };
 
-const UserMenu: React.SFC<UsernameDispatchProps> = ({ logout }) => (
+const UserMenu: React.SFC<DispatchProps> = ({ logout }) => (
   <Menu>
     <Link
       to="/profile"
@@ -34,37 +37,38 @@ const UserMenu: React.SFC<UsernameDispatchProps> = ({ logout }) => (
   </Menu>
 );
 
-const UsernameComponent: React.SFC<UsernameComponentProps & UsernameDispatchProps> =
-  ({ authentication, logout }) => {
-    if (authentication.loggedIn) {
+const UsernameComponent: React.SFC<StateProps & DispatchProps> =
+  ({ logout, username, isLoggedIn }) => {
+    if (isLoggedIn)
       return (
         <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
           <span className="pt-button pt-minimal pt-icon-user">
-            {authentication.data!.accessTokenClaims.username}
+            {username}
           </span>
         </Popover>
       );
-    }
 
     return <LoginButton />;
   };
 
-const mapStateToProps = (state: ApplicationState): UsernameComponentProps => ({
-  authentication: state.authentication,
-});
-
-const mapDispatchToProps =
-  (dispatch: Dispatch<ApplicationState>, ownProps: RouteComponentProps<any>): UsernameDispatchProps => ({
-    logout: (): void => {
-      dispatch(AuthenticationActions.logout());
-      ownProps.history.push('/');
-    },
-  });
+const stateSelector = createSelector<ApplicationState, boolean, string | null, StateProps>(
+  isLoggedIn,
+  getUsername,
+  (isLoggedIn, username) => ({
+    isLoggedIn,
+    username: username || 'ERROR NO USERNAME IN STORE',
+  }),
+);
 
 export const Username: React.ComponentClass = withRouter<{}>(
-  connect<UsernameComponentProps, UsernameDispatchProps, RouteComponentProps<any>>(
-    mapStateToProps,
-    mapDispatchToProps,
+  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
+    stateSelector,
+    (dispatch: Dispatch<ApplicationState>, ownProps: RouteComponentProps<any>): DispatchProps => ({
+      logout: (): void => {
+        dispatch(AuthenticationActions.logout());
+        ownProps.history.push('/');
+      },
+    }),
   )(UsernameComponent),
 );
 

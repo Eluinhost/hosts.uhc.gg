@@ -10,6 +10,7 @@ import {
 } from '../api/index';
 import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always } from 'ramda';
+import { getAccessToken, isLoggedIn } from './Selectors';
 
 export type ProfileState = {
   readonly apiKey: {
@@ -26,19 +27,19 @@ const apiKeyFetchError = createAction<string>('API_KEY_FETCH_ERROR');
 export const ProfileActions = {
   getApiKey: (): ThunkAction<Promise<string | null>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<string | null> => {
-      const authState = getState().authentication;
+      const state = getState();
 
-      if (!authState.loggedIn) {
+      if (!isLoggedIn(state)) {
         dispatch(apiKeyFetchError('User is not logged in'));
         throw new Error('User is not logged in');
       }
 
-      const accessToken = authState.data!.rawAccessToken;
+      const accessToken = getAccessToken(state);
 
       dispatch(startApiKeyFetch());
 
       try {
-        const currentKey = await getApiKey(accessToken);
+        const currentKey = await getApiKey(accessToken || 'ERROR NO ACCESS TOKEN IN STATE');
 
         dispatch(endApiKeyFetch(currentKey));
         return currentKey;
@@ -59,19 +60,19 @@ export const ProfileActions = {
     },
   regenerateApiKey: (): ThunkAction<Promise<string>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<string> => {
-      const authState = getState().authentication;
+      const state = getState();
 
-      if (!authState.loggedIn) {
+      if (!isLoggedIn(state)) {
         dispatch(apiKeyFetchError('User is not logged in'));
         throw new Error('User is not logged in');
       }
 
-      const accessToken = authState.data!.rawAccessToken;
+      const accessToken = getAccessToken(state);
 
       dispatch(startApiKeyFetch());
 
       try {
-        const newKey = await regenerateApiKey(accessToken);
+        const newKey = await regenerateApiKey(accessToken || 'ERROR NO ACCESS TOKEN IN STATE');
 
         dispatch(endApiKeyFetch(newKey));
 

@@ -16,6 +16,8 @@ import { presets } from './presets';
 import { Match } from '../../Match';
 import { HostFormActions } from '../../state/HostFormState';
 import * as moment from 'moment';
+import { getAccessToken, getUsername } from '../../state/Selectors';
+import { createSelector } from 'reselect';
 
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
@@ -164,12 +166,20 @@ class HostingPageComponent extends React.Component<
   }
 }
 
+const stateSelector =
+  createSelector<ApplicationState, string | null, CreateMatchData, string | null, HostingPageStateProps>(
+    getUsername,
+    valuesSelector,
+    getAccessToken,
+    (username, formValues, accessToken) => ({
+      formValues,
+      username: username || 'ERROR NO USERNAME IN STORE',
+      accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
+    }),
+  );
+
 export const HostingPage = connect<HostingPageStateProps, HostingPageDispatchProps, RouteComponentProps<any>>(
-  (state: ApplicationState): HostingPageStateProps => ({
-    username: state.authentication.data!.accessTokenClaims.username,
-    formValues: valuesSelector(state),
-    accessToken: state.authentication.data!.rawAccessToken,
-  }),
+  stateSelector,
   (dispatch: Dispatch<ApplicationState>): HostingPageDispatchProps => ({
     changeTemplate: (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
     getConflicts: (region: string, opens: moment.Moment) => dispatch(HostFormActions.getConflicts(region, opens)),
