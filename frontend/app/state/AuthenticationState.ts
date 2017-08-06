@@ -31,9 +31,16 @@ export type LoginPayload = {
   readonly refreshToken: string;
 };
 
+const clearTokens = createAction('CLEAR_LOGIN_TOKENS');
+
 export const AuthenticationActions = {
   login: createAction<LoginPayload>('SET_LOGIN_TOKENS'),
-  logout: createAction('LOGOUT'),
+  logout: (): ThunkAction<void, ApplicationState, {}> => (dispatch) => {
+    storage.removeItem(`${storageKey}.accessToken`);
+    storage.removeItem(`${storageKey}.refreshToken`);
+
+    dispatch(clearTokens());
+  },
   refreshIfRequired: (): ThunkAction<Promise<boolean>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<boolean> => {
       const state = getState();
@@ -85,7 +92,7 @@ export const AuthenticationActions = {
 
 export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
   .handle(AuthenticationActions.login, (state, action) => action.payload!)
-  .handle(AuthenticationActions.logout, () => ({
+  .handle(clearTokens, () => ({
     accessToken: null,
     refreshToken: null,
   }))
