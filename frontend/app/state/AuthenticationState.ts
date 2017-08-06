@@ -31,10 +31,16 @@ export type LoginPayload = {
   readonly refreshToken: string;
 };
 
+const setTokens = createAction<LoginPayload>('SET_LOGIN_TOKENS');
 const clearTokens = createAction('CLEAR_LOGIN_TOKENS');
 
 export const AuthenticationActions = {
-  login: createAction<LoginPayload>('SET_LOGIN_TOKENS'),
+  login: (tokens: LoginPayload): ThunkAction<void, ApplicationState, {}> => (dispatch) => {
+    storage.setItem(`${storageKey}.accessToken`, tokens.accessToken);
+    storage.setItem(`${storageKey}.refreshToken`, tokens.refreshToken);
+
+    dispatch(setTokens(tokens));
+  },
   logout: (): ThunkAction<void, ApplicationState, {}> => (dispatch) => {
     storage.removeItem(`${storageKey}.accessToken`);
     storage.removeItem(`${storageKey}.refreshToken`);
@@ -91,7 +97,7 @@ export const AuthenticationActions = {
 };
 
 export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
-  .handle(AuthenticationActions.login, (state, action) => action.payload!)
+  .handle(setTokens, (state, action) => action.payload!)
   .handle(clearTokens, () => ({
     accessToken: null,
     refreshToken: null,
