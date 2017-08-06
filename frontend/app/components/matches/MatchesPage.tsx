@@ -5,17 +5,22 @@ import { NoMatches } from './NoMatches';
 import { MatchRow } from './MatchRow';
 import { RouteComponentProps } from 'react-router';
 import { RemovalModal } from './RemovalModal';
+import { ApprovalModal } from './ApprovalModal';
 import { If } from '../If';
 
 export type MatchesPageDispatchProps = {
   readonly refetch: () => void;
-  readonly openModal: (id: number) => void;
-  readonly closeModal: () => void;
+  readonly openRemovalModal: (id: number) => void;
+  readonly openApprovalModal: (id: number) => void;
+  readonly closeRemovalModal: () => void;
+  readonly closeApprovalModal: () => void;
   readonly submitRemoval: (reason: string) => Promise<void>;
+  readonly submitApproval: () => Promise<void>;
 };
 
 export type MatchesPageStateProps = {
-  readonly isModalOpen: boolean;
+  readonly isRemovalModalOpen: boolean;
+  readonly isApprovalModalOpen: boolean;
   readonly isModerator: boolean;
   readonly username: string | null;
 } & MatchesState;
@@ -27,13 +32,15 @@ export class MatchesPage
   }
 
   renderMatches = (): React.ReactElement<any>[] => this.props.matches.map((match) => {
-    const onRemovePress = () => this.props.openModal(match.id);
+    const onRemovePress = () => this.props.openRemovalModal(match.id);
+    const onApprovePress = () => this.props.openApprovalModal(match.id);
 
     return (
       <MatchRow
         match={match}
         key={match.id}
         onRemovePress={onRemovePress}
+        onApprovePress={onApprovePress}
         canRemove={this.props.isModerator || this.props.username === match.author}
       />
     );
@@ -66,9 +73,14 @@ export class MatchesPage
         </If>
 
         <RemovalModal
-          isOpen={this.props.isModalOpen}
+          isOpen={this.props.isRemovalModalOpen}
           confirm={this.props.submitRemoval}
-          close={this.props.closeModal}
+          close={this.props.closeRemovalModal}
+        />
+        <ApprovalModal
+          isOpen={this.props.isApprovalModalOpen}
+          confirm={this.props.submitApproval}
+          close={this.props.closeApprovalModal}
         />
       </div>
     );

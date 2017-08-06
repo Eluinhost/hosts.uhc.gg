@@ -15,6 +15,7 @@ const renderConflict = (m: Match) => (
     match={m}
     canRemove={false}
     onRemovePress={noop}
+    onApprovePress={noop}
   />
 );
 

@@ -16,7 +16,8 @@ const stateSelector = createSelector<ApplicationState, boolean, string | null, M
     ...matches,
     isModerator,
     username,
-    isModalOpen: matches.removal.isModalOpen,
+    isRemovalModalOpen: matches.removal.isModalOpen,
+    isApprovalModalOpen: matches.approval.isModalOpen,
   }),
 );
 
@@ -25,8 +26,11 @@ export const MatchesPage: React.ComponentClass<RouteComponentProps<any>> =
     stateSelector,
     (dispatch: Dispatch<ApplicationState>): MatchesPageDispatchProps => ({
       refetch: () => dispatch(MatchesActions.refetch()),
-      closeModal: () => dispatch(MatchesActions.closeModal()),
-      openModal: (id: number) => dispatch(MatchesActions.askForReason(id)),
+      closeRemovalModal: () => dispatch(MatchesActions.closeRemovalModal()),
+      closeApprovalModal: () => dispatch(MatchesActions.closeApprovalModal()),
+      openRemovalModal: (id: number) => dispatch(MatchesActions.askForRemovalReason(id)),
+      openApprovalModal: (id: number) => dispatch(MatchesActions.askForApproval(id)),
       submitRemoval: (reason: string) => dispatch(MatchesActions.confirmRemove(reason)),
+      submitApproval: () => dispatch(MatchesActions.confirmApproval()),
     }),
   )(Component);

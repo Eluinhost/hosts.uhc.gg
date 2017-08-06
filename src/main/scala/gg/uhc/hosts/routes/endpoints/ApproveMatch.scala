@@ -15,7 +15,7 @@ class ApproveMatch(customDirectives: CustomDirectives, database: Database) {
         requirePermission("moderator", authentication.username) {
           requireSucessfulQuery(database.approveMatch(id, authentication.username)) {
             case false ⇒ complete(StatusCodes.NotFound) // None updated
-            case _     ⇒ complete(StatusCodes.NoContent)
+            case _     ⇒ complete(StatusCodes.OK)
           }
         }
       }

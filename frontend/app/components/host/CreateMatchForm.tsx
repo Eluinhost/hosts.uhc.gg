@@ -300,6 +300,7 @@ class CreateMatchFormComponent
             match={preview}
             canRemove={false}
             onRemovePress={noop}
+            onApprovePress={noop}
           />
         </fieldset>
 

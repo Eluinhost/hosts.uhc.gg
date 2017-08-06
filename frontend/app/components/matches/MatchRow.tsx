@@ -2,15 +2,15 @@ import * as React from 'react';
 import { Match } from '../../Match';
 import { TeamStyle } from './TeamStyle';
 import { renderTagList } from './renderTagList';
-import { Dialog, Intent, Tag } from '@blueprintjs/core';
+import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
-import { RemoveMatchButton } from './RemoveMatchButton';
 import { Markdown } from '../Markdown';
 import { If } from '../If';
 
 export type MatchRowProps = {
   readonly match: Match;
   readonly onRemovePress: () => void;
+  readonly onApprovePress: () => void;
   readonly canRemove: boolean;
 };
 
@@ -28,6 +28,11 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
   };
 
   onClick = (): void => this.setState(prev => ({ isOpen: !prev.isOpen }));
+
+  onApprovePress = (event: React.MouseEvent<HTMLElement>): void => {
+    event.stopPropagation();
+    this.props.onApprovePress();
+  }
 
   onRemovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
@@ -53,21 +58,6 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             {match.id}
           </span>
         </div>
-        <If condition={canRemove && !match.removed}>
-          <div className="match-moderation-actions">
-            <RemoveMatchButton onClick={this.onRemovePress}/>
-            <Dialog
-              isOpen={this.state.isOpen}
-              onClose={this.onClick}
-              title={`${match.author}'s #${match.count}`}
-              className="match-row-dialog pt-dark"
-            >
-              <div className="pt-dialog-body">
-                <Markdown markdown={match.content} />
-              </div>
-            </Dialog>
-          </div>
-        </If>
         <div className="match-content">
           <h4>
             <span>{match.author}</span>
@@ -97,6 +87,54 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         <If condition={match.removed}>
           <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>
         </If>
+        <div className="match-moderation-actions">
+          <If condition={!match.removed}>
+            <span>
+              <If condition={canRemove && !match.approvedBy}>
+                <Button
+                  intent={Intent.SUCCESS}
+                  rightIconName="tick"
+                  onClick={this.onApprovePress}
+                >
+                  Approve
+                </Button>
+              </If>
+
+              <If condition={!!match.approvedBy}>
+                <Tag
+                  className="pt-large pt-minimal"
+                  intent={Intent.SUCCESS}
+                  title={`Approved by /u/${match.approvedBy}`}
+                >
+                  Approved
+                </Tag>
+              </If>
+
+              <If condition={canRemove}>
+                <span>
+                  <Button
+                    intent={Intent.DANGER}
+                    rightIconName="delete"
+                    onClick={this.onRemovePress}
+                  >
+                    Remove
+                  </Button>
+
+                  <Dialog
+                    isOpen={this.state.isOpen}
+                    onClose={this.onClick}
+                    title={`${match.author}'s #${match.count}`}
+                    className="match-row-dialog pt-dark"
+                  >
+                    <div className="pt-dialog-body">
+                      <Markdown markdown={match.content} />
+                    </div>
+                  </Dialog>
+                </span>
+              </If>
+            </span>
+          </If>
+        </div>
       </div>
     );
   }

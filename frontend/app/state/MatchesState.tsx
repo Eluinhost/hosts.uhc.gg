@@ -4,6 +4,7 @@ import { Match } from '../Match';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
 import {
+  approveMatch,
   fetchUpcomingMatches,
   ForbiddenError,
   NotAuthenticatedError,
@@ -15,7 +16,7 @@ import { Reducer } from 'redux';
 import { AuthenticationActions } from './AuthenticationState';
 import { getAccessToken, getUsername } from './Selectors';
 
-export type MatchRemovalModelState = {
+export type MatchModelState = {
   readonly isModalOpen: boolean;
   readonly targettedId: number | null;
 };
@@ -24,7 +25,8 @@ export type MatchesState = {
   readonly matches: Match[];
   readonly fetching: boolean;
   readonly error: string | null;
-  readonly removal: MatchRemovalModelState;
+  readonly removal: MatchModelState;
+  readonly approval: MatchModelState;
 };
 
 const startFetch = createAction('MATCHES_START_FETCH');
@@ -41,9 +43,21 @@ const endRemoval = createAction('MATCHES_END_REMOVAL');
 const removalError = createAction<number>('MATCHES_REMOVAL_ERROR');
 
 const setRemovalTarget = createAction<number>('MATCHES_SET_REMOVAL_TARGET');
-const openModal = createAction('MATCHES_OPEN_MODAL');
+const openRemovalModal = createAction('MATCHES_OPEN_REMOVAL_MODAL');
+
+type StartApprovalPayload = {
+  id: number;
+  user: string;
+};
+const startApproval = createAction<StartApprovalPayload>('MATCHES_START_APPROVAL');
+const endApproval = createAction('MATCHES_END_APPROVAL');
+const approvalError = createAction<number>('MATCHES_APPROVAL_ERROR');
+
+const openApprovalModal = createAction('MATCHES_OPEN_APPROVAL_MODAL');
+const setApprovalTarget = createAction<number>('MATCHES_SET_APPROVAL_TARGET');
 
 export const MatchesActions = {
+
   /**
    * Refetches match list
    */
@@ -72,9 +86,13 @@ export const MatchesActions = {
   /**
    * Shows modal for confirmation
    */
-  askForReason: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
+  askForRemovalReason: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
     dispatch(setRemovalTarget(id));
-    dispatch(openModal());
+    dispatch(openRemovalModal());
+  },
+  askForApproval: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
+    dispatch(setApprovalTarget(id));
+    dispatch(openApprovalModal());
   },
   /**
    * Sends actual deletion request
@@ -102,9 +120,35 @@ export const MatchesActions = {
       }
     },
   /**
+   * Sends actual approval request
+   */
+  confirmApproval: (): ThunkAction<Promise<void>, ApplicationState, {}> =>
+    async (dispatch, getState): Promise<void> => {
+      const state = getState();
+
+      const id = state.matches.approval.targettedId!;
+
+      dispatch(startApproval({ id, user: getUsername(state) || 'ERROR NO USERNAME IN STATE' }));
+
+      try {
+        await approveMatch(id, getAccessToken(state) || 'ERROR NO AUTHENTICATION TOKEN IN STATE');
+
+        dispatch(endApproval());
+      } catch (err) {
+        dispatch(approvalError(id));
+
+        if (err instanceof NotAuthenticatedError || err instanceof ForbiddenError) {
+          dispatch(AuthenticationActions.logout());
+        }
+
+        throw err;
+      }
+    },
+  /**
    * Simply closes the removal modal, a 'cancel' action
    */
-  closeModal: createAction('MATCHES_CLOSE_MODAL'),
+  closeRemovalModal: createAction('MATCHES_CLOSE_REMOVAL_MODAL'),
+  closeApprovalModal: createAction('MATCHES_CLOSE_APPROVAL_MODAL'),
   updateReason: createAction<string>('MATCHES_UPDATE_REASON'),
 };
 
@@ -128,13 +172,28 @@ export const reducer: Reducer<MatchesState> =
         targettedId: always(action.payload),
       },
     }))
-    .handleEvolve(openModal, {
+    .handleEvolve(setApprovalTarget, (action: Action<number>) => ({
+      approval: {
+        targettedId: always(action.payload),
+      },
+    }))
+    .handleEvolve(openRemovalModal, {
       removal: {
         isModalOpen: T,
       },
     })
-    .handleEvolve(MatchesActions.closeModal, {
+    .handleEvolve(MatchesActions.closeRemovalModal, {
       removal: {
+        isModalOpen: F,
+      },
+    })
+    .handleEvolve(openApprovalModal, {
+      approval: {
+        isModalOpen: T,
+      },
+    })
+    .handleEvolve(MatchesActions.closeApprovalModal, {
+      approval: {
         isModalOpen: F,
       },
     })
@@ -162,6 +221,26 @@ export const reducer: Reducer<MatchesState> =
         ),
       ),
     }))
+    .handleEvolve(startApproval, (action: Action<StartApprovalPayload>) => ({
+      matches: map(
+        when(
+          propEq('id', action.payload!.id),
+          evolve({
+            approvedBy: always(action.payload!.user),
+          }),
+        ),
+      ),
+    }))
+    .handleEvolve(approvalError, (action: Action<number>) => ({
+      matches: map(
+        when(
+          propEq('id', action.payload!),
+          evolve({
+            approvedBy: always(null),
+          }),
+        ),
+      ),
+    }))
     .build();
 
 export const initialValues = async (): Promise<MatchesState> => ({
@@ -169,6 +248,10 @@ export const initialValues = async (): Promise<MatchesState> => ({
   fetching: false,
   error: null,
   removal: {
+    targettedId: null,
+    isModalOpen: false,
+  },
+  approval: {
     targettedId: null,
     isModalOpen: false,
   },

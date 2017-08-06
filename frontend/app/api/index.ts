@@ -56,6 +56,18 @@ export const removeMatch = (id: number, reason: string, accessToken: string): Pr
   ).then(verifyStatus(204))
     .then(always(undefined));
 
+export const approveMatch = (id: number, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/matches/${id}/approve`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(200))
+    .then(always(undefined));
+
 export type CreateMatchData = {
   opens: moment.Moment;
   address: string | null;
