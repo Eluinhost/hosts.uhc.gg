@@ -42,7 +42,7 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
         <pre>
           <span>CURRENT KEY: </span>
           <If condition={!!key} alternative={<span>NO API KEY GENERATED YET</span>}>
-            {key}
+            <span>{key}</span>
           </If>
         </pre>
         <Button intent={Intent.DANGER} onClick={resetStorage}>Reset All Data</Button>
