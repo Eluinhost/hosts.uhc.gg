@@ -87,6 +87,16 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         <If condition={match.removed}>
           <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>
         </If>
+        <Dialog
+          isOpen={this.state.isOpen}
+          onClose={this.onClick}
+          title={`${match.author}'s #${match.count}`}
+          className="match-row-dialog pt-dark"
+        >
+          <div className="pt-dialog-body">
+            <Markdown markdown={match.content} />
+          </div>
+        </Dialog>
         <div className="match-moderation-actions">
           <If condition={!match.removed}>
             <span>
@@ -111,26 +121,13 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
               </If>
 
               <If condition={canRemove}>
-                <span>
-                  <Button
-                    intent={Intent.DANGER}
-                    rightIconName="delete"
-                    onClick={this.onRemovePress}
-                  >
-                    Remove
-                  </Button>
-
-                  <Dialog
-                    isOpen={this.state.isOpen}
-                    onClose={this.onClick}
-                    title={`${match.author}'s #${match.count}`}
-                    className="match-row-dialog pt-dark"
-                  >
-                    <div className="pt-dialog-body">
-                      <Markdown markdown={match.content} />
-                    </div>
-                  </Dialog>
-                </span>
+                <Button
+                  intent={Intent.DANGER}
+                  rightIconName="delete"
+                  onClick={this.onRemovePress}
+                >
+                  Remove
+                </Button>
               </If>
             </span>
           </If>
