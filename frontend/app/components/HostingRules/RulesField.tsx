@@ -25,8 +25,8 @@ const PreviewTab: React.SFC<WrappedFieldProps<any> & RulesFieldProps> = ({ input
 const RulesFieldComponent: React.SFC<WrappedFieldProps<any> & RulesFieldProps> = props => (
   <FieldWrapper meta={props.meta} required={props.required} hideErrors>
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
-      <If condition={!!this.props.label}>
-        <RenderLabel label={this.props.label!} required={this.props.required} />
+      <If condition={!!props.label}>
+        <RenderLabel label={props.label!} required={props.required} />
       </If>
       <Tabs2 id="rules-form-tabs">
         <Tab2 id="rules-form-rules" title="Template" panel={<RulesTab {...props}/>}/>
