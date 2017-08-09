@@ -1,0 +1,446 @@
+openapi: '3.0.0'
+info:
+  title: API Documentation
+  description: API Documentation
+  version: 0.0.0
+
+servers:
+  - url: 'https://hosts.uhc.gg/api'
+    description: 'Live server'
+  - url: 'http://localhost:10000/api'
+    description: 'Development server'
+
+components:
+  securitySchemes:
+    UserApiToken:
+      type: http
+      description: "User-specific tokens that can be generated and regenerated via the website"
+      scheme: basic
+    SiteApiToken:
+      type: http
+      description: "Tokens meant specifically for the website but can be used outside if you want to handle short-lived tokens"
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Bad/malformed data supplied or data did not pass validation. Response body should contain a reason why the request was rejected
+    UnauthorizedError:
+      description: API key is missing or invalid
+    ForbiddenError:
+      description: You don't have permission to use this endpoint
+  schemas:
+    SyncResponse:
+      type: string
+      example: '2017-08-10T09:11:22.031Z'
+    SetRulesRequest:
+      type: string
+      example: Some *markdown* rules
+    RulesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'The revision # of the rules'
+        author:
+          type: string
+          description: The name of the user that created this revision
+        modified:
+          type: string
+          description: The date that this revision was created
+        content:
+          type: string
+          description: Markdown version of the rules
+      example:
+        id: 10
+        author: test
+        modified: '2017-08-07T10:22:11.145415Z'
+        content: '#RULES HERE'
+    MatchResponse:
+      type: object
+      required:
+        - id
+        - author
+        - opens
+        - ip
+        - scenarios
+        - tags
+        - teams
+        - count
+        - content
+        - region
+        - removed
+        - created
+        - roles
+        - location
+        - version
+        - slots
+        - length
+        - mapSizeX
+        - mapSizeZ
+        - pvpEnabledAt
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this match
+        author:
+          type: string
+          description: The username of the creator/host
+        opens:
+          type: string
+          description: The time that this match opens
+        address:
+          type: string
+          description: Domain name to join (optional)
+        ip:
+          type: string
+          description: IP + (optional) port combo for direct connect to the server
+        scenarios:
+          type: array
+          description: A list of scenarios that will be hosted
+          items:
+            type: string
+        tags:
+          type: array
+          description: A list of 'tags'
+          items:
+            type: string
+        teams:
+          type: string
+          description: The team style ID
+          enum:
+            - ffa
+            - chosen
+            - random
+            - captains
+            - picked
+            - market
+            - mystery
+            - rvb
+            - custom
+        size:
+          type: number
+          description: The team size (optional), not all teams require a size, this field
+            will be null for those
+        customStyle:
+          type: string
+          description: Will only be defined if `teams` === 'custom'
+        count:
+          type: number
+          description: The match count of the host
+        content:
+          type: string
+          description: Markdown content of the match post
+        region:
+          type: string
+          enum:
+            - NA
+            - SA
+            - AS
+            - EU
+            - AF
+            - OC
+        removed:
+          type: boolean
+          description: Whether a moderator has removed this match or not
+        removedBy:
+          type: string
+          description: Only defined if `removed` is true. The username of the account that
+            did the removal
+        removedReason:
+          type: string
+          description: Only defined if `removed` is true. The reason that `removedBy` removed
+            the match
+        created:
+          type: string
+          description: The date that the match was posted
+        roles:
+          type: array
+          description: A list of roles that the host has
+          items:
+            type: string
+        location:
+          type: string
+          description: The free-text location of the server
+        version:
+          type: string
+          description: The version of Minecraft the server accepts
+        slots:
+          type: number
+          description: How many slots are available on the server
+        length:
+          type: number
+          description: How long the match is in minutes
+        mapSizeX:
+          type: number
+          description: How big is the map on the X coordinates
+        mapSizeZ:
+          type: number
+          description: How big is the map on the Z coordinates
+        pvpEnabledAt:
+          type: boolean
+          description: How long into the match will PVP be enabled (in minutes)
+        approvedBy:
+          type: string
+          description: If defined, the username that approved the match
+      example:
+        id: 3
+        author: ghowden
+        opens: '2017-08-28T15:15:00Z'
+        address: example.com
+        ip: '255.0.0.255:5000'
+        scenarios:
+          - Vanilla+
+        tags:
+          - TEST
+        teams: chosen
+        size: 3
+        customStyle: null
+        count: 10
+        content: test content
+        region: NA
+        removed: true
+        removedBy: ghowden
+        removedReason: test removal
+        created: '2017-08-09T13:29:43.966Z'
+        roles:
+          - moderator
+          - trial host
+        location: test
+        version: "1.8.8"
+        slots: 80
+        length: 90
+        mapSizeX: 1500
+        mapSizeZ: 1500
+        pvpEnabledAt: 20
+        approvedBy: everyone
+    CreateMatchRequest:
+      type: object
+      required:
+        - opens
+        - ip
+        - scenarios
+        - tags
+        - teams
+        - count
+        - content
+        - region
+        - location
+        - version
+        - slots
+        - length
+        - mapSizeX
+        - mapSizeZ
+        - pvpEnabledAt
+      properties:
+        opens:
+          type: string
+          description: The time that this match will open
+        address:
+          type: string
+          description: Domain name to join (optional)
+        ip:
+          type: string
+          description: IP + (optional) port combo for direct connect to the server
+        scenarios:
+          type: array
+          description: A list of scenarios that will be hosted
+          items:
+            type: string
+        tags:
+          type: array
+          description: A list of 'tags'
+          items:
+            type: string
+        teams:
+          type: string
+          description: The team style ID
+          enum:
+            - ffa
+            - chosen
+            - random
+            - captains
+            - picked
+            - market
+            - mystery
+            - rvb
+            - custom
+        size:
+          type: number
+          description: The team size (optional), not all teams require a size, this field will be null for those
+        customStyle:
+          type: string
+          description: Will only need to be defined if `teams` === 'custom'
+        count:
+          type: number
+          description: The match count of the host
+        content:
+          type: string
+          description: Markdown content of the match post
+        region:
+          type: string
+          enum:
+            - NA
+            - SA
+            - AS
+            - EU
+            - AF
+            - OC
+        location:
+          type: string
+          description: The free-text location of the server
+        version:
+          type: string
+          description: The version of Minecraft the server accepts
+        slots:
+          type: number
+          description: How many slots are available on the server
+        length:
+          type: number
+          description: How long the match is in minutes
+        mapSizeX:
+          type: number
+          description: How big is the map on the X coordinates
+        mapSizeZ:
+          type: number
+          description: How big is the map on the Z coordinates
+        pvpEnabledAt:
+          type: boolean
+          description: How long into the match will PVP be enabled (in minutes)
+      example:
+        opens: '2017-08-28T15:15:00Z'
+        address: example.com
+        ip: '255.0.0.255:5000'
+        scenarios:
+          - Vanilla+
+        tags:
+          - TEST
+        teams: chosen
+        size: 3
+        customStyle: null
+        count: 10
+        content: test content
+        region: NA
+        location: test
+        version: "1.8.8"
+        slots: 80
+        length: 90
+        mapSizeX: 1500
+        mapSizeZ: 1500
+        pvpEnabledAt: 20
+
+
+paths:
+  /sync:
+    get:
+      tags:
+        - Misc
+      summary: Returns the server time (UTC)
+      description: Used by calendar to show correct UTC times independent of the users PC
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+  /rules:
+    get:
+      tags:
+        - Rules
+      summary: Returns the hosting rules
+      description: Shows the latest revision of the hosting rules, older versions are
+        stored by the server but are unfetchable currently
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+    post:
+      tags:
+        - Rules
+      security:
+        - UserApiToken: []
+        - SiteApiToken: []
+      summary: Update the hosting rules
+      description: Overwrites the hosting rules with new content, requires authentication
+        as a 'moderator' account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetRulesRequest'
+      responses:
+        '201':
+          description: Rules updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /matches:
+    get:
+      tags:
+        - Matches
+      summary: Returns a list of upcoming matches
+      description: Show matches that open after 30 minutes ago. Does not filter out removed
+        matches
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchResponse'
+    post:
+      tags:
+        - Matches
+      security:
+        - ApiToken: []
+      summary: Posts a new match
+      description: Attempts to post a new match. Requires 'trial host' or 'host' role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMatchRequest'
+      responses:
+        '200':
+          description: Success, returns the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  '/matches/{id}':
+    get:
+      tags:
+        - Matches
+      summary: Get a specific match
+      description: Fetches data from a specific match, even if it opened a long time ago
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+
