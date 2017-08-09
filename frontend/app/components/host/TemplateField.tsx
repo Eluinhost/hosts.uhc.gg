@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
-import * as Snuownd from 'snuownd';
 import * as Mark from 'markup-js';
 import * as moment from 'moment';
 import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
 import { memoize } from 'ramda';
 import { If } from '../If';
-
-const parser = Snuownd.getParser();
+import { Markdown } from '../Markdown';
 
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement<any> | string;
@@ -26,15 +24,12 @@ export const renderToMarkdown = (template: string, context: any): string => Mark
   },
 });
 
-export const renderToHtml = (template: string, context: any): string =>
-  parser.render(renderToMarkdown(template, context));
-
 const TemplateTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, disabled }) => (
   <textarea {...input} disabled={disabled} className="pt-fill pt-input" rows={15}/>
 );
 
 const PreviewTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, context }) => (
-  <pre dangerouslySetInnerHTML={{ __html: renderToHtml(input!.value, context) }} />
+  <Markdown markdown={renderToMarkdown(input!.value, context)}/>
 );
 
 const samples = [
