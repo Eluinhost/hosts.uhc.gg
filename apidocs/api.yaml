@@ -401,7 +401,8 @@ paths:
       tags:
         - Matches
       security:
-        - ApiToken: []
+        - UserApiToken: []
+        - SiteApiToken: []
       summary: Posts a new match
       description: Attempts to post a new match. Requires 'trial host' or 'host' role
       requestBody:
@@ -443,4 +444,237 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MatchResponse'
-
+        '404':
+          description: Could not find a match with the given ID
+    delete:
+      tags:
+        - Matches
+      security:
+        - UserApiToken: []
+        - SiteApiToken: []
+      summary: Remove a match
+      description: Removes a match, requires the `moderator` role, cannot be reversed
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to remove
+      responses:
+        '204':
+          description: Match removed
+        '404':
+          description: Could not find a match with the given ID
+  '/matches/{id}/approve':
+    post:
+      tags:
+        - Matches
+      security:
+        - UserApiToken: []
+        - SiteApiToken: []
+      summary: Approve a match
+      description: Approves a match, requires `moderator` role
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to get
+      responses:
+        '200':
+          description: Success
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find a match with the given ID
+  '/matches/conflicts/{region}/{time}':
+    get:
+      tags:
+        - Matches
+      summary: Check for potential conflicts
+      description: Shows matches +-15 minutes of the given time and region
+      parameters:
+        - in: path
+          name: region
+          required: true
+          description: The region to check in
+          schema:
+            type: string
+            enum:
+              - NA
+              - SA
+              - AS
+              - EU
+              - AF
+              - OC
+          example: OC
+        - in: path
+          name: time
+          required: true
+          description: The time to check around
+          schema:
+            type: string
+          example: '2017-08-07T10:22:11.145415Z'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchResponse'
+  /permissions:
+    get:
+      tags:
+        - Permissions
+      summary: List all users with roles
+      description: Shows all users grouped by role
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                description: a map of role name to members of each role
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                    description: username
+                example:
+                  trial host:
+                    - user 1
+                    - user 2
+                    - user 3
+                  host:
+                    - user 4
+                    - user 5
+                  moderator:
+                    - user 3
+                    - user 5
+  /permissions/log:
+    get:
+      tags:
+        - Permissions
+      summary: Lists log of permissions changes
+      description: Lists a recent history of permissions changes
+      parameters:
+        - in: query
+          name: before
+          schema:
+            type: integer
+          description: If defined only shows items before the given ID
+        - in: query
+          name: count
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          description: How many to return
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                  - id: 10
+                    modifier: ghowden
+                    username: LeonTG77
+                    at: '2017-08-07T10:22:11.145415Z'
+                    permission: host
+                    added: false
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      required: true
+                      description: The unique ID of this log
+                    modifier:
+                      type: string
+                      required: true
+                      description: The username of the user that did this action
+                    username:
+                      type: string
+                      required: true
+                      description: The username of the user that was modified
+                    at:
+                      type: string
+                      required: true
+                      description: The time that the modification occurred
+                    permission:
+                      type: string
+                      required: true
+                      description: The name of the role that was added/removed
+                    added:
+                      type: boolean
+                      required: true
+                      description: Whether the role was added or removed
+  /permissions/{username}/{permission}:
+    post:
+      tags:
+        - Permissions
+      summary: Adds a permission to a user
+      description: Adds the given permission to the given username, requires moderator role
+      security:
+        - SiteApiToken: []
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: What user to give the role to
+        - in: path
+          name: permission
+          schema:
+            type: string
+            description: The name of the role to grant
+          required: true
+      responses:
+        '201':
+          description: Role added
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+    delete:
+      tags:
+        - Permissions
+      summary: Removes a permission from a user
+      description: Removes the given permission from the given username, requires moderator role
+      security:
+        - SiteApiToken: []
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: What user to give the role to
+        - in: path
+          name: permission
+          schema:
+            type: string
+            description: The name of the role to grant
+          required: true
+      responses:
+        '204':
+          description: Role removed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'

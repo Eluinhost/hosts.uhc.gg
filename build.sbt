@@ -17,6 +17,9 @@ mappings in Universal += {
   ((resourceDirectory in Compile).value / "reference.conf") → "conf/reference.conf"
 }
 
+// For api docs
+mappings in Universal ++= directory(baseDirectory.value / "apidocs")
+
 // Dont' package in zip in subdir
 topLevelDirectory := None
 

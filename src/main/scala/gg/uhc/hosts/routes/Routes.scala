@@ -71,6 +71,8 @@ class Routes(
 
   val sync: Route = (get & pathEndOrSingleSlash)(timeSync.route)
 
+  val docs: Route = getFromDirectory("apidocs")
+
   val api: Route = pathPrefix("api") {
     respondWithHeader(`Access-Control-Allow-Origin`.*) {
       concat(
@@ -78,7 +80,8 @@ class Routes(
         pathPrefix("rules")(rules),
         pathPrefix("matches")(matches),
         pathPrefix("permissions")(permissions),
-        pathPrefix("key")(key)
+        pathPrefix("key")(key),
+        pathPrefix("docs")(docs)
       ) ~ complete(StatusCodes.NotFound)
     }
   }
