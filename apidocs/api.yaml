@@ -412,8 +412,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateMatchRequest'
       responses:
-        '200':
-          description: Success, returns the stored data
+        '201':
+          description: Created, returns the stored data
           content:
             application/json:
               schema:
