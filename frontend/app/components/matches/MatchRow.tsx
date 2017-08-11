@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Match } from '../../Match';
 import { TeamStyle } from './TeamStyle';
-import { renderTagList } from './renderTagList';
+import { TagList } from './TagList';
 import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { Markdown } from '../Markdown';
@@ -73,8 +73,8 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             <span> | PVP: {match.pvpEnabledAt}m</span>
           </h6>
           <div className="match-tags">
-            {renderTagList(Intent.WARNING, 'tags', match.tags)}
-            {renderTagList(Intent.DANGER, 'scenarios', match.scenarios)}
+            <TagList intent={Intent.WARNING} title="Tag" items={match.tags} />
+            <TagList intent={Intent.DANGER} title="Scenario" items={match.scenarios} />
           </div>
           <div className="server-tags">
             <ServerTag title="Server IP" text={match.ip}/>
