@@ -38,7 +38,6 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
   render() {
     const { meta, label, required, datePickerProps, input, disabled, timePickerProps, children } = this.props;
 
-    console.log(meta);
     return (
       <FieldWrapper
         meta={meta}
