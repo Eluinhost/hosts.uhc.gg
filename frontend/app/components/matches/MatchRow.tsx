@@ -6,6 +6,7 @@ import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { Markdown } from '../Markdown';
 import { If } from '../If';
+import { WithPermission } from "../WithPermission";
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -97,10 +98,12 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             <Markdown markdown={match.content} />
           </div>
         </Dialog>
-        <div className="match-moderation-actions">
-          <If condition={!match.removed}>
-            <span>
-              <If condition={canRemove && !match.approvedBy}>
+
+        {/* Only show actions if the match isn't removed. Removed matches shouldn't be modified */}
+        <If condition={!match.removed}>
+          <div className="match-moderation-actions">
+            <If condition={!match.approvedBy}>
+              <WithPermission permission="moderator">
                 <Button
                   intent={Intent.SUCCESS}
                   rightIconName="tick"
@@ -108,30 +111,30 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
                 >
                   Approve
                 </Button>
-              </If>
+              </WithPermission>
+            </If>
 
-              <If condition={!!match.approvedBy}>
-                <Tag
-                  className="pt-large pt-minimal"
-                  intent={Intent.SUCCESS}
-                  title={`Approved by /u/${match.approvedBy}`}
-                >
-                  Approved
-                </Tag>
-              </If>
+            <If condition={!!match.approvedBy}>
+              <Tag
+                className="pt-large pt-minimal"
+                intent={Intent.SUCCESS}
+                title={`Approved by /u/${match.approvedBy}`}
+              >
+                Approved
+              </Tag>
+            </If>
 
-              <If condition={canRemove}>
-                <Button
-                  intent={Intent.DANGER}
-                  rightIconName="delete"
-                  onClick={this.onRemovePress}
-                >
-                  Remove
-                </Button>
-              </If>
-            </span>
-          </If>
-        </div>
+            <If condition={canRemove}>
+              <Button
+                intent={Intent.DANGER}
+                rightIconName="delete"
+                onClick={this.onRemovePress}
+              >
+                Remove
+              </Button>
+            </If>
+          </div>
+        </If>
       </div>
     );
   }
