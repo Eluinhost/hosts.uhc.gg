@@ -118,6 +118,11 @@ class HostingPageComponent extends React.Component<
       content: renderToMarkdown(values.content, this.createTemplateContext(values)),
     };
 
+    // Remove the team size if it isn't required to avoid potential non-ints being sent and rejected at decoding
+    if (!TeamStyles.find(it => it.value === values.teams)!.requiresTeamSize) {
+      withRenderedTemplate.size = null;
+    }
+
     try {
       // fire API call
       await createMatch(withRenderedTemplate, this.props.accessToken);
