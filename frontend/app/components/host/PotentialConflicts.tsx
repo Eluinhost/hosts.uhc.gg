@@ -24,7 +24,7 @@ const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching }) =>
     return <NonIdealState visual={<Spinner />} title="Checking..." />;
 
   if (error)
-    return <NonIdealState visual="warning-sign" title="Failed to check for potentical conflicts" />;
+    return <NonIdealState visual="warning-sign" title="Failed to check for potential conflicts" />;
 
   if (!data.length)
     return <NonIdealState visual="tick" title="No conflicts found"/>;
