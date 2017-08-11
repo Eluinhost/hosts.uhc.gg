@@ -78,6 +78,7 @@ class CreateMatchFormComponent
   componentWillMount() {
     // update the conflicts when form first loads
     this.props.recheckConflicts(this.props.currentValues.region, this.props.currentValues.opens);
+    this.props.asyncValidate();
   }
 
   render() {
