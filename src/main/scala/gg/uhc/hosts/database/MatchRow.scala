@@ -3,7 +3,7 @@ package gg.uhc.hosts.database
 import java.time.Instant
 
 case class MatchRow(
-    id: Int,
+    id: Long,
     author: String,
     opens: Instant,
     address: Option[String],

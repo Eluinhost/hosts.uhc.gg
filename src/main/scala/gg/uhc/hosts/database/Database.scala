@@ -57,11 +57,11 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def listMatches: ConnectionIO[List[MatchRow]] =
     queries.listMathes.list
 
-  def matchById(id: Int): ConnectionIO[Option[MatchRow]] =
+  def matchById(id: Long): ConnectionIO[Option[MatchRow]] =
     queries.matchById(id).option
 
-  def insertMatch(m: MatchRow): ConnectionIO[Int] =
-    queries.insertMatch(m).run
+  def insertMatch(m: MatchRow): ConnectionIO[Long] =
+    queries.insertMatch(m).withUniqueGeneratedKeys[Long]("id")
 
   def removeMatch(id: Long, reason: String, remover: String): ConnectionIO[Int] =
     queries.removeMatch(id, reason, remover).run

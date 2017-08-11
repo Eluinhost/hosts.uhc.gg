@@ -16,7 +16,7 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import directives._
 
-  def fetchData(id: Int): ConnectionIO[Option[MatchRowResponse]] =
+  def fetchData(id: Long): ConnectionIO[Option[MatchRowResponse]] =
     (for {
       row ← OptionT[ConnectionIO, MatchRow] {
         database.matchById(id)
@@ -54,7 +54,7 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
         roles = perms
       )).run
 
-  def route(id: Int): Route =
+  def route(id: Long): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(fetchData(id)) {
         case None    ⇒ complete(StatusCodes.NotFound)

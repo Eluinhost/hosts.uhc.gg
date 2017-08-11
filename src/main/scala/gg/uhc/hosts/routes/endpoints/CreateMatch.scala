@@ -10,7 +10,7 @@ import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.database.MatchRow
-import gg.uhc.hosts.routes.{CustomDirectives, DatabaseErrorRejection}
+import gg.uhc.hosts.routes.CustomDirectives
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
@@ -116,9 +116,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
         validate(
           """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(row.ip).exists { m ⇒
             val octets = (1 to 4).map(m.group).map(_.toInt).forall(i ⇒ i >= 0 && i <= 255)
-            val port = Option(m.group(5)).map(_.toInt)
+            val port   = Option(m.group(5)).map(_.toInt)
 
-            octets && port.isEmpty || port.exists(p => p<= 65535 && p >= 1)
+            octets && port.isEmpty || port.exists(p => p <= 65535 && p >= 1)
           },
           "Invalid IP address supplied"
         ) &
@@ -157,12 +157,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
     }
   }
 
-  private[this] def requireInsertMatch(m: MatchRow): Directive0 =
-    requireSucessfulQuery(database.insertMatch(m)) flatMap {
-      case 0 ⇒ reject(DatabaseErrorRejection(new IllegalStateException("no rows inserted")))
-      case _ ⇒ pass
-    }
-
   val route: Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
@@ -170,8 +164,8 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
           // parse the entity
           entity(as[CreateMatchPayload]) { entity ⇒
             convertPayload(entity, session.username) { row ⇒
-              (validateRow(row) & requireInsertMatch(row)) {
-                complete(StatusCodes.Created → row)
+              (validateRow(row) & requireSucessfulQuery(database.insertMatch(row))) { id ⇒
+                complete(StatusCodes.Created → row.copy(id = id))
               }
             }
           }

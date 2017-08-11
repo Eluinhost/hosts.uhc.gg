@@ -55,7 +55,7 @@ class Queries(logger: LogHandler) {
        ORDER BY opens ASC
     """.asInstanceOf[Fragment].query[MatchRow]
 
-  def matchById(id: Int): Query0[MatchRow] =
+  def matchById(id: Long): Query0[MatchRow] =
     sql"""
        SELECT
         id,

@@ -12,7 +12,7 @@ import gg.uhc.hosts.routes.endpoints.ListMatches.MatchRowResponse
 
 object ListMatches {
   case class MatchRowResponse(
-      id: Int,
+      id: Long,
       author: String,
       opens: Instant,
       address: Option[String],
