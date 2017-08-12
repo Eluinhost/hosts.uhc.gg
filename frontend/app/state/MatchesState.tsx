@@ -15,6 +15,7 @@ import { always, T, F, evolve, propEq, map, when } from 'ramda';
 import { Reducer } from 'redux';
 import { AuthenticationActions } from './AuthenticationState';
 import { getAccessToken, getUsername } from './Selectors';
+import { storage } from '../storage';
 
 export type MatchModelState = {
   readonly isModalOpen: boolean;
@@ -25,6 +26,8 @@ export type MatchesState = {
   readonly matches: Match[];
   readonly fetching: boolean;
   readonly error: string | null;
+  readonly hideRemoved: boolean;
+  readonly showOwnRemoved: boolean;
   readonly removal: MatchModelState;
   readonly approval: MatchModelState;
 };
@@ -55,6 +58,9 @@ const approvalError = createAction<number>('MATCHES_APPROVAL_ERROR');
 
 const openApprovalModal = createAction('MATCHES_OPEN_APPROVAL_MODAL');
 const setApprovalTarget = createAction<number>('MATCHES_SET_APPROVAL_TARGET');
+
+const setHideRemoved = createAction<boolean>('SET_HIDE_REMOVED');
+const setShowOwnRemoved = createAction<boolean>('SET_SHOW_OWN_REMOVED');
 
 export const MatchesActions = {
 
@@ -150,6 +156,22 @@ export const MatchesActions = {
   closeRemovalModal: createAction('MATCHES_CLOSE_REMOVAL_MODAL'),
   closeApprovalModal: createAction('MATCHES_CLOSE_APPROVAL_MODAL'),
   updateReason: createAction<string>('MATCHES_UPDATE_REASON'),
+  toggleHideRemoved: (): ThunkAction<boolean, ApplicationState, {}> => (dispatch, getState): boolean => {
+    const newStatus = !getState().matches.hideRemoved;
+
+    dispatch(setHideRemoved(newStatus));
+    storage.setItem('matches-page-hide-removed', newStatus);
+
+    return newStatus;
+  },
+  toggleShowOwnRemoved: (): ThunkAction<boolean, ApplicationState, {}> => (dispatch, getState): boolean => {
+    const newStatus = !getState().matches.showOwnRemoved;
+
+    dispatch(setShowOwnRemoved(newStatus));
+    storage.setItem('matches-page-show-own-removed', newStatus);
+
+    return newStatus;
+  },
 };
 
 export const reducer: Reducer<MatchesState> =
@@ -241,18 +263,31 @@ export const reducer: Reducer<MatchesState> =
         ),
       ),
     }))
+    .handleEvolve(setHideRemoved, (action: Action<boolean>) => ({
+      hideRemoved: always(action.payload),
+    }))
+    .handleEvolve(setShowOwnRemoved, (action: Action<boolean>) => ({
+      showOwnRemoved: always(action.payload),
+    }))
     .build();
 
-export const initialValues = async (): Promise<MatchesState> => ({
-  matches: [],
-  fetching: false,
-  error: null,
-  removal: {
-    targettedId: null,
-    isModalOpen: false,
-  },
-  approval: {
-    targettedId: null,
-    isModalOpen: false,
-  },
-});
+export const initialValues = async (): Promise<MatchesState> => {
+  const hideRemoved: boolean | null = await storage.getItem<boolean>('matches-page-hide-removed');
+  const showOwnRemoved: boolean | null = await storage.getItem<boolean>('matches-page-show-own-removed');
+
+  return {
+    matches: [],
+    fetching: false,
+    error: null,
+    hideRemoved: hideRemoved === null ? true : hideRemoved,
+    showOwnRemoved: showOwnRemoved === null ? true : showOwnRemoved,
+    removal: {
+      targettedId: null,
+      isModalOpen: false,
+    },
+    approval: {
+      targettedId: null,
+      isModalOpen: false,
+    },
+  };
+};

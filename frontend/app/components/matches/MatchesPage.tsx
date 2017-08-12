@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { MatchesState } from '../../state/MatchesState';
-import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { NoMatches } from './NoMatches';
 import { MatchRow } from './MatchRow';
 import { RouteComponentProps } from 'react-router';
@@ -16,11 +16,11 @@ export type MatchesPageDispatchProps = {
   readonly closeApprovalModal: () => void;
   readonly submitRemoval: (reason: string) => Promise<void>;
   readonly submitApproval: () => Promise<void>;
+  readonly toggleHideRemoved: () => void;
+  readonly toggleShowOwnRemoved: () => void;
 };
 
 export type MatchesPageStateProps = {
-  readonly isRemovalModalOpen: boolean;
-  readonly isApprovalModalOpen: boolean;
   readonly isModerator: boolean;
   readonly username: string | null;
 } & MatchesState;
@@ -49,14 +49,29 @@ export class MatchesPage
   render() {
     return (
       <div>
-        <Button
-          disabled={this.props.fetching}
-          onClick={this.props.refetch}
-          iconName="refresh"
-          intent={Intent.SUCCESS}
-        >
-          Refresh
-        </Button>
+        <div>
+          <Switch
+            checked={this.props.hideRemoved}
+            label="Hide Removed"
+            onChange={this.props.toggleHideRemoved}
+          />
+          <If condition={this.props.hideRemoved}>
+            <Switch
+              checked={this.props.showOwnRemoved}
+              label="Show Own Removed"
+              onChange={this.props.toggleShowOwnRemoved}
+            />
+          </If>
+          <Button
+            disabled={this.props.fetching}
+            onClick={this.props.refetch}
+            iconName="refresh"
+            intent={Intent.SUCCESS}
+          >
+            Refresh
+          </Button>
+        </div>
+
 
         <If condition={!this.props.fetching && !!this.props.error}>
           <div className="pt-callout pt-intent-danger"><h5>{this.props.error}</h5></div>
@@ -73,12 +88,12 @@ export class MatchesPage
         </If>
 
         <RemovalModal
-          isOpen={this.props.isRemovalModalOpen}
+          isOpen={this.props.removal.isModalOpen}
           confirm={this.props.submitRemoval}
           close={this.props.closeRemovalModal}
         />
         <ApprovalModal
-          isOpen={this.props.isApprovalModalOpen}
+          isOpen={this.props.approval.isModalOpen}
           confirm={this.props.submitApproval}
           close={this.props.closeApprovalModal}
         />
