@@ -6,7 +6,7 @@ import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { Markdown } from '../Markdown';
 import { If } from '../If';
-import { WithPermission } from "../WithPermission";
+import { WithPermission } from '../WithPermission';
 
 export type MatchRowProps = {
   readonly match: Match;
