@@ -22,7 +22,7 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
       return reject(ValidationRejection("Reason must be at least 3 characters"))
 
     if (data.reason.length > 256)
-      return reject(ValidationRejection("Reason must be at most 256 characters"))
+      return reject(ValidationRejection("Reason must be at most 255 characters"))
 
     pass
   }

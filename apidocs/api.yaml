@@ -459,6 +459,22 @@ paths:
             type: integer
           required: true
           description: Numeric ID of the match to remove
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: A short description on why you want to remove this match
+                  minLength: 3
+                  maxLength: 255
+              example:
+                reason: Server exploded, can't host
       responses:
         '204':
           description: Match removed
