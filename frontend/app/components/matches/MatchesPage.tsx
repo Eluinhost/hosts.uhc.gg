@@ -55,7 +55,7 @@ export class MatchesPage
             label="Hide Removed"
             onChange={this.props.toggleHideRemoved}
           />
-          <If condition={this.props.hideRemoved}>
+          <If condition={!!this.props.username && this.props.hideRemoved}>
             <Switch
               checked={this.props.showOwnRemoved}
               label="Show Own Removed"
