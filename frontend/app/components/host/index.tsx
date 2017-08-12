@@ -62,10 +62,10 @@ class HostingPageComponent extends React.Component<
     location: '',
     length: 90,
     version: '1.8.8',
-    mapSizeX: 1500,
-    mapSizeZ: 1500,
+    mapSize: 1500,
     pvpEnabledAt: 20,
     slots: 80,
+    hostingName: null,
   };
 
   onUnload = async (): Promise<any> => {

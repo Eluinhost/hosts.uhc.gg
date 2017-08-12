@@ -1,0 +1,2 @@
+ALTER TABLE matches DROP COLUMN mapSizeZ;
+ALTER TABLE matches RENAME COLUMN mapSizeX TO mapSize;

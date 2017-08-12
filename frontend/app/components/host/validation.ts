@@ -107,13 +107,13 @@ export const validation: Spec<CreateMatchData> = {
   version: version => version && version.length ? undefined :  'Must provide a version',
   slots: slots => slots && slots > 1 ? undefined : 'Slots must be at least 2',
   length: length => length && length >= 30 ? undefined : 'Must be at least 30 minutes',
-  mapSizeX: mapSizeX => mapSizeX && mapSizeX > 0 ? undefined : 'Must be positive',
-  mapSizeZ: mapSizeZ => mapSizeZ && mapSizeZ > 0 ? undefined : 'Must be positive',
+  mapSize: mapSize => mapSize && mapSize > 0 ? undefined : 'Must be positive',
   pvpEnabledAt: pvpEnabledAt => pvpEnabledAt && pvpEnabledAt >= 0 ? undefined : 'Must be positive',
-  address: address => undefined,
-  tags: tags => undefined,
-  size: size => undefined,
-  customStyle: customStyle => undefined,
+  address: always(undefined),
+  tags: always(undefined),
+  size: always(undefined),
+  customStyle: always(undefined),
+  hostingName: always(undefined),
 };
 
 const isSameTime: CurriedFunction2<moment.Moment, moment.Moment, boolean> =

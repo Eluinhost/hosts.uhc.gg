@@ -84,9 +84,9 @@ export type CreateMatchData = {
   version: string;
   slots: number;
   length: number;
-  mapSizeX: number;
-  mapSizeZ: number;
+  mapSize: number;
   pvpEnabledAt: number;
+  hostingName: string | null;
 };
 
 export const createMatch = (data: CreateMatchData, accessToken: string): Promise<void> =>

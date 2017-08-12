@@ -22,8 +22,8 @@ export type Match = {
   version: string;
   slots: number;
   length: number;
-  mapSizeX: number;
-  mapSizeZ: number;
+  mapSize: number;
   pvpEnabledAt: number;
   approvedBy: string | null;
+  hostingName: string | null;
 };

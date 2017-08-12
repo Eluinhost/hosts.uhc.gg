@@ -35,9 +35,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       version: String,
       slots: Int,
       length: Int,
-      mapSizeX: Int,
-      mapSizeZ: Int,
-      pvpEnabledAt: Int)
+      mapSize: Int,
+      pvpEnabledAt: Int,
+      hostingName: Option[String])
 
   // map of style -> requires size
   private[this] val teamStyles: Map[String, Boolean] = Map(
@@ -74,8 +74,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       version = payload.version,
       slots = payload.slots,
       length = payload.length,
-      mapSizeX = payload.mapSizeX,
-      mapSizeZ = payload.mapSizeZ,
+      mapSize = payload.mapSize,
       pvpEnabledAt = payload.pvpEnabledAt,
       scenarios = payload.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
       tags = payload.tags.groupBy(_.toLowerCase).map(_._2.head).toList,           // removes duplicates
@@ -86,7 +85,8 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
       removed = false,
       removedBy = None,
       removedReason = None,
-      approvedBy = None
+      approvedBy = None,
+      hostingName = payload.hostingName.filter(!_.isEmpty)
     )
 
     // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it
@@ -126,8 +126,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
         validate(row.version.nonEmpty, "Must supply a version") &
         validate(row.slots >= 2, "Slots must be at least 2") &
         validate(row.length >= 30, "Matches must be at least 30 minutes") &
-        validate(row.mapSizeX > 0, "X must be positive") &
-        validate(row.mapSizeZ > 0, "Z must be positive") &
+        validate(row.mapSize > 0, "Map size must be positive") &
         validate(row.pvpEnabledAt >= 0, "PVP enabled at must be positive") &
         validate(row.scenarios.nonEmpty, "Must supply at least 1 scenario") &
         validate(row.scenarios.length <= 25, "Must supply at most 25 scenarios") &

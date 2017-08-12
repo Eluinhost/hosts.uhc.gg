@@ -61,12 +61,14 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         </div>
         <div className="match-content">
           <h4>
-            <span>{match.author}</span>
-            <span> #{match.count}</span>
+            <If condition={!!match.hostingName}>
+              <small className="pt-text-muted">/u/{match.author} </small>
+            </If>
+            <span>{match.hostingName || match.author}'s #{match.count}</span>
           </h4>
           <h5>
             <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
-            <span title="Map Size"> - {match.mapSizeX}x{match.mapSizeZ}</span>
+            <span title="Map Size"> - {match.mapSize}x{match.mapSize}</span>
             <span title="Version"> - {match.version}</span>
           </h5>
           <h6>

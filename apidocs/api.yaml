@@ -75,8 +75,7 @@ components:
         - version
         - slots
         - length
-        - mapSizeX
-        - mapSizeZ
+        - mapSize
         - pvpEnabledAt
       properties:
         id:
@@ -170,18 +169,18 @@ components:
         length:
           type: number
           description: How long the match is in minutes
-        mapSizeX:
+        mapSize:
           type: number
-          description: How big is the map on the X coordinates
-        mapSizeZ:
-          type: number
-          description: How big is the map on the Z coordinates
+          description: How big is the map (diameter)
         pvpEnabledAt:
           type: boolean
           description: How long into the match will PVP be enabled (in minutes)
         approvedBy:
           type: string
           description: If defined, the username that approved the match
+        hostingName:
+          type: string
+          description: If defined, should override the users Reddit username for the match
       example:
         id: 3
         author: ghowden
@@ -209,10 +208,10 @@ components:
         version: "1.8.8"
         slots: 80
         length: 90
-        mapSizeX: 1500
-        mapSizeZ: 1500
+        mapSize: 1500
         pvpEnabledAt: 20
         approvedBy: everyone
+        hostingName: Name Override
     CreateMatchRequest:
       type: object
       required:
@@ -228,8 +227,7 @@ components:
         - version
         - slots
         - length
-        - mapSizeX
-        - mapSizeZ
+        - mapSize
         - pvpEnabledAt
       properties:
         opens:
@@ -297,15 +295,15 @@ components:
         length:
           type: number
           description: How long the match is in minutes
-        mapSizeX:
+        mapSize:
           type: number
-          description: How big is the map on the X coordinates
-        mapSizeZ:
-          type: number
-          description: How big is the map on the Z coordinates
+          description: How big is the map (diameter)
         pvpEnabledAt:
           type: boolean
           description: How long into the match will PVP be enabled (in minutes)
+        hostingName:
+          type: string
+          description: If defined, should override the users Reddit username for the match
       example:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
@@ -324,9 +322,9 @@ components:
         version: "1.8.8"
         slots: 80
         length: 90
-        mapSizeX: 1500
-        mapSizeZ: 1500
+        mapSize: 1500
         pvpEnabledAt: 20
+        hostingName: Name Override
 
 
 paths:

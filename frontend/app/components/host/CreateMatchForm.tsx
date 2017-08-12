@@ -143,6 +143,13 @@ class CreateMatchFormComponent
         <fieldset>
           <legend>Game Details</legend>
           <div className="host-form-row">
+            <TextField
+              name="hostingName"
+              label="Hosting Name (optional)"
+              className="pt-fill"
+              required={false}
+              disabled={submitting}
+            />
             <NumberField
               name="count"
               label="Game Number"
@@ -151,6 +158,8 @@ class CreateMatchFormComponent
               required
               disabled={submitting}
             />
+          </div>
+          <div className="host-form-row">
             <TextField
               name="version"
               label="Game version"
@@ -158,19 +167,9 @@ class CreateMatchFormComponent
               required
               disabled={submitting}
             />
-          </div>
-          <div className="host-form-row">
             <NumberField
-              name="mapSizeX"
-              label="Map size (X)"
-              className="pt-fill"
-              min={1}
-              required
-              disabled={submitting}
-            />
-            <NumberField
-              name="mapSizeZ"
-              label="Map size (Z)"
+              name="mapSize"
+              label="Map size (diameter)"
               className="pt-fill"
               min={1}
               required

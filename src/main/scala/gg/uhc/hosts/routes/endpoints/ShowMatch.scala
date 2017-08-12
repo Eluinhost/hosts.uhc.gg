@@ -47,11 +47,11 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
         version = row.version,
         slots = row.slots,
         length = row.length,
-        mapSizeX = row.mapSizeX,
-        mapSizeZ = row.mapSizeZ,
+        mapSize = row.mapSize,
         pvpEnabledAt = row.pvpEnabledAt,
         approvedBy = row.approvedBy,
-        roles = perms
+        roles = perms,
+        hostingName = row.hostingName
       )).run
 
   def route(id: Long): Route =

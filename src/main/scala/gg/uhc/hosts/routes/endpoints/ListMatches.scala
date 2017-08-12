@@ -34,10 +34,10 @@ object ListMatches {
       version: String,
       slots: Int,
       length: Int,
-      mapSizeX: Int,
-      mapSizeZ: Int,
+      mapSize: Int,
       pvpEnabledAt: Int,
-      approvedBy: Option[String])
+      approvedBy: Option[String],
+      hostingName: Option[String])
 }
 
 class ListMatches(directives: CustomDirectives, database: Database) {
@@ -72,11 +72,11 @@ class ListMatches(directives: CustomDirectives, database: Database) {
           version = row.version,
           slots = row.slots,
           length = row.length,
-          mapSizeX = row.mapSizeX,
-          mapSizeZ = row.mapSizeZ,
+          mapSize = row.mapSize,
           pvpEnabledAt = row.pvpEnabledAt,
           approvedBy = row.approvedBy,
-          roles = perms.getOrElse(row.author, List.empty)
+          roles = perms.getOrElse(row.author, List.empty),
+          hostingName = row.hostingName
         )
       }
 
