@@ -19,13 +19,29 @@ type SetRulesDialogDispatchProps = {
 
 type SetRulesDialogStateProps = {
   readonly isOpen: boolean;
+  readonly currentRules: string;
 };
+
+// Simple component that exists just to pull the latest rules into the form once the dialog renders it's body
+class SetRulesDialogHelper extends React.Component<{
+  readonly current: string | null;
+  readonly change: (field: string, value: string) => void;
+}> {
+
+  componentDidMount() {
+    this.props.change('rules', this.props.current || '');
+  }
+
+  render() {
+    return null;
+  }
+}
 
 const SetRulesDialogComponent: React.SFC<
   SetRulesDialogStateProps &
   SetRulesDialogDispatchProps &
   FormProps<SetRulesDialogData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change }) => (
     <Dialog
       iconName="take-action"
       isOpen={isOpen}
@@ -33,6 +49,7 @@ const SetRulesDialogComponent: React.SFC<
       title="Modify Rules"
       className="pt-dark"
     >
+      <SetRulesDialogHelper current={currentRules} change={change!} />
       <div className="pt-dialog-body">
         <form onSubmit={handleSubmit}>
           <RulesField name="rules" label="Rules" required disabled={submitting} className="pt-fill" />
@@ -88,22 +105,19 @@ const SetRulesDialogForm: React.SFC<SetRulesDialogStateProps & SetRulesDialogDis
     },
   })(SetRulesDialogComponent);
 
-const mapStateToProps = (state: ApplicationState): SetRulesDialogStateProps => ({
-  isOpen: state.rules.editing,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): SetRulesDialogDispatchProps => ({
-  close: (): void => {
-    dispatch(HostingRulesActions.closeEditor());
-  },
-  confirm: (rules: string): Promise<void> => {
-    dispatch(HostingRulesActions.closeEditor());
-    return dispatch(HostingRulesActions.setRules(rules));
-  },
-});
-
 export const SetRulesDialog: React.ComponentClass =
   connect<SetRulesDialogStateProps, SetRulesDialogDispatchProps, {}>(
-    mapStateToProps,
-    mapDispatchToProps,
+    (state: ApplicationState): SetRulesDialogStateProps => ({
+      isOpen: state.rules.editing,
+      currentRules: state.rules.data ? state.rules.data.content : '',
+    }),
+    (dispatch: Dispatch<ApplicationState>): SetRulesDialogDispatchProps => ({
+      close: (): void => {
+        dispatch(HostingRulesActions.closeEditor());
+      },
+      confirm: (rules: string): Promise<void> => {
+        dispatch(HostingRulesActions.closeEditor());
+        return dispatch(HostingRulesActions.setRules(rules));
+      },
+    }),
   )(SetRulesDialogForm);
