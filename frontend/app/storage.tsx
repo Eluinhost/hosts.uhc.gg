@@ -1,8 +1,8 @@
 import * as localForage from 'localforage';
 
 export const storage: LocalForage = localForage.createInstance({
-  name: 'form-data',
+  name: 'hosts-uhcgg-data',
   version: 1.0,
-  storeName: 'form-data',
-  description: 'Serialized form data to carry across loads',
+  storeName: 'hosts-uhcgg-data',
+  description: 'Serialized data to carry settings across refreshes',
 });
