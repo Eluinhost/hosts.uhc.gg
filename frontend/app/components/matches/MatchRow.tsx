@@ -117,37 +117,36 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         {/* Only show actions if the match isn't removed. Removed matches shouldn't be modified */}
         <If condition={!match.removed}>
           <div className="match-moderation-actions">
-            <If condition={!match.approvedBy}>
-              <WithPermission permission="moderator">
+            <div className="pt-button-group pt-minimal pt-vertical pt-large">
+              <If condition={!match.approvedBy}>
+                <WithPermission permission="moderator">
+                  <Button
+                    intent={Intent.SUCCESS}
+                    iconName="confirm"
+                    title="Approve Match"
+                    onClick={this.onApprovePress}
+                  />
+                </WithPermission>
+              </If>
+
+              <If condition={!!match.approvedBy}>
                 <Button
                   intent={Intent.SUCCESS}
-                  rightIconName="tick"
-                  onClick={this.onApprovePress}
-                >
-                  Approve
-                </Button>
-              </WithPermission>
-            </If>
+                  title={`Approved by /u/${match.approvedBy}`}
+                  active
+                  iconName="tick"
+                />
+              </If>
 
-            <If condition={!!match.approvedBy}>
-              <Tag
-                className="pt-large pt-minimal"
-                intent={Intent.SUCCESS}
-                title={`Approved by /u/${match.approvedBy}`}
-              >
-                Approved
-              </Tag>
-            </If>
-
-            <If condition={canRemove}>
-              <Button
-                intent={Intent.DANGER}
-                rightIconName="delete"
-                onClick={this.onRemovePress}
-              >
-                Remove
-              </Button>
-            </If>
+              <If condition={canRemove}>
+                <Button
+                  intent={Intent.DANGER}
+                  iconName="trash"
+                  onClick={this.onRemovePress}
+                  title="Remove"
+                />
+              </If>
+            </div>
           </div>
         </If>
       </div>
