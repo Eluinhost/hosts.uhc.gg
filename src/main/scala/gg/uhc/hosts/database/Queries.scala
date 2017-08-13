@@ -60,7 +60,7 @@ class Queries(logger: LogHandler) {
        ORDER BY opens ASC
     """.asInstanceOf[Fragment].query[MatchRow]
 
-  def hostingHistory(host: String, before: Option[Long], count: Int) =
+  def hostingHistory(host: String, before: Option[Long], count: Int): Query0[MatchRow] =
     (
       sql"""
         SELECT
