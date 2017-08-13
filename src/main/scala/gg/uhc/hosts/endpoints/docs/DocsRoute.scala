@@ -5,6 +5,11 @@ import akka.http.scaladsl.server.Route
 
 class DocsRoute {
   def apply(): Route =
-    getFromDirectory("apidocs")
+    concat(
+      pathEndOrSingleSlash {
+        getFromFile("apidocs/index.html")
+      },
+      getFromDirectory("apidocs")
+    )
 
 }
