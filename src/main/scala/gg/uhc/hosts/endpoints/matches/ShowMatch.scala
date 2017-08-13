@@ -50,7 +50,8 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
         pvpEnabledAt = row.pvpEnabledAt,
         approvedBy = row.approvedBy,
         roles = perms,
-        hostingName = row.hostingName
+        hostingName = row.hostingName,
+        tournament = row.tournament
       )).run
 
   def apply(id: Long): Route =

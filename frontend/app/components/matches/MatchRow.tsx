@@ -67,7 +67,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             <If condition={!!match.hostingName}>
               <small className="pt-text-muted">/u/{match.author} </small>
             </If>
-            <span>{match.hostingName || match.author}'s #{match.count}</span>
+            <span>{match.hostingName || match.author}'s {match.tournament ? 'Tournament ' : ''}#{match.count}</span>
           </h4>
           <h5>
             <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>

@@ -87,6 +87,7 @@ export type CreateMatchData = {
   mapSize: number;
   pvpEnabledAt: number;
   hostingName: string | null;
+  tournament: boolean;
 };
 
 export const createMatch = (data: CreateMatchData, accessToken: string): Promise<void> =>

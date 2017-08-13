@@ -66,6 +66,7 @@ class HostingPageComponent extends React.Component<
     pvpEnabledAt: 20,
     slots: 80,
     hostingName: null,
+    tournament: false,
   };
 
   onUnload = async (): Promise<any> => {

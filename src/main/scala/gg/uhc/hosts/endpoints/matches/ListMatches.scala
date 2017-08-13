@@ -37,7 +37,8 @@ object ListMatches {
       mapSize: Int,
       pvpEnabledAt: Int,
       approvedBy: Option[String],
-      hostingName: Option[String])
+      hostingName: Option[String],
+      tournament: Boolean)
 }
 
 class ListMatches(directives: CustomDirectives, database: Database) {
@@ -76,7 +77,8 @@ class ListMatches(directives: CustomDirectives, database: Database) {
           pvpEnabledAt = row.pvpEnabledAt,
           approvedBy = row.approvedBy,
           roles = perms.getOrElse(row.author, List.empty),
-          hostingName = row.hostingName
+          hostingName = row.hostingName,
+          tournament = row.tournament
         )
       }
 

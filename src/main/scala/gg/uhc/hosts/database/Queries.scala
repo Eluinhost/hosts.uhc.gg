@@ -49,7 +49,8 @@ class Queries(logger: LogHandler) {
         mapSize,
         pvpEnabledAt,
         approvedBy,
-        hostingName
+        hostingName,
+        tournament
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
@@ -82,7 +83,8 @@ class Queries(logger: LogHandler) {
         mapSize,
         pvpEnabledAt,
         approvedBy,
-        hostingName
+        hostingName,
+        tournament
        FROM matches
        WHERE id = $id
     """.asInstanceOf[Fragment].query[MatchRow]
@@ -113,7 +115,8 @@ class Queries(logger: LogHandler) {
         mapSize,
         pvpEnabledAt,
         approvedBy,
-        hostingName
+        hostingName,
+        tournament
       ) VALUES (
         ${m.author},
         ${m.opens},
@@ -138,7 +141,8 @@ class Queries(logger: LogHandler) {
         ${m.mapSize},
         ${m.pvpEnabledAt},
         ${m.approvedBy},
-        ${m.hostingName}
+        ${m.hostingName},
+        ${m.tournament}
       );""".asInstanceOf[Fragment].update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =

@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { TeamStyles } from '../../TeamStyles';
 import { CreateMatchData } from '../../api/index';
 import {
+  propEq,
   find,
   propSatisfies,
   curry,
@@ -114,13 +115,20 @@ export const validation: Spec<CreateMatchData> = {
   size: always(undefined),
   customStyle: always(undefined),
   hostingName: always(undefined),
+  tournament: always(undefined),
 };
 
 const isSameTime: CurriedFunction2<moment.Moment, moment.Moment, boolean> =
   curry((a: moment.Moment, b: moment.Moment) => a.isSame(b));
 
 const findExactConflict: CurriedFunction2<moment.Moment, Match[], Match | undefined> =
-  curry((a: moment.Moment, b: Match[]) => find<Match>(propSatisfies(isSameTime(a), 'opens'))(b));
+  curry((a: moment.Moment, b: Match[]) => find<Match>(
+    both(
+      propEq('tournament', false), // can only conflict if not a tournament
+      propSatisfies(isSameTime(a), 'opens'),
+    ),
+    b,
+  ));
 
 export const asyncValidation = async (
   values: CreateMatchData,
@@ -131,7 +139,8 @@ export const asyncValidation = async (
 
   const conflict = findExactConflict(values.opens, conflicts);
 
-  if (conflict) {
+  // Tournaments bypass overhost protection
+  if (!values.tournament && conflict) {
     // tslint:disable-next-line:max-line-length
     const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm')})`;
 

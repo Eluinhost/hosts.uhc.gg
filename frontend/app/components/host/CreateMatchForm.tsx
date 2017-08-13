@@ -21,6 +21,7 @@ import { CreateMatchData } from '../../api/index';
 import { HostingRules } from '../HostingRules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { If } from '../If';
+import { SwitchField } from '../fields/SwitchField';
 
 const noop = (): void => undefined;
 
@@ -142,6 +143,9 @@ class CreateMatchFormComponent
         </fieldset>
         <fieldset>
           <legend>Game Details</legend>
+          <div className="host-form-row">
+            <SwitchField name="tournament" label="Is this a Tournament?" disabled={disabledAsync} className="pt-large"/>
+          </div>
           <div className="host-form-row">
             <TextField
               name="hostingName"
@@ -338,5 +342,5 @@ export const CreateMatchForm:
   reduxForm<CreateMatchData, CreateMatchFormProps>({
     validate: validate(validation),
     asyncValidate: asyncValidation,
-    asyncBlurFields: ['opens', 'region'],
+    asyncBlurFields: ['opens', 'region', 'tournament'],
   })(CreateMatchFormComponent);

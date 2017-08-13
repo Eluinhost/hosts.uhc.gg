@@ -27,4 +27,5 @@ case class MatchRow(
     mapSize: Int,
     pvpEnabledAt: Int,
     approvedBy: Option[String],
-    hostingName: Option[String])
+    hostingName: Option[String],
+    tournament: Boolean)

@@ -26,4 +26,5 @@ export type Match = {
   pvpEnabledAt: number;
   approvedBy: string | null;
   hostingName: string | null;
+  tournament: boolean;
 };
