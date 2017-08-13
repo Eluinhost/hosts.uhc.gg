@@ -3,9 +3,15 @@ package gg.uhc.hosts.endpoints
 import com.softwaremill.macwire.wire
 import gg.uhc.hosts.database.DatabaseModule
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
-import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
+import gg.uhc.hosts.endpoints.authentication.{
+  Authenticate,
+  AuthenticateCallback,
+  AuthenticateRefresh,
+  AuthenticationRoute
+}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.frontend.FrontendRoute
+import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
 import gg.uhc.hosts.endpoints.key.{GetApiKey, KeyRoute, RegenerateApiKey}
 import gg.uhc.hosts.endpoints.matches._
 import gg.uhc.hosts.endpoints.permissions._
@@ -34,6 +40,7 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val getLatestRules: GetLatestRules                   = wire[GetLatestRules]
   lazy val setRules: SetRules                               = wire[SetRules]
   lazy val approveMatch: ApproveMatch                       = wire[ApproveMatch]
+  lazy val getHostingHistory: GetHostingHistory             = wire[GetHostingHistory]
 
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]
   lazy val authenticationRoute: AuthenticationRoute = wire[AuthenticationRoute]
@@ -45,5 +52,6 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val rulesRoute: RulesRoute                   = wire[RulesRoute]
   lazy val syncRoute: SyncRoute                     = wire[SyncRoute]
   lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
+  lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }

@@ -9,6 +9,10 @@ import doobie.postgres.imports._
 
 import scalaz.NonEmptyList
 
+/*
+  NOTE - The massive use of .asInstanceOf[Fragment] is not required here for the code to work. It is a fix for the IDE
+  to work correctly, /shrug
+ */
 class Queries(logger: LogHandler) {
   private[this] implicit val logHandler: LogHandler = logger
 
@@ -55,6 +59,45 @@ class Queries(logger: LogHandler) {
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
     """.asInstanceOf[Fragment].query[MatchRow]
+
+  def hostingHistory(host: String, before: Option[Long], count: Int) =
+    (
+      sql"""
+        SELECT
+          id,
+          author,
+          opens,
+          address,
+          ip,
+          scenarios,
+          tags,
+          teams,
+          size,
+          customStyle,
+          count,
+          content,
+          region,
+          removed,
+          removedBy,
+          removedReason,
+          created,
+          location,
+          version,
+          slots,
+          length,
+          mapSize,
+          pvpEnabledAt,
+          approvedBy,
+          hostingName,
+          tournament
+        FROM matches
+      """.asInstanceOf[Fragment]
+        ++ Fragments.whereAndOpt(
+          Some(fr"author = $host".asInstanceOf[Fragment]),
+          before.map(b ⇒ fr"id < $b".asInstanceOf[Fragment])
+        )
+        ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
+    ).query[MatchRow]
 
   def matchById(id: Long): Query0[MatchRow] =
     sql"""

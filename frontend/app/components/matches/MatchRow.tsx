@@ -7,6 +7,7 @@ import { RemovedReason } from './RemovedReason';
 import { Markdown } from '../Markdown';
 import { If } from '../If';
 import { WithPermission } from '../WithPermission';
+import { UsernameLink } from '../UsernameLink';
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -64,10 +65,19 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         </div>
         <div className="match-content">
           <h4>
+            <UsernameLink username={match.author} className={match.hostingName ? 'pt-text-muted' : ''}/>
+
             <If condition={!!match.hostingName}>
-              <small className="pt-text-muted">/u/{match.author} </small>
+              <span>{match.hostingName}</span>
             </If>
-            <span>{match.hostingName || match.author}'s {match.tournament ? 'Tournament ' : ''}#{match.count}</span>
+
+            <span>'s</span>
+
+            <If condition={match.tournament}>
+              <span> Tournament</span>
+            </If>
+
+            <span> #{match.count}</span>
           </h4>
           <h5>
             <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>

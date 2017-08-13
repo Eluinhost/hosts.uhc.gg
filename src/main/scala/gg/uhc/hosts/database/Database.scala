@@ -143,6 +143,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def approveMatch(id: Long, approver: String): ConnectionIO[Boolean] =
     queries.approveMatch(id, approver).run.map(_ > 0)
 
+  def getHostingHistory(host: String, before: Option[Long], count: Int): ConnectionIO[List[MatchRow]] =
+    queries.hostingHistory(host, before, count).list
+
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
   }

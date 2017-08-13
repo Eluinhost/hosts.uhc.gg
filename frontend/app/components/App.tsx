@@ -11,6 +11,7 @@ import { Navbar } from './Navbar';
 import { MembersPage } from './members';
 import { ProfilePage } from './profile/index';
 import { WithPermission } from './WithPermission';
+import { HistoryPage } from './history';
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -52,6 +53,7 @@ const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
+    <Route path="/hosts/:host" component={HistoryPage} />
     <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...props}/>
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />

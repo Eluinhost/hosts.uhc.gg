@@ -552,6 +552,44 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MatchResponse'
+  /hosts/{host}/matches:
+    get:
+      tags:
+        - Hosts
+        - Matches
+      summary: List hosted matches
+      description: Lists hosted matches for the given host in reverse created order.
+      parameters:
+        - in: path
+          name: host
+          schema:
+            type: string
+          required: true
+          description: The username of the host
+        - in: query
+          name: count
+          schema:
+            type: integer
+          required: false
+          default: 20
+          description: How many entries to return max
+          max: 50
+          min: 1
+        - in: query
+          name: before
+          schema:
+            type: integer
+          required: false
+          description: Show matches IDs less than this ID used for pagination of data
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchResponse'
   /permissions:
     get:
       tags:

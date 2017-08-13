@@ -216,3 +216,12 @@ export const setHostingRules = (content: string, accessToken: string): Promise<v
     },
   ).then(verifyStatus(201))
     .then(_ => undefined);
+
+
+// TODO pages
+export const getHostingHistory = (host: String): Promise<Match[]> =>
+  fetch(`/api/hosts/${host}/matches`)
+  .then(verifyStatus(200))
+  .then(toJson<Match[]>())
+  .then(map(convertMatchTimes));
+
