@@ -44,7 +44,10 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
     const { match, canRemove } = this.props;
 
     return (
-      <div className={`pt-card match-row ${match.removed ? 'pt-intent-danger' : ''}`} onClick={this.onClick}>
+      <div
+        className={`pt-card match-row pt-interactive ${match.removed ? 'pt-intent-danger' : ''}`}
+        onClick={this.onClick}
+      >
         <div className="match-top-left-ribbon">
           <span className="pt-tag pt-large pt-intent-success match-opens" title="Opens">
             {match.opens.format('MMM DD HH:mm z')}
