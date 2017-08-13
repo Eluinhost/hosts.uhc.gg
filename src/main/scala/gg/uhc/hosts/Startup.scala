@@ -6,13 +6,13 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.Config
 import doobie.hikari.hikaritransactor.HikariTransactor
 import doobie.imports.IOLite
-import gg.uhc.hosts.routes.Routes
+import gg.uhc.hosts.endpoints.BaseRoute
 import org.flywaydb.core.Flyway
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
 
-class Startup(routes: Routes, flyway: Flyway, transactor: HikariTransactor[IOLite], config: Config) {
+class Startup(routes: BaseRoute, flyway: Flyway, transactor: HikariTransactor[IOLite], config: Config) {
   def apply(): Unit = {
     flyway.migrate()
 
@@ -20,13 +20,13 @@ class Startup(routes: Routes, flyway: Flyway, transactor: HikariTransactor[IOLit
       transactor.shutdown.unsafePerformIO
     }
 
-    implicit val system               = ActorSystem("http-actor-system", config)
-    implicit val ec: ExecutionContext = system.dispatcher
-    implicit val materializer         = ActorMaterializer()
+    implicit val system: ActorSystem             = ActorSystem("http-actor-system", config)
+    implicit val ec: ExecutionContext            = system.dispatcher
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     Http()
       .bindAndHandle(
-        handler = routes.all,
+        handler = routes(),
         interface = config.getString("http.interface"),
         port = config.getInt("http.port")
       )
