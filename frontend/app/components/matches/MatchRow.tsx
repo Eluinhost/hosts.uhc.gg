@@ -14,6 +14,7 @@ export type MatchRowProps = {
   readonly onRemovePress: () => void;
   readonly onApprovePress: () => void;
   readonly canRemove: boolean;
+  readonly canApprove: boolean;
 };
 
 export type MatchRowState = {
@@ -118,15 +119,13 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         <If condition={!match.removed}>
           <div className="match-moderation-actions">
             <div className="pt-button-group pt-minimal pt-vertical pt-large">
-              <If condition={!match.approvedBy}>
-                <WithPermission permission="moderator">
-                  <Button
-                    intent={Intent.SUCCESS}
-                    iconName="confirm"
-                    title="Approve Match"
-                    onClick={this.onApprovePress}
-                  />
-                </WithPermission>
+              <If condition={this.props.canApprove && !match.approvedBy}>
+                <Button
+                  intent={Intent.SUCCESS}
+                  iconName="confirm"
+                  title="Approve Match"
+                  onClick={this.onApprovePress}
+                />
               </If>
 
               <If condition={!!match.approvedBy}>

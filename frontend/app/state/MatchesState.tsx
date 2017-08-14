@@ -17,19 +17,12 @@ import { AuthenticationActions } from './AuthenticationState';
 import { getAccessToken, getUsername } from './Selectors';
 import { storage } from '../storage';
 
-export type MatchModelState = {
-  readonly isModalOpen: boolean;
-  readonly targettedId: number | null;
-};
-
 export type MatchesState = {
   readonly matches: Match[];
   readonly fetching: boolean;
   readonly error: string | null;
   readonly hideRemoved: boolean;
   readonly showOwnRemoved: boolean;
-  readonly removal: MatchModelState;
-  readonly approval: MatchModelState;
 };
 
 const startFetch = createAction('MATCHES_START_FETCH');
@@ -45,9 +38,6 @@ const startRemoval = createAction<StartRemovalPayload>('MATCHES_START_REMOVAL');
 const endRemoval = createAction('MATCHES_END_REMOVAL');
 const removalError = createAction<number>('MATCHES_REMOVAL_ERROR');
 
-const setRemovalTarget = createAction<number>('MATCHES_SET_REMOVAL_TARGET');
-const openRemovalModal = createAction('MATCHES_OPEN_REMOVAL_MODAL');
-
 type StartApprovalPayload = {
   id: number;
   user: string;
@@ -55,9 +45,6 @@ type StartApprovalPayload = {
 const startApproval = createAction<StartApprovalPayload>('MATCHES_START_APPROVAL');
 const endApproval = createAction('MATCHES_END_APPROVAL');
 const approvalError = createAction<number>('MATCHES_APPROVAL_ERROR');
-
-const openApprovalModal = createAction('MATCHES_OPEN_APPROVAL_MODAL');
-const setApprovalTarget = createAction<number>('MATCHES_SET_APPROVAL_TARGET');
 
 const setHideRemoved = createAction<boolean>('SET_HIDE_REMOVED');
 const setShowOwnRemoved = createAction<boolean>('SET_SHOW_OWN_REMOVED');
@@ -90,24 +77,11 @@ export const MatchesActions = {
     }
   },
   /**
-   * Shows modal for confirmation
-   */
-  askForRemovalReason: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
-    dispatch(setRemovalTarget(id));
-    dispatch(openRemovalModal());
-  },
-  askForApproval: (id: number): ThunkAction<void, ApplicationState, {}> => (dispatch): void => {
-    dispatch(setApprovalTarget(id));
-    dispatch(openApprovalModal());
-  },
-  /**
    * Sends actual deletion request
    */
-  confirmRemove: (reason: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
+  confirmRemove: (id: number, reason: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-
-      const id = state.matches.removal.targettedId!;
 
       dispatch(startRemoval({ id, reason, user: getUsername(state) || 'ERROR NO USERNAME IN STATE' }));
 
@@ -128,11 +102,9 @@ export const MatchesActions = {
   /**
    * Sends actual approval request
    */
-  confirmApproval: (): ThunkAction<Promise<void>, ApplicationState, {}> =>
+  confirmApproval: (id: number): ThunkAction<Promise<void>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-
-      const id = state.matches.approval.targettedId!;
 
       dispatch(startApproval({ id, user: getUsername(state) || 'ERROR NO USERNAME IN STATE' }));
 
@@ -150,12 +122,6 @@ export const MatchesActions = {
         throw err;
       }
     },
-  /**
-   * Simply closes the removal modal, a 'cancel' action
-   */
-  closeRemovalModal: createAction('MATCHES_CLOSE_REMOVAL_MODAL'),
-  closeApprovalModal: createAction('MATCHES_CLOSE_APPROVAL_MODAL'),
-  updateReason: createAction<string>('MATCHES_UPDATE_REASON'),
   toggleHideRemoved: (): ThunkAction<boolean, ApplicationState, {}> => (dispatch, getState): boolean => {
     const newStatus = !getState().matches.hideRemoved;
 
@@ -189,36 +155,6 @@ export const reducer: Reducer<MatchesState> =
       fetching: F,
       error: always(action.payload),
     }))
-    .handleEvolve(setRemovalTarget, (action: Action<number>) => ({
-      removal: {
-        targettedId: always(action.payload),
-      },
-    }))
-    .handleEvolve(setApprovalTarget, (action: Action<number>) => ({
-      approval: {
-        targettedId: always(action.payload),
-      },
-    }))
-    .handleEvolve(openRemovalModal, {
-      removal: {
-        isModalOpen: T,
-      },
-    })
-    .handleEvolve(MatchesActions.closeRemovalModal, {
-      removal: {
-        isModalOpen: F,
-      },
-    })
-    .handleEvolve(openApprovalModal, {
-      approval: {
-        isModalOpen: T,
-      },
-    })
-    .handleEvolve(MatchesActions.closeApprovalModal, {
-      approval: {
-        isModalOpen: F,
-      },
-    })
     .handleEvolve(startRemoval, (action: Action<StartRemovalPayload>) => ({
       matches: map(
         when(
@@ -281,13 +217,5 @@ export const initialValues = async (): Promise<MatchesState> => {
     error: null,
     hideRemoved: hideRemoved === null ? true : hideRemoved,
     showOwnRemoved: showOwnRemoved === null ? true : showOwnRemoved,
-    removal: {
-      targettedId: null,
-      isModalOpen: false,
-    },
-    approval: {
-      targettedId: null,
-      isModalOpen: false,
-    },
   };
 };

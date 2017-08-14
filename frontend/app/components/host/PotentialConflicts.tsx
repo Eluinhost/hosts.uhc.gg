@@ -14,6 +14,7 @@ const renderConflict = (m: Match, index: number) => (
   <MatchRow
     key={index}
     match={m}
+    canApprove={false}
     canRemove={false}
     onRemovePress={noop}
     onApprovePress={noop}

@@ -10,7 +10,11 @@ type State = {
   readonly loading: boolean;
 };
 
-export class HistoryPage extends React.Component<RouteComponentProps<{ host: string }>, State> {
+type Params = {
+  readonly host: string;
+};
+
+export class HistoryPage extends React.Component<RouteComponentProps<Params>, State> {
   state = {
     matches: [],
     error: null,

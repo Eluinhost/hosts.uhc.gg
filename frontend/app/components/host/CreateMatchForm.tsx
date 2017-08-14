@@ -303,6 +303,7 @@ class CreateMatchFormComponent
           <MatchRow
             match={preview}
             canRemove={false}
+            canApprove={false}
             onRemovePress={noop}
             onApprovePress={noop}
           />

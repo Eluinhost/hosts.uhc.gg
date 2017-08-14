@@ -16,16 +16,21 @@ type StateProps = {
 
 type DispatchProps = {
   readonly refetch: () => Promise<void>;
+  readonly confirmRemove: (id: number, reason: string) => Promise<void>;
+  readonly confirmApprove: (id: number) => Promise<void>;
 };
 
-const MatchesPageComponent: React.SFC<StateProps & DispatchProps> = ({ matches, error, loading, refetch }) => (
-  <MatchListing
-    matches={matches}
-    error={error}
-    loading={loading}
-    refetch={refetch}
-  />
-);
+const MatchesPageComponent: React.SFC<StateProps & DispatchProps> =
+  ({ matches, error, loading, refetch, confirmRemove, confirmApprove }) => (
+    <MatchListing
+      matches={matches}
+      error={error}
+      loading={loading}
+      refetch={refetch}
+      onRemove={confirmRemove}
+      onApprove={confirmApprove}
+    />
+  );
 
 const stateSelector = createSelector<ApplicationState, Match[], string | null, boolean, StateProps>(
   state => state.matches.matches,
@@ -43,5 +48,7 @@ export const MatchesPage: React.ComponentClass<RouteComponentProps<any>> =
     stateSelector,
     (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
       refetch: () => dispatch(MatchesActions.refetch()),
+      confirmRemove: (id: number, reason: string) => dispatch(MatchesActions.confirmRemove(id, reason)),
+      confirmApprove: (id: number) => dispatch(MatchesActions.confirmApproval(id)),
     }),
   )(MatchesPageComponent);
