@@ -11,6 +11,7 @@ import { Navbar } from './Navbar';
 import { MembersPage } from './members';
 import { ProfilePage } from './profile/index';
 import { WithPermission } from './WithPermission';
+import { UblPage } from './ubl';
 import { HistoryPage } from './history';
 
 const NotFoundPage: React.SFC = () => (
@@ -55,6 +56,7 @@ const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
     <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...props}/>
+    <Route path="/ubl" component={UblPage} />
     <Route path="/" exact component={HomePage}/>
     <Route component={NotFoundPage} />
   </Switch>

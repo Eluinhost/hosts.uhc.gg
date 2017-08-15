@@ -48,6 +48,11 @@ export const Navbar: React.SFC = () => (
         text="Members"
         icon="user"
       />
+      <NavbarButton
+        to="/ubl"
+        text="Ban List"
+        icon="take-action"
+      />
     </div>
     <div className="pt-navbar-group">
       <Username />
