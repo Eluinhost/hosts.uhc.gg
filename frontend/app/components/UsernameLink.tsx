@@ -9,7 +9,7 @@ export type UsernameLinkProps = {
 const stopProp = (e: React.MouseEvent<any>) => e.stopPropagation();
 
 export const UsernameLink: React.SFC<UsernameLinkProps> = ({ username, className }) => (
-  <Link to={`/hosts/${username}`} className={className || ''} onClick={stopProp}>
+  <Link to={`/matches/${username}`} className={className || ''} onClick={stopProp}>
     /u/{username}
   </Link>
 );
