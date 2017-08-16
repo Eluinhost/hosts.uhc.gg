@@ -3,11 +3,13 @@ import { Match } from '../../Match';
 import { RouteComponentProps } from 'react-router';
 import { MatchListing } from '../matches/MatchListing';
 import { getHostingHistory } from '../../api';
+import { concat, last } from 'ramda';
 
 type State = {
   readonly matches: Match[];
   readonly error: string | null;
   readonly loading: boolean;
+  readonly hasMore: boolean;
 };
 
 type Params = {
@@ -19,21 +21,27 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
     matches: [],
     error: null,
     loading: true,
+    hasMore: false,
   };
-  
-  refetch = async () => {
+
+  beforeId = () => this.state.matches.length > 0
+    ? last<Match, Match[]>(this.state.matches)!.id
+    : undefined
+
+  loadNextPage = async ()  => {
     this.setState({
-      error: null,
       loading: true,
+      error: null,
     });
 
     try {
-      const matches = await getHostingHistory(this.props.match.params.host);
+      const matches = await getHostingHistory(this.props.match.params.host, this.beforeId());
 
       this.setState({
-        matches,
+        matches: concat(this.state.matches, matches),
         error: null,
         loading: false,
+        hasMore: matches.length > 0,
       });
     } catch (err) {
       this.setState({
@@ -42,7 +50,17 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
       });
     }
   }
-  
+
+  refetch = () => {
+    // clear list first then just fetch the next page
+    this.setState({
+      matches: [],
+      hasMore: true,
+    });
+
+    setTimeout(() => this.loadNextPage());
+  }
+
   render() {
     return (
       <div>
@@ -57,9 +75,10 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
           error={this.state.error}
           loading={this.state.loading}
           refetch={this.refetch}
+          hasMore={this.state.hasMore}
+          loadMore={this.loadNextPage}
         />
       </div>
-
     );
   }
 }

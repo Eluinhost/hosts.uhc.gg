@@ -18,6 +18,8 @@ type MatchListingProps = {
   readonly loading: boolean;
   readonly error: string | null;
   readonly refetch: () => void;
+  readonly loadMore: () => Promise<void>;
+  readonly hasMore: boolean;
   readonly onApprove?: (id: number) => Promise<void>;
   readonly onRemove?: (id: number, reason: string) => Promise<void>;
 };
@@ -119,6 +121,17 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
         <If condition={this.props.matches.length > 0} alternative={NoMatches}>
           <div>
             {this.renderMatches()}
+
+            <If condition={this.props.hasMore}>
+              <Button
+                loading={this.props.loading}
+                disabled={this.props.loading}
+                onClick={this.props.loadMore}
+                iconName="refresh"
+                intent={Intent.SUCCESS}
+                text="Load more"
+              />
+            </If>
           </div>
         </If>
 

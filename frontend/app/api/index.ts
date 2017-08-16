@@ -220,8 +220,8 @@ export const setHostingRules = (content: string, accessToken: string): Promise<v
 
 
 // TODO pages
-export const getHostingHistory = (host: String): Promise<Match[]> =>
-  fetch(`/api/hosts/${host}/matches`)
+export const getHostingHistory = (host: String, before?: number): Promise<Match[]> =>
+  fetch(`/api/hosts/${host}/matches?before=${before || ''}`)
   .then(verifyStatus(200))
   .then(toJson<Match[]>())
   .then(map(convertMatchTimes));

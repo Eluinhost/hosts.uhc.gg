@@ -20,6 +20,8 @@ type DispatchProps = {
   readonly confirmApprove: (id: number) => Promise<void>;
 };
 
+const dontLoadMore = () => Promise.reject('Should not be called');
+
 const MatchesPageComponent: React.SFC<StateProps & DispatchProps> =
   ({ matches, error, loading, refetch, confirmRemove, confirmApprove }) => (
     <MatchListing
@@ -29,6 +31,8 @@ const MatchesPageComponent: React.SFC<StateProps & DispatchProps> =
       refetch={refetch}
       onRemove={confirmRemove}
       onApprove={confirmApprove}
+      hasMore={false}
+      loadMore={dontLoadMore}
     />
   );
 
