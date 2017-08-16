@@ -1,12 +1,12 @@
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button } from '@blueprintjs/core';
+import { Button, IconName } from '@blueprintjs/core';
 import * as React from 'react';
 import { Username } from './Username';
 
 type NavBarButtonProps = {
   readonly text: string;
-  readonly icon: string;
+  readonly icon: IconName;
   readonly to: string;
 };
 

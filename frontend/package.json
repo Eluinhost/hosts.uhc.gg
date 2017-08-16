@@ -8,8 +8,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@blueprintjs/core": "^1.23.0",
-    "@blueprintjs/labs": "^0.3.0",
+    "@blueprintjs/core": "^1.25.0",
+    "@blueprintjs/labs": "^0.6.0",
     "@types/jwt-decode": "^2.2.1",
     "@types/query-string": "^4.3.1",
     "babel-polyfill": "^6.23.0",
