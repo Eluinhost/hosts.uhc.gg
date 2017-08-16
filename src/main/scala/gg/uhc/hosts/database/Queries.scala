@@ -322,4 +322,19 @@ class Queries(logger: LogHandler) {
       WHERE
         id = $id
       """.asInstanceOf[Fragment].update
+
+  def getCurrentUbl: Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link
+      FROM ubl
+      WHERE
+        expires > NOW()
+      """.asInstanceOf[Fragment].query[UblRow]
 }

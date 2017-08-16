@@ -40,6 +40,7 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val getLatestRules: GetLatestRules                   = wire[GetLatestRules]
   lazy val setRules: SetRules                               = wire[SetRules]
   lazy val approveMatch: ApproveMatch                       = wire[ApproveMatch]
+  lazy val getCurrentUbl: GetCurrentUbl                     = wire[GetCurrentUbl]
   lazy val getHostingHistory: GetHostingHistory             = wire[GetHostingHistory]
 
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]

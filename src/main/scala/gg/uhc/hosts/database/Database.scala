@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.NonEmptyList
 
 class Database(transactor: HikariTransactor[IOLite]) {
-  implicit val system               = ActorSystem("database")
+  implicit val system: ActorSystem  = ActorSystem("database")
   implicit val ec: ExecutionContext = system.dispatcher
 
   val queries = new Queries(LogHandler {
@@ -142,6 +142,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
 
   def approveMatch(id: Long, approver: String): ConnectionIO[Boolean] =
     queries.approveMatch(id, approver).run.map(_ > 0)
+
+  def getCurrentUbl: ConnectionIO[List[UblRow]] =
+    queries.getCurrentUbl.list
 
   def getHostingHistory(host: String, before: Option[Long], count: Int): ConnectionIO[List[MatchRow]] =
     queries.hostingHistory(host, before, count).list
