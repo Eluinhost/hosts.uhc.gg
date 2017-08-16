@@ -17,6 +17,7 @@ import gg.uhc.hosts.endpoints.matches._
 import gg.uhc.hosts.endpoints.permissions._
 import gg.uhc.hosts.endpoints.rules.{GetLatestRules, RulesRoute, SetRules}
 import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
+import gg.uhc.hosts.endpoints.ubl.{GetCurrentUbl, UblRoute}
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends DatabaseModule with RedditModule {
@@ -53,6 +54,7 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val rulesRoute: RulesRoute                   = wire[RulesRoute]
   lazy val syncRoute: SyncRoute                     = wire[SyncRoute]
   lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
+  lazy val ublRoute: UblRoute                       = wire[UblRoute]
   lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }
