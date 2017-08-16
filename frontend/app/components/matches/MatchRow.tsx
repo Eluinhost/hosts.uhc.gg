@@ -42,6 +42,13 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
     this.props.onRemovePress();
   }
 
+  authorElement = (m: Match): React.ReactElement<any> => {
+    if (m.hostingName)
+      return <small>/u/{m.author}</small>;
+
+    return <span>/u/{m.author}</span>;
+  }
+
   render() {
     const { match, canRemove } = this.props;
 
@@ -66,10 +73,10 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         </div>
         <div className="match-content">
           <h4>
-            <UsernameLink username={match.author} className={match.hostingName ? 'pt-text-muted' : ''}/>
+            <UsernameLink username={match.author} override={this.authorElement(match)} />
 
             <If condition={!!match.hostingName}>
-              <span>{match.hostingName}</span>
+              <span> {match.hostingName}</span>
             </If>
 
             <span>'s</span>
