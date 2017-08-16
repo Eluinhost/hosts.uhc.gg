@@ -22,7 +22,7 @@ export type MatchRowState = {
 };
 
 const ServerTag: React.SFC<{ title: string, text: string }> = ({ title, text }) => (
-  <Tag intent={Intent.PRIMARY} className="pt-minimal pt-large" title={title}>{text}</Tag>
+  <Tag intent={Intent.PRIMARY} className="pt-minimal" title={title}>{text}</Tag>
 );
 
 export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
@@ -58,18 +58,28 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         onClick={this.onClick}
       >
         <div className="match-top-left-ribbon">
-          <span className="pt-tag pt-large pt-intent-success match-opens" title="Opens">
+          <Tag intent={Intent.SUCCESS} className="pt-large match-opens" title="Opens">
             {match.opens.format('MMM DD HH:mm z')}
-          </span>
-          <span className="pt-tag pt-large pt-intent-success match-region" title="Region">
+          </Tag>
+          <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region">
             {match.region}
-          </span>
-          <span className="pt-tag pt-large pt-intent-success" title="Location">
+          </Tag>
+          <Tag intent={Intent.SUCCESS} className="pt-large" title="Location">
             {match.location}
-          </span>
-          <span className="pt-tag pt-large pt-intent-success" title="Unique ID">
+          </Tag>
+          <Tag intent={Intent.SUCCESS} className="pt-large" title="Unique ID">
             {match.id}
-          </span>
+          </Tag>
+        </div>
+        <div className="match-top-right-ribbon">
+          <Tag intent={Intent.PRIMARY} className="pt-large">
+            <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
+          </Tag>
+          <If condition={match.tournament}>
+            <Tag intent={Intent.PRIMARY} className="pt-large">
+              <span className="pt-icon-timeline-bar-chart" /> Tournament
+            </Tag>
+          </If>
         </div>
         <div className="match-content">
           <h4>
@@ -81,21 +91,8 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
 
             <span>'s</span>
 
-            <If condition={match.tournament}>
-              <span> Tournament</span>
-            </If>
-
             <span> #{match.count}</span>
           </h4>
-          <h5>
-            <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
-            <span title="Map Size"> - {match.mapSize}x{match.mapSize}</span>
-            <span title="Version"> - {match.version}</span>
-          </h5>
-          <h6>
-            <span>Length: {match.length}m</span>
-            <span> | PVP: {match.pvpEnabledAt}m</span>
-          </h6>
           <div className="match-tags">
             <TagList intent={Intent.WARNING} title="Tag" items={match.tags} />
             <TagList intent={Intent.DANGER} title="Scenario" items={match.scenarios} />
@@ -105,7 +102,10 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
             <If condition={!!match.address}>
               <ServerTag title="Server Address" text={match.address!}/>
             </If>
-            <ServerTag title="slots" text={`${match.slots} Slots`}/>
+            <ServerTag title="slots" text={`${match.slots} Slots`} />
+            <ServerTag title="Map Size" text={`${match.mapSize}x${match.mapSize}`} />
+            <ServerTag title="Version" text={match.version} />
+            <ServerTag title="PVP Enabled/Match length" text={`${match.pvpEnabledAt}m / ${match.length}m`}/>
           </div>
         </div>
         <If condition={match.removed}>
