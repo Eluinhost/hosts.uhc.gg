@@ -34,6 +34,7 @@ const convertUnixToMoment = (x: string): moment.Moment => moment(x).utc();
 
 const convertMatchTimes = (m: Match): Match => evolve<Match>({
   opens: convertUnixToMoment,
+  created: convertUnixToMoment,
 }, m);
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>

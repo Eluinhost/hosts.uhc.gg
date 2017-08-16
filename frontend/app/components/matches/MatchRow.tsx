@@ -58,7 +58,11 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         onClick={this.onClick}
       >
         <div className="match-top-left-ribbon">
-          <Tag intent={Intent.SUCCESS} className="pt-large match-opens" title="Opens">
+          <Tag
+            intent={Intent.SUCCESS}
+            className="pt-large match-opens"
+            title={`Created @ ${match.created.format('MMM DD HH:mm z')}`}
+          >
             {match.opens.format('MMM DD HH:mm z')}
           </Tag>
           <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region">
