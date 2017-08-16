@@ -45,12 +45,21 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
   
   render() {
     return (
-      <MatchListing
-        matches={this.state.matches}
-        error={this.state.error}
-        loading={this.state.loading}
-        refetch={this.refetch}
-      />
+      <div>
+        <h1>Hosting history for /u/{this.props.match.params.host}</h1>
+
+        <p>
+          Matches are in reverse order by date they were <em>created.</em>
+        </p>
+
+        <MatchListing
+          matches={this.state.matches}
+          error={this.state.error}
+          loading={this.state.loading}
+          refetch={this.refetch}
+        />
+      </div>
+
     );
   }
 }
