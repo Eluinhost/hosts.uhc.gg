@@ -155,7 +155,7 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def getUblEntriesForUuid(uuid: UUID): ConnectionIO[List[UblRow]] =
     queries.getUblEntriesForUuid(uuid).list
 
-  def searchUblUsername(username: String): ConnectionIO[Map[String, String]] =
+  def searchUblUsername(username: String): ConnectionIO[Map[String, List[UUID]]] =
     queries.searchUblUsername(username).list.map(_.toMap)
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {

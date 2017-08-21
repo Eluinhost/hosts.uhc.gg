@@ -371,14 +371,15 @@ class Queries(logger: LogHandler) {
       ORDER BY expires DESC
       """.asInstanceOf[Fragment].query[UblRow]
 
-  def searchUblUsername(username: String): Query0[(String, String)] =
+  def searchUblUsername(username: String): Query0[(String, List[UUID])] =
     sql"""
       SELECT
-        DISTINCT(ign),
-        uuid
+        ign,
+        array_agg(uuid)
       FROM ubl
       WHERE
         ign ILIKE ${s"%$username%"}
+      GROUP BY ign
       LIMIT 21
-      """.asInstanceOf[Fragment].query[(String, String)]
+      """.asInstanceOf[Fragment].query[(String, List[UUID])]
 }
