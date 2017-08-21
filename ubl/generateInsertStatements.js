@@ -82,13 +82,14 @@ const parseOldItem = item => {
   }
 }
 
-const generateStatement = item => `INSERT INTO ubl (ign, uuid, reason, created, expires, link) VALUES (
+const generateStatement = item => `INSERT INTO ubl (ign, uuid, reason, created, expires, link, createdBy) VALUES (
     '${item.ign.replace(/'/g, '\'\'')}',
     '${item.uuid}',
     '${item.reason.replace(/'/g, '\'\'')}',
     '${item.created}',
     '${item.expires}',
-    '${item.link.replace(/'/g, '\'\'')}'
+    '${item.link.replace(/'/g, '\'\'')}',
+    'ghowden'
 )`;
 
 const createOutputFile = pipe(

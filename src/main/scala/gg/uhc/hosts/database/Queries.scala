@@ -3,6 +3,7 @@ package gg.uhc.hosts.database
 import java.net.InetAddress
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 import doobie.imports._
 import doobie.postgres.imports._
@@ -332,9 +333,52 @@ class Queries(logger: LogHandler) {
         reason,
         created,
         expires,
-        link
+        link,
+        createdBy
       FROM ubl
       WHERE
         expires > NOW()
       """.asInstanceOf[Fragment].query[UblRow]
+
+  def createUblEntry(entry: UblRow): Update0 =
+    sql"""
+      INSERT INTO ubl (ign, uuid, reason, created, expires, link, createdBy)
+      VALUES (
+        ${entry.ign},
+        ${entry.uuid},
+        ${entry.reason},
+        ${entry.created},
+        ${entry.expires},
+        ${entry.link},
+        ${entry.createdBy}
+      )
+      """.asInstanceOf[Fragment].update
+
+  def getUblEntriesForUuid(uuid: UUID): Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link,
+        createdBy
+      FROM ubl
+      WHERE
+        uuid = $uuid
+      ORDER BY expires DESC
+      """.asInstanceOf[Fragment].query[UblRow]
+
+  def searchUblUsername(username: String): Query0[(String, String)] =
+    sql"""
+      SELECT
+        DISTINCT(ign),
+        uuid
+      FROM ubl
+      WHERE
+        ign ILIKE ${s"%$username%"}
+      LIMIT 21
+      """.asInstanceOf[Fragment].query[(String, String)]
 }

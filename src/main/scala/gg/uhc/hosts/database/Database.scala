@@ -149,6 +149,15 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def getHostingHistory(host: String, before: Option[Long], count: Int): ConnectionIO[List[MatchRow]] =
     queries.hostingHistory(host, before, count).list
 
+  def createUblEntry(entry: UblRow): ConnectionIO[Long] =
+    queries.createUblEntry(entry).withUniqueGeneratedKeys[Long]("id")
+
+  def getUblEntriesForUuid(uuid: UUID): ConnectionIO[List[UblRow]] =
+    queries.getUblEntriesForUuid(uuid).list
+
+  def searchUblUsername(username: String): ConnectionIO[Map[String, String]] =
+    queries.searchUblUsername(username).list.map(_.toMap)
+
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
   }

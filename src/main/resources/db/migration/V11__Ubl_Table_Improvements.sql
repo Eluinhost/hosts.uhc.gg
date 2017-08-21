@@ -1,7 +1,0 @@
-ALTER TABLE ubl ALTER COLUMN created TYPE DATE;
-ALTER TABLE ubl ALTER COLUMN expires TYPE DATE;
-
-CREATE INDEX ON ubl (expires);
-CREATE INDEX ON ubl (created);
-CREATE INDEX ON ubl (uuid);
-CREATE INDEX ON ubl (ign);
