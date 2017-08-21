@@ -123,7 +123,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
       >
         <Button
           rightIconName="caret-down"
-          text="Search by username/UUID"
+          text="Show history for username or UUID"
         />
       </UsernameEntrySelect>
     );
