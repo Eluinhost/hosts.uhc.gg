@@ -4,7 +4,7 @@ import { Intent, Tag } from '@blueprintjs/core';
 
 export const BanHistoryEntry: React.SFC<BanEntry> = ({ reason, created, expires, link, createdBy }) => (
   <div
-    className={`pt-card match-row pt-interactive`}
+    className={`pt-card match-row`}
   >
     <div>
       <Tag intent={Intent.SUCCESS} title="Created">
