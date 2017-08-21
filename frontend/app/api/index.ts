@@ -1,10 +1,11 @@
 import { Match } from '../Match';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
-import { map, evolve, always, prop } from 'ramda';
+import { map, evolve, always, prop, Obj } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
 import { HostingRules } from '../state/HostingRulesState';
+import { BanEntry } from '../BanEntry';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -219,10 +220,32 @@ export const setHostingRules = (content: string, accessToken: string): Promise<v
     .then(_ => undefined);
 
 
-// TODO pages
-export const getHostingHistory = (host: String, before?: number): Promise<Match[]> =>
+export const getHostingHistory = (host: string, before?: number): Promise<Match[]> =>
   fetch(`/api/hosts/${host}/matches?before=${before || ''}`)
   .then(verifyStatus(200))
   .then(toJson<Match[]>())
   .then(map(convertMatchTimes));
 
+export const searchBannedUsernames = (query: string): Promise<Obj<string[]>> =>
+  fetch(
+    `/api/ubl/search/${query}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+    .then(verifyStatus(200))
+    .then(toJson<Obj<string[]>>());
+
+const convertBanTimes = (b: BanEntry): BanEntry => evolve<BanEntry>({
+  expires: convertUnixToMoment,
+  created: convertUnixToMoment,
+}, b);
+
+export const getAllBansForUuid = (uuid: string): Promise<BanEntry[]> =>
+  fetch(`/api/ubl/${uuid}`)
+    .then(verifyStatus(200))
+    .then(toJson<BanEntry[]>())
+    .then(map(convertBanTimes));

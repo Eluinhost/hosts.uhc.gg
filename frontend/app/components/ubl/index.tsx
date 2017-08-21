@@ -1,5 +1,9 @@
 import * as React from 'react';
+import { UsernameSearcher } from './UsernameSearcher';
 
 export const UblPage: React.SFC = () => (
-  <h1>UBL PAGE</h1>
+  <div>
+    <h1>UBL PAGE</h1>
+    <UsernameSearcher />
+  </div>
 );
