@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button, MenuItem, Classes } from '@blueprintjs/core';
 import { Redirect } from 'react-router';
 import { searchBannedUsernames } from '../../api/index';
-import { toPairs, map, Obj, pipe, mapObjIndexed, concat, values, flatten } from 'ramda';
+import { map, Obj, pipe, mapObjIndexed, values, flatten } from 'ramda';
 
 type UsernameEntry = {
   readonly username: string;
@@ -65,25 +65,15 @@ export class UsernameSearcher extends React.Component<{}, State> {
     flatten,
   )(data)
 
-  onChange = (value: string) => {
-    if (value.trim() === '') {
-      this.setState({
-        loading: false,
-      });
-
-      return;
-    }
-
-    searchBannedUsernames(value)
-      .then(this.convertToFlatList)
-      .then(items => this.setState({
-        items,
-        loading: false,
-      }))
-      .catch(err => this.setState({
-        loading: false, // TODO errors
-      }));
-  }
+  onChange = (value: string): Promise<void> => searchBannedUsernames(value)
+    .then(this.convertToFlatList)
+    .then(items => this.setState({
+      items,
+      loading: false,
+    }))
+    .catch(err => this.setState({
+      loading: false, // TODO errors
+    }))
 
   debouncedChange = (e: React.FormEvent<HTMLInputElement>) => {
     if (this.debounceId !== null)
@@ -93,8 +83,29 @@ export class UsernameSearcher extends React.Component<{}, State> {
       loading: true,
     });
 
-    const v = e.currentTarget.value;
-    this.debounceId = setTimeout(() => this.onChange(v), 300);
+    const value = e.currentTarget.value;
+
+    // is a UUID, give them a single option to load it directly
+    if (/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value)) {
+      this.setState({
+        loading: false,
+        items: [
+          {
+            uuid: value,
+            username: 'Click to load UUID',
+          },
+        ],
+      });
+
+      return;
+    } else if (value.trim() === '') {
+      this.setState({
+        loading: false,
+        items: [],
+      });
+    } else {
+      this.debounceId = window.setTimeout(() => this.onChange(value), 300);
+    }
   }
 
   render() {
@@ -112,7 +123,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
       >
         <Button
           rightIconName="caret-down"
-          text="Search by username"
+          text="Search by username/UUID"
         />
       </UsernameEntrySelect>
     );
