@@ -62,8 +62,8 @@ export class BanHistoryPage extends React.Component<RouteComponentProps<Params>,
   render() {
     return (
       <div>
-        <h1>Ban history for {this.props.match.params.uuid}</h1>
-
+        <h1>Ban History</h1>
+        <small>{this.props.match.params.uuid}</small>
         {this.renderList()}
       </div>
     );
