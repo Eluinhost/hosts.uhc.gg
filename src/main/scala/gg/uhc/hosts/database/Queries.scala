@@ -375,7 +375,7 @@ class Queries(logger: LogHandler) {
     sql"""
       SELECT
         ign,
-        array_agg(uuid)
+        array_agg(distinct uuid)
       FROM ubl
       WHERE
         ign ILIKE ${s"%$username%"}
