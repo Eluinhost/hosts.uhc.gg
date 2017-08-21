@@ -3,7 +3,7 @@ import { UsernameSearcher } from './UsernameSearcher';
 
 export const UblPage: React.SFC = () => (
   <div>
-    <h1>UBL PAGE</h1>
+    <h1>Universal Ban List</h1>
     <UsernameSearcher />
   </div>
 );
