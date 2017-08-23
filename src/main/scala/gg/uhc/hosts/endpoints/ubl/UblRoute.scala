@@ -11,7 +11,9 @@ class UblRoute(
     getCurrentUbl: GetCurrentUbl,
     createUblEntry: CreateUblEntry,
     getByUuid: GetUblForUuid,
-    usernameSearch: UsernameSearch) {
+    usernameSearch: UsernameSearch,
+    extendUblEntry: ExtendUblEntry,
+    deleteUblEntry: DeleteUblEntry) {
 
   implicit class SegmentExtensions(segment: PathMatcher1[String]) {
     def asUuid: PathMatcher1[UUID] =
@@ -25,6 +27,8 @@ class UblRoute(
   def apply(): Route =
     concat(
       (get & path("current"))(getCurrentUbl()),
+      (delete & path(IntNumber))(deleteUblEntry(_)),
+      (post & path(IntNumber))(extendUblEntry(_)),
       (post & pathEndOrSingleSlash)(createUblEntry()),
       (post & path("search" / Segment))(usernameSearch(_)),
       (get & path(Segment.asUuid))(getByUuid(_))

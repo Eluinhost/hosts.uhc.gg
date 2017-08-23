@@ -382,4 +382,20 @@ class Queries(logger: LogHandler) {
       GROUP BY ign
       LIMIT 21
       """.asInstanceOf[Fragment].query[(String, List[UUID])]
+
+  def extendUblEntry(id: Long, username: String, reason: String, newExpires: Instant): Update0 =
+    sql"""
+      UPDATE ubl
+      SET
+        expires = $newExpires,
+        reason = $reason,
+        createdBy = $username
+      WHERE id = $id
+      """.asInstanceOf[Fragment].update
+
+  def deleteUblEntry(id: Long): Update0 =
+    sql"""
+      DELETE FROM ubl
+      WHERE id = $id
+      """.asInstanceOf[Fragment].update
 }
