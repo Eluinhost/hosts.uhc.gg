@@ -249,3 +249,9 @@ export const getAllBansForUuid = (uuid: string): Promise<BanEntry[]> =>
     .then(verifyStatus(200))
     .then(toJson<BanEntry[]>())
     .then(map(convertBanTimes));
+
+export const getAllCurrentBans = (): Promise<BanEntry[]> =>
+  fetch(`/api/ubl/current`)
+    .then(verifyStatus(200))
+    .then(toJson<BanEntry[]>())
+    .then(map(convertBanTimes));

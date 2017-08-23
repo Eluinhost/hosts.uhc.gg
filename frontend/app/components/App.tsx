@@ -68,8 +68,10 @@ const Routes: React.ComponentClass<{}> = withRouter<{}>(RoutesComponent);
 
 export const App: React.SFC = () => (
   <BrowserRouter>
-    <div className="pt-dark">
-      <Navbar />
+    <div className="pt-dark full-page">
+      <div style={{ flexGrow: 0 }}>
+        <Navbar />
+      </div>
       <div className="app-container">
         <Routes />
       </div>
