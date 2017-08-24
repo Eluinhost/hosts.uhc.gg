@@ -2,10 +2,10 @@ import * as React from 'react';
 import { BanEntry } from '../../BanEntry';
 import { RouteComponentProps } from 'react-router';
 import { getAllBansForUuid } from '../../api';
-import { map, any, CurriedFunction2, curry, propSatisfies } from 'ramda';
-import { BanHistoryEntry } from './BanHistoryEntry';
+import { map, any, CurriedFunction2, curry, propSatisfies, filter, complement, when, propEq, always } from 'ramda';
 import { Intent, NonIdealState, Tag } from '@blueprintjs/core';
 import * as moment from 'moment';
+import { UblEntryRow } from '../ubl/UblEntryRow';
 
 type State = {
   readonly bans: BanEntry[];
@@ -53,8 +53,23 @@ export class BanHistoryPage extends React.Component<RouteComponentProps<Params>,
     }
   }
 
+  onRowDeleted = (id: number) => this.setState(prev => ({
+    bans: filter(complement(propEq('id', id)), prev.bans),
+  }))
+
+  onRowEdited = (ban: BanEntry, oldBan: BanEntry) => this.setState(prev => ({
+    bans: map(when(propEq('id', oldBan.id), always(ban)), prev.bans),
+  }))
+
   renderBans: (bans: BanEntry[]) => React.ReactElement<any>[] =
-    map<BanEntry, React.ReactElement<any>>(ban => <BanHistoryEntry {...ban} key={ban.id} />);
+    map<BanEntry, React.ReactElement<any>>(ban => (
+      <UblEntryRow
+        key={ban.id}
+        ban={ban}
+        onDeleted={this.onRowDeleted}
+        onEdited={this.onRowEdited}
+      />
+    ));
 
   renderList = (): React.ReactElement<any> | React.ReactElement<any>[] => {
     if (this.state.bans.length)
