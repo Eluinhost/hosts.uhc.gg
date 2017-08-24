@@ -338,6 +338,7 @@ class Queries(logger: LogHandler) {
       FROM ubl
       WHERE
         expires > NOW()
+      ORDER BY created DESC
       """.asInstanceOf[Fragment].query[UblRow]
 
   def createUblEntry(entry: UblRow): Update0 =

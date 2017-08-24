@@ -819,7 +819,7 @@ paths:
       tags:
         - UBL
       summary: List all current bans
-      description: List all of the bans that are currently being applied
+      description: List all of the bans that are currently being applied, most recently created first
       responses:
         '200':
           description: 'Success'
