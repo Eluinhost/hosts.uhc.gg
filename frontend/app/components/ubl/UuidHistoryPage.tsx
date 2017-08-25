@@ -4,7 +4,7 @@ import { getAllBansForUuid } from '../../api';
 import { any, CurriedFunction2, curry, propSatisfies } from 'ramda';
 import { Intent, Tag } from '@blueprintjs/core';
 import * as moment from 'moment';
-import { UblListing } from '../ubl/UblListing';
+import { UblListing } from './UblListing';
 import { If } from '../If';
 import { BanEntry } from '../../BanEntry';
 
@@ -26,7 +26,7 @@ enum BanState {
 const isAfter: CurriedFunction2<moment.Moment, moment.Moment, boolean> =
   curry((a: moment.Moment, b: moment.Moment) => b.isAfter(a));
 
-export class BanHistoryPage extends React.Component<RouteComponentProps<Params>, State> {
+export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>, State> {
   state = {
     currentlyBanned: BanState.NotLoaded,
   };
