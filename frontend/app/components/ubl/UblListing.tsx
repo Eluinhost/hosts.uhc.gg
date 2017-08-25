@@ -16,6 +16,7 @@ type UblListingStateProps = {
 
 type UblListingProps = {
   readonly refetch: () => Promise<BanEntry[]>;
+  readonly onListUpdate?: (bans: BanEntry[]) => void;
 };
 
 type State = {
@@ -57,11 +58,18 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
   }
 
   // Delete immediately + store backup list
-  onRowDeleteStart = (ban: BanEntry) => this.setState(prev => ({
-    bans: filter(complement(propEq('id', ban.id)), prev.bans),
-    backup: prev.bans,
-    working: true,
-  }))
+  onRowDeleteStart = (ban: BanEntry) => this.setState((prev) => {
+    const bans = filter(complement(propEq('id', ban.id)), prev.bans);
+
+    if (this.props.onListUpdate)
+      this.props.onListUpdate(bans);
+
+    return {
+      bans,
+      backup: prev.bans,
+      working: true,
+    };
+  })
 
   // Clear backup on confirm
   onRowDeleted = () => this.setState({
@@ -69,17 +77,29 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
   })
 
   // restore from backup
-  onRowDeleteFailed = (ban: BanEntry) => this.setState(prev => ({
-    bans: prev.backup,
-    backup: null,
-  }))
+  onRowDeleteFailed = (ban: BanEntry) => this.setState((prev) => {
+    if (this.props.onListUpdate)
+      this.props.onListUpdate(prev.backup!);
+
+    return {
+      bans: prev.backup,
+      backup: null,
+    };
+  })
 
 
   // make the change immediately + save backup
-  onRowEditStart = (ban: BanEntry, oldBan: BanEntry) => this.setState(prev => ({
-    bans: map(when(propEq('id', oldBan.id), always(ban)), prev.bans),
-    backup: prev.bans,
-  }))
+  onRowEditStart = (ban: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
+    const bans = map(when(propEq('id', oldBan.id), always(ban)), prev.bans);
+
+    if (this.props.onListUpdate)
+      this.props.onListUpdate(bans);
+
+    return {
+      bans,
+      backup: prev.bans,
+    };
+  })
 
   // clear backup
   onRowEdited = () => this.setState({
@@ -87,10 +107,15 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
   })
 
   // restore from backup
-  onRowEditFailed = (ban: BanEntry, oldBan: BanEntry) => this.setState(prev => ({
-    bans: prev.backup,
-    backup: null,
-  }))
+  onRowEditFailed = (ban: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
+    if (this.props.onListUpdate)
+      this.props.onListUpdate(prev.backup!);
+
+    return {
+      bans: prev.backup,
+      backup: null,
+    };
+  })
 
   renderRow = (props: ListRowProps) => {
     const ban = this.state.bans[props.index];

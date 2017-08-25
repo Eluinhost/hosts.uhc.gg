@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { getAllBansForUuid } from '../../api';
-import { any, CurriedFunction2, curry, propSatisfies, always } from 'ramda';
+import { any, CurriedFunction2, curry, propSatisfies } from 'ramda';
 import { Intent, Tag } from '@blueprintjs/core';
 import * as moment from 'moment';
 import { UblListing } from '../ubl/UblListing';
 import { If } from '../If';
+import { BanEntry } from '../../BanEntry';
 
 type Params = {
   readonly uuid: string;
@@ -30,22 +31,24 @@ export class BanHistoryPage extends React.Component<RouteComponentProps<Params>,
     currentlyBanned: BanState.NotLoaded,
   };
 
-  load = () =>
-    getAllBansForUuid(this.props.match.params.uuid)
-      .then((bans) => {
-        // Set the currently banned flags
-        if (bans.length === 0) {
-          this.setState({ currentlyBanned: BanState.NeverBanned });
-        } else {
-          this.setState({
-            currentlyBanned: any(propSatisfies(isAfter(moment.utc()), 'expires'), bans)
-              ? BanState.CurrentlyBanned
-              : BanState.AllExpired,
-          });
-        }
+  updateFlag = (bans: BanEntry[]) => {
+    if (bans.length === 0) {
+      this.setState({
+        currentlyBanned: BanState.NeverBanned,
+      });
+    } else {
+      this.setState({
+        currentlyBanned: any(propSatisfies(isAfter(moment.utc()), 'expires'), bans)
+          ? BanState.CurrentlyBanned
+          : BanState.AllExpired,
+      });
+    }
+  }
 
-        return bans;
-      })
+  load = () => getAllBansForUuid(this.props.match.params.uuid).then((bans) => {
+    this.updateFlag(bans);
+    return bans;
+  })
 
   render() {
     return (
@@ -71,7 +74,7 @@ export class BanHistoryPage extends React.Component<RouteComponentProps<Params>,
           </If>
         </h2>
 
-        <UblListing refetch={this.load} />
+        <UblListing refetch={this.load} onListUpdate={this.updateFlag} />
       </div>
     );
   }
