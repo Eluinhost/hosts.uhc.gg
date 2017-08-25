@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors } from './FieldWrapper';
-import DatePicker from 'react-datepicker';
-import TimePicker from 'rc-time-picker';
+import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
+import TimePicker, { RcTimePickerProps } from 'rc-time-picker';
 import * as moment from 'moment';
 import { Overlay } from '@blueprintjs/core';
 
