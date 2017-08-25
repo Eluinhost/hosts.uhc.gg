@@ -1,10 +1,10 @@
 import { BanEntry } from '../../BanEntry';
-import { AutoSizer, List, ListRowProps } from 'react-virtualized';
+import { AutoSizer, List, ListRowProps, WindowScroller } from 'react-virtualized';
 import { If } from '../If';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
-import { filter, propEq, complement, always, map, when, findIndex, splitAt } from 'ramda';
+import { filter, propEq, complement, always, map, when } from 'ramda';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -137,18 +137,6 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
     );
   }
 
-  renderList = ({ width, height }: { readonly width: number, readonly height: number }) => (
-    <List
-      updateHelper={this.state/*not a real prop, used to make sure renders pass through properly*/}
-      updateHelper2={this.props/*not a real prop, used to make sure renders pass through properly*/}
-      width={width}
-      height={height}
-      rowCount={this.state.bans.length}
-      rowHeight={100}
-      rowRenderer={this.renderRow}
-    />
-  )
-
   render() {
     return (
       <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
@@ -163,12 +151,25 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
         </If>
 
         <div style={{ flex: '1 0 auto' }}>
-          <AutoSizer
-            updateHelper={this.state/*not a real prop, used to make sure renders pass through properly*/}
-            updateHelper2={this.props/*not a real prop, used to make sure renders pass through properly*/}
-          >
-            {this.renderList}
-          </AutoSizer>
+          <WindowScroller>
+            {/*tslint:disable-next-line jsx-no-multiline-js*/({ height, isScrolling, scrollTop }) => (
+              <AutoSizer disableHeight>
+                {/*tslint:disable-next-line jsx-no-multiline-js*/({ width }) => (
+                  <List
+                    renderHelper={this.props}
+                    renderHelper2={this.state}
+                    autoHeight
+                    height={height}
+                    rowCount={this.state.bans.length}
+                    rowHeight={100}
+                    rowRenderer={this.renderRow}
+                    scrollTop={scrollTop}
+                    width={width}
+                  />
+                )}
+              </AutoSizer>
+            )}
+          </WindowScroller >
         </div>
       </div>
     );
