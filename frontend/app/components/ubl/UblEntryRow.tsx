@@ -4,12 +4,19 @@ import { WithPermission } from '../WithPermission';
 import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
 import { AppToaster } from '../../AppToaster';
 import { Link } from 'react-router-dom';
+import { deleteBan } from '../../api/index';
 
 type UblEntryRowProps = {
   readonly ban: BanEntry;
   readonly className?: string;
-  readonly onDeleted: (id: number) => void;
+  readonly onDeleteStart: (ban: BanEntry) => void;
+  readonly onDeleted: (ban: BanEntry) => void;
+  readonly onDeleteFailed: (ban: BanEntry) => void;
+  readonly onEditStart: (ban: BanEntry, oldBan: BanEntry) => void;
   readonly onEdited: (ban: BanEntry, oldBan: BanEntry) => void;
+  readonly onEditFailed: (ban: BanEntry, oldBan: BanEntry) => void;
+  readonly accessToken: string | null;
+  readonly disabled: boolean;
 };
 
 type State = {
@@ -32,18 +39,25 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
   })
 
   confirmDelete = () => {
-    console.log(`deleting ${this.props.ban.id}`);
-    this.closeDeleteDialog();
+    const ban = this.props.ban;
 
-    // TODO api calls
-    Promise
-      .resolve()
+    this.closeDeleteDialog();
+    this.props.onDeleteStart(ban);
+
+    deleteBan(ban.id, this.props.accessToken!)
       .then(() => {
         AppToaster.show({
-          message: `Ban #${this.props.ban.id} deleted`,
+          message: `Ban #${ban.id} deleted`,
           intent: Intent.SUCCESS,
         });
-        this.props.onDeleted(this.props.ban.id);
+        this.props.onDeleted(ban);
+      })
+      .catch(() => {
+        AppToaster.show({
+          message: `Unexpected response from the server deleting ban #${ban.id}`,
+          intent: Intent.DANGER,
+        });
+        this.props.onDeleteFailed(ban);
       });
   }
 
@@ -56,36 +70,55 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
   })
 
   confirmEdit = () => {
-    console.log(`editing ${this.props.ban.id}`);
-
-    AppToaster.show({
-      message: `Ban #${this.props.ban.id} edited`,
-      intent: Intent.SUCCESS,
-    });
+    const oldBan = this.props.ban;
+    const newBan = {
+      ...this.props.ban,
+      ign: `${this.props.ban.ign}-test`,
+    }; // TODO API calls + actual edits
 
     this.closeEditDialog();
+    this.props.onEditStart(newBan, oldBan);
 
-    // TODO API calls + actual edits
-    this.props.onEdited(
-      {
-        ...this.props.ban,
-        ign: `${this.props.ban.ign}-test`,
-      },
-      this.props.ban,
-    );
+    Promise.resolve()
+      .then(() => {
+        AppToaster.show({
+          message: `Ban #${oldBan.id} edited`,
+          intent: Intent.SUCCESS,
+        });
+        this.props.onEdited(newBan, oldBan);
+      })
+      .catch(() => {
+        AppToaster.show({
+          message: `Unexpected response from the server editing ban #${oldBan.id}`,
+          intent: Intent.DANGER,
+        });
+        this.props.onEditFailed(newBan, oldBan);
+      });
   }
 
   renderCaseLink = (link: string) => {
     if (/^https?/.test(link)) {
       return (
         <a href={link} target="_blank">
-          <Tag intent={Intent.PRIMARY} className="pt-minimal pt-icon-take-action pt-large" title="Open case link"/>
+          <Button
+            intent={Intent.PRIMARY}
+            className="pt-minimal pt-large"
+            iconName="take-action"
+            title="Open case link"
+            disabled={this.props.disabled}
+          />
         </a>
       );
     }
 
     return (
-      <Tag intent={Intent.DANGER} className="pt-minimal pt-icon-take-action pt-large" title="No case link available" />
+      <Button
+        intent={Intent.DANGER}
+        className="pt-minimal pt-large"
+        iconName="take-action"
+        title="No case link available"
+        disabled={this.props.disabled}
+      />
     );
   }
 
@@ -114,19 +147,21 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
             {this.renderCaseLink(ban.link)}
             <WithPermission permission="moderator">
               <span>
-                <Tag
-                  style={{ cursor: 'pointer' }}
+                <Button
                   intent={Intent.WARNING}
-                  className="pt-minimal pt-icon-edit pt-large"
+                  className="pt-minimal pt-large"
+                  iconName="edit"
                   title="Modify Ban"
                   onClick={this.openEditDialog}
+                  disabled={this.props.disabled}
                 />
-                <Tag
-                  style={{ cursor: 'pointer' }}
+                <Button
                   intent={Intent.DANGER}
-                  className="pt-minimal pt-icon-trash pt-large"
+                  className="pt-minimal pt-large"
+                  iconName="trash"
                   title="Delete Ban"
                   onClick={this.openDeleteDialog}
+                  disabled={this.props.disabled}
                 />
               </span>
             </WithPermission>

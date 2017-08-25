@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { UsernameSearcher } from './UsernameSearcher';
-import { UblCurrentListing } from './UblCurrentListing';
+import { UblListing } from './UblListing';
+import { getAllCurrentBans } from '../../api/index';
 
 export const UblPage: React.SFC = () => (
   <div>
@@ -8,6 +9,6 @@ export const UblPage: React.SFC = () => (
     <div style={{ flexGrow: 0 }}>
       <UsernameSearcher />
     </div>
-    <UblCurrentListing />
+    <UblListing refetch={getAllCurrentBans} />
   </div>
 );

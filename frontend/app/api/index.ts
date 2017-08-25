@@ -255,3 +255,15 @@ export const getAllCurrentBans = (): Promise<BanEntry[]> =>
     .then(verifyStatus(200))
     .then(toJson<BanEntry[]>())
     .then(map(convertBanTimes));
+
+export const deleteBan = (id: number, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/ubl/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(204)).then(always(undefined));
