@@ -369,7 +369,7 @@ class Queries(logger: LogHandler) {
       FROM ubl
       WHERE
         uuid = $uuid
-      ORDER BY expires DESC
+      ORDER BY created DESC
       """.asInstanceOf[Fragment].query[UblRow]
 
   def searchUblUsername(username: String): Query0[(String, List[UUID])] =

@@ -893,7 +893,7 @@ paths:
       tags:
         - UBL
       summary: List bans for UUID
-      description: Shows every ban that has been created for the given UUID
+      description: Shows every ban that has been created for the given UUID ordered by created date descending
       parameters:
         - in: path
           name: uuid
