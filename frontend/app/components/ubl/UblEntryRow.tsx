@@ -175,7 +175,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           onClose={this.closeEditDialog}
         >
           <div className="pt-dialog-body">
-            test
+            NOT IMPLEMENTED YET
           </div>
           <div className="pt-dialog-footer">
             <div className="pt-dialog-footer-actions">

@@ -4,6 +4,7 @@ import { Button, MenuItem, Classes } from '@blueprintjs/core';
 import { Redirect } from 'react-router';
 import { searchBannedUsernames } from '../../api/index';
 import { map, Obj, pipe, mapObjIndexed, values, flatten } from 'ramda';
+import { uuidRegex } from '../../uuidRegex';
 
 type UsernameEntry = {
   readonly username: string;
@@ -86,7 +87,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
     const value = e.currentTarget.value;
 
     // is a UUID, give them a single option to load it directly
-    if (/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value)) {
+    if (uuidRegex.test(value)) {
       this.setState({
         loading: false,
         items: [

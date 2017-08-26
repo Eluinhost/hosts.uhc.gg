@@ -5,6 +5,7 @@ import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import TimePicker, { RcTimePickerProps } from 'rc-time-picker';
 import * as moment from 'moment';
 import { Overlay } from '@blueprintjs/core';
+import { If } from '../If';
 
 export interface DateTimeFieldProps extends BaseFieldProps {
   readonly label?: string | React.ReactElement<any>;
@@ -12,6 +13,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
   readonly datePickerProps?: Partial<ReactDatePickerProps>;
   readonly timePickerProps?: Partial<RcTimePickerProps>;
+  readonly disableTime?: boolean;
 }
 
 class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFieldProps> {
@@ -54,14 +56,16 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
           onChange={this.onDateChange}
         >
           <div className="date-time-field-time-section">
-            <TimePicker
-              {...timePickerProps}
-              onChange={this.onTimeChange}
-              value={input ? input.value : null}
-              className={`date-time-field-time-picker ${(timePickerProps || {}).className || ''}`}
-              disabled={disabled}
-              onClose={this.onTimeClose}
-            />
+            <If condition={!this.props.disableTime}>
+              <TimePicker
+                {...timePickerProps}
+                onChange={this.onTimeChange}
+                value={input ? input.value : null}
+                className={`date-time-field-time-picker ${(timePickerProps || {}).className || ''}`}
+                disabled={disabled}
+                onClose={this.onTimeClose}
+              />
+            </If>
 
             <RenderErrors {...meta} />
 
