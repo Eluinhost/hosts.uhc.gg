@@ -10,7 +10,7 @@ import { Spec, validate } from '../../validate';
 import { uuidRegex } from '../../uuidRegex';
 import { BadDataError, createBan, ForbiddenError, NotAuthenticatedError } from '../../api/index';
 import * as H from 'history';
-import {ReactDatePickerProps} from "react-datepicker";
+import { ReactDatePickerProps } from 'react-datepicker';
 
 export type CreateBanFormProps = {
   readonly accessToken: string;
