@@ -102,7 +102,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         <a href={link} target="_blank">
           <Button
             intent={Intent.PRIMARY}
-            className="pt-minimal pt-large"
+            className="pt-minimal"
             iconName="take-action"
             title="Open case link"
             disabled={this.props.disabled}
@@ -114,7 +114,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     return (
       <Button
         intent={Intent.DANGER}
-        className="pt-minimal pt-large"
+        className="pt-minimal"
         iconName="take-action"
         title="No case link available"
         disabled={this.props.disabled}
@@ -149,7 +149,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
               <span>
                 <Button
                   intent={Intent.WARNING}
-                  className="pt-minimal pt-large"
+                  className="pt-minimal"
                   iconName="edit"
                   title="Modify Ban"
                   onClick={this.openEditDialog}
@@ -157,7 +157,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
                 />
                 <Button
                   intent={Intent.DANGER}
-                  className="pt-minimal pt-large"
+                  className="pt-minimal"
                   iconName="trash"
                   title="Delete Ban"
                   onClick={this.openDeleteDialog}

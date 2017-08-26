@@ -161,7 +161,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
                     autoHeight
                     height={height}
                     rowCount={this.state.bans.length}
-                    rowHeight={100}
+                    rowHeight={110}
                     rowRenderer={this.renderRow}
                     scrollTop={scrollTop}
                     width={width}
