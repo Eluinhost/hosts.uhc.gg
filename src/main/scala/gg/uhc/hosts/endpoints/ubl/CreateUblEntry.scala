@@ -31,9 +31,11 @@ class CreateUblEntry(directives: CustomDirectives, database: Database) {
     requireAuthentication { session ⇒
       requirePermission("moderator", session.username) {
         entity(as[UblEntryPayload]) { entity ⇒
-          convertPayload(entity, session.username) { row ⇒
-            requireSucessfulQuery(database.createUblEntry(row)) { id ⇒
-              complete(StatusCodes.Created → row.copy(id = id))
+          entity.requireValid {
+            convertPayload(entity, session.username) { row ⇒
+              requireSucessfulQuery(database.createUblEntry(row)) { id ⇒
+                complete(StatusCodes.Created → row.copy(id = id))
+              }
             }
           }
         }

@@ -32,11 +32,13 @@ class EditUblEntry(directives: CustomDirectives, database: Database) {
     requireAuthentication { session ⇒
       requirePermission("moderator", session.username) {
         entity(as[UblEntryPayload]) { entity ⇒
-          getExistingIfExists(id) { existing ⇒
-            val toUpdate = merge(existing, entity, session.username)
+          entity.requireValid {
+            getExistingIfExists(id) { existing ⇒
+              val toUpdate = merge(existing, entity, session.username)
 
-            requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ ⇒
-              complete(StatusCodes.OK)
+              requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ ⇒
+                complete(StatusCodes.OK)
+              }
             }
           }
         }
