@@ -3,6 +3,7 @@ package gg.uhc.hosts.database
 import java.net.InetAddress
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 import doobie.imports._
 import doobie.postgres.imports._
@@ -321,5 +322,101 @@ class Queries(logger: LogHandler) {
         approvedBy = $approver
       WHERE
         id = $id
+      """.asInstanceOf[Fragment].update
+
+  def getCurrentUbl: Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link,
+        createdBy
+      FROM ubl
+      WHERE
+        expires > NOW()
+      ORDER BY created DESC
+      """.asInstanceOf[Fragment].query[UblRow]
+
+  def createUblEntry(entry: UblRow): Update0 =
+    sql"""
+      INSERT INTO ubl (ign, uuid, reason, created, expires, link, createdBy)
+      VALUES (
+        ${entry.ign},
+        ${entry.uuid},
+        ${entry.reason},
+        ${entry.created},
+        ${entry.expires},
+        ${entry.link},
+        ${entry.createdBy}
+      )
+      """.asInstanceOf[Fragment].update
+
+  def getUblEntriesForUuid(uuid: UUID): Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link,
+        createdBy
+      FROM ubl
+      WHERE
+        uuid = $uuid
+      ORDER BY created DESC
+      """.asInstanceOf[Fragment].query[UblRow]
+
+  def getUblEntry(id: Long): Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link,
+        createdBy
+      FROM ubl
+      WHERE
+        id = $id
+      """.asInstanceOf[Fragment].query[UblRow]
+
+  def searchUblUsername(username: String): Query0[(String, List[UUID])] =
+    sql"""
+      SELECT
+        ign,
+        array_agg(distinct uuid)
+      FROM ubl
+      WHERE
+        ign ILIKE ${s"%$username%"}
+      GROUP BY ign
+      LIMIT 21
+      """.asInstanceOf[Fragment].query[(String, List[UUID])]
+
+  def editUblEntry(row: UblRow): Update0 =
+    sql"""
+      UPDATE ubl
+      SET
+        ign = ${row.ign},
+        uuid = ${row.uuid},
+        reason = ${row.reason},
+        created = ${row.created},
+        expires = ${row.expires},
+        link = ${row.link},
+        createdBy = ${row.createdBy}
+      WHERE id = ${row.id}
+      """.asInstanceOf[Fragment].update
+
+  def deleteUblEntry(id: Long): Update0 =
+    sql"""
+      DELETE FROM ubl
+      WHERE id = $id
       """.asInstanceOf[Fragment].update
 }

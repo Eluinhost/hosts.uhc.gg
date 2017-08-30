@@ -11,6 +11,13 @@
     "jsx": "react",
     "lib": ["es6", "dom", "dom.iterable"],
     "experimentalDecorators": true,
-    "strictNullChecks": true
-  }
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "./**/*.tsx", "./**/*.ts"
+  ],
+  "exclude": ["./node_modules"]
 }

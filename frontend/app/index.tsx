@@ -12,6 +12,7 @@ createReduxStore()
   .then((store) => {
     // Add root element for React to body for rendering to
     const root = document.createElement('div');
+    root.id = 'root';
     document.body.appendChild(root);
 
     ReactDOM.render(

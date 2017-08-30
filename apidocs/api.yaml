@@ -335,7 +335,81 @@ components:
         pvpEnabledAt: 20
         hostingName: Name Override
         tournament: false
-
+    UblEntryResponse:
+      type: object
+      example:
+        id: 10
+        ign: test
+        uuid: 00000000-0000-0000-0000-000000000000
+        reason: reasoning
+        created: '2017-08-10T09:11:22.031Z'
+        expires: '2018-08-10T09:11:22.031Z'
+        link: 'https://redd.it/aaaaa'
+        createdBy: ghowden
+      required:
+        - id
+        - ign
+        - uuid
+        - reason
+        - created
+        - expires
+        - link
+        - createdBy
+      properties:
+        id:
+          type: integer
+          description: 'The unique ID of this entry'
+        ign:
+          type: string
+          description: 'The in game name of the banned account (at time of ban)'
+        uuid:
+          type: string
+          description: 'The in game UUID of the banned account'
+        reason:
+          type: string
+          description: 'The reason this ban was added'
+        created:
+          type: string
+          description: 'When the ban started'
+        expires:
+          type: string
+          description: 'When the ban ends'
+        link:
+          type: string
+          description: 'The courtroom post for the ban'
+        createdBy:
+          type: string
+          description: Username of the account that created the ban
+    CreateUblEntryRequest:
+      type: object
+      required:
+        - ign
+        - uuid
+        - reason
+        - expires
+        - link
+      example:
+        ign: test
+        uuid: 00000000-0000-0000-0000-000000000000
+        reason: test
+        expires: '2017-08-10T09:11:22.031Z'
+        link: https://redd.it/test
+      properties:
+        ign:
+          type: string
+          description: 'The in game name of the banned account (at time of ban)'
+        uuid:
+          type: string
+          description: 'The in game UUID of the banned account'
+        reason:
+          type: string
+          description: 'The reason this ban was added'
+        expires:
+          type: string
+          description: 'When the ban ends'
+        link:
+          type: string
+          description: 'The courtroom post for the ban'
 
 paths:
   /sync:
@@ -740,3 +814,159 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
+  /ubl/current:
+    get:
+      tags:
+        - UBL
+      summary: List all current bans
+      description: List all of the bans that are currently being applied, most recently created first
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UblEntryResponse'
+  /ubl:
+    post:
+      tags:
+        - UBL
+      summary: Create a new ban Entry
+      description: Creates a new ban entry
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUblEntryRequest'
+      responses:
+        '201':
+          description: Created, returns the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UblEntryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /ubl/{id}:
+    delete:
+     tags:
+       - UBL
+     summary: Deletes a ban Entry
+     description: Deletes an existing ban entry
+     parameters:
+       - in: path
+         name: id
+         type: number
+         required: true
+         description: The id of the ban to delete
+     security:
+       - SiteApiToken: []
+       - UserApiToken: []
+     responses:
+       '204':
+         description: Deleted
+       '400':
+         $ref: '#/components/responses/BadRequest'
+       '401':
+         $ref: '#/components/responses/UnauthorizedError'
+       '403':
+         $ref: '#/components/responses/ForbiddenError'
+       '404':
+         description: Could not find a ban with the given ID
+    post:
+      tags:
+        - UBL
+      summary: Edits a ban Entry
+      description: Edit an existing ban entry
+      parameters:
+        - in: path
+          name: id
+          type: number
+          required: true
+          description: The id of the ban to edit
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUblEntryRequest'
+      responses:
+        '200':
+          description: Created, returns the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UblEntryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find a ban with the given ID
+  /ubl/search/{query}:
+    post:
+      tags:
+        - UBL
+      summary: Search for username
+      description: Searches for partial username in the UBL and lists UUIDs
+      parameters:
+        - in: path
+          name: query
+          type: string
+          required: true
+          description: The partial username to search for
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Map of username -> uuid mappings
+                example:
+                  user1:
+                    - 00000000-0000-0000-0000-000000000000
+                    - 00000000-0000-0000-0000-000000000001
+                  user2:
+                    - 00000000-0000-0000-0000-000000000002
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                    description: List of matching UUIDs for the username
+  /ubl/{uuid}:
+    get:
+      tags:
+        - UBL
+      summary: List bans for UUID
+      description: Shows every ban that has been created for the given UUID ordered by created date descending
+      parameters:
+        - in: path
+          name: uuid
+          type: string
+          required: true
+          description: The uuid to lookup
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UblEntryResponse'

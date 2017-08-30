@@ -11,6 +11,7 @@ import gg.uhc.hosts.endpoints.matches.MatchesRoute
 import gg.uhc.hosts.endpoints.permissions.PermissionsRoute
 import gg.uhc.hosts.endpoints.rules.RulesRoute
 import gg.uhc.hosts.endpoints.sync.SyncRoute
+import gg.uhc.hosts.endpoints.ubl.UblRoute
 
 class ApiRoute(
     syncRoute: SyncRoute,
@@ -19,12 +20,14 @@ class ApiRoute(
     permissionsRoute: PermissionsRoute,
     keyRoute: KeyRoute,
     docsRoute: DocsRoute,
-    hostsRoute: HostsRoute) {
+    hostsRoute: HostsRoute,
+    ublRoute: UblRoute) {
 
   def apply(): Route =
     respondWithHeader(`Access-Control-Allow-Origin`.*) {
       concat(
         pathPrefix("sync")(syncRoute()),
+        pathPrefix("ubl")(ublRoute()),
         pathPrefix("rules")(rulesRoute()),
         pathPrefix("matches")(matchesRoute()),
         pathPrefix("hosts")(hostsRoute()),

@@ -3,17 +3,43 @@
 @import "~@blueprintjs/labs/dist/blueprint-labs.css"
 @import "~react-datepicker/dist/react-datepicker.css"
 @import "~rc-time-picker/assets/index.css"
+@import "~react-virtualized/styles.css"
 
 @import "~@blueprintjs/core/dist/variables"
 
 body
   background: $dark-gray2
 
+html, body, #root
+  width: 100%
+  height: 100%
+
+.full-page
+  display: flex
+  flex-direction: column
+  align-items: stretch
+  flex-wrap: nowrap
+  justify-content: flex-start
+  align-content: center
+  min-height: 100%
+
 .app-container
+  width: 100%
   max-width: 920px
   margin-left: auto
   margin-right: auto
   margin-top: 30px
+  display: flex
+  flex-direction: column
+  flex: 1 0 auto
+  > div
+    flex: 1 0 auto
+    display: flex
+    flex-direction: column
+
+.ubl-card
+  margin-top: 5px
+  margin-bottom: 5px
 
 .required-star
   color: $red4
@@ -211,3 +237,13 @@ a.username-link, span.username-link
   &:hover
     color: $pt-dark-text-color
     border-bottom-style: solid
+
+.pt-card, .pt-navbar, .pt-dialog
+  border-top: 3px solid $pt-intent-warning
+  border-top-left-radius: 0
+  border-top-right-radius: 0
+//
+//.ubl-card button.pt-large
+//  min-width: 20px
+//  min-height: 20px
+//  line-height: 20px

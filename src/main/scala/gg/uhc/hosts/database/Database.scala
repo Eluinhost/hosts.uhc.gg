@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.NonEmptyList
 
 class Database(transactor: HikariTransactor[IOLite]) {
-  implicit val system               = ActorSystem("database")
+  implicit val system: ActorSystem  = ActorSystem("database")
   implicit val ec: ExecutionContext = system.dispatcher
 
   val queries = new Queries(LogHandler {
@@ -143,8 +143,29 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def approveMatch(id: Long, approver: String): ConnectionIO[Boolean] =
     queries.approveMatch(id, approver).run.map(_ > 0)
 
+  def getCurrentUbl: ConnectionIO[List[UblRow]] =
+    queries.getCurrentUbl.list
+
   def getHostingHistory(host: String, before: Option[Long], count: Int): ConnectionIO[List[MatchRow]] =
     queries.hostingHistory(host, before, count).list
+
+  def createUblEntry(entry: UblRow): ConnectionIO[Long] =
+    queries.createUblEntry(entry).withUniqueGeneratedKeys[Long]("id")
+
+  def getUblEntriesForUuid(uuid: UUID): ConnectionIO[List[UblRow]] =
+    queries.getUblEntriesForUuid(uuid).list
+
+  def searchUblUsername(username: String): ConnectionIO[Map[String, List[UUID]]] =
+    queries.searchUblUsername(username).list.map(_.toMap)
+
+  def editUblEntry(row: UblRow): ConnectionIO[Boolean] =
+    queries.editUblEntry(row).run.map(_ > 0)
+
+  def deleteUblEntry(id: Long): ConnectionIO[Boolean] =
+    queries.deleteUblEntry(id).run.map(_ > 0)
+
+  def getUblEntry(id: Long): ConnectionIO[Option[UblRow]] =
+    queries.getUblEntry(id).option
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO
