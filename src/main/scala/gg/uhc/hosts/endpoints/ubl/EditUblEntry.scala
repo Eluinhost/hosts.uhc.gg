@@ -27,7 +27,6 @@ class EditUblEntry(directives: CustomDirectives, database: Database) {
     // skip created + id fields
   )
 
-  // TODO apidocs
   def apply(id: Long): Route = handleRejections(EndpointRejectionHandler()) {
     requireAuthentication { session ⇒
       requirePermission("moderator", session.username) {
@@ -37,7 +36,7 @@ class EditUblEntry(directives: CustomDirectives, database: Database) {
               val toUpdate = merge(existing, entity, session.username)
 
               requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ ⇒
-                complete(StatusCodes.OK)
+                complete(toUpdate)
               }
             }
           }

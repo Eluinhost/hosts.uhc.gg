@@ -9,7 +9,6 @@ import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 class DeleteUblEntry(directives: CustomDirectives, database: Database) {
   import directives._
 
-  // TODO apidocs
   def apply(id: Long): Route = handleRejections(EndpointRejectionHandler()) {
     requireAuthentication { session ⇒
       requirePermission("moderator", session.username) {

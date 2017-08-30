@@ -857,6 +857,67 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
+  /ubl/{id}:
+    delete:
+     tags:
+       - UBL
+     summary: Deletes a ban Entry
+     description: Deletes an existing ban entry
+     parameters:
+       - in: path
+         name: id
+         type: number
+         required: true
+         description: The id of the ban to delete
+     security:
+       - SiteApiToken: []
+       - UserApiToken: []
+     responses:
+       '204':
+         description: Deleted
+       '400':
+         $ref: '#/components/responses/BadRequest'
+       '401':
+         $ref: '#/components/responses/UnauthorizedError'
+       '403':
+         $ref: '#/components/responses/ForbiddenError'
+       '404':
+         description: Could not find a ban with the given ID
+    post:
+      tags:
+        - UBL
+      summary: Edits a ban Entry
+      description: Edit an existing ban entry
+      parameters:
+        - in: path
+          name: id
+          type: number
+          required: true
+          description: The id of the ban to edit
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUblEntryRequest'
+      responses:
+        '200':
+          description: Created, returns the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UblEntryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find a ban with the given ID
   /ubl/search/{query}:
     post:
       tags:
