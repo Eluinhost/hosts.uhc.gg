@@ -1,10 +1,11 @@
 import { BanEntry } from '../../BanEntry';
 import * as React from 'react';
 import { WithPermission } from '../WithPermission';
-import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
+import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { AppToaster } from '../../AppToaster';
 import { Link } from 'react-router-dom';
-import { deleteBan } from '../../api/index';
+import { deleteBan, editBan } from '../../api/index';
+import { BanData, BanDataForm } from './BanDataForm';
 
 type UblEntryRowProps = {
   readonly ban: BanEntry;
@@ -34,9 +35,18 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     isDeleteOpen: true,
   })
 
+  openEditDialog = () => this.setState({
+    isEditOpen: true,
+  })
+
   closeDeleteDialog = () => this.setState({
     isDeleteOpen: false,
   })
+
+  closeEditDialog = () => this.setState({
+    isEditOpen: false,
+  })
+
 
   confirmDelete = () => {
     const ban = this.props.ban;
@@ -61,25 +71,17 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
       });
   }
 
-  openEditDialog = () => this.setState({
-    isEditOpen: true,
-  })
-
-  closeEditDialog = () => this.setState({
-    isEditOpen: false,
-  })
-
-  confirmEdit = () => {
+  confirmEdit = (values: BanData) => {
     const oldBan = this.props.ban;
     const newBan = {
-      ...this.props.ban,
-      ign: `${this.props.ban.ign}-test`,
-    }; // TODO API calls + actual edits
+      ...oldBan,
+      ...values,
+    };
 
     this.closeEditDialog();
     this.props.onEditStart(newBan, oldBan);
 
-    Promise.resolve()
+    return editBan(oldBan.id, values, this.props.accessToken!)
       .then(() => {
         AppToaster.show({
           message: `Ban #${oldBan.id} edited`,
@@ -175,17 +177,11 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           onClose={this.closeEditDialog}
         >
           <div className="pt-dialog-body">
-            NOT IMPLEMENTED YET
+            <BanDataForm onSubmit={this.confirmEdit} initialValues={this.props.ban}/>
           </div>
           <div className="pt-dialog-footer">
             <div className="pt-dialog-footer-actions">
               <Button text="Close" onClick={this.closeEditDialog} />
-              <Button
-                intent={Intent.SUCCESS}
-                onClick={this.confirmEdit}
-                text="Update"
-                iconName="cloud-upload"
-              />
             </div>
           </div>
         </Dialog>

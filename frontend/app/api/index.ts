@@ -281,3 +281,16 @@ export const createBan = (data: BanData, accessToken: string): Promise<void> =>
       body: JSON.stringify(data),
     },
   ).then(verifyStatus(201)).then(always(undefined));
+
+export const editBan = (id: number, data: BanData, accessToken: string): Promise<void> =>
+  fetch(
+    `/api/ubl/${id}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    },
+  ).then(verifyStatus(200)).then(always(undefined));

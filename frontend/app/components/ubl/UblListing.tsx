@@ -79,12 +79,30 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
       bans,
       filtered: this.filterBans(prev.filter, bans),
       backup: prev.bans,
-      working: true,
+    };
+  })
+
+  // make the change immediately + save backup
+  onRowEditStart = (newBan: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
+    const bans = map(when(propEq('id', oldBan.id), always(newBan)), prev.bans);
+
+    if (this.props.onListUpdate)
+      this.props.onListUpdate(bans);
+
+    return {
+      bans,
+      filtered: this.filterBans(prev.filter, bans),
+      backup: prev.bans,
     };
   })
 
   // Clear backup on confirm
   onRowDeleted = () => this.setState({
+    backup: null,
+  })
+
+  // clear backup
+  onRowEdited = () => this.setState({
     backup: null,
   })
 
@@ -100,28 +118,8 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
     };
   })
 
-
-  // make the change immediately + save backup
-  onRowEditStart = (ban: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
-    const bans = map(when(propEq('id', oldBan.id), always(ban)), prev.bans);
-
-    if (this.props.onListUpdate)
-      this.props.onListUpdate(bans);
-
-    return {
-      bans,
-      filtered: this.filterBans(prev.filter, bans),
-      backup: prev.bans,
-    };
-  })
-
-  // clear backup
-  onRowEdited = () => this.setState({
-    backup: null,
-  })
-
   // restore from backup
-  onRowEditFailed = (ban: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
+  onRowEditFailed = (newBan: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
     if (this.props.onListUpdate)
       this.props.onListUpdate(prev.backup!);
 
