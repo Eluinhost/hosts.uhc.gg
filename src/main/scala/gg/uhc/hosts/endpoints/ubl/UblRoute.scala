@@ -12,7 +12,7 @@ class UblRoute(
     createUblEntry: CreateUblEntry,
     getByUuid: GetUblForUuid,
     usernameSearch: UsernameSearch,
-    extendUblEntry: ExtendUblEntry,
+    editUblEntry: EditUblEntry,
     deleteUblEntry: DeleteUblEntry) {
 
   implicit class SegmentExtensions(segment: PathMatcher1[String]) {
@@ -28,7 +28,7 @@ class UblRoute(
     concat(
       (get & path("current"))(getCurrentUbl()),
       (delete & path(IntNumber))(deleteUblEntry(_)),
-      (post & path(IntNumber))(extendUblEntry(_)),
+      (post & path(IntNumber))(editUblEntry(_)),
       (post & pathEndOrSingleSlash)(createUblEntry()),
       (post & path("search" / Segment))(usernameSearch(_)),
       (get & path(Segment.asUuid))(getByUuid(_))

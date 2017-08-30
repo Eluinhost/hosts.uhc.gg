@@ -372,6 +372,22 @@ class Queries(logger: LogHandler) {
       ORDER BY created DESC
       """.asInstanceOf[Fragment].query[UblRow]
 
+  def getUblEntry(id: Long): Query0[UblRow] =
+    sql"""
+      SELECT
+        id,
+        ign,
+        uuid,
+        reason,
+        created,
+        expires,
+        link,
+        createdBy
+      FROM ubl
+      WHERE
+        id = $id
+      """.asInstanceOf[Fragment].query[UblRow]
+
   def searchUblUsername(username: String): Query0[(String, List[UUID])] =
     sql"""
       SELECT
@@ -384,14 +400,18 @@ class Queries(logger: LogHandler) {
       LIMIT 21
       """.asInstanceOf[Fragment].query[(String, List[UUID])]
 
-  def extendUblEntry(id: Long, username: String, reason: String, newExpires: Instant): Update0 =
+  def editUblEntry(row: UblRow): Update0 =
     sql"""
       UPDATE ubl
       SET
-        expires = $newExpires,
-        reason = $reason,
-        createdBy = $username
-      WHERE id = $id
+        ign = ${row.ign},
+        uuid = ${row.uuid},
+        reason = ${row.reason},
+        created = ${row.created},
+        expires = ${row.expires},
+        link = ${row.link},
+        createdBy = ${row.createdBy}
+      WHERE id = ${row.id}
       """.asInstanceOf[Fragment].update
 
   def deleteUblEntry(id: Long): Update0 =

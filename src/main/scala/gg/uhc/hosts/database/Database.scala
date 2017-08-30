@@ -158,11 +158,14 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def searchUblUsername(username: String): ConnectionIO[Map[String, List[UUID]]] =
     queries.searchUblUsername(username).list.map(_.toMap)
 
-  def extendUblEntry(id: Long, username: String, reason: String, newExpires: Instant): ConnectionIO[Boolean] =
-    queries.extendUblEntry(id, username, reason, newExpires).run.map(_ > 0)
+  def editUblEntry(row: UblRow): ConnectionIO[Boolean] =
+    queries.editUblEntry(row).run.map(_ > 0)
 
   def deleteUblEntry(id: Long): ConnectionIO[Boolean] =
     queries.deleteUblEntry(id).run.map(_ > 0)
+
+  def getUblEntry(id: Long): ConnectionIO[Option[UblRow]] =
+    queries.getUblEntry(id).option
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
     query.transact(transactor).unsafePerformIO

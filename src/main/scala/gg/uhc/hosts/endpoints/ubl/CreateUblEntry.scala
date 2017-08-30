@@ -1,7 +1,6 @@
 package gg.uhc.hosts.endpoints.ubl
 
 import java.time.Instant
-import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{entity, _}
@@ -14,9 +13,7 @@ class CreateUblEntry(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import directives._
 
-  case class CreateUblEntryPayload(ign: String, uuid: UUID, reason: String, expires: Instant, link: String)
-
-  private[this] def convertPayload(payload: CreateUblEntryPayload, username: String): Directive1[UblRow] =
+  private[this] def convertPayload(payload: UblEntryPayload, username: String): Directive1[UblRow] =
     provide(
       UblRow(
         id = -1,
@@ -33,7 +30,7 @@ class CreateUblEntry(directives: CustomDirectives, database: Database) {
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
     requireAuthentication { session ⇒
       requirePermission("moderator", session.username) {
-        entity(as[CreateUblEntryPayload]) { entity ⇒
+        entity(as[UblEntryPayload]) { entity ⇒
           convertPayload(entity, session.username) { row ⇒
             requireSucessfulQuery(database.createUblEntry(row)) { id ⇒
               complete(StatusCodes.Created → row.copy(id = id))
