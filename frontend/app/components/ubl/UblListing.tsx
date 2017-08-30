@@ -4,7 +4,9 @@ import { If } from '../If';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
-import { filter, propEq, complement, always, map, when } from 'ramda';
+import {
+  filter, propEq, complement, always, map, when, toLower, curry, CurriedFunction2, any, pipe,
+} from 'ramda';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -24,7 +26,13 @@ type State = {
   readonly backup: BanEntry[] | null;
   readonly error: string | null;
   readonly loading: boolean;
+  readonly filter: string;
+  readonly filtered: BanEntry[];
 };
+
+const caseInsensitiveContains: CurriedFunction2<string, string, boolean> = curry(
+  (needle: string, haystack: string) => toLower(haystack).indexOf(toLower(needle)) > -1,
+);
 
 class UblListingComponent extends React.Component<UblListingProps & UblListingStateProps, State> {
   state = {
@@ -32,6 +40,8 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
     backup: null,
     error: null,
     loading: false,
+    filter: '',
+    filtered: [],
   };
 
   componentDidMount() {
@@ -46,11 +56,12 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     this.props
       .refetch()
-      .then(bans => this.setState({
+      .then(bans => this.setState(prev => ({
         bans,
+        filtered: this.filterBans(prev.filter, bans),
         loading: false,
         error: null,
-      }))
+      })))
       .catch(err => this.setState({
         error: 'Failed to fetch list from server',
         loading: false,
@@ -66,6 +77,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     return {
       bans,
+      filtered: this.filterBans(prev.filter, bans),
       backup: prev.bans,
       working: true,
     };
@@ -83,6 +95,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     return {
       bans: prev.backup,
+      filtered: this.filterBans(prev.filter, prev.backup!),
       backup: null,
     };
   })
@@ -97,6 +110,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     return {
       bans,
+      filtered: this.filterBans(prev.filter, bans),
       backup: prev.bans,
     };
   })
@@ -113,12 +127,13 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     return {
       bans: prev.backup,
+      filtered: this.filterBans(prev.filter, prev.backup!),
       backup: null,
     };
   })
 
   renderRow = (props: ListRowProps) => {
-    const ban = this.state.bans[props.index];
+    const ban = this.state.filtered[props.index];
 
     return (
       <div style={props.style} key={props.key}>
@@ -137,9 +152,43 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
     );
   }
 
+  onFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFilter = e.target.value;
+
+    this.setState(prev => ({
+      filter: newFilter,
+      filtered: this.filterBans(newFilter, prev.bans),
+    }));
+  }
+
+  filterBans = (filterString: string, bans: BanEntry[]): BanEntry[] => {
+    if (filterString === '')
+      return bans;
+
+    const filterPred = caseInsensitiveContains(filterString);
+
+    return filter<BanEntry>(
+      pipe(
+        (ban: BanEntry) => [ban.ign, ban.uuid, ban.reason, ban.link],
+        any(filterPred),
+      ),
+      bans,
+    );
+  }
+
   render() {
     return (
       <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
+        <div className={`pt-input-group ${this.state.filter !== '' ? 'pt-intent-primary' : '' }`}>
+          <span className="pt-icon pt-icon-filter" />
+          <input
+            type="text"
+            className="pt-input"
+            placeholder="Filter this list... (ign, uuid, reason, link)"
+            value={this.state.filter}
+            onChange={this.onFilterChange}
+          />
+        </div>
         <If condition={this.state.loading}>
           <div style={{ flexGrow: 0 }}>
             <NonIdealState title="Loading..." visual={<Spinner/>}/>
@@ -160,7 +209,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
                     renderHelper2={this.state}
                     autoHeight
                     height={height}
-                    rowCount={this.state.bans.length}
+                    rowCount={this.state.filtered.length}
                     rowHeight={110}
                     rowRenderer={this.renderRow}
                     scrollTop={scrollTop}

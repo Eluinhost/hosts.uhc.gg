@@ -124,7 +124,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
       >
         <Button
           rightIconName="caret-down"
-          text="Show history for username or UUID"
+          text="Show full ban history for username/UUID"
         />
       </UsernameEntrySelect>
     );

@@ -17,6 +17,9 @@ export const CurrentUblPage: React.SFC = () => (
         </Link>
       </WithPermission>
     </div>
+    <h4 style={{ paddingTop: 30 }}>
+      This is a list of all accounts currently banned, sorted by most recently created.
+    </h4>
     <UblListing refetch={getAllCurrentBans} />
   </div>
 );
