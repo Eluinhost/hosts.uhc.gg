@@ -70,10 +70,10 @@ export const CreateBanFormComponent: React.SFC<
   </form>
 );
 
-const minLength3 = (value: string) =>
-  value && value.length >= 3
+const minLength1 = (value: string) =>
+  value && value.length >= 1
     ? undefined
-    : 'Must be at least 3 characters';
+    : 'This field is required';
 
 const isUuid = (value: string) =>
   uuidRegex.test(value)
@@ -81,10 +81,10 @@ const isUuid = (value: string) =>
     : 'Must be a UUID (00000000-0000-0000-0000-000000000000)';
 
 const validation: Spec<CreateBanData> = {
-  ign: minLength3,
+  ign: minLength1,
   uuid: isUuid,
-  reason: minLength3,
-  link: minLength3,
+  reason: minLength1,
+  link: minLength1,
   expires: (v: moment.Moment) => v && v.isValid()
     ? undefined
     : 'A valid date must be supplied',
