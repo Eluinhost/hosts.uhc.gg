@@ -8,16 +8,14 @@ import { If } from '../If';
 import { Button, Intent } from '@blueprintjs/core';
 import { Spec, validate } from '../../validate';
 import { uuidRegex } from '../../uuidRegex';
-import { BadDataError, createBan, ForbiddenError, NotAuthenticatedError } from '../../api/index';
-import * as H from 'history';
+import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../../api/index';
 import { ReactDatePickerProps } from 'react-datepicker';
 
-export type CreateBanFormProps = {
-  readonly accessToken: string;
-  readonly history: H.History;
+export type BanDataFormProps = {
+  readonly onSubmit: (values: BanData) => Promise<void>;
 };
 
-export type CreateBanData = {
+export type BanData = {
   ign: string;
   uuid: string;
   reason: string;
@@ -25,7 +23,7 @@ export type CreateBanData = {
   link: string;
 };
 
-const earliest = moment().set('hour', 0).set('minute', 0).set('second', 0).add(1, 'day');
+const earliest = moment.utc().set('hour', 0).set('minute', 0).set('second', 0).add(1, 'day');
 
 const dateProps: Partial<ReactDatePickerProps> = {
   minDate: earliest,
@@ -34,14 +32,14 @@ const dateProps: Partial<ReactDatePickerProps> = {
   monthsShown: 2,
 };
 
-export const CreateBanFormComponent: React.SFC<
-  & StrictFormProps<CreateBanData, {}, ApplicationState>
-  & CreateBanFormProps
+export const BanDataFormComponent: React.SFC<
+  & StrictFormProps<BanData, {}, ApplicationState>
+  & BanDataFormProps
 > = ({ handleSubmit, submitting, valid, error }) => (
   <form onSubmit={handleSubmit}>
     <DateTimeField
       name="expires"
-      label="Ban Ends"
+      label="Ban Expires"
       required
       disabled={submitting}
       disableTime
@@ -64,7 +62,7 @@ export const CreateBanFormComponent: React.SFC<
         loading={submitting}
         intent={valid ? Intent.SUCCESS : Intent.WARNING}
       >
-        {submitting ? 'Banning...' : 'Ban User'}
+        Submit Ban
       </Button>
     </div>
   </form>
@@ -80,7 +78,7 @@ const isUuid = (value: string) =>
     ? undefined
     : 'Must be a UUID (00000000-0000-0000-0000-000000000000)';
 
-const validation: Spec<CreateBanData> = {
+const validation: Spec<BanData> = {
   ign: minLength1,
   uuid: isUuid,
   reason: minLength1,
@@ -90,34 +88,28 @@ const validation: Spec<CreateBanData> = {
     : 'A valid date must be supplied',
 };
 
-export const CreateBanForm: React.SFC<
-  & FormProps<CreateBanData, CreateBanFormProps, ApplicationState>
-  & CreateBanFormProps
-> = reduxForm<CreateBanData, CreateBanFormProps>({
-  form: 'create-ban-form',
+export const BanDataForm: React.SFC<
+  & FormProps<BanData, BanDataFormProps, ApplicationState>
+  & BanDataFormProps
+> = reduxForm<BanData, BanDataFormProps>({
+  form: 'ban-data-form',
   initialValues: {
     expires: earliest,
   },
   validate: validate(validation),
-  onSubmit: (values, _, props) =>
-    createBan(values, props.accessToken)
-      .then(() => {
-        // if success send them to the current bans page to view it
-        props.history.push('/ubl');
-      })
-      .catch((err) => {
-        if (err instanceof BadDataError)
-          throw new SubmissionError({ _error: `Bad data: ${err.message}` });
+  onSubmit: (values, dispatch, props) => props.onSubmit(values).catch((err) => {
+    if (err instanceof BadDataError)
+      throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
-        if (err instanceof NotAuthenticatedError) {
-          // User cookie has expired, get them to reauthenticate
-          window.location.href = '/authenticate?path=/host';
-          return;
-        }
+    if (err instanceof NotAuthenticatedError) {
+      // User cookie has expired, get them to reauthenticate
+      window.location.href = '/authenticate?path=/host';
+      return;
+    }
 
-        if (err instanceof ForbiddenError)
-          throw new SubmissionError({ _error: 'You no longer have permission to ban' });
+    if (err instanceof ForbiddenError)
+      throw new SubmissionError({ _error: 'You no longer have permission to ban' });
 
-        throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
-      }),
-})(CreateBanFormComponent);
+    throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
+  }),
+})(BanDataFormComponent);

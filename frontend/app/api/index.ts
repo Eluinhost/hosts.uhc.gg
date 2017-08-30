@@ -6,7 +6,7 @@ import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
 import { HostingRules } from '../state/HostingRulesState';
 import { BanEntry } from '../BanEntry';
-import { CreateBanData } from '../components/ubl/CreateBanForm';
+import { BanData } from '../components/ubl/BanDataForm';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -269,7 +269,7 @@ export const deleteBan = (id: number, accessToken: string): Promise<void> =>
     },
   ).then(verifyStatus(204)).then(always(undefined));
 
-export const createBan = (data: CreateBanData, accessToken: string): Promise<void> =>
+export const createBan = (data: BanData, accessToken: string): Promise<void> =>
   fetch(
     `/api/ubl`,
     {
