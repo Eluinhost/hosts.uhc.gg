@@ -5,9 +5,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, UblRow}
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
-class EditUblEntry(directives: CustomDirectives, database: Database) {
+class EditUblEntry(directives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
   import directives._
 
@@ -36,6 +36,7 @@ class EditUblEntry(directives: CustomDirectives, database: Database) {
               val toUpdate = merge(existing, entity, session.username)
 
               requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ ⇒
+                cache.invalidateCurrentUbl()
                 complete(toUpdate)
               }
             }

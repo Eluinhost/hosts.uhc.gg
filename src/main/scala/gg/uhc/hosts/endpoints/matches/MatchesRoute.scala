@@ -8,12 +8,12 @@ import akka.http.scaladsl.server.{PathMatcher1, Route}
 import scala.util.Try
 
 class MatchesRoute(
-                    approveMatch: ApproveMatch,
-                    checkConflicts: CheckConflicts,
-                    createMatch: CreateMatch,
-                    listMatches: ListUpcomingMatches,
-                    removeMatch: RemoveMatch,
-                    showMatch: ShowMatch) {
+    approveMatch: ApproveMatch,
+    checkConflicts: CheckConflicts,
+    createMatch: CreateMatch,
+    listMatches: ListUpcomingMatches,
+    removeMatch: RemoveMatch,
+    showMatch: ShowMatch) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =

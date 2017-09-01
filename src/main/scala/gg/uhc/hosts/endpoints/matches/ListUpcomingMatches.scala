@@ -2,26 +2,18 @@ package gg.uhc.hosts.endpoints.matches
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import doobie.imports._
-import gg.uhc.hosts.CustomJsonCodec
-import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.JsonObject
+import gg.uhc.hosts.endpoints.{BasicCache, DatabaseErrorRejection, EndpointRejectionHandler}
 
-class ListUpcomingMatches(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
+import scala.util.{Failure, Success}
 
-  def listingQuery: ConnectionIO[List[JsonObject]] =
-    for {
-      matches ← database.getUpcomingMatches
-      perms   ← database.getPermissions(matches.map(_.author))
-    } yield matches.map(row ⇒ row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
+class ListUpcomingMatches(cache: BasicCache) {
+  import gg.uhc.hosts.CustomJsonCodec._
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireSucessfulQuery(listingQuery) { items ⇒
-        complete(items)
+      onComplete(cache.getUpcomingMatches) {
+        case Success(value) ⇒ complete(value)
+        case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
       }
     }
 }

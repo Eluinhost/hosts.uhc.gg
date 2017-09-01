@@ -6,12 +6,12 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
 /**
   * Removes a match. Must provide a reason. Can only be ran by 'moderator' permission or author of match.
   */
-class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
+class RemoveMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
   import customDirectives._
 
@@ -48,7 +48,9 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
             validate(data) {
               requireSucessfulQuery(database.removeMatch(id, data.reason, authentication.username)) {
                 case 0 ⇒ complete(StatusCodes.NotFound) // None updated
-                case _ ⇒ complete(StatusCodes.NoContent)
+                case _ ⇒
+                  cache.invalidateUpcomingMatches()
+                  complete(StatusCodes.NoContent)
               }
             }
           }

@@ -7,9 +7,9 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server.{Directive1, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, UblRow}
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
-class CreateUblEntry(directives: CustomDirectives, database: Database) {
+class CreateUblEntry(directives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
   import directives._
 
@@ -34,6 +34,7 @@ class CreateUblEntry(directives: CustomDirectives, database: Database) {
           entity.requireValid {
             convertPayload(entity, session.username) { row ⇒
               requireSucessfulQuery(database.createUblEntry(row)) { id ⇒
+                cache.invalidateCurrentUbl()
                 complete(StatusCodes.Created → row.copy(id = id))
               }
             }

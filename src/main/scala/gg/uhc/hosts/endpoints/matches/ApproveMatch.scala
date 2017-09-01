@@ -4,9 +4,9 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
-class ApproveMatch(customDirectives: CustomDirectives, database: Database) {
+class ApproveMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
   import customDirectives._
 
   def apply(id: Int): Route =
@@ -15,7 +15,9 @@ class ApproveMatch(customDirectives: CustomDirectives, database: Database) {
         requirePermission("hosting advisor", authentication.username) {
           requireSucessfulQuery(database.approveMatch(id, authentication.username)) {
             case false ⇒ complete(StatusCodes.NotFound) // None updated
-            case _     ⇒ complete(StatusCodes.OK)
+            case _     ⇒
+              cache.invalidateUpcomingMatches()
+              complete(StatusCodes.OK)
           }
         }
       }

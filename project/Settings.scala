@@ -25,6 +25,7 @@ object Settings {
     val logback       = "1.2.3"
     val jwtCirce      = "0.14.0"
     val macwire       = "2.3.0"
+    val caffeine      = "2.1.0"
   }
 
   val dependencies = Def.setting(
@@ -43,7 +44,8 @@ object Settings {
       "org.flywaydb"             % "flyway-core"      % versions.flyway,
       "com.pauldijou"            %% "jwt-circe"       % versions.jwtCirce,
       "com.softwaremill.macwire" %% "macros"          % versions.macwire % Provided,
-      "com.softwaremill.macwire" %% "util"            % versions.macwire
+      "com.softwaremill.macwire" %% "util"            % versions.macwire,
+      "com.github.blemale"       %% "scaffeine"       % versions.caffeine
     )
   )
 }

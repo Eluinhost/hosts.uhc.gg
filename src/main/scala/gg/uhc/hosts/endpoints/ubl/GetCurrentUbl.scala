@@ -4,15 +4,17 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, DatabaseErrorRejection, EndpointRejectionHandler}
 
-class GetCurrentUbl(directives: CustomDirectives, database: Database) {
+import scala.util.{Failure, Success}
+
+class GetCurrentUbl(directives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
-  import directives._
 
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
-    requireSucessfulQuery(database.getCurrentUbl) { ubl ⇒
-      complete(ubl)
+    onComplete(cache.getCurrentUbl) {
+      case Success(value) ⇒ complete(value)
+      case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
     }
   }
 }

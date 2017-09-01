@@ -9,12 +9,12 @@ import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.{Database, MatchRow}
-import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
   */
-class CreateMatch(customDirectives: CustomDirectives, database: Database) {
+class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
   import customDirectives._
 
@@ -169,6 +169,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database) {
           entity(as[CreateMatchPayload]) { entity ⇒
             convertPayload(entity, session.username) { row ⇒
               (validateRow(row) & requireSucessfulQuery(database.insertMatch(row))) { id ⇒
+                cache.invalidateUpcomingMatches()
                 complete(StatusCodes.Created → row.copy(id = id))
               }
             }
