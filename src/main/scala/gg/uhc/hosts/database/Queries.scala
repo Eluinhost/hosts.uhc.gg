@@ -27,7 +27,7 @@ class Queries(logger: LogHandler) {
       WHERE id = $id
      """.asInstanceOf[Fragment].update
 
-  def listMathes: Query0[MatchRow] =
+  def getUpcomingMatches: Query0[MatchRow] =
     sql"""
        SELECT
         id,

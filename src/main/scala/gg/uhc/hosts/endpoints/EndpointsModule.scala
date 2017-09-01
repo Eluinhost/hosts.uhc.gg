@@ -23,7 +23,7 @@ import gg.uhc.hosts.reddit.RedditModule
 trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val customDirectives: CustomDirectives = wire[CustomDirectives]
 
-  lazy val listMatchesEndpoint: ListMatches                 = wire[ListMatches]
+  lazy val listUpcomingEndpoint: ListUpcomingMatches        = wire[ListUpcomingMatches]
   lazy val createMatchesEndpoint: CreateMatch               = wire[CreateMatch]
   lazy val removeMatchesEndpoint: RemoveMatch               = wire[RemoveMatch]
   lazy val showMatchEndpoint: ShowMatch                     = wire[ShowMatch]
@@ -46,7 +46,7 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val createUblEntry: CreateUblEntry                   = wire[CreateUblEntry]
   lazy val getUblForUuid: GetUblForUuid                     = wire[GetUblForUuid]
   lazy val usernameSearch: UsernameSearch                   = wire[UsernameSearch]
-  lazy val extendUblEntry: EditUblEntry                   = wire[EditUblEntry]
+  lazy val extendUblEntry: EditUblEntry                     = wire[EditUblEntry]
   lazy val deleteUblEntry: DeleteUblEntry                   = wire[DeleteUblEntry]
 
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]

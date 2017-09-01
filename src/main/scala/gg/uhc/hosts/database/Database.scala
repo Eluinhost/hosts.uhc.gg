@@ -54,8 +54,8 @@ class Database(transactor: HikariTransactor[IOLite]) {
       )
   })
 
-  def listMatches: ConnectionIO[List[MatchRow]] =
-    queries.listMathes.list
+  def getUpcomingMatches: ConnectionIO[List[MatchRow]] =
+    queries.getUpcomingMatches.list
 
   def matchById(id: Long): ConnectionIO[Option[MatchRow]] =
     queries.matchById(id).option

@@ -8,13 +8,13 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 import io.circe.JsonObject
 
-class ListMatches(directives: CustomDirectives, database: Database) {
+class ListUpcomingMatches(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
   import directives._
 
   def listingQuery: ConnectionIO[List[JsonObject]] =
     for {
-      matches ← database.listMatches
+      matches ← database.getUpcomingMatches
       perms   ← database.getPermissions(matches.map(_.author))
     } yield matches.map(row ⇒ row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
 
