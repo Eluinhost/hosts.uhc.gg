@@ -12,10 +12,14 @@ class RemovePermission(customDirectives: CustomDirectives, database: Database) {
   def apply(username: String, permission: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireJwtAuthentication { session ⇒
-        requirePermission("admin", session.username) {
-          requireSucessfulQuery(database.removePermission(username, permission, session.username)) {
-            case true  ⇒ complete(StatusCodes.NoContent)
-            case false ⇒ complete(StatusCodes.BadRequest)
+        // get permissions for requester
+        requireSucessfulQuery(database.getPermissions(session.username)) { userPermissions ⇒
+          // check they can actual do this
+          Permissions.requireCanModifyPermission(userPermissions, permission) {
+            requireSucessfulQuery(database.removePermission(username, permission, session.username)) {
+              case true  ⇒ complete(StatusCodes.NoContent)
+              case false ⇒ complete(StatusCodes.BadRequest)
+            }
           }
         }
       }

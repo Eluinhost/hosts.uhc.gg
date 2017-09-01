@@ -23,16 +23,16 @@ class CustomDirectives(database: Database) {
       case RemoteAddress.IP(ip, _) ⇒ provide(ip)
     }
 
-  def checkHasAtLeastOnePermission(permissions: List[String], username: String): Directive1[Boolean] =
+  def checkHasAtLeastOnePermission(permissions: Iterable[String], username: String): Directive1[Boolean] =
     requireSucessfulQuery(database.getPermissions(username)).flatMap {
-      case l if l.intersect(permissions).nonEmpty ⇒ provide(true)
-      case _                                      ⇒ provide(false)
+      case l if l.intersect(permissions.toList).nonEmpty ⇒ provide(true)
+      case _                                             ⇒ provide(false)
     }
 
   def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
     checkHasAtLeastOnePermission(permission :: Nil, username)
 
-  def requireAtLeastOnePermission(permissions: List[String], username: String): Directive0 =
+  def requireAtLeastOnePermission(permissions: Iterable[String], username: String): Directive0 =
     checkHasAtLeastOnePermission(permissions, username) flatMap {
       case true ⇒ pass
       case false ⇒

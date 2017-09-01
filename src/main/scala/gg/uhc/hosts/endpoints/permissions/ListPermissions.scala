@@ -13,10 +13,8 @@ class ListPermissions(customDirectives: CustomDirectives, database: Database) {
   def addPermIfNotExists(perm: String, m: Map[String, List[String]]): Map[String, List[String]] =
     if (m.contains(perm)) m else m + (perm → List.empty)
 
-  val basePerms: List[String] = "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: Nil
-
   def addBasePerms: (Map[String, List[String]]) ⇒ Map[String, List[String]] =
-    basePerms.foldRight[Map[String, List[String]]](_)(addPermIfNotExists)
+    Permissions.base.foldRight[Map[String, List[String]]](_)(addPermIfNotExists)
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
