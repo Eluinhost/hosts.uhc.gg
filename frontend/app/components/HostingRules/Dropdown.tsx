@@ -70,7 +70,7 @@ export class Dropdown extends React.Component<DropdownStateProps & DropdownDispa
         <h3>Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small></h3>
         <Collapse isOpen={this.state.areRulesOpen}>
           <div onClick={this.stopPropagation}>
-            <WithPermission permission="moderator">
+            <WithPermission permission="hosting advisor">
               <div>
                 <Button intent={Intent.WARNING} text="Edit Rules" onClick={this.props.startEdit} />
                 <SetRulesDialog />

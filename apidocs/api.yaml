@@ -141,7 +141,7 @@ components:
             - OC
         removed:
           type: boolean
-          description: Whether a moderator has removed this match or not
+          description: Whether a hosting advisor has removed this match or not
         removedBy:
           type: string
           description: Only defined if `removed` is true. The username of the account that
@@ -206,7 +206,7 @@ components:
         removedReason: test removal
         created: '2017-08-09T13:29:43.966Z'
         roles:
-          - moderator
+          - hosting advisor
           - trial host
         location: test
         version: "1.8.8"
@@ -447,7 +447,7 @@ paths:
         - SiteApiToken: []
       summary: Update the hosting rules
       description: Overwrites the hosting rules with new content, requires authentication
-        as a 'moderator' account
+        with `hosting advisor` permission
       requestBody:
         required: true
         content:
@@ -486,7 +486,7 @@ paths:
         - UserApiToken: []
         - SiteApiToken: []
       summary: Posts a new match
-      description: Attempts to post a new match. Requires 'trial host' or 'host' role
+      description: Attempts to post a new match. Requires either `trial host` or `host` permission
       requestBody:
         required: true
         content:
@@ -535,7 +535,7 @@ paths:
         - UserApiToken: []
         - SiteApiToken: []
       summary: Remove a match
-      description: Removes a match, requires the `moderator` role, cannot be reversed
+      description: Removes a match, requires the `hosting advisor` permission, cannot be reversed
       parameters:
         - in: path
           name: id
@@ -572,7 +572,7 @@ paths:
         - UserApiToken: []
         - SiteApiToken: []
       summary: Approve a match
-      description: Approves a match, requires `moderator` role
+      description: Approves a match, requires `hosting advisor` permission
       parameters:
         - in: path
           name: id
@@ -691,7 +691,7 @@ paths:
                   host:
                     - user 4
                     - user 5
-                  moderator:
+                  hosting advisor:
                     - user 3
                     - user 5
   /permissions/log:
@@ -760,7 +760,7 @@ paths:
       tags:
         - Permissions
       summary: Adds a permission to a user
-      description: Adds the given permission to the given username, requires moderator role
+      description: Adds the given permission to the given username, requires `admin` permission
       security:
         - SiteApiToken: []
       parameters:
@@ -789,7 +789,7 @@ paths:
       tags:
         - Permissions
       summary: Removes a permission from a user
-      description: Removes the given permission from the given username, requires moderator role
+      description: Removes the given permission from the given username, requires admin role
       security:
         - SiteApiToken: []
       parameters:
@@ -834,7 +834,7 @@ paths:
       tags:
         - UBL
       summary: Create a new ban Entry
-      description: Creates a new ban entry
+      description: Creates a new ban entry, requires `ubl moderator` permission
       security:
         - SiteApiToken: []
         - UserApiToken: []
@@ -862,7 +862,7 @@ paths:
      tags:
        - UBL
      summary: Deletes a ban Entry
-     description: Deletes an existing ban entry
+     description: Deletes an existing ban entry, requires `ubl moderator` permission
      parameters:
        - in: path
          name: id
@@ -887,7 +887,7 @@ paths:
       tags:
         - UBL
       summary: Edits a ban Entry
-      description: Edit an existing ban entry
+      description: Edit an existing ban entry, requires `ubl moderator` permission
       parameters:
         - in: path
           name: id

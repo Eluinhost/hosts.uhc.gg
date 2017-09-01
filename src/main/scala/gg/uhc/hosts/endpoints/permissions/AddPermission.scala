@@ -12,7 +12,7 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
   def apply(username: String, permission: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireJwtAuthentication { session ⇒
-        requirePermission("moderator", session.username) {
+        requirePermission("admin", session.username) {
           requireSucessfulQuery(database.addPermission(username, permission, session.username)) {
             case true  ⇒ complete(StatusCodes.Created)
             case false ⇒ complete(StatusCodes.BadRequest)

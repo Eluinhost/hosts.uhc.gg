@@ -29,7 +29,7 @@ class CreateUblEntry(directives: CustomDirectives, database: Database) {
 
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
     requireAuthentication { session ⇒
-      requirePermission("moderator", session.username) {
+      requirePermission("ubl moderator", session.username) {
         entity(as[UblEntryPayload]) { entity ⇒
           entity.requireValid {
             convertPayload(entity, session.username) { row ⇒

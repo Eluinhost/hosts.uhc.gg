@@ -13,7 +13,7 @@ export const CurrentUblPage: React.SFC = () => (
     <h1 style={{ flexGrow: 0 }}>Universal Ban List</h1>
     <div style={{ flexGrow: 0 }}>
       <UsernameSearcher />
-      <WithPermission permission="moderator">
+      <WithPermission permission="ubl moderator">
         <Link to="/ubl/create">
           <Button intent={Intent.SUCCESS} iconName="take-action">Create New Ban</Button>
         </Link>

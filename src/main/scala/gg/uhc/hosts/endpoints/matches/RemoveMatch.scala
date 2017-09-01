@@ -43,7 +43,7 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database) {
   def apply(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { authentication ⇒
-        (requirePermission("moderator", authentication.username) | requireOwner(id, authentication.username)) {
+        (requirePermission("hosting advisor", authentication.username) | requireOwner(id, authentication.username)) {
           entity(as[RemoveMatchPayload]) { data ⇒
             validate(data) {
               requireSucessfulQuery(database.removeMatch(id, data.reason, authentication.username)) {

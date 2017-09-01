@@ -58,7 +58,7 @@ const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
     <Route path="/members" component={MembersPage} />
     <Route path="/login" component={LoginPage} />
     <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...props} />
-    <AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="moderator" {...props} />
+    <AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...props} />
     <Route path="/ubl/:uuid" component={UuidHistoryPage} />
     <Route path="/ubl" component={CurrentUblPage} />
     <Route path="/" exact component={HomePage}/>

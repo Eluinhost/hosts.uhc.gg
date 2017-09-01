@@ -147,7 +147,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           <em>{ban.reason} - {ban.expires.from(ban.created, true)}</em>
           <div style={{ float: 'right' }}>
             {this.renderCaseLink(ban.link)}
-            <WithPermission permission="moderator">
+            <WithPermission permission="ubl moderator">
               <span>
                 <Button
                   intent={Intent.WARNING}

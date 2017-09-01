@@ -12,7 +12,7 @@ class ApproveMatch(customDirectives: CustomDirectives, database: Database) {
   def apply(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { authentication ⇒
-        requirePermission("moderator", authentication.username) {
+        requirePermission("hosting advisor", authentication.username) {
           requireSucessfulQuery(database.approveMatch(id, authentication.username)) {
             case false ⇒ complete(StatusCodes.NotFound) // None updated
             case _     ⇒ complete(StatusCodes.OK)

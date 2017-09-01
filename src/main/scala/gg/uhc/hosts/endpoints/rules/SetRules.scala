@@ -14,7 +14,7 @@ class SetRules(customDirectives: CustomDirectives, database: Database) {
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
-        requirePermission("moderator", session.username) {
+        requirePermission("hosting advisor", session.username) {
           entity(as[String]) { entity ⇒
             requireSucessfulQuery(database.setRules(author = session.username, content = entity)) { _ ⇒
               complete(StatusCodes.Created)

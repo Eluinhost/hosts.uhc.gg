@@ -9,7 +9,7 @@ import { matchesPermissions } from '../../state/Selectors';
 import { createSelector } from 'reselect';
 
 const stateSelector = createSelector<ApplicationState, boolean, MembersState, MembersPageStateProps>(
-  matchesPermissions('moderator'),
+  matchesPermissions('admin'),
   state => state.members,
   (canModify, members) => ({
     ...members,

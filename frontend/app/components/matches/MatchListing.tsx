@@ -29,7 +29,7 @@ type StateProps = {
   readonly hideRemoved: boolean;
   readonly showOwnRemoved: boolean;
   readonly username: string | null;
-  readonly isModerator: boolean;
+  readonly isHostingAdvisor: boolean;
 };
 
 type DispatchProps = {
@@ -78,8 +78,8 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
       key={match.id}
       onRemovePress={this.openModal(match.id, 'removal')}
       onApprovePress={this.openModal(match.id, 'approval')}
-      canRemove={!!this.props.onRemove && (this.props.isModerator || this.props.username === match.author)}
-      canApprove={!!this.props.onApprove && this.props.isModerator}
+      canRemove={!!this.props.onRemove && (this.props.isHostingAdvisor || this.props.username === match.author)}
+      canApprove={!!this.props.onApprove && this.props.isHostingAdvisor}
     />
   ), this.props.filteredMatches)
 
@@ -184,13 +184,13 @@ const stateSelector = createSelector<
   boolean, // filters
   StateProps // OUTPUT
   >(
-  matchesPermissions('moderator'),
+  matchesPermissions('hosting advisor'),
   getUsername,
   visibleMatches,
   state => state.matches.hideRemoved,
   state => state.matches.showOwnRemoved,
-  (isModerator, username, matches, hideRemoved, showOwnRemoved): StateProps => ({
-    isModerator,
+  (isHostingAdvisor, username, matches, hideRemoved, showOwnRemoved): StateProps => ({
+    isHostingAdvisor,
     username,
     hideRemoved,
     showOwnRemoved,
