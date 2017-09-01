@@ -18,7 +18,7 @@ export type MembersPageDispatchProps = {
 };
 
 export type MembersPageStateProps = MembersState & {
-  readonly canModify: boolean;
+  readonly canModify: string[];
 };
 
 const capitalise = (word: string): string => converge<string>(concat, [pipe(head, toUpper), tail])(word);
@@ -30,10 +30,26 @@ export class MembersPage
     this.props.fetchModerationLog();
   }
 
+  noOp = () => {};
+
+  openRemoveDialog = (permission: string, username: string) => {
+    if (this.props.canModify.indexOf(permission) === -1)
+      return this.noOp;
+
+    return this.props.openRemovePermission(permission, username);
+  }
+
+  openAddDialog = (permission: string) => {
+    if (this.props.canModify.indexOf(permission) === -1)
+      return this.noOp;
+
+    return this.props.openAddPermission(permission);
+  }
+
   generateMemberNode = (permission: string, username: string): ITreeNode => ({
     iconName: 'user',
-    label: <span onClick={this.props.openRemovePermission(permission, username)}>{username}</span>,
-    className: this.props.canModify ? 'permission-node' : '',
+    label: <span onClick={this.openRemoveDialog(permission, username)}>{username}</span>,
+    className: this.props.canModify.indexOf(permission) > -1 ? 'permission-node' : '',
     id: `${permission}-${username}`,
   })
 
@@ -41,8 +57,8 @@ export class MembersPage
     iconName: 'folder-close',
     hasCaret: true,
     id: permission,
-    className: this.props.canModify ? 'permission-folder' : '',
-    label: <span onClick={this.props.openAddPermission(permission)}>{capitalise(permission) + 's'}</span>,
+    className: this.props.canModify.indexOf(permission) > -1 ? 'permission-folder' : '',
+    label: <span onClick={this.openAddDialog(permission)}>{capitalise(permission) + 's'}</span>,
     isExpanded: contains(permission, this.props.permissions.expandedPermissions),
     childNodes: pipe(
       sortBy(toLower),
@@ -138,7 +154,7 @@ export class MembersPage
           {this.renderPermissionsTree()}
           {this.renderModerationLog()}
         </div>
-        <If condition={this.props.canModify}>
+        <If condition={this.props.canModify.length > 0}>
           <div>
             <AddPermissionDialog />
             <RemovePermissionDialog />

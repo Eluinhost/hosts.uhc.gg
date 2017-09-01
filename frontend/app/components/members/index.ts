@@ -5,15 +5,21 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import * as React from 'react';
 import { MembersActions, MembersState } from '../../state/MembersState';
-import { matchesPermissions } from '../../state/Selectors';
+import { getPermissions } from '../../state/Selectors';
 import { createSelector } from 'reselect';
+import { Obj, flatten, map } from 'ramda';
 
-const stateSelector = createSelector<ApplicationState, boolean, MembersState, MembersPageStateProps>(
-  matchesPermissions('admin'),
+const allowedModifications: Obj<string[]> = {
+  'hosting advisor': ['host', 'trial host'],
+  admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator'],
+};
+
+const stateSelector = createSelector<ApplicationState, string[], MembersState, MembersPageStateProps>(
+  getPermissions,
   state => state.members,
-  (canModify, members) => ({
+  (permissions, members) => ({
     ...members,
-    canModify,
+    canModify: flatten<string>(map<string, string[]>(perm => allowedModifications[perm] || [], permissions)),
   }),
 );
 
