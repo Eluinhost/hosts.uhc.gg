@@ -40,7 +40,7 @@ const convertMatchTimes = (m: Match): Match => evolve<Match>({
 }, m);
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
-  fetch('/api/matches')
+  fetch('/api/matches/upcoming')
     .then(verifyStatus(200))
     .then(toJson<Match[]>())
     .then(map(convertMatchTimes));
