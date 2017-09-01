@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import { Match } from '../../Match';
 import { MatchListing } from './MatchListing';
 import { RouteComponentProps } from 'react-router';
+import { Title } from '../Title';
 
 type StateProps = {
   readonly matches: Match[];
@@ -24,16 +25,20 @@ const dontLoadMore = () => Promise.reject('Should not be called');
 
 const MatchesPageComponent: React.SFC<StateProps & DispatchProps> =
   ({ matches, error, loading, refetch, confirmRemove, confirmApprove }) => (
-    <MatchListing
-      matches={matches}
-      error={error}
-      loading={loading}
-      refetch={refetch}
-      onRemove={confirmRemove}
-      onApprove={confirmApprove}
-      hasMore={false}
-      loadMore={dontLoadMore}
-    />
+    <div>
+      <Title>Upcoming Matches</Title>
+      <h1>Upcoming Matches</h1>
+      <MatchListing
+        matches={matches}
+        error={error}
+        loading={loading}
+        refetch={refetch}
+        onRemove={confirmRemove}
+        onApprove={confirmApprove}
+        hasMore={false}
+        loadMore={dontLoadMore}
+      />
+    </div>
   );
 
 const stateSelector = createSelector<ApplicationState, Match[], string | null, boolean, StateProps>(

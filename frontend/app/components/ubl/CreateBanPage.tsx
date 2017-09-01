@@ -7,6 +7,7 @@ import { getAccessToken } from '../../state/Selectors';
 import { ApplicationState } from '../../state/ApplicationState';
 import { always } from 'ramda';
 import { createBan } from '../../api/index';
+import { Title } from '../Title';
 
 type Props = {
   readonly accessToken: string | null;
@@ -23,6 +24,7 @@ class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentP
   render() {
     return (
       <div>
+        <Title>Create new ban</Title>
         <h1>Create new ban</h1>
         <BanDataForm onSubmit={this.handleSubmit} />
       </div>

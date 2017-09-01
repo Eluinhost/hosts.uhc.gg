@@ -14,6 +14,7 @@ import { WithPermission } from './WithPermission';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { HistoryPage } from './history';
 import { CreateBanPage } from './ubl/CreateBanPage';
+import { Helmet } from 'react-helmet';
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -74,6 +75,7 @@ export const App: React.SFC = () => (
         <Navbar />
       </div>
       <div className="app-container">
+        <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
         <Routes />
       </div>
     </div>

@@ -24,6 +24,7 @@ import { If } from '../If';
 import { SwitchField } from '../fields/SwitchField';
 import { ReactDatePickerProps } from 'react-datepicker';
 import { RcTimePickerProps } from 'rc-time-picker';
+import { Title } from '../Title';
 
 const noop = (): void => undefined;
 
@@ -123,7 +124,7 @@ class CreateMatchFormComponent
 
     return (
       <form className="host-form" onSubmit={handleSubmit(createMatch)}>
-
+        <Title>Create a match</Title>
         <HostingRules/>
 
         <fieldset className="opening-time">

@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { UblListing } from './UblListing';
 import { If } from '../If';
 import { BanEntry } from '../../BanEntry';
+import { Title } from '../Title';
 
 type Params = {
   readonly uuid: string;
@@ -53,6 +54,7 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
   render() {
     return (
       <div>
+        <Title>Ban History - {this.props.match.params.uuid}</Title>
         <h1>Ban History</h1>
         <small>{this.props.match.params.uuid}</small>
 

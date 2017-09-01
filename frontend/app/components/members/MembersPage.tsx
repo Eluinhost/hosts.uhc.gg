@@ -7,6 +7,7 @@ import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
 import { PermissionsMap } from '../../PermissionsMap';
 import { If } from '../If';
+import { Title } from '../Title';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
@@ -132,6 +133,7 @@ export class MembersPage
   render() {
     return (
       <div>
+        <Title>Members</Title>
         <div className="members-page">
           {this.renderPermissionsTree()}
           {this.renderModerationLog()}

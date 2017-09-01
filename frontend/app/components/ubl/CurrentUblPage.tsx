@@ -5,9 +5,11 @@ import { getAllCurrentBans } from '../../api/index';
 import { WithPermission } from '../WithPermission';
 import { Button, Intent } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
+import { Title } from '../Title';
 
 export const CurrentUblPage: React.SFC = () => (
   <div>
+    <Title>Current UBL</Title>
     <h1 style={{ flexGrow: 0 }}>Universal Ban List</h1>
     <div style={{ flexGrow: 0 }}>
       <UsernameSearcher />

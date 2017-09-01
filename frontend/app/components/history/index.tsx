@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { MatchListing } from '../matches/MatchListing';
 import { getHostingHistory } from '../../api';
 import { concat, last } from 'ramda';
+import { Title } from '../Title';
 
 type State = {
   readonly matches: Match[];
@@ -64,6 +65,7 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
   render() {
     return (
       <div>
+        <Title>Hosting History - {this.props.match.params.host}</Title>
         <h1>Hosting history for /u/{this.props.match.params.host}</h1>
 
         <p>

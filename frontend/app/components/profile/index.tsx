@@ -7,6 +7,7 @@ import { Dispatch } from 'redux';
 import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { storage } from '../../storage';
 import { If } from '../If';
+import { Title } from '../Title';
 
 export type ProfilePageStateProps = ProfileState;
 export type ProfilePageDispatchProps = {
@@ -37,6 +38,7 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
 
     return (
       <div>
+        <Title>Profile</Title>
         <Button onClick={refreshApiKey}>Refresh</Button>
         <Button onClick={regenerateApiKey}>Regenerate</Button>
         <pre>
