@@ -10,6 +10,9 @@ class FrontendRoute {
       path("favicon.png") {
         getFromResource("favicon.png")
       },
+      path("logo.png") {
+        getFromResource("logo.png")
+      },
       getFromResource("frontend.html")
     )
 
