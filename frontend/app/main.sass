@@ -1,14 +1,27 @@
 @import "~normalize.css/normalize.css"
-@import "~@blueprintjs/core/dist/blueprint.css"
-@import "~@blueprintjs/labs/dist/blueprint-labs.css"
 @import "~react-datepicker/dist/react-datepicker.css"
 @import "~rc-time-picker/assets/index.css"
 @import "~react-virtualized/styles.css"
 
-@import "~@blueprintjs/core/dist/variables"
+$icon-font-path: "~@blueprintjs/core/resources/icons"
+
+$pt-intent-warning: #FD971F
+$pt-dark-app-background-color: #282828
+$dark-card-background-color: lighten($pt-dark-app-background-color, 3%)
+$dark-navbar-background-color: $dark-card-background-color
+$dark-popover-background-color: $dark-card-background-color
+$dark-input-background-color: $dark-card-background-color
+$dark-button-background-color: $dark-card-background-color
+$pt-text-selection-color: $pt-dark-app-background-color
+
+@import "~@blueprintjs/core/src/blueprint.scss"
+@import "~@blueprintjs/labs/src/blueprint-labs.scss"
+
+.pt-dark .pt-dialog-header
+  background-color: $dark-card-background-color
 
 body
-  background: $dark-gray2
+  background: $pt-dark-app-background-color
 
 html, body, #root
   width: 100%
@@ -239,7 +252,7 @@ a.username-link, span.username-link
     border-bottom-style: solid
 
 .pt-card, .pt-navbar, .pt-dialog
-  border-top: 3px solid $pt-intent-warning
+  border-top: 3px solid $pt-intent-danger
   border-top-left-radius: 0
   border-top-right-radius: 0
 //
