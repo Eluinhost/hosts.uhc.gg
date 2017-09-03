@@ -138,7 +138,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           </span>
         </div>
         <div>
-          <Link to={`/ubl/${ban.uuid}`} title="Show ban history">
+          <Link to={`/ubl/${ban.uuid}`} title="Show ban history" className="ubl-link">
             <small>{ban.uuid}</small>
           </Link>
           <span style={{ float: 'right' }}>/u/{ban.createdBy}</span>
