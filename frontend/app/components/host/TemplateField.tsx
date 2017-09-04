@@ -34,6 +34,8 @@ const PreviewTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ in
 
 const samples = [
   ['{{author}}', 'The creator of the post (you!)'],
+  ['{{hostingName}}', 'Any hosting name override'],
+  ['{{tournament}}', 'Is a tournament?'],
   ['{{opens}}', 'When the match opens, default formatting'],
   ['{{opens|moment>MMM Do HH:mm z}}', 'Use `|moment>FORMAT` to specify a custom format'],
   ['{{address}}', 'The address of the server'],
@@ -51,7 +53,7 @@ const samples = [
   ['{{version}}', 'The version of the server'],
   ['{{slots}}', 'How many slots the server has'],
   ['{{length}}', 'The length of the game'],
-  ['{{mapSizeX}} x {{mapSizeZ}}', 'Map dimensions'],
+  ['{{mapSize}}', 'Map dimensions'],
   ['{{pvpEnabledAt}}', 'When PVP turns on'],
 ];
 

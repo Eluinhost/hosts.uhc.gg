@@ -64,7 +64,7 @@ export class Dropdown extends React.Component<DropdownStateProps & DropdownDispa
 
     return (
       <div
-        className={`hosting-rules pt-intent-warning pt-callout ${this.iconClasses()}`}
+        className={`hosting-rules pt-callout ${this.iconClasses()}`}
         onClick={this.toggleDropdown}
       >
         <h3>Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small></h3>
@@ -72,7 +72,7 @@ export class Dropdown extends React.Component<DropdownStateProps & DropdownDispa
           <div onClick={this.stopPropagation}>
             <WithPermission permission="hosting advisor">
               <div>
-                <Button intent={Intent.WARNING} text="Edit Rules" onClick={this.props.startEdit} />
+                <Button intent={Intent.PRIMARY} text="Edit Rules" onClick={this.props.startEdit} />
                 <SetRulesDialog />
               </div>
             </WithPermission>

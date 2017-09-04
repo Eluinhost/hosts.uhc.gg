@@ -29,6 +29,9 @@ export const Navbar: React.SFC = () => (
   <nav className="pt-navbar">
     <div className="pt-navbar-group">
       <Link to="/">
+        <img src="/logo.png" className="brand-logo" />
+      </Link>
+      <Link to="/">
         <div className="pt-navbar-heading">uhc.gg hosting</div>
       </Link>
     </div>

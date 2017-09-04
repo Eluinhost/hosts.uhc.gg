@@ -1,18 +1,42 @@
 @import "~normalize.css/normalize.css"
-@import "~@blueprintjs/core/dist/blueprint.css"
-@import "~@blueprintjs/labs/dist/blueprint-labs.css"
 @import "~react-datepicker/dist/react-datepicker.css"
 @import "~rc-time-picker/assets/index.css"
 @import "~react-virtualized/styles.css"
 
-@import "~@blueprintjs/core/dist/variables"
+$icon-font-path: "~@blueprintjs/core/resources/icons"
+
+$pt-font-family: "Share Tech"
+$pt-intent-warning: #FD971F
+$pt-intent-danger: #DB3737
+$pt-dark-app-background-color: #282828
+$dark-card-background-color: lighten($pt-dark-app-background-color, 3%)
+$dark-navbar-background-color: $dark-card-background-color
+$dark-popover-background-color: $dark-card-background-color
+$dark-input-background-color: $dark-card-background-color
+$dark-button-background-color: $dark-card-background-color
+$dark-popover-background-color: $dark-card-background-color
+$dark-menu-background-color: $dark-card-background-color
+$pt-text-selection-color: $pt-dark-app-background-color
+$dark-input-shadow-color-focus: $pt-intent-danger
+$pt-dark-link-color: $pt-intent-danger
+
+@import "~@blueprintjs/core/src/blueprint.scss"
+@import "~@blueprintjs/labs/src/blueprint-labs.scss"
+
+.pt-dark .pt-dialog-header
+  background-color: $dark-card-background-color
 
 body
-  background: $dark-gray2
+  background: $pt-dark-app-background-color
 
 html, body, #root
   width: 100%
   height: 100%
+
+.brand-logo
+  width: 32px
+  height: 32px
+  margin-right: 15px
 
 .full-page
   display: flex
@@ -36,6 +60,10 @@ html, body, #root
     flex: 1 0 auto
     display: flex
     flex-direction: column
+
+.ubl-link
+  font-weight: bold
+  text-transform: uppercase
 
 .ubl-card
   margin-top: 5px
@@ -211,6 +239,7 @@ html, body, #root
 
 .hosting-rules
   margin-bottom: 10px
+  padding-bottom: 0
   cursor: pointer
 
   > .pt-collapse
@@ -239,7 +268,7 @@ a.username-link, span.username-link
     border-bottom-style: solid
 
 .pt-card, .pt-navbar, .pt-dialog
-  border-top: 3px solid $pt-intent-warning
+  border-top: 3px solid $pt-intent-danger
   border-top-left-radius: 0
   border-top-right-radius: 0
 //

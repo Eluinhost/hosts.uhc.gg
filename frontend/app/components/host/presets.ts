@@ -40,7 +40,7 @@ ___
 **PvP/iPvP** | {{pvpEnabledAt}} Minutes after start.
 **Meetup** | {{length}} Minutes after start.
 **Permaday** | Enabled at meetup.
-**Map size** | {{mapSizeX}}x{{mapSizeZ}}
+**Map size** | {{mapSize}}x{{mapSize}}
  
 &nbsp;
 ___

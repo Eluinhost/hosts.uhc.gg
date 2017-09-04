@@ -2,11 +2,10 @@ import * as React from 'react';
 import { Match } from '../../Match';
 import { TeamStyle } from './TeamStyle';
 import { TagList } from './TagList';
-import { Button, Dialog, Intent, Tag } from '@blueprintjs/core';
+import { Button, Dialog, Icon, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { Markdown } from '../Markdown';
 import { If } from '../If';
-import { WithPermission } from '../WithPermission';
 import { UsernameLink } from '../UsernameLink';
 
 export type MatchRowProps = {
@@ -81,7 +80,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
           </Tag>
           <If condition={match.tournament}>
             <Tag intent={Intent.PRIMARY} className="pt-large">
-              <span className="pt-icon-timeline-bar-chart" /> Tournament
+              <Icon iconName="timeline-bar-chart"/> Tournament
             </Tag>
           </If>
         </div>
