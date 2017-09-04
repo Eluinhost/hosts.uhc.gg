@@ -2,8 +2,8 @@ const {join, pipe, map, concat, filter} = require('ramda');
 const moment = require('moment');
 const fs = require('fs');
 
-const old = require('./data/old');
-const current = require('./data/current');
+const old = require('./data/oldUbl');
+const current = require('./data/currentUbl');
 
 const parseDate = dateString => {
   const parsed = moment.utc(
