@@ -29,7 +29,7 @@ export type RemovePermissionDialogState = {
 export type PermissionsState = {
   readonly fetching: boolean;
   readonly error: string | null;
-  readonly expandedPermissions: string[];
+  readonly expandedNodes: string[];
   readonly permissions: PermissionsMap;
 };
 
@@ -62,8 +62,8 @@ const startModLogFetch = createAction('MOD_LOG_START_FETCH');
 const endModLogFetch = createAction<ModLogEntry[]>('MOD_LOG_END_FETCH');
 const fetchModLogError = createAction<string>('MOD_LOG_FETCH_ERROR');
 
-const collapsePermssion = createAction<string>('COLLAPSE_PERMISSION');
-const expandPermission = createAction<string>('EXPAND_PERMISSION');
+const collapseNode = createAction<string>('COLLAPSE_PERMISSION');
+const expandNode = createAction<string>('EXPAND_PERMISSION');
 
 export const MembersActions = {
   /**
@@ -113,11 +113,11 @@ export const MembersActions = {
       throw err;
     }
   },
-  togglePermissionExpanded: (perm: string): ThunkAction<void, ApplicationState, {}> => (dispatch, getState): void => {
+  toggleNodeExpanded: (id: string): ThunkAction<void, ApplicationState, {}> => (dispatch, getState): void => {
     dispatch(
-      contains(perm, getState().members.permissions.expandedPermissions)
-        ? collapsePermssion(perm)
-        : expandPermission(perm),
+      contains(id, getState().members.permissions.expandedNodes)
+        ? collapseNode(id)
+        : expandNode(id),
     );
   },
   openAddPermissionDialog: createAction<string>('OPEN_ADD_PERMISSION_DIALOG'),
@@ -179,14 +179,14 @@ export const reducer = new ReducerBuilder<MembersState>()
       error: always(action.payload),
     },
   }))
-  .handleEvolve(expandPermission, (action: Action<string>) => ({
+  .handleEvolve(expandNode, (action: Action<string>) => ({
     permissions: {
-      expandedPermissions: concat([action.payload]),
+      expandedNodes: concat([action.payload]),
     },
   }))
-  .handleEvolve(collapsePermssion, (action: Action<string>) => ({
+  .handleEvolve(collapseNode, (action: Action<string>) => ({
     permissions: {
-      expandedPermissions: without([action.payload]),
+      expandedNodes: without([action.payload]),
     },
   }))
   .handleEvolve(startModLogFetch, () => ({
@@ -249,7 +249,7 @@ export const initialValues = async (): Promise<MembersState> => ({
     fetching: false,
     error: null,
     permissions: {},
-    expandedPermissions: [],
+    expandedNodes: ['permission-admin'],
   },
   moderationLog: {
     error: null,

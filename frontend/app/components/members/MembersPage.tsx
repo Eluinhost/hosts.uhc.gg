@@ -1,6 +1,9 @@
 import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import { map, sortBy, toLower, contains, toPairs, pipe, concat, toUpper, head, tail, converge } from 'ramda';
+import {
+  map, sortBy, toLower, contains, toPairs, pipe, concat,
+  toUpper, head, tail, converge, groupBy, Obj, unless, chain, prop,
+} from 'ramda';
 import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree, Tag } from '@blueprintjs/core';
 import { MembersState } from '../../state/MembersState';
 import { AddPermissionDialog } from './AddPermissionDialog';
@@ -12,9 +15,9 @@ import { Title } from '../Title';
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
   readonly fetchModerationLog: () => void;
-  readonly togglePermissionExpanded: (perm: string) => void;
-  readonly openAddPermission: (perm: string) => () => void;
-  readonly openRemovePermission: (perm: string, username: string) => () => void;
+  readonly toggleNodeExpanded: (perm: string) => void;
+  readonly openAddPermission: (perm: string) => void;
+  readonly openRemovePermission: (perm: string, username: string) => void;
 };
 
 export type MembersPageStateProps = MembersState & {
@@ -23,6 +26,15 @@ export type MembersPageStateProps = MembersState & {
 
 const capitalise = (word: string): string => converge<string>(concat, [pipe(head, toUpper), tail])(word);
 
+interface PermissionTreeNode extends ITreeNode {
+  readonly type: 'permission folder' | 'alpha folder' | 'username';
+  readonly permission: string;
+}
+
+interface UsernameTreeNode extends PermissionTreeNode {
+  readonly username: string;
+}
+
 export class MembersPage
   extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
   componentDidMount(): void {
@@ -30,43 +42,63 @@ export class MembersPage
     this.props.fetchModerationLog();
   }
 
-  noOp = () => {};
+  private canModify = (permission: string): boolean => this.props.canModify.indexOf(permission) >= 0;
 
-  openRemoveDialog = (permission: string, username: string) => {
-    if (this.props.canModify.indexOf(permission) === -1)
-      return this.noOp;
-
-    return this.props.openRemovePermission(permission, username);
-  }
-
-  openAddDialog = (permission: string) => {
-    if (this.props.canModify.indexOf(permission) === -1)
-      return this.noOp;
-
-    return this.props.openAddPermission(permission);
-  }
-
-  generateMemberNode = (permission: string, username: string): ITreeNode => ({
+  private createUsernameNode = (permission: string, username: string): UsernameTreeNode => ({
+    username,
+    permission,
+    type: 'username',
     iconName: 'user',
-    label: <span onClick={this.openRemoveDialog(permission, username)}>{username}</span>,
-    className: this.props.canModify.indexOf(permission) > -1 ? 'permission-node' : '',
-    id: `${permission}-${username}`,
+    label: username,
+    className: this.canModify(permission) ? 'permission-node' : '',
+    id: `username-${permission}-${username}`,
   })
 
-  generatePermissionNode = (permission: string, members: string[]): ITreeNode => ({
+  private headChar = (s: string): string => s.charAt(0).toUpperCase();
+
+  private shouldGroup = (items: PermissionTreeNode[]): boolean => items.length > 20;
+
+  private createAlphaNumericFolders = (permission: string, members: string[]): PermissionTreeNode[] => pipe<
+    string[],
+    Obj<string[]>,
+    Obj<UsernameTreeNode[]>,
+    [string, UsernameTreeNode[]][],
+    [string, UsernameTreeNode[]][],
+    PermissionTreeNode[]
+  >(
+    groupBy<string>(this.headChar), // map[first char, members]
+    map<string[], UsernameTreeNode[]>(
+      map<string, UsernameTreeNode>(member => this.createUsernameNode(permission, member)),
+    ), // map[string[], UsernameTreeNode[]]
+    toPairs, // array[[first char, treenodes]]
+    sortBy<[string, UsernameTreeNode[]]>(head),
+    map<[string, UsernameTreeNode[]], PermissionTreeNode>(([char, memberNodes]): PermissionTreeNode => ({
+      permission,
+      id: `alpha-${char}-${permission}`,
+      type: 'alpha folder',
+      label: char,
+      hasCaret: true,
+      isExpanded: contains(`alpha-${char}-${permission}`, this.props.permissions.expandedNodes),
+      childNodes: memberNodes,
+    })),
+  )(members)
+
+  private createPermissionFolderNode = (permission: string, members: string[]): PermissionTreeNode => ({
+    permission,
+    type: 'permission folder',
     iconName: 'folder-close',
     hasCaret: true,
-    id: permission,
-    className: this.props.canModify.indexOf(permission) > -1 ? 'permission-folder' : '',
-    label: <span onClick={this.openAddDialog(permission)}>{capitalise(permission) + 's'}</span>,
-    isExpanded: contains(permission, this.props.permissions.expandedPermissions),
-    childNodes: pipe(
-      sortBy(toLower),
-      map<string, ITreeNode>(member => this.generateMemberNode(permission, member)),
-    )(members),
+    id: `permission-${permission}`,
+    className: this.canModify(permission) ? 'permission-folder' : '',
+    label: capitalise(permission) + 's',
+    isExpanded: contains(`permission-${permission}`, this.props.permissions.expandedNodes),
+    childNodes: unless<PermissionTreeNode[], PermissionTreeNode[]>(
+      this.shouldGroup, // Remove nested alpha when there is no need to use it
+      chain<PermissionTreeNode, PermissionTreeNode>(prop('childNodes')),
+    )(this.createAlphaNumericFolders(permission, members)),
   })
 
-  generateTree = (): ITreeNode[] => pipe(
+  private generateTree = (): PermissionTreeNode[] => pipe(
     toPairs as (p: PermissionsMap) => [string, string[]][],
     sortBy<[string, string[]]>(
       pipe(
@@ -74,16 +106,29 @@ export class MembersPage
         toLower,
       ),
     ),
-    map(([permission, members]) => this.generatePermissionNode(permission, members)),
+    map(([permission, members]) => this.createPermissionFolderNode(permission, members)),
   )(this.props.permissions.permissions)
 
-  onToggle = (node: ITreeNode): void => this.props.togglePermissionExpanded('' + node.id);
+  private onNodeClick = (node: ITreeNode) => {
+    const permissionNode = node as PermissionTreeNode;
+
+    if (!this.canModify(permissionNode.permission))
+      return;
+
+    if (permissionNode.type === 'permission folder') {
+      this.props.openAddPermission(permissionNode.permission);
+    } else if (permissionNode.type === 'username') {
+      this.props.openRemovePermission(permissionNode.permission, (permissionNode as UsernameTreeNode).username);
+    }
+  }
+
+  private onToggle = (node: ITreeNode): void => this.props.toggleNodeExpanded(node.id as string);
 
   RenderError: React.SFC<{ message: string }> = ({ message }) => (
     <div className="pt-callout pt-intent-danger"><h5>{message}</h5></div>
   )
 
-  renderModLog = (): React.ReactElement<any>[] => map(
+  private renderModLog = (): React.ReactElement<any>[] => map(
     entry => (
       <Tag
         key={entry.id}
@@ -100,14 +145,19 @@ export class MembersPage
     this.props.moderationLog.log,
   )
 
-  renderPermissionsTree = (): React.ReactElement<any> => {
+  private renderPermissionsTree = (): React.ReactElement<any> => {
     if (this.props.permissions.fetching)
       return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 
     return (
       <div className="permissions-tree">
         <h2>All members</h2>
-        <Tree contents={this.generateTree()} onNodeCollapse={this.onToggle} onNodeExpand={this.onToggle} />
+        <Tree
+          contents={this.generateTree()}
+          onNodeCollapse={this.onToggle}
+          onNodeExpand={this.onToggle}
+          onNodeClick={this.onNodeClick}
+        />
         <If condition={!!this.props.permissions.error}>
           <this.RenderError message={this.props.permissions.error!} />
         </If>
@@ -123,7 +173,7 @@ export class MembersPage
     );
   }
 
-  renderModerationLog = (): React.ReactElement<any> => {
+  private renderModerationLog = (): React.ReactElement<any> => {
     if (this.props.moderationLog.fetching)
       return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 
@@ -146,7 +196,7 @@ export class MembersPage
     );
   }
 
-  render() {
+  public render() {
     return (
       <div>
         <Title>Members</Title>

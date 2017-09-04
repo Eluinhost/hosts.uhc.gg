@@ -29,11 +29,11 @@ export const MembersPage: React.ComponentClass<RouteComponentProps<any>> =
     (dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps => ({
       fetchPermissionList: (): Promise<void> => dispatch(MembersActions.refetchPermissions()),
       fetchModerationLog: (): Promise<void> => dispatch(MembersActions.refetchModerationLog()),
-      togglePermissionExpanded: (perm: string): void => dispatch(MembersActions.togglePermissionExpanded(perm)),
-      openAddPermission: (perm: string) => (): void => {
+      toggleNodeExpanded: (id: string): void => dispatch(MembersActions.toggleNodeExpanded(id)),
+      openAddPermission: (perm: string): void => {
         dispatch(MembersActions.openAddPermissionDialog(perm));
       },
-      openRemovePermission: (permission: string, username: string) => (): void => {
+      openRemovePermission: (permission: string, username: string): void => {
         dispatch(MembersActions.openRemovePermissionDialog({ username, permission }));
       },
     }),
