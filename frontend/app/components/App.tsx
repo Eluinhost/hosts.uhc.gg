@@ -20,6 +20,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
 import { isDarkMode } from '../state/Selectors';
 import { always } from 'ramda';
+import { GlobalHotkeys } from './GlobalHotkeys';
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -79,15 +80,17 @@ type AppProps = {
 
 const AppComponent: React.SFC<AppProps> = ({ isDarkMode }) => (
   <BrowserRouter>
-    <div className={`${isDarkMode ? 'pt-dark' : ''} full-page`}>
-      <div style={{ flexGrow: 0 }}>
-        <Navbar />
+    <GlobalHotkeys>
+      <div className={`${isDarkMode ? 'pt-dark' : ''} full-page`}>
+        <div style={{ flexGrow: 0 }}>
+          <Navbar />
+        </div>
+        <div className="app-container">
+          <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+          <Routes />
+        </div>
       </div>
-      <div className="app-container">
-        <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
-        <Routes />
-      </div>
-    </div>
+    </GlobalHotkeys>
   </BrowserRouter>
 );
 
