@@ -10,10 +10,11 @@ import {
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { getAccessToken } from '../../state/Selectors';
+import { getAccessToken, isDarkMode } from '../../state/Selectors';
 
 type UblListingStateProps = {
   readonly accessToken: string | null;
+  readonly isDarkMode: boolean;
 };
 
 type UblListingProps = {
@@ -145,6 +146,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
           onEditFailed={this.onRowEditFailed}
           accessToken={this.props.accessToken}
           disabled={this.state.loading || this.state.backup !== null}
+          isDarkMode={this.props.isDarkMode}
         />
       </div>
     );
@@ -223,9 +225,10 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
   }
 }
 
-const stateSelector = createSelector<ApplicationState, string | null, UblListingStateProps>(
+const stateSelector = createSelector<ApplicationState, string | null, boolean, UblListingStateProps>(
   getAccessToken,
-  accessToken => ({ accessToken }),
+  isDarkMode,
+  (accessToken, isDarkMode) => ({ accessToken, isDarkMode }),
 );
 
 export const UblListing: React.ComponentClass<UblListingProps> = connect<UblListingStateProps, {}, UblListingProps>(

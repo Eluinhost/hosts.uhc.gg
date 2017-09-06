@@ -26,8 +26,11 @@ $pt-dark-link-color: $pt-intent-danger
 .pt-dark .pt-dialog-header
   background-color: $dark-card-background-color
 
-body
-  background: $pt-dark-app-background-color
+#root
+  background: $pt-app-background-color
+
+  & > .pt-dark
+    background: $pt-dark-app-background-color
 
 html, body, #root
   width: 100%
@@ -259,16 +262,28 @@ html, body, #root
   margin: 0
 
 a.username-link, span.username-link
-  border-bottom: 1px $pt-dark-text-color dotted
+  border-bottom: 1px dotted
+  border-bottom-color: $pt-text-color
   text-decoration: none
+  color: $pt-text-color
+
+  &:hover
+    color: $pt-text-color
+    border-bottom-style: solid
+
+.pt-dark a.username-link, .pt-dark span.username-link
   color: $pt-dark-text-color
+  border-bottom-color: $pt-dark-text-color
 
   &:hover
     color: $pt-dark-text-color
-    border-bottom-style: solid
+
+.pt-dark
+  .pt-card, .pt-navbar, .pt-dialog
+    border-top: 3px solid $pt-intent-danger
 
 .pt-card, .pt-navbar, .pt-dialog
-  border-top: 3px solid $pt-intent-danger
+  border-top: 3px solid $pt-intent-primary
   border-top-left-radius: 0
   border-top-right-radius: 0
 //

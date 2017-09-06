@@ -7,10 +7,12 @@ import { MatchRow } from '../matches/MatchRow';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../state/ApplicationState';
 
-type ComponentStateProps = HostFormConflicts;
+type ComponentStateProps = HostFormConflicts & {
+  readonly isDarkMode: boolean;
+};
 
 const noop = () => undefined;
-const renderConflict = (m: Match, index: number) => (
+const renderConflict = (isDarkMode: boolean) => (m: Match, index: number) => (
   <MatchRow
     key={index}
     match={m}
@@ -18,10 +20,11 @@ const renderConflict = (m: Match, index: number) => (
     canRemove={false}
     onRemovePress={noop}
     onApprovePress={noop}
+    isDarkMode={isDarkMode}
   />
 );
 
-const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching }) => {
+const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching, isDarkMode }) => {
   if (fetching)
     return <NonIdealState visual={<Spinner />} title="Checking..." />;
 
@@ -33,11 +36,14 @@ const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching }) =>
     
   return (
     <div>
-      {addIndex(map)(renderConflict, data)}
+      {addIndex(map)(renderConflict(isDarkMode), data)}
     </div>
   );
 };
 
 export const PotentialConflicts: React.ComponentClass = connect<ComponentStateProps, {}, {}>(
-  (state: ApplicationState): ComponentStateProps => state.hostForm.conflicts,
+  (state: ApplicationState): ComponentStateProps => ({
+    ...state.hostForm.conflicts,
+    isDarkMode: state.settings.isDarkMode,
+  }),
 )(Component);

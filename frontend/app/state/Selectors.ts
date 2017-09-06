@@ -7,6 +7,11 @@ import {
 import { createSelector } from 'reselect';
 import { AccessTokenClaims, RefreshTokenClaims } from './AuthenticationState';
 
+export const isDarkMode = createSelector<ApplicationState, boolean, boolean>(
+  state => state.settings.isDarkMode,
+  identity,
+);
+
 export const getAccessToken = createSelector<ApplicationState, string | null, string | null>(
   state => state.authentication.accessToken,
   identity,

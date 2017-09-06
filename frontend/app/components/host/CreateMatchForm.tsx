@@ -35,6 +35,7 @@ export type CreateMatchFormProps = {
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => Promise<void>;
   readonly recheckConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
+  readonly isDarkMode: boolean;
 };
 
 const disabledMinutes = range(0, 60).filter(m => m % 15 !== 0);
@@ -309,6 +310,7 @@ class CreateMatchFormComponent
             canApprove={false}
             onRemovePress={noop}
             onApprovePress={noop}
+            isDarkMode={this.props.isDarkMode}
           />
         </fieldset>
 

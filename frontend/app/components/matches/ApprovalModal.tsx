@@ -12,17 +12,18 @@ type DispatchProps = {
 
 type StateProps = {
   readonly isOpen: boolean;
+  readonly isDarkMode: boolean;
 };
 
 const ApprovalModalComponent:
   React.SFC<StateProps & DispatchProps & FormProps<ApprovalModalData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, isDarkMode }) => (
     <Dialog
       iconName="tick"
       isOpen={isOpen}
       onClose={close}
       title="Approve match"
-      className="pt-dark"
+      className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body remove-modal-body">
         <form onSubmit={handleSubmit}>

@@ -15,6 +15,11 @@ import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { HistoryPage } from './history';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
+import { ApplicationState } from '../state/ApplicationState';
+import { createSelector } from 'reselect';
+import { isDarkMode } from '../state/Selectors';
+import { always } from 'ramda';
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -68,9 +73,13 @@ const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
 
 const Routes: React.ComponentClass<{}> = withRouter<{}>(RoutesComponent);
 
-export const App: React.SFC = () => (
+type AppProps = {
+  readonly isDarkMode: boolean;
+};
+
+const AppComponent: React.SFC<AppProps> = ({ isDarkMode }) => (
   <BrowserRouter>
-    <div className="pt-dark full-page">
+    <div className={`${isDarkMode ? 'pt-dark' : ''} full-page`}>
       <div style={{ flexGrow: 0 }}>
         <Navbar />
       </div>
@@ -81,3 +90,15 @@ export const App: React.SFC = () => (
     </div>
   </BrowserRouter>
 );
+
+const stateSelector = createSelector<ApplicationState, boolean, AppProps>(
+  isDarkMode,
+  isDarkMode => ({
+    isDarkMode,
+  }),
+);
+
+export const App: React.ComponentClass = connect<AppProps, {}, {}>(
+  stateSelector,
+  always({}),
+)(AppComponent);

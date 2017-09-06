@@ -20,19 +20,20 @@ type AddPermissionDialogDispatchProps = {
 type AddPermissionDialogStateProps = {
   readonly isOpen: boolean;
   readonly permission: string;
+  readonly isDarkMode: boolean;
 };
 
 const AddPermissionDialogComponent: React.SFC<
   AddPermissionDialogStateProps &
   AddPermissionDialogDispatchProps &
   FormProps<AddPermissionDialogData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen, permission }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, permission, isDarkMode }) => (
     <Dialog
       iconName="add"
       isOpen={isOpen}
       onClose={close}
       title={`Add '${permission}' role`}
-      className="pt-dark"
+      className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body add-permission-body">
         <form onSubmit={handleSubmit}>
@@ -96,6 +97,7 @@ const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPerm
 const mapStateToProps = (state: ApplicationState): AddPermissionDialogStateProps => ({
   permission: state.members.dialogs.add.permission,
   isOpen: state.members.dialogs.add.isOpen,
+  isDarkMode: state.settings.isDarkMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): AddPermissionDialogDispatchProps => ({

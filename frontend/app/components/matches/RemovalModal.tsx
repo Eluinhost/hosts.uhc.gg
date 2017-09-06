@@ -16,17 +16,18 @@ type RemovalModalDispatchProps = {
 
 type RemovalModalStateProps = {
   readonly isOpen: boolean;
+  readonly isDarkMode: boolean;
 };
 
 const RemovalModalComponent:
   React.SFC<RemovalModalStateProps & RemovalModalDispatchProps & FormProps<RemovalModalData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, isDarkMode }) => (
     <Dialog
       iconName="delete"
       isOpen={isOpen}
       onClose={close}
       title="Remove match"
-      className="pt-dark"
+      className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body remove-modal-body">
         <form onSubmit={handleSubmit}>

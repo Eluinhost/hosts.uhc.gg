@@ -14,6 +14,7 @@ export type MatchRowProps = {
   readonly onApprovePress: () => void;
   readonly canRemove: boolean;
   readonly canApprove: boolean;
+  readonly isDarkMode: boolean;
 };
 
 export type MatchRowState = {
@@ -49,7 +50,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
   }
 
   render() {
-    const { match, canRemove } = this.props;
+    const { match, canRemove, isDarkMode } = this.props;
 
     return (
       <div
@@ -118,7 +119,7 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
           isOpen={this.state.isOpen}
           onClose={this.onClick}
           title={`${match.author}'s #${match.count}`}
-          className="match-row-dialog pt-dark"
+          className={`match-row-dialog ${isDarkMode ? 'pt-dark' : ''}`}
         >
           <div className="pt-dialog-body">
             <Markdown markdown={match.content} />

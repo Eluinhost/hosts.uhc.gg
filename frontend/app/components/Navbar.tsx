@@ -1,8 +1,13 @@
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, IconName } from '@blueprintjs/core';
+import { Button, Icon, IconName } from '@blueprintjs/core';
 import * as React from 'react';
 import { Username } from './Username';
+import { createSelector } from 'reselect';
+import { ApplicationState } from '../state/ApplicationState';
+import { isDarkMode } from '../state/Selectors';
+import { connect, Dispatch } from 'react-redux';
+import { SettingsActions } from '../state/SettingsState';
 
 type NavBarButtonProps = {
   readonly text: string;
@@ -25,7 +30,15 @@ const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<a
 
 const NavbarButton: React.ComponentClass<NavBarButtonProps> = withRouter<NavBarButtonProps>(NavBarButtonComponent);
 
-export const Navbar: React.SFC = () => (
+type StateProps = {
+  readonly isDarkMode: boolean;
+};
+
+type DispatchProps = {
+  readonly toggleDarkMode: () => void;
+};
+
+const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, toggleDarkMode }) => (
   <nav className="pt-navbar">
     <div className="pt-navbar-group">
       <Link to="/">
@@ -59,6 +72,27 @@ export const Navbar: React.SFC = () => (
     </div>
     <div className="pt-navbar-group">
       <Username />
+      <Button
+        className="pt-minimal"
+        iconName={isDarkMode ? 'moon' : 'flash'}
+        onClick={toggleDarkMode}
+      />
     </div>
   </nav>
+);
+
+const stateSelector = createSelector<ApplicationState, boolean, StateProps>(
+  isDarkMode,
+  isDarkMode => ({
+    isDarkMode,
+  }),
+);
+
+export const Navbar: React.ComponentClass = withRouter<{}>(
+  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
+    stateSelector,
+    (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+      toggleDarkMode: () => dispatch(SettingsActions.toggleDarkMode()),
+    }),
+  )(NavbarComponent),
 );

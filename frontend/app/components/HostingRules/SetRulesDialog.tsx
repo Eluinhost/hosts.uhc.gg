@@ -19,6 +19,7 @@ type SetRulesDialogDispatchProps = {
 
 type SetRulesDialogStateProps = {
   readonly isOpen: boolean;
+  readonly isDarkMode: boolean;
   readonly currentRules: string;
 };
 
@@ -41,13 +42,13 @@ const SetRulesDialogComponent: React.SFC<
   SetRulesDialogStateProps &
   SetRulesDialogDispatchProps &
   FormProps<SetRulesDialogData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change, isDarkMode }) => (
     <Dialog
       iconName="take-action"
       isOpen={isOpen}
       onClose={close}
       title="Modify Rules"
-      className="pt-dark"
+      className={isDarkMode ? 'pt-dark' : ''}
     >
       <SetRulesDialogHelper current={currentRules} change={change!} />
       <div className="pt-dialog-body">
@@ -110,6 +111,7 @@ export const SetRulesDialog: React.ComponentClass =
     (state: ApplicationState): SetRulesDialogStateProps => ({
       isOpen: state.rules.editing,
       currentRules: state.rules.data ? state.rules.data.content : '',
+      isDarkMode: state.settings.isDarkMode,
     }),
     (dispatch: Dispatch<ApplicationState>): SetRulesDialogDispatchProps => ({
       close: (): void => {

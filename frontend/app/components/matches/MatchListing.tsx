@@ -11,7 +11,7 @@ import { connect, Dispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { MatchesActions } from '../../state/MatchesState';
-import { getUsername, matchesPermissions } from '../../state/Selectors';
+import { getUsername, isDarkMode, matchesPermissions } from '../../state/Selectors';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -30,6 +30,7 @@ type StateProps = {
   readonly showOwnRemoved: boolean;
   readonly username: string | null;
   readonly isHostingAdvisor: boolean;
+  readonly isDarkMode: boolean;
 };
 
 type DispatchProps = {
@@ -80,6 +81,7 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
       onApprovePress={this.openModal(match.id, 'approval')}
       canRemove={!!this.props.onRemove && (this.props.isHostingAdvisor || this.props.username === match.author)}
       canApprove={!!this.props.onApprove && this.props.isHostingAdvisor}
+      isDarkMode={this.props.isDarkMode}
     />
   ), this.props.filteredMatches)
 
@@ -139,11 +141,13 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
           isOpen={this.state.removal !== null}
           confirm={this.confirmRemoval}
           close={this.closeModal('removal')}
+          isDarkMode={this.props.isDarkMode}
         />
         <ApprovalModal
           isOpen={this.state.approval !== null}
           confirm={this.confirmApproval}
           close={this.closeModal('approval')}
+          isDarkMode={this.props.isDarkMode}
         />
       </div>
     );
@@ -182,6 +186,7 @@ const stateSelector = createSelector<
   Match[], // visible matches
   boolean, // filters
   boolean, // filters
+  boolean, // dark mode
   StateProps // OUTPUT
   >(
   matchesPermissions('hosting advisor'),
@@ -189,11 +194,13 @@ const stateSelector = createSelector<
   visibleMatches,
   state => state.matches.hideRemoved,
   state => state.matches.showOwnRemoved,
-  (isHostingAdvisor, username, matches, hideRemoved, showOwnRemoved): StateProps => ({
+  isDarkMode,
+  (isHostingAdvisor, username, matches, hideRemoved, showOwnRemoved, isDarkMode): StateProps => ({
     isHostingAdvisor,
     username,
     hideRemoved,
     showOwnRemoved,
+    isDarkMode,
     filteredMatches: matches,
   }),
 );

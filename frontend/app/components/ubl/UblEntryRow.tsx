@@ -18,6 +18,7 @@ type UblEntryRowProps = {
   readonly onEditFailed: (ban: BanEntry, oldBan: BanEntry) => void;
   readonly accessToken: string | null;
   readonly disabled: boolean;
+  readonly isDarkMode: boolean;
 };
 
 type State = {
@@ -171,7 +172,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         </div>
         <Dialog
           title="Edit Ban"
-          className="pt-dark"
+          className={this.props.isDarkMode ? 'pt-dark' : ''}
           isOpen={this.state.isEditOpen}
           iconName="trash"
           onClose={this.closeEditDialog}
@@ -188,7 +189,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
 
         <Dialog
           title="Delete Ban"
-          className="pt-dark"
+          className={this.props.isDarkMode ? 'pt-dark' : ''}
           isOpen={this.state.isDeleteOpen}
           iconName="trash"
           onClose={this.closeDeleteDialog}

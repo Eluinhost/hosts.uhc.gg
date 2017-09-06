@@ -16,19 +16,20 @@ type RemovePermissionDialogStateProps = {
   readonly isOpen: boolean;
   readonly permission: string;
   readonly username: string;
+  readonly isDarkMode: boolean;
 };
 
 const RemovePermissionDialogComponent: React.SFC<
   RemovePermissionDialogStateProps &
   RemovePermissionDialogDispatchProps &
   FormProps<{}, {}, ApplicationState>> =
-  ({ close, isOpen, permission, username, submitting, invalid, handleSubmit, error }) => (
+  ({ close, isOpen, permission, username, submitting, invalid, handleSubmit, error, isDarkMode }) => (
     <Dialog
       iconName="remove"
       isOpen={isOpen}
       onClose={close}
       title="Remove role"
-      className="pt-dark"
+      className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body remove-permission-body">
         <h5>Are you sure you want to remove '{permission}' from /u/{username}</h5>
@@ -78,6 +79,7 @@ const mapStateToProps = (state: ApplicationState): RemovePermissionDialogStatePr
   username: state.members.dialogs.remove.username,
   permission: state.members.dialogs.remove.permission,
   isOpen: state.members.dialogs.remove.isOpen,
+  isDarkMode: state.settings.isDarkMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): RemovePermissionDialogDispatchProps => ({
