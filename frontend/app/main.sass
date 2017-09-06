@@ -29,10 +29,6 @@ $pt-dark-link-color: $pt-intent-danger
 html, body, #root
   width: 100%
   height: 100%
-  background: $pt-app-background-color
-
-  & > .pt-dark
-    background: $pt-dark-app-background-color
 
 .brand-logo
   width: 32px
@@ -47,6 +43,10 @@ html, body, #root
   justify-content: flex-start
   align-content: center
   min-height: 100%
+  background-color: $pt-app-background-color
+
+  &.pt-dark
+    background: $pt-dark-app-background-color
 
 .app-container
   width: 100%
