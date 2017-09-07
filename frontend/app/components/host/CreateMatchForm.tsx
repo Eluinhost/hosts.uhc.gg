@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { range } from 'ramda';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
+import { SuggestionsField } from '../fields/SuggestionsField';
 import { TeamStyles } from '../../TeamStyles';
 import { Regions } from '../../Regions';
 import { TemplateField } from './TemplateField';
@@ -25,6 +26,7 @@ import { SwitchField } from '../fields/SwitchField';
 import { ReactDatePickerProps } from 'react-datepicker';
 import { RcTimePickerProps } from 'rc-time-picker';
 import { Title } from '../Title';
+import { versions } from '../../versions';
 
 const noop = (): void => undefined;
 
@@ -168,12 +170,14 @@ class CreateMatchFormComponent
             />
           </div>
           <div className="host-form-row">
-            <TextField
+            <SuggestionsField
               name="version"
               label="Game version"
               className="pt-fill"
               required
               disabled={submitting}
+              suggestions={versions}
+              suggestionText="Choose"
             />
             <NumberField
               name="mapSize"

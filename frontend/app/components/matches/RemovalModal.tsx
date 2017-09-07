@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { FormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
-import { TextField } from '../fields/TextField';
+import { SuggestionsField } from '../fields/SuggestionsField';
 import { Spec, validate } from '../../validate';
 
 type RemovalModalData = {
@@ -21,7 +21,7 @@ type RemovalModalStateProps = {
 
 const RemovalModalComponent:
   React.SFC<RemovalModalStateProps & RemovalModalDispatchProps & FormProps<RemovalModalData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen, isDarkMode }) => (
+  ({ handleSubmit, submitting, invalid, close, isOpen, isDarkMode, change }) => (
     <Dialog
       iconName="delete"
       isOpen={isOpen}
@@ -31,7 +31,16 @@ const RemovalModalComponent:
     >
       <div className="pt-dialog-body remove-modal-body">
         <form onSubmit={handleSubmit}>
-          <TextField name="reason" label="Reason" required disabled={submitting} className="pt-fill"/>
+          <div className="pt-control-group pt-fill">
+            <SuggestionsField
+              name="reason"
+              label="Reason"
+              required
+              disabled={submitting}
+              suggestions={['Missing scenario descriptions']}
+              suggestionText="Select a preset"
+            />
+          </div>
           <h5>This cannot be undone once confirmed</h5>
         </form>
       </div>
