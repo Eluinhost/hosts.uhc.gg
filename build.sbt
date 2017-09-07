@@ -6,6 +6,7 @@ organization := Settings.organisation
 version := Settings.version
 scalaVersion := Settings.versions.scala
 scalacOptions ++= Settings.scalacOptions
+licenses := Seq("MIT" → url("https://tldrlegal.com/license/mit-license"))
 resolvers += "Bartek's repo at Bintray" at "https://dl.bintray.com/btomala/maven"
 libraryDependencies ++= Settings.dependencies.value
 
