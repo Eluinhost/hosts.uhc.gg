@@ -308,14 +308,16 @@ class CreateMatchFormComponent
         <fieldset>
           <legend>Game preview</legend>
 
-          <MatchRow
-            match={preview}
-            canRemove={false}
-            canApprove={false}
-            onRemovePress={noop}
-            onApprovePress={noop}
-            isDarkMode={this.props.isDarkMode}
-          />
+          <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+            <MatchRow
+              match={preview}
+              canRemove={false}
+              canApprove={false}
+              onRemovePress={noop}
+              onApprovePress={noop}
+              isDarkMode={this.props.isDarkMode}
+            />
+          </div>
         </fieldset>
 
         <fieldset>
@@ -324,7 +326,9 @@ class CreateMatchFormComponent
             Here you can see all games in the region +- 15 minutes of the chosen time. Please review any conflicts to
             avoid your game being removed
           </p>
-          <PotentialConflicts/>
+          <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+            <PotentialConflicts/>
+          </div>
         </fieldset>
 
         <If condition={!!error}>
