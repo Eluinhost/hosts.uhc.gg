@@ -23,7 +23,6 @@ export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
   readonly username: string;
   readonly accessToken: string;
-  readonly isDarkMode: boolean;
 };
 
 export type HostingPageDispatchProps = {
@@ -168,7 +167,6 @@ class HostingPageComponent extends React.Component<
         changeTemplate={this.props.changeTemplate}
         createMatch={this.handleCreateMatch}
         recheckConflicts={this.props.getConflicts}
-        isDarkMode={this.props.isDarkMode}
       />
     );
   }
@@ -182,7 +180,6 @@ const stateSelector =
     isDarkMode,
     (username, formValues, accessToken, isDarkMode) => ({
       formValues,
-      isDarkMode,
       username: username || 'ERROR NO USERNAME IN STORE',
       accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
     }),

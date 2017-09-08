@@ -1,12 +1,13 @@
 import { Match } from '../Match';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment';
-import { map, evolve, always, prop, Obj } from 'ramda';
+import { map, evolve, always, prop, Obj, contains } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';
 import { HostingRules } from '../state/HostingRulesState';
 import { BanEntry } from '../BanEntry';
 import { BanData } from '../components/ubl/BanDataForm';
+import { isArray } from 'util';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -14,10 +15,13 @@ export class ForbiddenError extends ApiError {}
 export class UnexpectedResponseError extends ApiError {}
 export class BadDataError extends ApiError {}
 
-const verifyStatus = (expected: number) => async (response: Response): Promise<Response> => {
+const verifyStatus = (expected: number[] | number) => async (response: Response): Promise<Response> => {
+  const check: number[] = isArray(expected) ? expected : [expected];
+
+  if (contains(response.status, check))
+    return response;
+
   switch (response.status) {
-    case expected:
-      return response;
     case 400:
       const error = await response.text();
       throw new BadDataError(error);
@@ -44,6 +48,16 @@ export const fetchUpcomingMatches = (): Promise<Match[]> =>
     .then(verifyStatus(200))
     .then(toJson<Match[]>())
     .then(map(convertMatchTimes));
+
+export const getMatch = (id: number): Promise<Match | null> =>
+  fetch(`/api/matches/${id}`)
+    .then(verifyStatus([200, 404]))
+    .then((response) => {
+      if (response.status === 404)
+        return Promise.resolve(null);
+
+      return toJson<Match>()(response).then(convertMatchTimes);
+    });
 
 export const removeMatch = (id: number, reason: string, accessToken: string): Promise<void> =>
   fetch(

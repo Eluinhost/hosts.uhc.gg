@@ -22,6 +22,7 @@ type MatchListingProps = {
   readonly hasMore: boolean;
   readonly onApprove?: (id: number) => Promise<void>;
   readonly onRemove?: (id: number, reason: string) => Promise<void>;
+  readonly onClick?: (id: number) => void;
 };
 
 type StateProps = {
@@ -73,6 +74,12 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
     ? this.props.onApprove(this.state.approval!)
     : Promise.reject('No callback defined')
 
+  onClick = (id: number) => {
+    if (this.props.onClick) {
+      this.props.onClick!(id);
+    }
+  }
+
   renderMatches = (): React.ReactElement<any>[] => map(match => (
     <MatchRow
       match={match}
@@ -81,7 +88,7 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
       onApprovePress={this.openModal(match.id, 'approval')}
       canRemove={!!this.props.onRemove && (this.props.isHostingAdvisor || this.props.username === match.author)}
       canApprove={!!this.props.onApprove && this.props.isHostingAdvisor}
-      isDarkMode={this.props.isDarkMode}
+      onClick={this.onClick}
     />
   ), this.props.filteredMatches)
 

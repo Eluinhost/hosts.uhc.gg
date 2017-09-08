@@ -21,6 +21,7 @@ import { createSelector } from 'reselect';
 import { isDarkMode } from '../state/Selectors';
 import { always } from 'ramda';
 import { GlobalHotkeys } from './GlobalHotkeys';
+import { MatchDetailsPage } from './match-details';
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -59,6 +60,7 @@ const AuthenticatedRoute: React.SFC<AuthenticatedRouteProps> = (props) => {
 const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
   <Switch>
     <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...props}/>
+    <Route path="/m/:id" component={MatchDetailsPage} />
     <Route path="/matches/:host" component={HistoryPage} />
     <Route path="/matches" component={MatchesPage} />
     <Route path="/members" component={MembersPage} />

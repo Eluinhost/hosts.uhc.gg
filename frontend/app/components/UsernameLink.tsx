@@ -11,6 +11,6 @@ const stopProp = (e: React.MouseEvent<any>) => e.stopPropagation();
 
 export const UsernameLink: React.SFC<UsernameLinkProps> = ({ username, className, override }) => (
   <Link to={`/matches/${username}`} className={`username-link ${className || ''}`} onClick={stopProp}>
-    {override || `/u${username}`}
+    {override || `/u/${username}`}
   </Link>
 );

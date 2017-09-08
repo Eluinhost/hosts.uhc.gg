@@ -285,8 +285,49 @@ a.username-link, span.username-link
   border-top: 3px solid $pt-intent-primary
   border-top-left-radius: 0
   border-top-right-radius: 0
-//
-//.ubl-card button.pt-large
-//  min-width: 20px
-//  min-height: 20px
-//  line-height: 20px
+
+.match-details
+  .match-details__header
+    position: relative
+    margin-bottom: 10px
+
+    .match-details__header__floating-tags__top
+      position: relative
+      top: -35px
+      left: -35px
+
+    .match-details__header__content
+      position: relative
+      top: -20px
+      text-align: center
+
+    .match-details__header__floating-tags__bottom
+      position: relative
+      left: -35px
+      top: -5px
+
+    .pt-tag
+      margin-right: 10px
+
+  .match-details__server-address
+    .pt-control-group
+      margin-bottom: 15px
+      input
+        text-align: center
+
+  .match-details__scenarios
+    margin-top: 5px
+
+  .match-details__extra-info
+    text-align: center
+    display: flex
+    flex-direction: row
+    justify-content: space-around
+
+    label
+      flex-grow: 1
+      padding-left: 10px
+      padding-right: 10px
+
+    input
+      text-align: center

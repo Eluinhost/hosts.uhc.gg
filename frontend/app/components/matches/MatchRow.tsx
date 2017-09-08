@@ -2,9 +2,8 @@ import * as React from 'react';
 import { Match } from '../../Match';
 import { TeamStyle } from './TeamStyle';
 import { TagList } from './TagList';
-import { Button, Dialog, Icon, Intent, Tag } from '@blueprintjs/core';
+import { Button, Icon, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
-import { Markdown } from '../Markdown';
 import { If } from '../If';
 import { UsernameLink } from '../UsernameLink';
 
@@ -14,24 +13,14 @@ export type MatchRowProps = {
   readonly onApprovePress: () => void;
   readonly canRemove: boolean;
   readonly canApprove: boolean;
-  readonly isDarkMode: boolean;
-};
-
-export type MatchRowState = {
-  readonly isOpen: boolean;
+  readonly onClick: (id: number) => void;
 };
 
 const ServerTag: React.SFC<{ title: string, text: string }> = ({ title, text }) => (
   <Tag intent={Intent.PRIMARY} className="pt-minimal" title={title}>{text}</Tag>
 );
 
-export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
-  state = {
-    isOpen: false,
-  };
-
-  onClick = (): void => this.setState(prev => ({ isOpen: !prev.isOpen }));
-
+export class MatchRow extends React.PureComponent<MatchRowProps> {
   onApprovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
     this.props.onApprovePress();
@@ -49,8 +38,10 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
     return <span>/u/{m.author}</span>;
   }
 
+  onClick = () => this.props.onClick(this.props.match.id);
+
   render() {
-    const { match, canRemove, isDarkMode } = this.props;
+    const { match, canRemove } = this.props;
 
     return (
       <div
@@ -115,16 +106,6 @@ export class MatchRow extends React.Component<MatchRowProps, MatchRowState> {
         <If condition={match.removed}>
           <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>
         </If>
-        <Dialog
-          isOpen={this.state.isOpen}
-          onClose={this.onClick}
-          title={`${match.author}'s #${match.count}`}
-          className={`match-row-dialog ${isDarkMode ? 'pt-dark' : ''}`}
-        >
-          <div className="pt-dialog-body">
-            <Markdown markdown={match.content} />
-          </div>
-        </Dialog>
 
         {/* Only show actions if the match isn't removed. Removed matches shouldn't be modified */}
         <If condition={!match.removed}>

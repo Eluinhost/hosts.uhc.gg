@@ -23,23 +23,31 @@ type DispatchProps = {
 
 const dontLoadMore = () => Promise.reject('Should not be called');
 
-const MatchesPageComponent: React.SFC<StateProps & DispatchProps> =
-  ({ matches, error, loading, refetch, confirmRemove, confirmApprove }) => (
-    <div>
-      <Title>Upcoming Matches</Title>
-      <h1>Upcoming Matches</h1>
-      <MatchListing
-        matches={matches}
-        error={error}
-        loading={loading}
-        refetch={refetch}
-        onRemove={confirmRemove}
-        onApprove={confirmApprove}
-        hasMore={false}
-        loadMore={dontLoadMore}
-      />
-    </div>
-  );
+class MatchesPageComponent extends React.PureComponent<StateProps & DispatchProps & RouteComponentProps<any>> {
+  onClick = (id: number) => this.props.history.push(`/m/${id}`);
+
+  render() {
+    const { matches, error, loading, refetch, confirmRemove, confirmApprove } = this.props;
+
+    return (
+      <div>
+        <Title>Upcoming Matches</Title>
+        <h1>Upcoming Matches</h1>
+        <MatchListing
+          matches={matches}
+          error={error}
+          loading={loading}
+          refetch={refetch}
+          onRemove={confirmRemove}
+          onApprove={confirmApprove}
+          hasMore={false}
+          loadMore={dontLoadMore}
+          onClick={this.onClick}
+        />
+      </div>
+    );
+  }
+}
 
 const stateSelector = createSelector<ApplicationState, Match[], string | null, boolean, StateProps>(
   state => state.matches.matches,

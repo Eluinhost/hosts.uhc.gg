@@ -62,6 +62,8 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
     setTimeout(() => this.loadNextPage());
   }
 
+  onClick = (id: number) => this.props.history.push(`/m/${id}`);
+
   render() {
     return (
       <div>
@@ -79,6 +81,7 @@ export class HistoryPage extends React.Component<RouteComponentProps<Params>, St
           refetch={this.refetch}
           hasMore={this.state.hasMore}
           loadMore={this.loadNextPage}
+          onClick={this.onClick}
         />
       </div>
     );
