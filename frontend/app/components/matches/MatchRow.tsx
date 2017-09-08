@@ -6,6 +6,7 @@ import { Button, Icon, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { If } from '../If';
 import { UsernameLink } from '../UsernameLink';
+import { Link } from 'react-router-dom';
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -13,7 +14,7 @@ export type MatchRowProps = {
   readonly onApprovePress: () => void;
   readonly canRemove: boolean;
   readonly canApprove: boolean;
-  readonly onClick: (id: number) => void;
+  readonly doNotLink?: boolean;
 };
 
 const ServerTag: React.SFC<{ title: string, text: string }> = ({ title, text }) => (
@@ -38,16 +39,11 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
     return <span>/u/{m.author}</span>;
   }
 
-  onClick = () => this.props.onClick(this.props.match.id);
-
   render() {
-    const { match, canRemove } = this.props;
+    const { match, canRemove, doNotLink } = this.props;
 
-    return (
-      <div
-        className={`pt-card match-row pt-interactive ${match.removed ? 'pt-intent-danger' : ''}`}
-        onClick={this.onClick}
-      >
+    const card = (
+      <div className={`pt-card match-row pt-interactive ${match.removed ? 'pt-intent-danger' : ''}`}>
         <div className="match-top-left-ribbon">
           <Tag
             intent={Intent.SUCCESS}
@@ -141,6 +137,15 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
           </div>
         </If>
       </div>
+    );
+
+    if (doNotLink)
+      return card;
+
+    return (
+      <Link to={`/m/${match.id}`} className="match-row-link">
+        {card}
+      </Link>
     );
   }
 }

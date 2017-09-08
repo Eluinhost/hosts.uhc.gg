@@ -18,7 +18,7 @@ const renderConflict = (m: Match, index: number) => (
     canRemove={false}
     onRemovePress={noop}
     onApprovePress={noop}
-    onClick={noop}
+    doNotLink
   />
 );
 

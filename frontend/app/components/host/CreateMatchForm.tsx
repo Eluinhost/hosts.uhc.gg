@@ -314,7 +314,7 @@ class CreateMatchFormComponent
               canApprove={false}
               onRemovePress={noop}
               onApprovePress={noop}
-              onClick={noop}
+              doNotLink
             />
           </div>
         </fieldset>

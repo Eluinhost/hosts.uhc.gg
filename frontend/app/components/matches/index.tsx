@@ -24,8 +24,6 @@ type DispatchProps = {
 const dontLoadMore = () => Promise.reject('Should not be called');
 
 class MatchesPageComponent extends React.PureComponent<StateProps & DispatchProps & RouteComponentProps<any>> {
-  onClick = (id: number) => this.props.history.push(`/m/${id}`);
-
   render() {
     const { matches, error, loading, refetch, confirmRemove, confirmApprove } = this.props;
 
@@ -42,7 +40,6 @@ class MatchesPageComponent extends React.PureComponent<StateProps & DispatchProp
           onApprove={confirmApprove}
           hasMore={false}
           loadMore={dontLoadMore}
-          onClick={this.onClick}
         />
       </div>
     );
