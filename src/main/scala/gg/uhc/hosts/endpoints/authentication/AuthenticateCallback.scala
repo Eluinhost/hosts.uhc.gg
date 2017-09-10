@@ -9,7 +9,7 @@ import doobie.imports.ConnectionIO
 import gg.uhc.hosts.authentication.Session
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.CustomDirectives
-import gg.uhc.hosts.reddit.{RedditAuthenticationApi, RedditSecuredApi}
+import gg.uhc.hosts.reddit.{WwwRedditApi, OauthRedditApi}
 
 import scala.util.{Failure, Success}
 
@@ -19,8 +19,8 @@ import scala.util.{Failure, Success}
   * as part of the 'state' paramter
   */
 class AuthenticateCallback(
-    authenticationApi: RedditAuthenticationApi,
-    oauthApi: RedditSecuredApi,
+    wwwApi: WwwRedditApi,
+    oauthApi: OauthRedditApi,
     database: Database,
     customDirectives: CustomDirectives) {
   import customDirectives._
@@ -30,7 +30,7 @@ class AuthenticateCallback(
 
   def dbQuery(username: String, ip: InetAddress): ConnectionIO[List[String]] =
     for {
-      _ ← database.updateAuthenticationLog(username, ip)
+      _     ← database.updateAuthenticationLog(username, ip)
       perms ← database.getPermissions(username)
     } yield perms
 
@@ -38,8 +38,8 @@ class AuthenticateCallback(
     requireRemoteIp { ip ⇒
       extractExecutionContext { implicit ec ⇒
         val task = for {
-          accessToken ← authenticationApi.getAccessToken(authCode = code)
-          username ← oauthApi.getUsername(accessToken.access_token)
+          accessToken ← wwwApi.getAccessToken(authCode = code)
+          username    ← oauthApi.getUsername(accessToken.access_token)
           permissions ← database.run(dbQuery(username, ip))
         } yield username → permissions
 
@@ -50,9 +50,9 @@ class AuthenticateCallback(
               complete(StatusCodes.Unauthorized → "Unable to lookup your account details")
             }
           case Success((username, permissions)) ⇒
-            val token = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
+            val token   = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
             val refresh = URLEncoder.encode(Session.RefreshToken(username).toJwt, "utf-8")
-            val path = URLEncoder.encode(state, "utf-8")
+            val path    = URLEncoder.encode(state, "utf-8")
 
             redirect(s"/login?path=$path&token=$token&refresh=$refresh", StatusCodes.TemporaryRedirect)
         }

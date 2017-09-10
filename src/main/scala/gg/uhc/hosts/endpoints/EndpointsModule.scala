@@ -48,6 +48,7 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val usernameSearch: UsernameSearch                   = wire[UsernameSearch]
   lazy val extendUblEntry: EditUblEntry                     = wire[EditUblEntry]
   lazy val deleteUblEntry: DeleteUblEntry                   = wire[DeleteUblEntry]
+  lazy val discussMatch: DiscussMatch                       = wire[DiscussMatch]
 
   lazy val basicCache: BasicCache                   = wire[BasicCache]
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]

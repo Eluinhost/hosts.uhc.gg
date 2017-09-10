@@ -31,7 +31,8 @@ case class MatchRow(
     pvpEnabledAt: Int,
     approvedBy: Option[String],
     hostingName: Option[String],
-    tournament: Boolean) {
+    tournament: Boolean,
+    redditThreadId: Option[String]) {
 
   def renderStyle(): String = TeamStyles.byCode(teams) match {
     case t: SimpleTeamStyle ⇒ t.render()

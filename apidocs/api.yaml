@@ -185,6 +185,9 @@ components:
         tournament:
           type: boolean
           description: Whether the game is a tournament or not, tournaments bypass overhosting rules
+        redditThreadId:
+          type: string
+          description: If a reddit comment thread has been created it's ID will be provided here
       example:
         id: 3
         author: ghowden

@@ -55,7 +55,8 @@ class Queries(logger: LogHandler) {
         pvpEnabledAt,
         approvedBy,
         hostingName,
-        tournament
+        tournament,
+        redditThreadId
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
@@ -90,7 +91,8 @@ class Queries(logger: LogHandler) {
           pvpEnabledAt,
           approvedBy,
           hostingName,
-          tournament
+          tournament,
+          redditThreadId
         FROM matches
       """.asInstanceOf[Fragment]
         ++ Fragments.whereAndOpt(
@@ -128,7 +130,8 @@ class Queries(logger: LogHandler) {
         pvpEnabledAt,
         approvedBy,
         hostingName,
-        tournament
+        tournament,
+        redditThreadId
        FROM matches
        WHERE id = $id
     """.asInstanceOf[Fragment].query[MatchRow]
@@ -417,6 +420,13 @@ class Queries(logger: LogHandler) {
   def deleteUblEntry(id: Long): Update0 =
     sql"""
       DELETE FROM ubl
+      WHERE id = $id
+      """.asInstanceOf[Fragment].update
+
+  def updateRedditThreadId(id: Long, threadId: String): Update0 =
+    sql"""
+      UPDATE matches
+      SET redditThreadId = $threadId
       WHERE id = $id
       """.asInstanceOf[Fragment].update
 }

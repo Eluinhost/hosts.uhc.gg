@@ -60,6 +60,9 @@ class Database(transactor: HikariTransactor[IOLite]) {
   def matchById(id: Long): ConnectionIO[Option[MatchRow]] =
     queries.matchById(id).option
 
+  def updateRedditThreadId(id: Long, redditThreadId: String): ConnectionIO[Boolean] =
+    queries.updateRedditThreadId(id, redditThreadId).run.map(_ > 0)
+
   def insertMatch(m: MatchRow): ConnectionIO[Long] =
     queries.insertMatch(m).withUniqueGeneratedKeys[Long]("id")
 
