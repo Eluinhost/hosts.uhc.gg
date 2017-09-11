@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { TagInput } from '@blueprintjs/labs';
-import { map, toLower, union } from 'ramda';
+import { uniqBy, toLower, union } from 'ramda';
 
 export type TagsFieldProps = BaseFieldProps & {
   readonly label: string;
@@ -11,10 +11,7 @@ export type TagsFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const combineTags = (a: string[], b: string[]) => union(
-  map(toLower, a),
-  map(toLower, b),
-);
+const combineTags = (a: string[], b: string[]) => uniqBy(toLower, union(a, b));
 
 const onAdd = (input?: WrappedFieldInputProps) => (newValues: string[]): void => {
   if (!input)
