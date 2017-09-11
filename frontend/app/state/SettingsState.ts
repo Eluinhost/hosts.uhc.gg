@@ -31,6 +31,6 @@ export const initialValues = async (): Promise<SettingsState> => {
   const saved = await storage.getItem<boolean>(`${storageKey}.isDarkMode`);
 
   return {
-    isDarkMode: saved === null ? true : saved,
+    isDarkMode: saved === null ? false : saved,
   };
 };
