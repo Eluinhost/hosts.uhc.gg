@@ -24,11 +24,13 @@ const ServerTag: React.SFC<{ title: string, text: string }> = ({ title, text }) 
 export class MatchRow extends React.PureComponent<MatchRowProps> {
   onApprovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
+    event.preventDefault();
     this.props.onApprovePress();
   }
 
   onRemovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
+    event.preventDefault();
     this.props.onRemovePress();
   }
 
