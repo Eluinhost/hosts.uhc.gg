@@ -64,11 +64,11 @@ const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, to
         text="Members"
         icon="user"
       />
-      <NavbarButton
-        to="/ubl"
-        text="Ban List"
-        icon="take-action"
-      />
+      {/*<NavbarButton*/}
+        {/*to="/ubl"*/}
+        {/*text="Ban List"*/}
+        {/*icon="take-action"*/}
+      {/*/>*/}
     </div>
     <div className="pt-navbar-group">
       <Username />

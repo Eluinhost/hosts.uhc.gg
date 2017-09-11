@@ -34,13 +34,13 @@ export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
       </div>
     </Link>
 
-    <Link to="/ubl">
-      <div className="pt-card pt-interactive">
-        <h4>Universal Ban List</h4>
-        <p>
-          View the universal ban list
-        </p>
-      </div>
-    </Link>
+    {/*<Link to="/ubl">*/}
+      {/*<div className="pt-card pt-interactive">*/}
+        {/*<h4>Universal Ban List</h4>*/}
+        {/*<p>*/}
+          {/*View the universal ban list*/}
+        {/*</p>*/}
+      {/*</div>*/}
+    {/*</Link>*/}
   </div>
 );
