@@ -107,10 +107,13 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         pass
       case conflicts if !row.tournament && conflicts.forall(_.tournament) ⇒
         pass
-      case _ ⇒
+      case conflicts ⇒
         val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
 
-        reject(ValidationRejection(s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - $hours)"))
+        // Try to find a non-tournament to tell, otherwise just give whatever was returned first
+        val best = conflicts.find(!_.tournament).getOrElse(conflicts.head)
+
+        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours)"))
     }
 
   private[this] def optionalValidate[T](data: Option[T], message: String)(p: (T ⇒ Boolean)) =
