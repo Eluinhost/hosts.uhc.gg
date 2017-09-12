@@ -3,27 +3,8 @@ import * as moment from 'moment';
 import { TeamStyles } from '../../TeamStyles';
 import { CreateMatchData } from '../../api/index';
 import {
-  propEq,
-  find,
-  propSatisfies,
-  curry,
-  CurriedFunction2,
-  all,
-  map,
-  take,
-  pipe,
-  drop,
-  view,
-  lensIndex,
-  ifElse,
-  T,
-  both,
-  flip,
-  gte,
-  lte,
-  cond,
-  complement,
-  always,
+  prop, propEq, all, propSatisfies, curry, CurriedFunction2, find, map, take, pipe, drop, view, lensIndex, ifElse, T,
+  both, flip, gte, lte, cond, complement, always, filter,
 } from 'ramda';
 import { Match } from '../../Match';
 import { isUndefined } from 'util';
@@ -136,15 +117,6 @@ export const validation: Spec<CreateMatchData> = {
 const isSameTime: CurriedFunction2<moment.Moment, moment.Moment, boolean> =
   curry((a: moment.Moment, b: moment.Moment) => a.isSame(b));
 
-const findExactConflict: CurriedFunction2<moment.Moment, Match[], Match | undefined> =
-  curry((a: moment.Moment, b: Match[]) => find<Match>(
-    both(
-      propEq('tournament', false), // can only conflict if not a tournament
-      propSatisfies(isSameTime(a), 'opens'),
-    ),
-    b,
-  ));
-
 export const asyncValidation = async (
   values: CreateMatchData,
   dispatch: Dispatch<ApplicationState>,
@@ -152,16 +124,24 @@ export const asyncValidation = async (
 ): Promise<void> => {
   const conflicts = await props.recheckConflicts(values.region, values.opens);
 
-  const conflict = findExactConflict(values.opens, conflicts);
+  const sameTime = filter<Match>(propSatisfies(isSameTime(values.opens), 'opens'), conflicts);
 
-  // Tournaments bypass overhost protection
-  if (conflict) {
-    // tslint:disable-next-line:max-line-length
-    const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm')})`;
+  // no conflicts
+  if (!sameTime.length)
+    return undefined;
 
-    return Promise.reject({
-      opens: message,
-      region: message,
-    });
-  }
+  // if it's not a tournament it has a special case to be able to overhost tournaments
+  if (!values.tournament && all(prop('tournament'), sameTime))
+    return undefined;
+
+  // conflict should be whatever isn't a tournament, if they're all tournaments just return whatever is first
+  const conflict = find<Match>(propEq('tournament', false), sameTime) || sameTime[0];
+
+  // tslint:disable-next-line:max-line-length
+  const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm')})`;
+
+  return Promise.reject({
+    opens: message,
+    region: message,
+  });
 };
