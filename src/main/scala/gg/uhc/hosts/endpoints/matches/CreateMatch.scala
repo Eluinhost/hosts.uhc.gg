@@ -99,19 +99,14 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
   }
 
   private[this] def overhostCheck(row: MatchRow): Directive0 =
-    // Tournaments cannot conflict
-    if (row.tournament) {
-      pass
-    } else {
-      requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region)) flatMap {
-        // Its valid if there are no conflicts or if they are all tournaments
-        case conflicts if conflicts.forall(_.tournament) ⇒
-          pass
-        case _ ⇒
-          val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
+    requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region)) flatMap {
+      // Its valid if there are no conflicts or if they are all tournaments
+      case conflicts if conflicts.forall(_.tournament) ⇒
+        pass
+      case _ ⇒
+        val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
 
-          reject(ValidationRejection(s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - $hours)"))
-      }
+        reject(ValidationRejection(s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - $hours)"))
     }
 
   /**

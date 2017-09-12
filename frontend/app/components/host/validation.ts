@@ -140,7 +140,7 @@ export const asyncValidation = async (
   const conflict = findExactConflict(values.opens, conflicts);
 
   // Tournaments bypass overhost protection
-  if (!values.tournament && conflict) {
+  if (conflict) {
     // tslint:disable-next-line:max-line-length
     const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm')})`;
 
