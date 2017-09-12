@@ -22,6 +22,10 @@ import { isDarkMode } from '../state/Selectors';
 import { always } from 'ramda';
 import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details';
+import * as reactGa from 'react-ga';
+import { Location } from 'history';
+
+reactGa.initialize('UA-71696797-2');
 
 const NotFoundPage: React.SFC = () => (
   <NonIdealState
@@ -57,22 +61,38 @@ const AuthenticatedRoute: React.SFC<AuthenticatedRouteProps> = (props) => {
   return <Route {...routeProps} component={component}/>;
 };
 
-const RoutesComponent : React.SFC<RouteComponentProps<any>> = props => (
-  <Switch>
-    <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...props}/>
-    <Route path="/m/:id" component={MatchDetailsPage} />
-    <Route path="/matches/:host" component={HistoryPage} />
-    <Route path="/matches" component={MatchesPage} />
-    <Route path="/members" component={MembersPage} />
-    <Route path="/login" component={LoginPage} />
-    <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...props} />
-    {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...props} />*/}
-    {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
-    {/*<Route path="/ubl" component={CurrentUblPage} />*/}
-    <Route path="/" exact component={HomePage}/>
-    <Route component={NotFoundPage} />
-  </Switch>
-);
+class RoutesComponent extends React.Component<RouteComponentProps<any>> {
+  componentDidMount() {
+    const send = (location: Location) => {
+      const path = location.pathname + location.search;
+
+      reactGa.set({ page: path });
+      reactGa.pageview(path);
+    };
+
+    this.props.history.listen(send);
+    send(this.props.location);
+  }
+
+  public render() {
+    return (
+      <Switch>
+        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props}/>
+        <Route path="/m/:id" component={MatchDetailsPage} />
+        <Route path="/matches/:host" component={HistoryPage} />
+        <Route path="/matches" component={MatchesPage} />
+        <Route path="/members" component={MembersPage} />
+        <Route path="/login" component={LoginPage} />
+        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
+        {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...props} />*/}
+        {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
+        {/*<Route path="/ubl" component={CurrentUblPage} />*/}
+        <Route path="/" exact component={HomePage}/>
+        <Route component={NotFoundPage} />
+      </Switch>
+    );
+  }
+}
 
 const Routes: React.ComponentClass<{}> = withRouter<{}>(RoutesComponent);
 
