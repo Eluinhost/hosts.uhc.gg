@@ -60,9 +60,11 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
           <Tag intent={Intent.SUCCESS} className="pt-large" title="Location">
             {match.location}
           </Tag>
-          <Tag intent={Intent.SUCCESS} className="pt-large" title="Unique ID">
-            {match.id}
-          </Tag>
+          <If condition={match.id !== 0}>
+            <Tag intent={Intent.SUCCESS} className="pt-large" title="Unique ID">
+              {match.id}
+            </Tag>
+          </If>
         </div>
         <div className="match-top-right-ribbon">
           <Tag intent={Intent.PRIMARY} className="pt-large">
