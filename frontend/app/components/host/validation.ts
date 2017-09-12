@@ -45,9 +45,14 @@ export const validation: Spec<CreateMatchData> = {
 
     return undefined;
   },
-  ip: (ip) => {
-    if (!ip)
-      return 'A direct IP address is required';
+  ip: (ip, obj) => {
+    if (!ip) {
+      if (!obj.address) {
+        return 'IP must be provided if address is not provided';
+      } else {
+        return undefined; // allowed to be not provided when address is
+      }
+    }
 
     const matches: RegExpMatchArray | null =
       ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
@@ -110,7 +115,17 @@ export const validation: Spec<CreateMatchData> = {
   length: length => length && length >= 30 ? undefined : 'Must be at least 30 minutes',
   mapSize: mapSize => mapSize && mapSize > 0 ? undefined : 'Must be positive',
   pvpEnabledAt: pvpEnabledAt => pvpEnabledAt && pvpEnabledAt >= 0 ? undefined : 'Must be positive',
-  address: always(undefined),
+  address: (address, obj) => {
+    if (!address) {
+      if (!obj.ip) {
+        return 'Address must be provided if an IP is not provided';
+      } else {
+        return undefined; // allowed to be not provided when ip is
+      }
+    }
+
+    return address.length >= 5 ? undefined : 'Address must be at least 5 characters';
+  },
   tags: always(undefined),
   size: always(undefined),
   customStyle: always(undefined),

@@ -7,7 +7,7 @@ case class MatchRow(
     author: String,
     opens: Instant,
     address: Option[String],
-    ip: String,
+    ip: Option[String],
     scenarios: List[String],
     tags: List[String],
     teams: String,

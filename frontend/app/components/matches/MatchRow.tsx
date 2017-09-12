@@ -91,7 +91,9 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
             <TagList intent={Intent.DANGER} title="Scenario" items={match.scenarios} />
           </div>
           <div className="server-tags">
-            <ServerTag title="Server IP" text={match.ip}/>
+            <If condition={!!match.ip}>
+              <ServerTag title="Server IP" text={match.ip!}/>
+            </If>
             <If condition={!!match.address}>
               <ServerTag title="Server Address" text={match.address!}/>
             </If>

@@ -245,7 +245,7 @@ class CreateMatchFormComponent
               className="pt-fill"
               disabled={submitting}
               label="Server IP Address"
-              required
+              required={false}
             />
             <TextField
               name="address"

@@ -75,7 +75,9 @@ export const MatchDetailsRenderer: React.SFC<Props> =
         </div>
       </div>
       <div className="match-details__server-address">
-        <ClipboardControlGroup value={ip} />
+        <If condition={!!ip}>
+          <ClipboardControlGroup value={ip!} />
+        </If>
 
         <If condition={!!address}>
           <ClipboardControlGroup value={address!} />

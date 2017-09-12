@@ -21,7 +21,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
   case class CreateMatchPayload(
       opens: Instant,
       address: Option[String],
-      ip: String,
+      ip: Option[String],
       scenarios: List[String],
       tags: List[String],
       teams: String,
@@ -109,6 +109,37 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         reject(ValidationRejection(s"Conflicts with /u/${row.author}'s #${row.count} (${row.region} - $hours)"))
     }
 
+  private[this] def optionalValidate[T](data: Option[T], message: String)(p: (T ⇒ Boolean)) =
+    data
+      .map { item ⇒
+        validate(p(item), message)
+      }
+      .getOrElse(pass)
+
+  private[this] def ipChecks(row: MatchRow): Directive0 = {
+    // treat empty strings as non-provided
+    val valIp = row.ip.filter(_.nonEmpty)
+    val valAddress = row.address.filter(_.nonEmpty)
+
+    if (valIp.isEmpty && valAddress.isEmpty)
+      reject(ValidationRejection("Either an IP or an address must be provided (or both)"))
+
+    val ipCheck = optionalValidate(valIp, "Invalid IP supplied, expected format 111.222.333.444[:55555]") { ip ⇒
+      """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(ip).exists { m ⇒
+        val octets = (1 to 4).map(m.group(_).toInt).forall(i ⇒ i >= 0 && i <= 255)
+        val port   = Option(m.group(5)).map(_.toInt)
+
+        octets && (port.isEmpty || port.exists(p => p <= 65535 && p >= 1))
+      }
+    }
+
+    val addressCheck = optionalValidate(valAddress.map(_.trim), "Address must be at least 5 chars") { address ⇒
+      address.length >= 5
+    }
+
+    ipCheck & addressCheck
+  }
+
   /**
     * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
     * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
@@ -123,15 +154,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         row.opens.atOffset(ZoneOffset.UTC).getMinute % 15 == 0,
         "Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour (UTC)"
       ) &
-      validate(
-        """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(row.ip).exists { m ⇒
-          val octets = (1 to 4).map(m.group).map(_.toInt).forall(i ⇒ i >= 0 && i <= 255)
-          val port   = Option(m.group(5)).map(_.toInt)
-
-          octets && port.isEmpty || port.exists(p => p <= 65535 && p >= 1)
-        },
-        "Invalid IP address supplied"
-      ) &
+      ipChecks(row) &
       validate(row.location.nonEmpty, "Must supply a location") &
       validate(row.version.nonEmpty, "Must supply a version") &
       validate(row.slots >= 2, "Slots must be at least 2") &
