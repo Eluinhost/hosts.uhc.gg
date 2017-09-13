@@ -13,6 +13,9 @@ class FrontendRoute {
       path("logo.png") {
         getFromResource("logo.png")
       },
+      path("outdatedbrowser.html") {
+        getFromResource("outdatedbrowser.html")
+      },
       getFromResource("frontend.html")
     )
 

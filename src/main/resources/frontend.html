@@ -2,11 +2,38 @@
 <html>
     <head>
         <link rel="stylesheet" href="/assets/main.bundle.css" />
-        <link rel="shortcut icon" href="/favicon.png">
-        <link href="https://fonts.googleapis.com/css?family=Share+Tech" rel="stylesheet">
+        <link rel="shortcut icon" href="/favicon.png" />
+        <link href="https://fonts.googleapis.com/css?family=Share+Tech" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css" />
     </head>
     <body>
+        <div id="outdated"></div>
         <script src="/assets/vendor.bundle.js"></script>
         <script src="/assets/main.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+        <script>
+          function addLoadEvent(func) {
+            var oldonload = window.onload;
+            if (typeof window.onload != 'function') {
+              window.onload = func;
+            } else {
+              window.onload = function() {
+                if (oldonload) {
+                  oldonload();
+                }
+                func();
+              }
+            }
+          }
+          //call plugin function after DOM ready
+          addLoadEvent(function(){
+            outdatedBrowser({
+              bgColor: '#f25648',
+              color: '#ffffff',
+              lowerThan: 'borderImage',
+              languagePath: '/outdatedbrowser.html'
+            })
+          });
+        </script>
     </body>
 </html>
