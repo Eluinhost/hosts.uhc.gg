@@ -1,6 +1,9 @@
 package gg.uhc.hosts.database
 
-import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.{Instant, ZoneOffset}
+
+import gg.uhc.hosts.{CustomTeamStyle, SimpleTeamStyle, SizedTeamStyle, TeamStyles}
 
 case class MatchRow(
     id: Long,
@@ -28,4 +31,15 @@ case class MatchRow(
     pvpEnabledAt: Int,
     approvedBy: Option[String],
     hostingName: Option[String],
-    tournament: Boolean)
+    tournament: Boolean) {
+
+  def renderStyle(): String = TeamStyles.byCode(teams) match {
+    case t: SimpleTeamStyle ⇒ t.render()
+    case t: SizedTeamStyle  ⇒ t.render(size.get)
+    case CustomTeamStyle    ⇒ CustomTeamStyle.render(customStyle.get)
+  }
+
+  def legacyTitle() =
+    s"${opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("MMM dd HH:mm"))} UTC $region - ${hostingName.getOrElse(
+      author)}'s #$count - ${renderStyle()} - ${scenarios.mkString(", ")} ${tags.map(t ⇒ s"[$t]").mkString("")}"
+}

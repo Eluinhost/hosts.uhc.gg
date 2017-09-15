@@ -26,6 +26,7 @@ object Settings {
     val jwtCirce      = "0.14.0"
     val macwire       = "2.3.0"
     val caffeine      = "2.1.0"
+    val akkaHttpTwirl = "1.2.0"
   }
 
   val dependencies = Def.setting(
@@ -45,7 +46,8 @@ object Settings {
       "com.pauldijou"            %% "jwt-circe"       % versions.jwtCirce,
       "com.softwaremill.macwire" %% "macros"          % versions.macwire % Provided,
       "com.softwaremill.macwire" %% "util"            % versions.macwire,
-      "com.github.blemale"       %% "scaffeine"       % versions.caffeine
+      "com.github.blemale"       %% "scaffeine"       % versions.caffeine,
+      "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl
     )
   )
 }

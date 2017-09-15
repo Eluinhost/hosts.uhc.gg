@@ -39,19 +39,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       hostingName: Option[String],
       tournament: Boolean)
 
-  // map of style -> requires size
-  private[this] val teamStyles: Map[String, Boolean] = Map(
-    "ffa"      → false,
-    "chosen"   → true,
-    "random"   → true,
-    "captains" → true,
-    "picked"   → true,
-    "market"   → true,
-    "mystery"  → true,
-    "rvb"      → false,
-    "custom"   → false
-  )
-
   // allowed regions
   private[this] val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
 
@@ -69,7 +56,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       opens = payload.opens.atOffset(ZoneOffset.UTC).withSecond(0).withNano(0).toInstant,
       region = payload.region,
       teams = payload.teams,
-      size = if (teamStyles.getOrElse(payload.teams, false)) payload.size else None, // remove size if not required
+      size = if (TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle])) payload.size else None, // remove size if not required
       location = payload.location,
       version = payload.version,
       slots = payload.slots,
@@ -125,7 +112,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   private[this] def ipChecks(row: MatchRow): Directive0 = {
     // treat empty strings as non-provided
-    val valIp = row.ip.filter(_.nonEmpty)
+    val valIp      = row.ip.filter(_.nonEmpty)
     val valAddress = row.address.filter(_.nonEmpty)
 
     if (valIp.isEmpty && valAddress.isEmpty)
@@ -171,12 +158,13 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(row.scenarios.nonEmpty, "Must supply at least 1 scenario") &
       validate(row.scenarios.length <= 25, "Must supply at most 25 scenarios") &
       validate(row.tags.length <= 5, "Must supply at most 5 tags") &
-      validate(teamStyles.contains(row.teams), "Unknown team style") &
+      validate(TeamStyles.byCode.contains(row.teams), "Unknown team style") &
       validate(row.content.nonEmpty, "Must provide some post content") &
       validate(regions.contains(row.region), "Invalid region supplied") &
       validate(
         // either doesn't require size or size is within range
-        !teamStyles(row.teams) || row.size.exists(size ⇒ size >= 1 && size <= 32767),
+        !TeamStyles.byCode(row.teams).isInstanceOf[SizedTeamStyle]
+          || row.size.exists(size ⇒ size >= 1 && size <= 32767),
         "Invalid value for size"
       ) &
       validate(
