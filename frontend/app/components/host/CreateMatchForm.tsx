@@ -190,7 +190,7 @@ class CreateMatchFormComponent
           <div className="host-form-row">
             <NumberField
               name="length"
-              label="Game length (minutes)"
+              label="Meetup @ (minutes)"
               className="pt-fill"
               min={30}
               required

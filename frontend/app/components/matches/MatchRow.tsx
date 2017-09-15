@@ -102,7 +102,7 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
             <ServerTag title="slots" text={`${match.slots} Slots`} />
             <ServerTag title="Map Size" text={`${match.mapSize}x${match.mapSize}`} />
             <ServerTag title="Version" text={match.version} />
-            <ServerTag title="PVP Enabled/Match length" text={`${match.pvpEnabledAt}m / ${match.length}m`}/>
+            <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`}/>
           </div>
         </div>
         <If condition={match.removed}>

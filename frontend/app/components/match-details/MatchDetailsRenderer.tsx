@@ -94,7 +94,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
         </label>
 
         <label className="pt-label">
-          Length
+          Meetup @
           <input className="pt-input pt-fill" type="text" value={`${length} minutes`} readOnly />
         </label>
 
