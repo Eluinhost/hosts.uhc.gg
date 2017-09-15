@@ -10,12 +10,16 @@ import { ClipboardControlGroup } from './ClipboardControlGroup';
 import { Markdown } from '../Markdown';
 
 const renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => addIndex(map)(
-  (scenario, index) => <Tag intent={Intent.DANGER} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
+  (scenario, index) => <Tag intent={Intent.NONE} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
   scenarios,
 );
 
 const renderTags = (tags: string[]): React.ReactElement<any>[] => addIndex(map)(
-  (tag, index) => <Tag intent={Intent.WARNING} className="pt-large" title="Tag" key={index}>{tag}</Tag>,
+  (tag, index) => (
+    <Tag intent={Intent.PRIMARY} className="pt-large" title="Tag" key={index}>
+      <Icon iconName="tag"/> {tag}
+    </Tag>
+  ),
   tags,
 );
 
@@ -61,7 +65,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
 
         <div className="match-details__header__floating-tags__bottom">
           <div>
-            <Tag intent={Intent.PRIMARY} title="Team style" className="pt-large">
+            <Tag intent={Intent.DANGER} title="Team style" className="pt-large">
               <Icon iconName="people"/> <TeamStyle size={size} style={teams} custom={customStyle}/>
             </Tag>
             <Tag intent={Intent.PRIMARY} title="Version" className="pt-large">

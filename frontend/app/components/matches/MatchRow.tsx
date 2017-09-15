@@ -67,9 +67,7 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
           </If>
         </div>
         <div className="match-top-right-ribbon">
-          <Tag intent={Intent.PRIMARY} className="pt-large">
-            <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
-          </Tag>
+          <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} iconName="tag" />
           <If condition={match.tournament}>
             <Tag intent={Intent.PRIMARY} className="pt-large">
               <Icon iconName="timeline-bar-chart"/> Tournament
@@ -89,8 +87,10 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
             <span> #{match.count}</span>
           </h4>
           <div className="match-tags">
-            <TagList intent={Intent.WARNING} title="Tag" items={match.tags} />
-            <TagList intent={Intent.DANGER} title="Scenario" items={match.scenarios} />
+            <Tag intent={Intent.DANGER} className="pt-large">
+              <Icon iconName="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
+            </Tag>
+            <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
           </div>
           <div className="server-tags">
             <If condition={!!match.ip}>
