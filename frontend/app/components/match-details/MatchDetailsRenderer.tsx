@@ -8,6 +8,7 @@ import { TeamStyle } from '../matches/TeamStyle';
 import { If } from '../If';
 import { ClipboardControlGroup } from './ClipboardControlGroup';
 import { Markdown } from '../Markdown';
+import {FromNow} from "../FromNow";
 
 const renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => addIndex(map)(
   (scenario, index) => <Tag intent={Intent.NONE} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
@@ -40,7 +41,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
             className="pt-large"
             title="Opens"
           >
-            <Icon iconName="time" /> {opens.fromNow()}
+            <Icon iconName="time" /> <FromNow time={opens} updateInterval={10000} />
           </Tag>
           <Tag intent={Intent.SUCCESS} title="Region - Location" className="pt-large">
             <Icon iconName="globe" /> {region} - {location}
