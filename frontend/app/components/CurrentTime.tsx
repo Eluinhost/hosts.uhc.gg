@@ -44,13 +44,13 @@ class CurrentTimeComponent extends React.Component<Props, State> {
       o *= -1;
     }
 
-    if (offset > 3600) {
-      output += `${Math.floor(offset / 3600)}h `;
+    if (o > 3600) {
+      output += `${Math.floor(o / 3600)}h `;
       o %= 3600;
     }
 
-    if (offset > 60) {
-      output += `${Math.floor(offset / 60)}m `;
+    if (o > 60) {
+      output += `${Math.floor(o / 60)}m `;
       o %= 60;
     }
 
