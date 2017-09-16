@@ -308,3 +308,10 @@ export const editBan = (id: number, data: BanData, accessToken: string): Promise
       body: JSON.stringify(data),
     },
   ).then(verifyStatus(200)).then(always(undefined));
+
+export const getServerTime = (): Promise<moment.Moment> =>
+  fetch(`/api/sync`)
+    .then(verifyStatus(200))
+    .then(toJson<string>())
+    .then(convertUnixToMoment);
+

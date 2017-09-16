@@ -12,6 +12,7 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { MatchesActions } from '../../state/MatchesState';
 import { getUsername, isDarkMode, matchesPermissions } from '../../state/Selectors';
+import { CurrentTime } from '../CurrentTime';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -87,6 +88,10 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
   render() {
     return (
       <div>
+        <div>
+          <h3>Current Time UTC: <CurrentTime /></h3>
+        </div>
+
         <div>
           <Switch
             checked={this.props.hideRemoved}
