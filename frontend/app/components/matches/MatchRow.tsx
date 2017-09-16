@@ -7,6 +7,8 @@ import { RemovedReason } from './RemovedReason';
 import { If } from '../If';
 import { UsernameLink } from '../UsernameLink';
 import { Link } from 'react-router-dom';
+import { FromNow } from '../FromNow';
+import { HoverSwap } from '../HoverSwap';
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -54,11 +56,18 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
           >
             {match.opens.format('MMM DD HH:mm z')}
           </Tag>
-          <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region">
-            {match.region}
+          <Tag
+            intent={Intent.SUCCESS}
+            className="pt-large match-opens"
+            title="Opens"
+          >
+            <FromNow time={match.opens} updateInterval={10000} />
           </Tag>
-          <Tag intent={Intent.SUCCESS} className="pt-large" title="Location">
-            {match.location}
+          <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region / Location">
+            <HoverSwap>
+              <span>{match.region}</span>
+              <span>{match.location}</span>
+            </HoverSwap>
           </Tag>
           <If condition={match.id !== 0}>
             <Tag intent={Intent.SUCCESS} className="pt-large" title="Unique ID">
