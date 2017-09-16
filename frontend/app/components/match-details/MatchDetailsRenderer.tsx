@@ -8,7 +8,7 @@ import { TeamStyle } from '../matches/TeamStyle';
 import { If } from '../If';
 import { ClipboardControlGroup } from './ClipboardControlGroup';
 import { Markdown } from '../Markdown';
-import {FromNow} from "../FromNow";
+import { FromNow } from '../FromNow';
 
 const renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => addIndex(map)(
   (scenario, index) => <Tag intent={Intent.NONE} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
