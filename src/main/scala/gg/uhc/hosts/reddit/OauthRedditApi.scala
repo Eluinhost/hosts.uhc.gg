@@ -36,8 +36,6 @@ class OauthRedditApi(discussionSubreddit: String, queueSize: Int)
   def createDiscussionThread(m: MatchRow, baseUrl: String, accessToken: String): Future[String] = {
     // TODO set flairs?
 
-    val opens = m.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd MMM YYYY HH:mm"))
-
     val request = HttpRequest(
       uri = s"/api/submit",
       method = HttpMethods.POST,
@@ -49,7 +47,7 @@ class OauthRedditApi(discussionSubreddit: String, queueSize: Int)
         "sendreplies" → "false",
         "sr"          → discussionSubreddit,
         "text"        → s"[More information can be found here]($baseUrl/m/${m.id})",
-        "title"       → s"${m.hostingName.getOrElse(m.author)}'s #${m.count} @ $opens UTC Discussion"
+        "title"       → s"${m.legacyTitle()}"
       ).toEntity
     )
 
