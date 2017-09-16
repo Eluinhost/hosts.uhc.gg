@@ -4,31 +4,49 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
 import { always } from 'ramda';
+import { Icon, Intent, Tag, ITagProps } from '@blueprintjs/core';
 
 type Props = {
   readonly time: moment.Moment;
   readonly updateInterval: number;
   readonly hideSuffix?: boolean;
-};
+} & ITagProps;
 
 type State = {
   readonly text: string;
+  readonly intent: Intent;
 };
 
 type StateProps = {
   readonly offset: number;
 };
 
-class FromNowComponent extends React.Component<Props & StateProps, State> {
+class TimeFromNowComponent extends React.Component<Props & StateProps, State> {
   state = {
     text: '',
+    intent: Intent.SUCCESS,
   };
 
   private timerId: number;
 
   private update = (): void => {
+    const now = moment.utc().add(this.props.offset, 'milliseconds');
+    const text = this.props.time.from(now, this.props.hideSuffix);
+
+    let intent = Intent.SUCCESS;
+    const diff = this.props.time.diff(now, 'minutes');
+
+    if (diff < 0) {
+      intent = Intent.WARNING;
+    }
+
+    if (diff < -30) {
+      intent = Intent.DANGER;
+    }
+
     this.setState({
-      text: this.props.time.from(moment.utc().add(this.props.offset, 'milliseconds'), this.props.hideSuffix),
+      text,
+      intent,
     });
   }
 
@@ -42,7 +60,11 @@ class FromNowComponent extends React.Component<Props & StateProps, State> {
   }
 
   public render() {
-    return <span>{this.state.text}</span>;
+    return (
+      <Tag {...this.props} intent={this.state.intent}>
+        <Icon iconName="time" /> {this.state.text}
+      </Tag>
+    );
   }
 }
 
@@ -53,7 +75,7 @@ const stateSelector = createSelector<ApplicationState, number, StateProps>(
   }),
 );
 
-export const FromNow: React.ComponentClass<Props> = connect<StateProps, {}, Props>(
+export const TimeFromNowTag: React.ComponentClass<Props> = connect<StateProps, {}, Props>(
   stateSelector,
   always({}),
-)(FromNowComponent);
+)(TimeFromNowComponent);

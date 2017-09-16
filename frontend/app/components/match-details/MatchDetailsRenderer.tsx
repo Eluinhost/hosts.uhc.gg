@@ -1,14 +1,13 @@
 import { Match } from '../../Match';
 import * as React from 'react';
 import { Icon, Intent, Tag } from '@blueprintjs/core';
-import * as moment from 'moment';
 import { addIndex, map } from 'ramda';
 import { UsernameLink } from '../UsernameLink';
 import { TeamStyle } from '../matches/TeamStyle';
 import { If } from '../If';
 import { ClipboardControlGroup } from './ClipboardControlGroup';
 import { Markdown } from '../Markdown';
-import { FromNow } from '../FromNow';
+import { TimeFromNowTag } from '../TimeFromNowTag';
 
 const renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => addIndex(map)(
   (scenario, index) => <Tag intent={Intent.NONE} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
@@ -36,13 +35,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
     <div className="pt-card match-details">
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
-          <Tag
-            intent={opens.isBefore(moment.utc()) ? Intent.DANGER : Intent.SUCCESS}
-            className="pt-large"
-            title="Opens"
-          >
-            <Icon iconName="time" /> <FromNow time={opens} updateInterval={10000} />
-          </Tag>
+          <TimeFromNowTag time={opens} updateInterval={10000} className="pt-large" title="Opens"/>
           <Tag intent={Intent.SUCCESS} title="Region - Location" className="pt-large">
             <Icon iconName="globe" /> {region} - {location}
           </Tag>
