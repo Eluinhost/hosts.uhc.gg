@@ -19,7 +19,6 @@ export class FromNow extends React.Component<Props, State> {
   private timerId: number;
 
   private update = (): void => {
-    console.log('triggered');
     this.setState({
       text: this.props.time.fromNow(this.props.hideSuffix),
     });
