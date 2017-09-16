@@ -56,7 +56,7 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
           >
             {match.opens.format('MMM DD HH:mm z')}
           </Tag>
-          <TimeFromNowTag time={match.opens} updateInterval={10000} className="pt-large match-opens" title="Opens"/>
+          <TimeFromNowTag time={match.opens} className="pt-large match-opens" title="Opens"/>
           <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region / Location">
             <HoverSwap>
               <span>{match.region}</span>

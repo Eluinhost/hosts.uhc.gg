@@ -35,7 +35,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
     <div className="pt-card match-details">
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
-          <TimeFromNowTag time={opens} updateInterval={10000} className="pt-large" title="Opens"/>
+          <TimeFromNowTag time={opens} className="pt-large" title="Opens"/>
           <Tag intent={Intent.SUCCESS} title="Region - Location" className="pt-large">
             <Icon iconName="globe" /> {region} - {location}
           </Tag>

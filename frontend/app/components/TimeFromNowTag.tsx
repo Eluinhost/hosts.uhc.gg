@@ -8,7 +8,6 @@ import { Icon, Intent, Tag, ITagProps } from '@blueprintjs/core';
 
 type Props = {
   readonly time: moment.Moment;
-  readonly updateInterval: number;
   readonly hideSuffix?: boolean;
 } & ITagProps;
 
@@ -51,7 +50,7 @@ class TimeFromNowComponent extends React.Component<Props & StateProps, State> {
   }
 
   public componentDidMount(): void {
-    this.timerId = window.setInterval(this.update, this.props.updateInterval);
+    this.timerId = window.setInterval(this.update, 2000);
     this.update();
   }
 
