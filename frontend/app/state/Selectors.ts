@@ -12,6 +12,16 @@ export const isDarkMode = createSelector<ApplicationState, boolean, boolean>(
   identity,
 );
 
+export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
+  state => state.settings.is12h,
+  is12h => is12h ? 'hh:mm A' : 'HH:mm',
+);
+
+export const getOpensDateTimeFormat = createSelector<ApplicationState, string, string>(
+  getTimeFormat,
+  timeFormat => `MMM Do ${timeFormat} z`,
+);
+
 export const getAccessToken = createSelector<ApplicationState, string | null, string | null>(
   state => state.authentication.accessToken,
   identity,

@@ -9,6 +9,7 @@ import { UsernameLink } from '../UsernameLink';
 import { Link } from 'react-router-dom';
 import { TimeFromNowTag } from '../TimeFromNowTag';
 import { HoverSwap } from '../HoverSwap';
+import { MatchOpensTag } from '../MatchOpensTag';
 
 export type MatchRowProps = {
   readonly match: Match;
@@ -49,13 +50,7 @@ export class MatchRow extends React.PureComponent<MatchRowProps> {
     const card = (
       <div className={`pt-card match-row pt-interactive ${match.removed ? 'pt-intent-danger' : ''}`}>
         <div className="match-top-left-ribbon">
-          <Tag
-            intent={Intent.SUCCESS}
-            className="pt-large match-opens"
-            title={`Created @ ${match.created.format('MMM DD HH:mm z')}`}
-          >
-            {match.opens.format('MMM DD HH:mm z')}
-          </Tag>
+          <MatchOpensTag opens={match.opens} created={match.created} />
           <TimeFromNowTag time={match.opens} className="pt-large match-opens" title="Opens"/>
           <Tag intent={Intent.SUCCESS} className="pt-large match-region" title="Region / Location">
             <HoverSwap>

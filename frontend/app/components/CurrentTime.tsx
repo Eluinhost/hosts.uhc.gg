@@ -4,16 +4,19 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
 import { TimeSyncState } from '../state/TimeSyncState';
-import { identity, always, memoize } from 'ramda';
+import { always, memoize } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 
 type State = {
   readonly text: string;
 };
 
-type Props = TimeSyncState;
+type StateProps = {
+  readonly timeSync: TimeSyncState;
+  readonly timeFormat: string;
+};
 
-class CurrentTimeComponent extends React.Component<Props, State> {
+class CurrentTimeComponent extends React.Component<StateProps, State> {
   state = {
     text: '',
   };
@@ -21,7 +24,7 @@ class CurrentTimeComponent extends React.Component<Props, State> {
   private timerId: number;
 
   private update = (): void => this.setState({
-    text: moment.utc().add(this.props.offset, 'milliseconds').format('HH:mm:ss'),
+    text: moment.utc().add(this.props.timeSync.offset, 'milliseconds').format(this.props.timeFormat),
   })
 
   public componentWillMount(): void {
@@ -62,25 +65,31 @@ class CurrentTimeComponent extends React.Component<Props, State> {
   });
 
   private tooltipText = (): string =>
-    this.props.synced
-      ? `Synced with the server with ${this.formatOffset(this.props.offset / 1000)} offset`
+    this.props.timeSync.synced
+      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset / 1000)} offset`
       : 'Not synced with the server'
 
   render() {
     return (
       <Tooltip content={this.tooltipText()} position={Position.BOTTOM}>
-        <span className={`current-time ${this.props.synced ? '' : 'current-time-unsynced'}`}>{this.state.text}</span>
+        <span className={`current-time ${this.props.timeSync.synced ? '' : 'current-time-unsynced'}`}>
+          {this.state.text}
+        </span>
       </Tooltip>
     );
   }
 }
 
-const stateSelector = createSelector<ApplicationState, Props, Props>(
+const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, StateProps>(
   state => state.timeSync,
-  identity,
+  state => state.settings.is12h,
+  (timeSync, is12h) => ({
+    timeSync,
+    timeFormat: is12h ? 'hh:mm:ss A' : 'HH:mm:ss',
+  }),
 );
 
-export const CurrentTime: React.ComponentClass = connect<Props, {}, {}>(
+export const CurrentTime: React.ComponentClass = connect<StateProps, {}, {}>(
   stateSelector,
   always({}),
 )(CurrentTimeComponent);
