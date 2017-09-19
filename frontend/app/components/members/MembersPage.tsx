@@ -11,6 +11,7 @@ import { RemovePermissionDialog } from './RemovePermissionDialog';
 import { PermissionsMap } from '../../PermissionsMap';
 import { If } from '../If';
 import { Title } from '../Title';
+import { MatchOpens } from '../time/MatchOpens';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
@@ -136,7 +137,7 @@ export class MembersPage
         intent={entry.added ? Intent.SUCCESS : Intent.DANGER}
         title={`Actioned by ${entry.modifier}`}
       >
-        <span className="pt-monospace-text">{entry.at.format('MMM Do HH:mm')}</span>
+        <span className="pt-monospace-text"><MatchOpens time={entry.at}/></span>
         <span className={`pt-icon pt-icon-${entry.added ? 'add' : 'remove'}`}/>
         <span>{entry.permission}</span>
         <span className="moderation-log-entry-affected">/u/{entry.username}</span>
