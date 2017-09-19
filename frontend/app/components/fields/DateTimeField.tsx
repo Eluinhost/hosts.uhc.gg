@@ -3,7 +3,7 @@ import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors } from './FieldWrapper';
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import TimePicker, { RcTimePickerProps } from 'rc-time-picker';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { Overlay } from '@blueprintjs/core';
 import { If } from '../If';
 

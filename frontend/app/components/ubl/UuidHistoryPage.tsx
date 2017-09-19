@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import { getAllBansForUuid } from '../../api';
 import { any, CurriedFunction2, curry, propSatisfies } from 'ramda';
 import { Intent, Tag } from '@blueprintjs/core';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { UblListing } from './UblListing';
 import { If } from '../If';
 import { BanEntry } from '../../BanEntry';

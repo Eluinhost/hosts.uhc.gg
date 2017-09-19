@@ -5,7 +5,7 @@ import { getPotentialConflicts } from '../api/index';
 import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always } from 'ramda';
 import { Match } from '../Match';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 
 export type HostFormConflicts = {
   readonly data: Match[];

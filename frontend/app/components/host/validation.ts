@@ -1,5 +1,5 @@
 import { Spec } from '../../validate';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { TeamStyles } from '../../TeamStyles';
 import { CreateMatchData } from '../../api/index';
 import {

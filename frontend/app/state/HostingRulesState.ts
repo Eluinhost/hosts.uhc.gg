@@ -10,7 +10,7 @@ import {
 } from '../api/index';
 import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always } from 'ramda';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { getAccessToken, getUsername, isLoggedIn } from './Selectors';
 
 export type HostingRules = {

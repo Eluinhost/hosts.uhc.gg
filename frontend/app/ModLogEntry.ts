@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 
 export type ModLogEntry = {
   readonly id: number;

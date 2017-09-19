@@ -19,6 +19,7 @@
     "localforage": "^1.5.0",
     "markup-js": "^1.5.21",
     "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
     "query-string": "^4.3.4",
     "ramda": "^0.24.1",
     "rc-time-picker": "^2.4.1",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.2.35",
     "@types/node": "^8.0.13",
     "@types/prop-types": "^15.5.1",
     "@types/ramda": "types/npm-ramda",

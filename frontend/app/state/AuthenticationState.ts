@@ -2,7 +2,7 @@ import { createAction } from 'redux-actions';
 import { ReducerBuilder } from './ReducerBuilder';
 import { Reducer, Store } from 'redux';
 import { storage } from '../storage';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { ThunkAction } from 'redux-thunk';
 import { ApplicationState } from './ApplicationState';
 import { ForbiddenError, NotAuthenticatedError, refreshTokens } from '../api/index';

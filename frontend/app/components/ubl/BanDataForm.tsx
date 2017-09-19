@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormProps, reduxForm, StrictFormProps, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { TextField } from '../fields/TextField';
 import { DateTimeField } from '../fields/DateTimeField';
 import { If } from '../If';

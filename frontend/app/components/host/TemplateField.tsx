@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import * as Mark from 'markup-js';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
 import { memoize } from 'ramda';

@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 
 export const nextAvailableSlot = (): moment.Moment => {
   // set seconds + millis to zero and add 31 minutes to find the next whole minute in 30 minutes time

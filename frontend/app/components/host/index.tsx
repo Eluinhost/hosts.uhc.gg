@@ -15,7 +15,7 @@ import { renderToMarkdown } from './TemplateField';
 import { presets } from './presets';
 import { Match } from '../../Match';
 import { HostFormActions } from '../../state/HostFormState';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { getAccessToken, getUsername, isDarkMode } from '../../state/Selectors';
 import { createSelector } from 'reselect';
 

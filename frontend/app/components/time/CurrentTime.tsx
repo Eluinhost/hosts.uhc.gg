@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';

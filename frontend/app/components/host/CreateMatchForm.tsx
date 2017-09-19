@@ -5,7 +5,7 @@ import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
 import * as React from 'react';
 import { nextAvailableSlot } from './nextAvailableSlot';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { range } from 'ramda';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';

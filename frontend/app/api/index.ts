@@ -1,6 +1,6 @@
 import { Match } from '../Match';
 import { ApplicationError } from '../ApplicationError';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { map, evolve, always, prop, Obj, contains } from 'ramda';
 import { PermissionsMap } from '../PermissionsMap';
 import { ModLogEntry } from '../ModLogEntry';

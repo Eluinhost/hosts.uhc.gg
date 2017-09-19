@@ -1,7 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import { Action, createAction } from 'redux-actions';
 import { ApplicationState } from './ApplicationState';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { getServerTime } from '../api/index';
 import { always } from 'ramda';
 import { ReducerBuilder } from './ReducerBuilder';

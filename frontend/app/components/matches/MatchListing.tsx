@@ -14,6 +14,7 @@ import { MatchesActions } from '../../state/MatchesState';
 import { getUsername, isDarkMode, matchesPermissions } from '../../state/Selectors';
 import { CurrentTime } from '../time/CurrentTime';
 import { TimeFormatToggle } from '../time/TimeFormatToggle';
+import { TimezoneSelector } from '../time/TimezoneSelector';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -92,6 +93,7 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
         <div>
           <h3>Current Time UTC: <CurrentTime /></h3>
           <TimeFormatToggle />
+          <TimezoneSelector />
         </div>
 
         <div>
