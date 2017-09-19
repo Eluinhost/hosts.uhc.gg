@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as moment from 'moment-timezone';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { getTagDateTimeFormat } from '../../state/Selectors';
+import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { always } from 'ramda';
 
@@ -14,22 +14,25 @@ type Props = {
 
 type StateProps = {
   readonly format: string;
+  readonly timezone: string;
 };
 
-const MatchOpensTagComponent: React.SFC<Props & StateProps> = ({ opens, created, format }) => (
+const MatchOpensTagComponent: React.SFC<Props & StateProps> = ({ opens, created, format, timezone }) => (
   <Tag
     intent={Intent.SUCCESS}
     className="pt-large match-opens"
-    title={`Created @ ${created.format(format)}`}
+    title={`Created @ ${created.tz(timezone).format(format)}`}
   >
-    {opens.format(format)}
+    {opens.tz(timezone).format(format)}
   </Tag>
 );
 
-const stateSelector = createSelector<ApplicationState, string, StateProps>(
+const stateSelector = createSelector<ApplicationState, string, string, StateProps>(
   getTagDateTimeFormat,
-  format => ({
+  getTimezone,
+  (format, timezone) => ({
     format,
+    timezone,
   }),
 );
 

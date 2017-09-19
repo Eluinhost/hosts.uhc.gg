@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment-timezone';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { getDetailsDateTimeFormat } from '../../state/Selectors';
+import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { always } from 'ramda';
 
@@ -12,16 +12,19 @@ type Props = {
 
 type StateProps = {
   readonly format: string;
+  readonly timezone: string;
 };
 
-const MatchOpensComponent: React.SFC<Props & StateProps> = ({ time, format }) => (
-  <span className="match-time">{time.format(format)}</span>
+const MatchOpensComponent: React.SFC<Props & StateProps> = ({ time, timezone, format }) => (
+  <span className="match-time">{time.tz(timezone).format(format)}</span>
 );
 
-const stateSelector = createSelector<ApplicationState, string, StateProps>(
+const stateSelector = createSelector<ApplicationState, string, string, StateProps>(
   getDetailsDateTimeFormat,
-  format => ({
+  getTimezone,
+  (format, timezone) => ({
     format,
+    timezone,
   }),
 );
 

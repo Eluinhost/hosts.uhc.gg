@@ -12,6 +12,11 @@ export const isDarkMode = createSelector<ApplicationState, boolean, boolean>(
   identity,
 );
 
+export const getTimezone = createSelector<ApplicationState, string, string>(
+  state => state.settings.timezone,
+  identity,
+);
+
 export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
   state => state.settings.is12h,
   is12h => is12h ? 'hh:mm A' : 'HH:mm',
