@@ -2,8 +2,8 @@ import { Intent, Tag } from '@blueprintjs/core';
 import * as React from 'react';
 import * as moment from 'moment';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
-import { getOpensDateTimeFormat } from '../state/Selectors';
+import { ApplicationState } from '../../state/ApplicationState';
+import { getTagDateTimeFormat } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { always } from 'ramda';
 
@@ -27,7 +27,7 @@ const MatchOpensTagComponent: React.SFC<Props & StateProps> = ({ opens, created,
 );
 
 const stateSelector = createSelector<ApplicationState, string, StateProps>(
-  getOpensDateTimeFormat,
+  getTagDateTimeFormat,
   format => ({
     format,
   }),

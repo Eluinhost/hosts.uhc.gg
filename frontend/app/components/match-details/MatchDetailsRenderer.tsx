@@ -7,7 +7,8 @@ import { TeamStyle } from '../matches/TeamStyle';
 import { If } from '../If';
 import { ClipboardControlGroup } from './ClipboardControlGroup';
 import { Markdown } from '../Markdown';
-import { TimeFromNowTag } from '../TimeFromNowTag';
+import { TimeFromNowTag } from '../time/TimeFromNowTag';
+import { MatchOpens } from '../time/MatchOpens';
 
 const renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => addIndex(map)(
   (scenario, index) => <Tag intent={Intent.NONE} className="pt-large" title="Scenario" key={index}>{scenario}</Tag>,
@@ -53,7 +54,7 @@ export const MatchDetailsRenderer: React.SFC<Props> =
 
         <div className="match-details__header__content">
           <h2>{hostingName || author}'s #{count}</h2>
-          <h4>{opens.format('MMM Do YYYY - HH:mm')}</h4>
+          <h4><MatchOpens time={opens}/></h4>
           <UsernameLink username={author} />
         </div>
 

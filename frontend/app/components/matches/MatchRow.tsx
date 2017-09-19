@@ -7,9 +7,9 @@ import { RemovedReason } from './RemovedReason';
 import { If } from '../If';
 import { UsernameLink } from '../UsernameLink';
 import { Link } from 'react-router-dom';
-import { TimeFromNowTag } from '../TimeFromNowTag';
+import { TimeFromNowTag } from '../time/TimeFromNowTag';
 import { HoverSwap } from '../HoverSwap';
-import { MatchOpensTag } from '../MatchOpensTag';
+import { MatchOpensTag } from '../time/MatchOpensTag';
 
 export type MatchRowProps = {
   readonly match: Match;

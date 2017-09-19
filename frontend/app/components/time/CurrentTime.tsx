@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
-import { TimeSyncState } from '../state/TimeSyncState';
+import { ApplicationState } from '../../state/ApplicationState';
+import { TimeSyncState } from '../../state/TimeSyncState';
 import { always, memoize } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 

@@ -17,9 +17,14 @@ export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
   is12h => is12h ? 'hh:mm A' : 'HH:mm',
 );
 
-export const getOpensDateTimeFormat = createSelector<ApplicationState, string, string>(
+export const getTagDateTimeFormat = createSelector<ApplicationState, string, string>(
   getTimeFormat,
   timeFormat => `MMM Do ${timeFormat} z`,
+);
+
+export const getDetailsDateTimeFormat = createSelector<ApplicationState, string, string>(
+  getTimeFormat,
+  timeFormat => `MMM Do YYYY - ${timeFormat} z`,
 );
 
 export const getAccessToken = createSelector<ApplicationState, string | null, string | null>(

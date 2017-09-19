@@ -12,8 +12,8 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { MatchesActions } from '../../state/MatchesState';
 import { getUsername, isDarkMode, matchesPermissions } from '../../state/Selectors';
-import { CurrentTime } from '../CurrentTime';
-import { TimeFormatToggle } from '../TimeFormatToggle';
+import { CurrentTime } from '../time/CurrentTime';
+import { TimeFormatToggle } from '../time/TimeFormatToggle';
 
 type MatchListingProps = {
   readonly matches: Match[];

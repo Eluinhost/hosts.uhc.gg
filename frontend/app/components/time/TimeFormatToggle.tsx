@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
+import { ApplicationState } from '../../state/ApplicationState';
 import { connect } from 'react-redux';
-import { SettingsActions } from '../state/SettingsState';
+import { SettingsActions } from '../../state/SettingsState';
 
 type StateProps = {
   readonly is12h: boolean;
