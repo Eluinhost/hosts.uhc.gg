@@ -17,8 +17,13 @@ export const getTimezone = createSelector<ApplicationState, string, string>(
   identity,
 );
 
-export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
+export const is12hFormat = createSelector<ApplicationState, boolean, boolean>(
   state => state.settings.is12h,
+  identity,
+);
+
+export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
+  is12hFormat,
   is12h => is12h ? 'hh:mm A' : 'HH:mm',
 );
 

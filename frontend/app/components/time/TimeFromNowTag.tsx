@@ -12,24 +12,32 @@ type Props = {
 } & ITagProps;
 
 type State = {
-  readonly text: string;
-  readonly intent: Intent;
+  readonly currentTime: moment.Moment;
 };
 
 type StateProps = {
   readonly offset: number;
 };
 
-class TimeFromNowComponent extends React.Component<Props & StateProps, State> {
+class TimeFromNowComponent extends React.PureComponent<Props & StateProps, State> {
   state = {
-    text: '',
-    intent: Intent.SUCCESS,
+    currentTime: moment.utc(),
   };
 
   private timerId: number;
 
-  private update = (): void => {
-    const now = moment.utc().add(this.props.offset, 'milliseconds');
+  private update = (): void => this.setState({ currentTime: moment.utc() });
+
+  public componentDidMount(): void {
+    this.timerId = window.setInterval(this.update, 2000);
+  }
+
+  public componentWillUnmount(): void {
+    window.clearInterval(this.timerId);
+  }
+
+  public render() {
+    const now = this.state.currentTime.add(this.props.offset, 'milliseconds');
     const text = this.props.time.from(now, this.props.hideSuffix);
 
     let intent = Intent.SUCCESS;
@@ -43,25 +51,9 @@ class TimeFromNowComponent extends React.Component<Props & StateProps, State> {
       intent = Intent.DANGER;
     }
 
-    this.setState({
-      text,
-      intent,
-    });
-  }
-
-  public componentDidMount(): void {
-    this.timerId = window.setInterval(this.update, 2000);
-    this.update();
-  }
-
-  public componentWillUnmount(): void {
-    window.clearInterval(this.timerId);
-  }
-
-  public render() {
     return (
-      <Tag {...this.props} intent={this.state.intent}>
-        <Icon iconName="time" /> {this.state.text}
+      <Tag {...this.props} intent={intent}>
+        <Icon iconName="time" /> {text}
       </Tag>
     );
   }

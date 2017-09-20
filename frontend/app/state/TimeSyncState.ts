@@ -35,6 +35,9 @@ export const TimeSyncActions = {
 };
 
 export const reducer = new ReducerBuilder<TimeSyncState>()
+  .handleEvolve(startSync, () => ({
+    synced: always(false),
+  }))
   .handleEvolve(endSync, (action: Action<number>) => ({
     synced: always(true),
     offset: always(action.payload!),

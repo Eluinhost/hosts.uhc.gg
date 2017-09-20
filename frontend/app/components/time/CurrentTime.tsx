@@ -3,33 +3,42 @@ import * as moment from 'moment-timezone';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { TimeSyncState } from '../../state/TimeSyncState';
+import { TimeSyncState, TimeSyncActions } from '../../state/TimeSyncState';
 import { always, memoize } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
+import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 type State = {
-  readonly text: string;
+  readonly time: moment.Moment;
 };
 
 type StateProps = {
   readonly timeSync: TimeSyncState;
   readonly timeFormat: string;
+  readonly timezone: string;
 };
 
-class CurrentTimeComponent extends React.Component<StateProps, State> {
+type DispatchProps = {
+  readonly resync: () => Promise<number>;
+};
+
+type Props = {
+  readonly prefix?: string;
+};
+
+class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps & Props, State> {
   state = {
-    text: '',
+    time: moment.utc(),
   };
 
   private timerId: number;
 
   private update = (): void => this.setState({
-    text: moment.utc().add(this.props.timeSync.offset, 'milliseconds').format(this.props.timeFormat),
+    time: moment.utc(),
   })
 
   public componentWillMount(): void {
     this.timerId = window.setInterval(this.update, 1000);
-    this.update();
   }
 
   public componentWillUnmount(): void {
@@ -66,30 +75,43 @@ class CurrentTimeComponent extends React.Component<StateProps, State> {
 
   private tooltipText = (): string =>
     this.props.timeSync.synced
-      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset / 1000)} offset`
+      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset / 1000)} offset. Click to resync`
       : 'Not synced with the server'
+
+  private timeText = () =>
+    this.state.time
+      .add(this.props.timeSync.offset, 'milliseconds')
+      .tz(this.props.timezone)
+      .format(this.props.timeFormat)
 
   render() {
     return (
       <Tooltip content={this.tooltipText()} position={Position.BOTTOM}>
-        <span className={`current-time ${this.props.timeSync.synced ? '' : 'current-time-unsynced'}`}>
-          {this.state.text}
+        <span
+          className={`current-time ${this.props.timeSync.synced ? '' : 'current-time-unsynced'}`}
+          onClick={this.props.resync}
+        >
+          {this.props.prefix || ''}{this.timeText()}
         </span>
       </Tooltip>
     );
   }
 }
 
-const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, StateProps>(
+const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, string, StateProps>(
   state => state.timeSync,
-  state => state.settings.is12h,
-  (timeSync, is12h) => ({
+  is12hFormat,
+  getTimezone,
+  (timeSync, is12h, timezone) => ({
     timeSync,
-    timeFormat: is12h ? 'hh:mm:ss A' : 'HH:mm:ss',
+    timezone,
+    timeFormat: is12h ? 'hh:mm:ss A z' : 'HH:mm:ss z',
   }),
 );
 
-export const CurrentTime: React.ComponentClass = connect<StateProps, {}, {}>(
+export const CurrentTime: React.ComponentClass<Props> = connect<StateProps, DispatchProps, Props>(
   stateSelector,
-  always({}),
+  (dispatch): DispatchProps => ({
+    resync: () => dispatch(TimeSyncActions.sync()),
+  }),
 )(CurrentTimeComponent);

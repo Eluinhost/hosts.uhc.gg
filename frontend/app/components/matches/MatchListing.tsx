@@ -12,9 +12,7 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { MatchesActions } from '../../state/MatchesState';
 import { getUsername, isDarkMode, matchesPermissions } from '../../state/Selectors';
-import { CurrentTime } from '../time/CurrentTime';
-import { TimeFormatToggle } from '../time/TimeFormatToggle';
-import { TimezoneSelector } from '../time/TimezoneSelector';
+import { TimeSettings } from '../time/TimeSettings';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -90,10 +88,8 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
   render() {
     return (
       <div>
-        <div>
-          <h3>Current Time UTC: <CurrentTime /></h3>
-          <TimeFormatToggle />
-          <TimezoneSelector />
+        <div style={{ marginTop: 10, marginBottom: 10 }}>
+          <TimeSettings />
         </div>
 
         <div>
