@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { TimeSyncState, TimeSyncActions } from '../../state/TimeSyncState';
-import { always, memoize } from 'ramda';
+import { memoize } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 
@@ -22,11 +22,7 @@ type DispatchProps = {
   readonly resync: () => Promise<number>;
 };
 
-type Props = {
-  readonly prefix?: string;
-};
-
-class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps & Props, State> {
+class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps, State> {
   state = {
     time: moment.utc(),
   };
@@ -81,6 +77,7 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
   private timeText = () =>
     this.state.time
       .add(this.props.timeSync.offset, 'milliseconds')
+      .clone()
       .tz(this.props.timezone)
       .format(this.props.timeFormat)
 
@@ -91,7 +88,7 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
           className={`current-time ${this.props.timeSync.synced ? '' : 'current-time-unsynced'}`}
           onClick={this.props.resync}
         >
-          {this.props.prefix || ''}{this.timeText()}
+          {this.timeText()}
         </span>
       </Tooltip>
     );
@@ -109,7 +106,7 @@ const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, s
   }),
 );
 
-export const CurrentTime: React.ComponentClass<Props> = connect<StateProps, DispatchProps, Props>(
+export const CurrentTime: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
   stateSelector,
   (dispatch): DispatchProps => ({
     resync: () => dispatch(TimeSyncActions.sync()),

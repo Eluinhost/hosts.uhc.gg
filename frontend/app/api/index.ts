@@ -116,7 +116,10 @@ export const createMatch = (data: CreateMatchData, accessToken: string): Promise
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        opens: data.opens.clone().utc(),
+      }),
     },
   ).then(verifyStatus(201))
     .then(always(undefined));
@@ -205,7 +208,7 @@ export const regenerateApiKey = (accessToken: string): Promise<string> =>
     .then(prop('key'));
 
 export const getPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
-  fetch(`/api/matches/conflicts/${region}/${time.format()}`)
+  fetch(`/api/matches/conflicts/${region}/${time.clone().utc().format()}`)
     .then(verifyStatus(200))
     .then(toJson<Match[]>())
     .then(map(convertMatchTimes));

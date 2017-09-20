@@ -24,6 +24,7 @@ import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details';
 import * as reactGa from 'react-ga';
 import { Location } from 'history';
+import { TimeSettings } from './time/TimeSettings';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -106,6 +107,7 @@ const AppComponent: React.SFC<AppProps> = ({ isDarkMode }) => (
       <div className={`${isDarkMode ? 'pt-dark' : ''} full-page`}>
         <div style={{ flexGrow: 0 }}>
           <Navbar />
+          <TimeSettings />
         </div>
         <div className="app-container">
           <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />

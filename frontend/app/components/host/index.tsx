@@ -16,13 +16,14 @@ import { presets } from './presets';
 import { Match } from '../../Match';
 import { HostFormActions } from '../../state/HostFormState';
 import * as moment from 'moment-timezone';
-import { getAccessToken, getUsername, isDarkMode } from '../../state/Selectors';
+import { getAccessToken, getUsername, isDarkMode, getTimezone, is12hFormat } from '../../state/Selectors';
 import { createSelector } from 'reselect';
 
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
   readonly username: string;
   readonly accessToken: string;
+  readonly is12h: boolean;
 };
 
 export type HostingPageDispatchProps = {
@@ -167,19 +168,24 @@ class HostingPageComponent extends React.Component<
         changeTemplate={this.props.changeTemplate}
         createMatch={this.handleCreateMatch}
         recheckConflicts={this.props.getConflicts}
+        is12h={this.props.is12h}
       />
     );
   }
 }
 
 const stateSelector =
-  createSelector<ApplicationState, string | null, CreateMatchData, string | null, boolean, HostingPageStateProps>(
+  createSelector<
+    ApplicationState, string | null, CreateMatchData, string | null, boolean, boolean, HostingPageStateProps
+  >(
     getUsername,
     valuesSelector,
     getAccessToken,
     isDarkMode,
-    (username, formValues, accessToken, isDarkMode) => ({
+    is12hFormat,
+    (username, formValues, accessToken, isDarkMode, is12h) => ({
       formValues,
+      is12h,
       username: username || 'ERROR NO USERNAME IN STORE',
       accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
     }),

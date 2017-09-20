@@ -88,10 +88,6 @@ class MatchListingComponent extends React.Component<MatchListingProps & StatePro
   render() {
     return (
       <div>
-        <div style={{ marginTop: 10, marginBottom: 10 }}>
-          <TimeSettings />
-        </div>
-
         <div>
           <Switch
             checked={this.props.hideRemoved}

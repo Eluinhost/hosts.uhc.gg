@@ -138,7 +138,7 @@ export const asyncValidation = async (
   const conflict = find<Match>(propEq('tournament', false), sameTime) || sameTime[0];
 
   // tslint:disable-next-line:max-line-length
-  const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm')})`;
+  const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm z')})`;
 
   return Promise.reject({
     opens: message,

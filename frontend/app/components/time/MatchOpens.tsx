@@ -16,7 +16,7 @@ type StateProps = {
 };
 
 const MatchOpensComponent: React.SFC<Props & StateProps> = ({ time, timezone, format }) => (
-  <span className="match-time">{time.tz(timezone).format(format)}</span>
+  <span className="match-time">{time.clone().tz(timezone).format(format)}</span>
 );
 
 const stateSelector = createSelector<ApplicationState, string, string, StateProps>(

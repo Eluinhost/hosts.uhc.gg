@@ -21,9 +21,9 @@ const MatchOpensTagComponent: React.SFC<Props & StateProps> = ({ opens, created,
   <Tag
     intent={Intent.SUCCESS}
     className="pt-large match-opens"
-    title={`Created @ ${created.tz(timezone).format(format)}`}
+    title={`Created @ ${created.clone().tz(timezone).format(format)}`}
   >
-    {opens.tz(timezone).format(format)}
+    {opens.clone().tz(timezone).format(format)}
   </Tag>
 );
 

@@ -39,7 +39,7 @@ type DispatchProps = {
 };
 
 const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, toggleDarkMode }) => (
-  <nav className="pt-navbar">
+  <nav className="pt-navbar header-navbar">
     <div className="pt-navbar-group">
       <Link to="/">
         <img src="/logo.png" className="brand-logo" />

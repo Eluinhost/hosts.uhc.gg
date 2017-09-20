@@ -34,6 +34,7 @@ export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
   readonly templateContext: any;
   readonly username: string;
+  readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => Promise<void>;
   readonly recheckConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
@@ -81,6 +82,11 @@ const CustomStyleField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled
 class CreateMatchFormComponent
   extends React.Component<StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> {
 
+  private timeProps = (): Partial<RcTimePickerProps> => ({
+    ...openingTimeProps,
+    use12Hours: this.props.is12h,
+  })
+
   componentWillMount() {
     // update the conflicts when form first loads
     this.props.recheckConflicts(this.props.currentValues.region, this.props.currentValues.opens);
@@ -108,7 +114,7 @@ class CreateMatchFormComponent
     const openingDateProps: Partial<ReactDatePickerProps> = {
       minDate: nextAvailableSlot(),
       fixedHeight: true,
-      maxDate: moment().add(30, 'd').utc(),
+      maxDate: moment.utc().add(30, 'd'),
       isClearable: false,
       monthsShown: 2,
     };
@@ -121,7 +127,7 @@ class CreateMatchFormComponent
       removedBy: null,
       removedReason: null,
       approvedBy: null,
-      created: moment(),
+      created: moment.utc(),
     };
 
     return (
@@ -136,7 +142,7 @@ class CreateMatchFormComponent
             required
             disabled={disabledAsync}
             datePickerProps={openingDateProps}
-            timePickerProps={openingTimeProps}
+            timePickerProps={this.timeProps()}
           >
             <div className="pt-callout pt-intent-danger pt-icon-warning-sign">
               <h5>

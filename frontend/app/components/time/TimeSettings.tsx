@@ -5,11 +5,12 @@ import { connect } from 'react-redux';
 import { SettingsActions } from '../../state/SettingsState';
 import { Popover2 } from '@blueprintjs/labs';
 import * as moment from 'moment-timezone';
-import { Button, MenuItem } from '@blueprintjs/core';
+import { Button, Classes, MenuItem } from '@blueprintjs/core';
 import { contains, toLower, filter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 import { CurrentTime } from './CurrentTime';
+import { If } from '../If';
 
 const tzs = moment.tz.names();
 
@@ -44,12 +45,24 @@ type DispatchProps = {
 
 type State = {
   readonly filter: string;
+  readonly open: boolean;
+  readonly stuck: boolean;
 };
 
 class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchProps, State> {
   state = {
     filter: '',
+    open: false,
+    stuck: false,
   };
+
+  public componentWillMount(): void {
+    document.addEventListener('scroll', this.onScroll);
+  }
+
+  private onScroll = (): void => this.setState({
+    stuck: window.scrollY > 50, // upper navbar is 50px
+  })
 
   private searchFilter = (query: string): ((item: string) => boolean) => {
     if (!query) {
@@ -68,6 +81,8 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
 
   private noRows = () => <MenuItem text="No items found." />;
 
+  private toggleOpen = () => this.setState(prevState => ({ open: !prevState.open }));
+
   public render() {
     const filtered = filter(this.searchFilter(this.state.filter), tzs);
 
@@ -83,49 +98,61 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
     const height = renderedHeight + 10; // 10px padding
 
     return (
-      <div className="pt-button-group pt-minimal" style={{ position: 'relative' }}>
-        <Button>
-          <h4>
-            <CurrentTime prefix="Current Time: " />
-          </h4>
+      <div className={`pt-card time-settings ${this.state.stuck ? 'time-settings-stuck' : ''}`}>
+        <Button className="current-time pt-minimal pt-large">
+          <CurrentTime/>
         </Button>
-        <Button
-          text={this.props.is12h ? '12h' : '24h'}
-          iconName="time"
-          onClick={this.props.toggleTimeFormat}
-        />
-        <Popover2
-          canEscapeKeyClose
-          inheritDarkTheme
-          lazy
-          minimal
-          inline
-          placement="top-start"
-          modifiers={{ inner: { enabled: true } }}
-        >
+        <div className="time-settings-popout">
+          <If condition={this.state.open}>
+            <Button
+              text={this.props.is12h ? '12h' : '24h'}
+              iconName="time"
+              className="pt-minimal pt-large"
+              onClick={this.props.toggleTimeFormat}
+            />
+          </If>
+          <If condition={this.state.open}>
+            <div style={{ position: 'relative' }}>
+              <Popover2
+                canEscapeKeyClose
+                inheritDarkTheme
+                lazy
+                minimal
+                inline
+                placement="bottom-end"
+              >
+                <Button
+                  text={this.props.timezone}
+                  rightIconName="double-caret-vertical"
+                  className="pt-minimal pt-large"
+                />
+                <div>
+                  <input
+                    autoFocus
+                    type="text"
+                    className="pt-input pt-fill"
+                    value={this.state.filter}
+                    onChange={this.onFilterChange}
+                  />
+                  <List
+                    className="pt-menu pt-large pt-minimal"
+                    height={height}
+                    width={200}
+                    rowCount={filtered.length}
+                    rowHeight={rowHeight}
+                    rowRenderer={renderRow}
+                    noRowsRenderer={this.noRows}
+                  />
+                </div>
+              </Popover2>
+            </div>
+          </If>
           <Button
-            text={this.props.timezone}
-            rightIconName="double-caret-vertical"
+            className="toggle-time-settings pt-large pt-minimal"
+            iconName={this.state.open ? 'chevron-right' : 'cog'}
+            onClick={this.toggleOpen}
           />
-          <div>
-            <input
-              autoFocus
-              type="text"
-              className="pt-input pt-fill"
-              value={this.state.filter}
-              onChange={this.onFilterChange}
-            />
-            <List
-              className="pt-menu"
-              height={height}
-              width={300}
-              rowCount={filtered.length}
-              rowHeight={rowHeight}
-              rowRenderer={renderRow}
-              noRowsRenderer={this.noRows}
-            />
-          </div>
-        </Popover2>
+        </div>
       </div>
     );
   }

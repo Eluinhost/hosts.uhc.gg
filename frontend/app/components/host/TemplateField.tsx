@@ -20,7 +20,7 @@ export type TemplateFieldProps = BaseFieldProps & {
 
 export const renderToMarkdown = (template: string, context: any): string => Mark.up(template, context, {
   pipes: {
-    moment: (date: moment.Moment, format: string): string => date.utc().format(format),
+    moment: (date: moment.Moment, format: string): string => date.clone().utc().format(format),
   },
 });
 

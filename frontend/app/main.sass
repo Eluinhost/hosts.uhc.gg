@@ -169,6 +169,30 @@ html, body, #root
   .removed-reason-remover
     font-style: italic
 
+.pt-card.time-settings
+  z-index: $pt-z-index-overlay + 10
+  border-top: none
+  width: 100%
+  display: flex
+  justify-content: center
+  padding: 1px 0 0 0
+
+  &.time-settings-stuck
+    position: fixed
+    top: 0
+  .time-settings-popout
+    position: absolute
+    right: 0
+    > *
+      display: inline
+  .current-time
+    font-size: 22px
+    font-weight: bold
+  .pt-button
+    margin: 0
+    &:after
+      display: none
+
 .pt-navbar
   display: flex
   justify-content: space-between
@@ -284,10 +308,10 @@ a.username-link, span.username-link
     color: $pt-dark-text-color
 
 .pt-dark
-  .pt-card, .pt-navbar, .pt-dialog
+  .pt-card, .pt-navbar, .pt-dialog, .pt-card.time-settings-stuck
     border-top: 3px solid $pt-intent-danger
 
-.pt-card, .pt-navbar, .pt-dialog
+.pt-card, .pt-navbar, .pt-dialog, .pt-card.time-settings-stuck
   border-top: 3px solid $pt-intent-primary
   border-top-left-radius: 0
   border-top-right-radius: 0
