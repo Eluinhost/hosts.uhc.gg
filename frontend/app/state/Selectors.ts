@@ -24,7 +24,7 @@ export const is12hFormat = createSelector<ApplicationState, boolean, boolean>(
 
 export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
   is12hFormat,
-  is12h => is12h ? 'hh:mm A' : 'HH:mm',
+  is12h => is12h ? 'h:mm A' : 'HH:mm',
 );
 
 export const getTagDateTimeFormat = createSelector<ApplicationState, string, string>(
