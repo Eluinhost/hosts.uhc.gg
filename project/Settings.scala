@@ -13,20 +13,22 @@ object Settings {
   )
 
   object versions {
-    val scala         = "2.12.2"
-    val doobie        = "0.4.1"
-    val circe         = "0.8.0"
-    val akkaHttp      = "10.0.9"
-    val akkaSlf4j     = "2.4.19"
-    val akkaHttpCirce = "1.17.0"
-    val postgresql    = "42.1.3"
-    val flyway        = "4.2.0"
-    val hikaricp      = "2.6.3"
-    val logback       = "1.2.3"
-    val jwtCirce      = "0.14.0"
-    val macwire       = "2.3.0"
-    val caffeine      = "2.1.0"
-    val akkaHttpTwirl = "1.2.0"
+    val scala           = "2.12.2"
+    val doobie          = "0.4.1"
+    val circe           = "0.8.0"
+    val akkaHttp        = "10.0.9"
+    val akkaSlf4j       = "2.4.19"
+    val akkaHttpCirce   = "1.17.0"
+    val postgresql      = "42.1.3"
+    val flyway          = "4.2.0"
+    val hikaricp        = "2.6.3"
+    val logback         = "1.2.3"
+    val jwtCirce        = "0.14.0"
+    val macwire         = "2.3.0"
+    val caffeine        = "2.1.0"
+    val akkaHttpTwirl   = "1.2.0"
+    val metricsScala    = "3.5.9_a2.4"
+    val metricsInfluxDb = "0.9.3"
   }
 
   val dependencies = Def.setting(
@@ -47,7 +49,9 @@ object Settings {
       "com.softwaremill.macwire" %% "macros"          % versions.macwire % Provided,
       "com.softwaremill.macwire" %% "util"            % versions.macwire,
       "com.github.blemale"       %% "scaffeine"       % versions.caffeine,
-      "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl
+      "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl,
+      "nl.grons"                 %% "metrics-scala"   % versions.metricsScala,
+      "com.github.davidb"        % "metrics-influxdb" % versions.metricsInfluxDb
     )
   )
 }

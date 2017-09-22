@@ -9,11 +9,16 @@ import doobie.free.connection.raw
 import doobie.hikari.hikaritransactor.HikariTransactor
 import doobie.imports._
 import doobie.util.log.{ExecFailure, ProcessingFailure, Success}
+import gg.uhc.hosts.Instrumented
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.NonEmptyList
 
-class Database(transactor: HikariTransactor[IOLite]) {
+class Database(transactor: HikariTransactor[IOLite]) extends Instrumented {
+  private[this] val queryTimer = metrics.timer("query-time")
+  private[this] val successGauge = metrics.counter("successful-queries")
+  private[this] val failureGauge = metrics.counter("failed-queries")
+
   implicit val system: ActorSystem  = ActorSystem("database")
   implicit val ec: ExecutionContext = system.dispatcher
 
@@ -168,6 +173,15 @@ class Database(transactor: HikariTransactor[IOLite]) {
     queries.getUblEntry(id).option
 
   def run[T](query: ConnectionIO[T]): Future[T] = Future {
-    query.transact(transactor).unsafePerformIO
+    queryTimer.time {
+      query.transact(transactor).unsafePerformIO
+    }
+  }.transform { result ⇒
+    if (result.isSuccess) {
+      successGauge.inc()
+    } else {
+      failureGauge.inc()
+    }
+    result
   }
 }
