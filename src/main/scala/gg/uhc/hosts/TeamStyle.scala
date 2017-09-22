@@ -5,7 +5,7 @@ sealed trait TeamStyle {
 }
 
 case class SizedTeamStyle(display: String, code: String) extends TeamStyle {
-  def render(size: Int): String = s"$display To$size"
+  def render(size: Int): String = s"$display To${if (size == 0) "X" else size}"
 }
 
 case object CustomTeamStyle extends TeamStyle {

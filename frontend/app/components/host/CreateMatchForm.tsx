@@ -62,8 +62,8 @@ const TeamSizeField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled })
     name="size"
     className="pt-fill"
     disabled={disabled}
-    label="Team size"
-    min={1}
+    label="Team size (0 for 'ToX')"
+    min={0}
     max={32767}
     required
   />

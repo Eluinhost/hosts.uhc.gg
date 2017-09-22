@@ -164,7 +164,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(
         // either doesn't require size or size is within range
         !TeamStyles.byCode(row.teams).isInstanceOf[SizedTeamStyle]
-          || row.size.exists(size ⇒ size >= 1 && size <= 32767),
+          || row.size.exists(size ⇒ size >= 0 && size <= 32767),
         "Invalid value for size"
       ) &
       validate(
