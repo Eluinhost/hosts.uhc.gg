@@ -3,22 +3,24 @@ package gg.uhc.hosts
 import java.util.concurrent.TimeUnit
 
 import akka.http.scaladsl.server.directives.BasicDirectives.{extractRequestContext, mapRouteResult}
-import akka.http.scaladsl.server.{Directive, Directive0, Directives}
+import akka.http.scaladsl.server.{Directive, Directive0}
 import com.codahale.metrics.MetricRegistry
 import metrics_influxdb.{HttpInfluxdbProtocol, InfluxdbReporter}
 import nl.grons.metrics.scala.{Counter, InstrumentedBuilder, Timer}
 
-object Instrumented {
+object Instrumented extends ConfigurationModule {
   val metricRegistry = new MetricRegistry()
 
-  InfluxdbReporter
-    .forRegistry(metricRegistry)
-    .convertDurationsTo(TimeUnit.MILLISECONDS)
-    .convertRatesTo(TimeUnit.SECONDS)
-    .skipIdleMetrics(true)
-    .protocol(new HttpInfluxdbProtocol("localhost", 8086, "akka-metrics"))
-    .build()
-    .start(1, TimeUnit.SECONDS)
+  if (!config.getBoolean("disable instrumentation")) {
+    InfluxdbReporter
+      .forRegistry(metricRegistry)
+      .convertDurationsTo(TimeUnit.MILLISECONDS)
+      .convertRatesTo(TimeUnit.SECONDS)
+      .skipIdleMetrics(true)
+      .protocol(new HttpInfluxdbProtocol("localhost", 8086, "akka-metrics"))
+      .build()
+      .start(1, TimeUnit.SECONDS)
+  }
 }
 
 trait Instrumented extends InstrumentedBuilder {
@@ -40,4 +42,3 @@ trait Instrumented extends InstrumentedBuilder {
       Directive.Empty
     }
 }
-
