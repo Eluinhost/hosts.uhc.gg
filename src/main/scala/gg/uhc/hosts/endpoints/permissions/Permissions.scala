@@ -5,11 +5,12 @@ import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
 import akka.http.scaladsl.server.Directives._
 
 object Permissions {
-  val base: List[String] = "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: Nil
+  val base: List[String] =
+    "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: "hosting banned" :: Nil
 
   // Map of user permission to allowed permissions for adding/removal
   val allowedModifications: Map[String, List[String]] = Map(
-    "hosting advisor" → List("trial host", "host"),
+    "hosting advisor" → List("trial host", "host", "hosting banned"),
     "admin"           → base.filter(_ != "admin")
   )
 

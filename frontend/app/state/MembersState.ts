@@ -3,7 +3,7 @@ import { ApplicationState } from './ApplicationState';
 import { Action, createAction } from 'redux-actions';
 import { PermissionsMap } from '../PermissionsMap';
 import {
-  addPermission,
+  addPermission, BadDataError,
   fetchModLog,
   fetchPermissions,
   ForbiddenError,
@@ -14,6 +14,8 @@ import { ReducerBuilder } from './ReducerBuilder';
 import { T, F, always, contains, concat, without } from 'ramda';
 import { ModLogEntry } from '../ModLogEntry';
 import { getAccessToken } from './Selectors';
+import { AppToaster } from '../AppToaster';
+import { Intent } from '@blueprintjs/core';
 
 export type AddPermissionDialogState = {
   readonly permission: string;
@@ -131,15 +133,31 @@ export const MembersActions = {
       
       const state = getState();
 
-      await addPermission(
-        state.members.dialogs.add.permission,
-        username,
-        getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
-      );
+      try {
+        await addPermission(
+          state.members.dialogs.add.permission,
+          username,
+          getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
+        );
 
-      dispatch(permissionAddSuccess());
-      dispatch(MembersActions.refetchModerationLog());
-      dispatch(MembersActions.refetchPermissions());
+        dispatch(permissionAddSuccess());
+
+        AppToaster.show({
+          intent: Intent.SUCCESS,
+          message: `Added permission '${state.members.dialogs.add.permission} to /u/${username}`,
+        });
+
+        dispatch(MembersActions.refetchModerationLog());
+        dispatch(MembersActions.refetchPermissions());
+      } catch (err) {
+        if (err instanceof BadDataError) {
+          AppToaster.show({
+            intent: Intent.DANGER,
+            iconName: 'warning-sign',
+            message: `Failed to add permission: ${err.message}`,
+          });
+        }
+      }
     },
   removePermission: (): ThunkAction<Promise<void>, ApplicationState, {}> =>
     async (dispatch, getState): Promise<void> => {
@@ -147,15 +165,34 @@ export const MembersActions = {
 
       const state = getState();
 
-      await removePermission(
-        state.members.dialogs.remove.permission, 
-        state.members.dialogs.remove.username, 
-        getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
-      );
+      try {
+        const permission = state.members.dialogs.remove.permission;
+        const username = state.members.dialogs.remove.username;
 
-      dispatch(permissionRemoveSuccess());
-      dispatch(MembersActions.refetchModerationLog());
-      dispatch(MembersActions.refetchPermissions());
+        await removePermission(
+          permission,
+          state.members.dialogs.remove.username,
+          getAccessToken(state) || 'ERROR NO ACCESS TOKEN IN STATE',
+        );
+
+        dispatch(permissionRemoveSuccess());
+
+        AppToaster.show({
+          intent: Intent.SUCCESS,
+          message: `Removed permission '${permission} from /u/${username}`,
+        });
+
+        dispatch(MembersActions.refetchModerationLog());
+        dispatch(MembersActions.refetchPermissions());
+      } catch (err) {
+        if (err instanceof BadDataError) {
+          AppToaster.show({
+            intent: Intent.DANGER,
+            iconName: 'warning-sign',
+            message: `Failed to remove permission: ${err.message}`,
+          });
+        }
+      }
     },
 };
 

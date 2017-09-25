@@ -25,7 +25,17 @@ export type MembersPageStateProps = MembersState & {
   readonly canModify: string[];
 };
 
-const capitalise = (word: string): string => converge<string>(concat, [pipe(head, toUpper), tail])(word);
+const permissionGroupNames: Obj<string> = {
+  admin: 'Administrators',
+  host: 'Verified Hosts',
+  'hosting advisor': 'Hosting Advisors',
+  'hosting banned': 'Hosting Banned',
+  'trial host': 'Trial Hosts',
+  'ubl moderator': 'UBL Moderators',
+};
+
+const getGroupName = (permission: string) =>
+  permissionGroupNames[permission] || (converge<string>(concat, [pipe(head, toUpper), tail])(permission) + 's');
 
 interface PermissionTreeNode extends ITreeNode {
   readonly type: 'permission folder' | 'alpha folder' | 'username';
@@ -91,7 +101,7 @@ export class MembersPage
     hasCaret: true,
     id: `permission-${permission}`,
     className: this.canModify(permission) ? 'permission-folder' : '',
-    label: capitalise(permission) + 's',
+    label: getGroupName(permission),
     isExpanded: contains(`permission-${permission}`, this.props.permissions.expandedNodes),
     childNodes: unless<PermissionTreeNode[], PermissionTreeNode[]>(
       this.shouldGroup, // Remove nested alpha when there is no need to use it

@@ -10,7 +10,7 @@ import { createSelector } from 'reselect';
 import { Obj, flatten, map } from 'ramda';
 
 const allowedModifications: Obj<string[]> = {
-  'hosting advisor': ['host', 'trial host'],
+  'hosting advisor': ['host', 'trial host', 'hosting banned'],
   admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator'],
 };
 

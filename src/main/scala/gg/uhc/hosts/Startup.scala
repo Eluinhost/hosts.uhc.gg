@@ -17,7 +17,7 @@ class Startup(routes: BaseRoute, flyway: Flyway, transactor: HikariTransactor[IO
     flyway.migrate()
 
     sys.addShutdownHook {
-      transactor.shutdown.unsafePerformIO
+      transactor.configure(_.close()).unsafePerformIO
     }
 
     implicit val system: ActorSystem             = ActorSystem("http-actor-system", config)

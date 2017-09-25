@@ -14,7 +14,7 @@ object Settings {
 
   object versions {
     val scala           = "2.12.2"
-    val doobie          = "0.4.1"
+    val doobie          = "0.4.4"
     val circe           = "0.8.0"
     val akkaHttp        = "10.0.9"
     val akkaSlf4j       = "2.4.19"
