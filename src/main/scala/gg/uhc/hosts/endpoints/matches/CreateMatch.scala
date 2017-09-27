@@ -10,6 +10,8 @@ import akka.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
+import doobie.free.connection.delay
+import doobie.imports.ConnectionIO
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
@@ -17,6 +19,7 @@ import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHa
 class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
   import CustomJsonCodec._
   import customDirectives._
+  import Alerts._
 
   case class CreateMatchPayload(
       opens: Instant,
@@ -174,6 +177,18 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(row.count >= 1, "Count must be at least 1") &
       overhostCheck(row)
 
+  private[this] def createMatchAndAlerts(row: MatchRow): ConnectionIO[MatchRow] =
+    for {
+      id       ← database.insertMatch(row)
+      allRules ← database.getAllAlertRules()
+      matchedRules = allRules.filter { _.matchesRow(row) }
+      addedAlertCount ← matchedRules.foldLeft(delay(0)) { (prev, rule) ⇒ // reduce to run each in series, one for each alert
+        prev.flatMap { count ⇒
+          database.createAlert(matchId = id, triggeredRuleId = rule.id).map(_ + count)
+        }
+      }
+    } yield row.copy(id = id)
+
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session ⇒
@@ -181,9 +196,11 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
           // parse the entity
           entity(as[CreateMatchPayload]) { entity ⇒
             convertPayload(entity, session.username) { row ⇒
-              (validateRow(row) & requireSucessfulQuery(database.insertMatch(row))) { id ⇒
-                cache.invalidateUpcomingMatches()
-                complete(StatusCodes.Created → row.copy(id = id))
+              validateRow(row) {
+                requireSucessfulQuery(createMatchAndAlerts(row)) { inserted ⇒
+                  cache.invalidateUpcomingMatches()
+                  complete(StatusCodes.Created → inserted)
+                }
               }
             }
           }

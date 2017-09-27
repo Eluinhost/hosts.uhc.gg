@@ -25,6 +25,7 @@ import { MatchDetailsPage } from './match-details';
 import * as reactGa from 'react-ga';
 import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
+import { HostingAlertsPage } from './hosting-alerts';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -88,6 +89,12 @@ class RoutesComponent extends React.Component<RouteComponentProps<any>> {
         {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...props} />*/}
         {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
         {/*<Route path="/ubl" component={CurrentUblPage} />*/}
+        <AuthenticatedRoute
+          path="/hosting-alerts"
+          component={HostingAlertsPage}
+          permission="hosting advisor"
+          {...this.props}
+        />
         <Route path="/" exact component={HomePage}/>
         <Route component={NotFoundPage} />
       </Switch>

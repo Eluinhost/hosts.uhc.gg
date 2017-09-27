@@ -2,6 +2,7 @@ package gg.uhc.hosts.endpoints
 
 import com.softwaremill.macwire.wire
 import gg.uhc.hosts.database.DatabaseModule
+import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
 import gg.uhc.hosts.endpoints.authentication.{
   Authenticate,
@@ -48,6 +49,9 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val usernameSearch: UsernameSearch                   = wire[UsernameSearch]
   lazy val extendUblEntry: EditUblEntry                     = wire[EditUblEntry]
   lazy val deleteUblEntry: DeleteUblEntry                   = wire[DeleteUblEntry]
+  lazy val createAlertRule: CreateAlertRule                 = wire[CreateAlertRule]
+  lazy val deleteAlertRule: DeleteAlertRule                 = wire[DeleteAlertRule]
+  lazy val getAllAlertRules: GetAllAlertRules               = wire[GetAllAlertRules]
 
   lazy val basicCache: BasicCache                   = wire[BasicCache]
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]
@@ -62,5 +66,6 @@ trait EndpointsModule extends DatabaseModule with RedditModule {
   lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
   lazy val ublRoute: UblRoute                       = wire[UblRoute]
   lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
+  lazy val alertsRoute: AlertsRoute                 = wire[AlertsRoute]
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }

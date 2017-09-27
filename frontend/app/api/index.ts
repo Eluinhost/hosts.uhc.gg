@@ -8,6 +8,7 @@ import { HostingRules } from '../state/HostingRulesState';
 import { BanEntry } from '../BanEntry';
 import { BanData } from '../components/ubl/BanDataForm';
 import { isArray } from 'util';
+import { AlertRule, AlertRuleField } from '../models/AlertRule';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}
@@ -318,3 +319,47 @@ export const getServerTime = (): Promise<moment.Moment> =>
     .then(toJson<string>())
     .then(convertUnixToMoment);
 
+export const getAllAlertRules = (accessToken: string): Promise<AlertRule[]> =>
+  fetch(
+    `/api/alerts`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(verifyStatus(200))
+    .then(toJson<AlertRule[]>());
+
+export type CreateAlertRulePayload = {
+  readonly field: AlertRuleField;
+  readonly alertOn: string;
+  readonly exact: boolean;
+};
+
+export const createAlertRule = (rule: CreateAlertRulePayload, accessToken: string) =>
+  fetch(
+    `/api/alerts`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(rule),
+    },
+  ).then(verifyStatus(201))
+  .then(toJson<AlertRule>());
+
+export const deleteAlertRule = (id: number, accessToken: string) =>
+  fetch(
+    `/api/alerts/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  ).then(verifyStatus(204))
+    .then(always(undefined));

@@ -7,7 +7,11 @@ version := Settings.version
 scalaVersion := Settings.versions.scala
 scalacOptions ++= Settings.scalacOptions
 licenses := Seq("MIT" → url("https://tldrlegal.com/license/mit-license"))
-resolvers += "Bartek's repo at Bintray" at "https://dl.bintray.com/btomala/maven"
+resolvers ++= Seq(
+  "Bartek's repo at Bintray" at "https://dl.bintray.com/btomala/maven",
+  "jcenter" at "http://jcenter.bintray.com",
+  "jitpack.io" at "https://jitpack.io"
+)
 libraryDependencies ++= Settings.dependencies.value
 
 // include frontend assets in build

@@ -29,6 +29,7 @@ object Settings {
     val akkaHttpTwirl   = "1.2.0"
     val metricsScala    = "3.5.9_a2.4"
     val metricsInfluxDb = "0.9.3"
+    val discord4j       = "2.9"
   }
 
   val dependencies = Def.setting(
@@ -51,7 +52,8 @@ object Settings {
       "com.github.blemale"       %% "scaffeine"       % versions.caffeine,
       "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl,
       "nl.grons"                 %% "metrics-scala"   % versions.metricsScala,
-      "com.github.davidb"        % "metrics-influxdb" % versions.metricsInfluxDb
+      "com.github.davidb"        % "metrics-influxdb" % versions.metricsInfluxDb,
+      "com.github.austinv11"     % "Discord4J"        % versions.discord4j
     )
   )
 }

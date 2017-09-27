@@ -410,7 +410,41 @@ components:
         link:
           type: string
           description: 'The courtroom post for the ban'
-
+    AlertResponse:
+      type: object
+      required:
+        - id
+        - field
+        - alertOn
+        - exact
+        - createdBy
+        - created
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this alert
+        field:
+          type: string
+          description: The field to check, must be one of 'ip' | 'address' | 'hosting name' | 'content' | 'tags'. 'tags' checks each tag individually
+        alertOn:
+          type: string
+          description: Value to search for
+        exact:
+          type: boolean
+          description: Whether to alert on exact match or not. If true the entire field must match, if false the field only has to contain the alertOn value
+        createdBy:
+          type: string
+          description: Username of whoever created the alert
+        created:
+          type: string
+          description: The date + time the alert was created
+      example:
+        id: 11
+        field: tags
+        alertOn: exact tag
+        exact: true
+        createdBy: ghowden
+        created: "2017-09-29T11:33:07.039Z"
 paths:
   /sync:
     get:
@@ -971,3 +1005,90 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UblEntryResponse'
+
+  /alerts:
+    get:
+      tags:
+        - Hosting Alerts
+      summary: List all alerts
+      description: Lists all alerts, requires `hosting advisor` permission
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+    post:
+      tags:
+        - Hosting Alerts
+      summary: Create a new alert
+      description: Creates a new alert, requires `hosting advisor` permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - field
+                - alertOn
+                - exact
+              properties:
+                field:
+                  type: string
+                  description: The field to check, must be one of 'ip' | 'address' | 'hosting name' | 'content' | 'tags'. 'tags' checks each tag individually
+                alertOn:
+                  type: string
+                  description: Value to search for
+                exact:
+                  type: boolean
+                  description: Whether to alert on exact match or not. If true the entire field must match, if false the field only has to contain the alertOn value
+              example:
+                field: tags
+                alertOn: exact tag
+                exact: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /alerts/{id}:
+    delete:
+      tags:
+        - Hosting Alerts
+      summary: Delete an alert
+      description: Deletes an alert, requries `hosting advisor` permission
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID to delete
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an alert with the given ID

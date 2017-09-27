@@ -8,6 +8,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { isDarkMode } from '../state/Selectors';
 import { connect, Dispatch } from 'react-redux';
 import { SettingsActions } from '../state/SettingsState';
+import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
   readonly text: string;
@@ -21,7 +22,7 @@ const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<a
       <Button
         className="pt-minimal"
         iconName={icon}
-        active={location.pathname.startsWith(to)}
+        active={location.pathname === to || location.pathname.startsWith(`${to}/`)}
       >
         {text}
       </Button>
@@ -69,6 +70,13 @@ const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, to
         {/*text="Ban List"*/}
         {/*icon="take-action"*/}
       {/*/>*/}
+      <WithPermission permission="hosting advisor">
+        <NavbarButton
+          to="/hosting-alerts"
+          text="Hosting Alerts"
+          icon="notifications"
+        />
+      </WithPermission>
     </div>
     <div className="pt-navbar-group">
       <Username />

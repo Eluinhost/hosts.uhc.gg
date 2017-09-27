@@ -133,6 +133,38 @@ class Queries(logger: LogHandler) {
        WHERE id = $id
     """.asInstanceOf[Fragment].query[MatchRow]
 
+  def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] =
+    (sql"""
+       SELECT
+        id,
+        author,
+        opens,
+        address,
+        ip,
+        scenarios,
+        tags,
+        teams,
+        size,
+        customStyle,
+        count,
+        content,
+        region,
+        removed,
+        removedBy,
+        removedReason,
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSize,
+        pvpEnabledAt,
+        approvedBy,
+        hostingName,
+        tournament
+       FROM matches
+       WHERE """.asInstanceOf[Fragment] ++ Fragments.in(fr"id".asInstanceOf[Fragment], ids)).query[MatchRow]
+
   def insertMatch(m: MatchRow): Update0 =
     sql"""
       INSERT INTO matches (
@@ -418,5 +450,120 @@ class Queries(logger: LogHandler) {
     sql"""
       DELETE FROM ubl
       WHERE id = $id
+      """.asInstanceOf[Fragment].update
+
+  def getUnprocessedDiscordMatches: Query0[MatchRow] =
+    sql"""
+      SELECT
+        id,
+        author,
+        opens,
+        address,
+        ip,
+        scenarios,
+        tags,
+        teams,
+        size,
+        customStyle,
+        count,
+        content,
+        region,
+        removed,
+        removedBy,
+        removedReason,
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSize,
+        pvpEnabledAt,
+        approvedBy,
+        hostingName,
+        tournament
+      FROM matches
+      WHERE
+        handledDiscord = false
+        AND
+        removed = false
+        AND
+        opens > now()
+    """.asInstanceOf[Fragment].query[MatchRow]
+
+  def flagMatchesAsProcessedForDiscord(ids: NonEmptyList[Long]): Update0 =
+    (sql"""
+      UPDATE
+        matches
+      SET
+        handledDiscord = true
+      WHERE """.asInstanceOf[Fragment] ++
+      Fragments.in(fr"id".asInstanceOf[Fragment], ids)).update
+
+  val unapprovedUpcomingMatchesCount: Query0[Int] =
+    sql"""
+      SELECT
+        COUNT(*)
+      FROM matches
+      WHERE
+        approvedBy IS NULL
+        AND
+        removed = FALSE
+        AND
+        opens > NOW()
+      """.asInstanceOf[Fragment].query[Int]
+
+  def createAlertRule(rule: AlertRuleRow): Update0 =
+    sql"""
+      INSERT INTO alert_rules
+        (field, alertOn, exact, createdBy, created)
+      VALUES
+        (${rule.field}, ${rule.alertOn}, ${rule.exact}, ${rule.createdBy}, ${rule.created})
+      """.asInstanceOf[Fragment].update
+
+  val getAllAlertRules: Query0[AlertRuleRow] =
+    sql"""
+      SELECT
+        id,
+        field,
+        alertOn,
+        exact,
+        createdBy,
+        created
+      FROM
+        alert_rules
+      """.asInstanceOf[Fragment].query[AlertRuleRow]
+
+  def deleteAlertRule(id: Long): Update0 =
+    sql"""
+      DELETE FROM alert_rules
+      WHERE id = $id
+      """.asInstanceOf[Fragment].update
+
+  def createAlert(matchId: Long, triggeredRuleId: Long): Update0 =
+    sql"""
+      INSERT INTO alerts
+        (matchId, triggeredRuleId)
+      VALUES
+        ($matchId, $triggeredRuleId)
+      """.asInstanceOf[Fragment].update
+
+  val getAlertsForDiscord: Query0[AlertRow] =
+    sql"""
+      SELECT
+        matchId, triggeredRuleId
+      FROM
+        alerts
+      WHERE
+        discord = false
+      """.asInstanceOf[Fragment].query[AlertRow]
+
+  def setAlertsHandledForDiscord(matchId: Long): Update0 =
+    sql"""
+      UPDATE
+        alerts
+      SET
+        discord = true
+      WHERE
+        matchId = $matchId
       """.asInstanceOf[Fragment].update
 }
