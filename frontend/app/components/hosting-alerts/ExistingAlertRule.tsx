@@ -1,5 +1,5 @@
 import { AlertRule } from '../../models/AlertRule';
-import { Classes, Icon, Intent, Tag } from '@blueprintjs/core';
+import { Alert, Classes, Icon, Intent, Tag } from '@blueprintjs/core';
 import * as React from 'react';
 
 type ExistingAlertRuleProps = {
@@ -7,31 +7,47 @@ type ExistingAlertRuleProps = {
   readonly onClick?: (id: number) => void;
 };
 
-export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProps, { readonly hover: boolean }> {
+type State = {
+  readonly isHovered: boolean;
+  readonly isAlertOpen: boolean;
+};
+
+export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProps, State> {
   state = {
-    hover: false,
+    isHovered: false,
+    isAlertOpen: false,
   };
 
-  private onMouseEnter = () => this.setState({ hover: true });
-  private onMouseLeave = () => this.setState({ hover: false });
+  private onMouseEnter = () => this.setState({ isHovered: true });
+  private onMouseLeave = () => this.setState({ isHovered: false });
+
   private onClick = () => {
+    if (this.props.onClick) {
+      this.setState({ isAlertOpen: true });
+    }
+  }
+
+  private onConfirm = () => {
     if (this.props.onClick) {
       this.props.onClick(this.props.rule.id);
     }
+    this.onCancel();
   }
+
+  private onCancel = () => this.setState({ isAlertOpen: false });
 
   public render() {
     return (
       <div className="alert-rule-set-item">
         <Tag
           className={`alert-rule-set-item__field ${Classes.LARGE} ${Classes.MINIMAL}`}
-          intent={this.state.hover ? Intent.DANGER : Intent.NONE}
+          intent={this.state.isHovered && this.props.onClick ? Intent.DANGER : Intent.NONE}
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
           title={this.props.rule.field}
           onClick={this.onClick}
         >
-          <Icon iconName={this.state.hover ? 'trash' : 'notifications'} />
+          <Icon iconName={this.state.isHovered && this.props.onClick ? 'trash' : 'notifications'} />
           <span>{this.props.rule.field}</span>
         </Tag>
 
@@ -46,6 +62,19 @@ export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProp
         <Tag className={`${Classes.LARGE} ${Classes.MINIMAL}`}>
           {this.props.rule.alertOn}
         </Tag>
+
+        <Alert
+          isOpen={this.state.isAlertOpen}
+          onConfirm={this.onConfirm}
+          onCancel={this.onCancel}
+          confirmButtonText="Delete"
+          cancelButtonText="Cancel"
+          intent={Intent.DANGER}
+        >
+          <p>
+            Are you sure you want to delete this alert?
+          </p>
+        </Alert>
       </div>
     );
   }
