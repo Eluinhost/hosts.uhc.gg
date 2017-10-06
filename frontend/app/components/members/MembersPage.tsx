@@ -4,24 +4,23 @@ import {
   map, sortBy, toLower, contains, toPairs, pipe, concat,
   toUpper, head, tail, converge, groupBy, Obj, unless, chain, prop,
 } from 'ramda';
-import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree, Tag } from '@blueprintjs/core';
-import { MembersState } from '../../state/MembersState';
+import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree } from '@blueprintjs/core';
+import { PermissionsState } from '../../state/PermissionsState';
 import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
-import { PermissionsMap } from '../../PermissionsMap';
+import { PermissionsMap } from '../../models/PermissionsMap';
 import { If } from '../If';
 import { Title } from '../Title';
-import { MatchOpens } from '../time/MatchOpens';
+import { ModerationLog } from './ModerationLog';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
-  readonly fetchModerationLog: () => void;
   readonly toggleNodeExpanded: (perm: string) => void;
   readonly openAddPermission: (perm: string) => void;
   readonly openRemovePermission: (perm: string, username: string) => void;
 };
 
-export type MembersPageStateProps = MembersState & {
+export type MembersPageStateProps = PermissionsState & {
   readonly canModify: string[];
 };
 
@@ -50,7 +49,6 @@ export class MembersPage
   extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
   componentDidMount(): void {
     this.props.fetchPermissionList();
-    this.props.fetchModerationLog();
   }
 
   private canModify = (permission: string): boolean => this.props.canModify.indexOf(permission) >= 0;
@@ -89,7 +87,7 @@ export class MembersPage
       type: 'alpha folder',
       label: char,
       hasCaret: true,
-      isExpanded: contains(`alpha-${char}-${permission}`, this.props.permissions.expandedNodes),
+      isExpanded: contains(`alpha-${char}-${permission}`, this.props.expandedNodes),
       childNodes: memberNodes,
     })),
   )(members)
@@ -102,7 +100,7 @@ export class MembersPage
     id: `permission-${permission}`,
     className: this.canModify(permission) ? 'permission-folder' : '',
     label: getGroupName(permission),
-    isExpanded: contains(`permission-${permission}`, this.props.permissions.expandedNodes),
+    isExpanded: contains(`permission-${permission}`, this.props.expandedNodes),
     childNodes: unless<PermissionTreeNode[], PermissionTreeNode[]>(
       this.shouldGroup, // Remove nested alpha when there is no need to use it
       chain<PermissionTreeNode, PermissionTreeNode>(prop('childNodes')),
@@ -118,7 +116,7 @@ export class MembersPage
       ),
     ),
     map(([permission, members]) => this.createPermissionFolderNode(permission, members)),
-  )(this.props.permissions.permissions)
+  )(this.props.permissions)
 
   private onNodeClick = (node: ITreeNode) => {
     const permissionNode = node as PermissionTreeNode;
@@ -139,25 +137,8 @@ export class MembersPage
     <div className="pt-callout pt-intent-danger"><h5>{message}</h5></div>
   )
 
-  private renderModLog = (): React.ReactElement<any>[] => map(
-    entry => (
-      <Tag
-        key={entry.id}
-        className="pt-large moderation-log-entry"
-        intent={entry.added ? Intent.SUCCESS : Intent.DANGER}
-        title={`Actioned by ${entry.modifier}`}
-      >
-        <span className="pt-monospace-text"><MatchOpens time={entry.at}/></span>
-        <span className={`pt-icon pt-icon-${entry.added ? 'add' : 'remove'}`}/>
-        <span>{entry.permission}</span>
-        <span className="moderation-log-entry-affected">/u/{entry.username}</span>
-      </Tag>
-    ),
-    this.props.moderationLog.log,
-  )
-
   private renderPermissionsTree = (): React.ReactElement<any> => {
-    if (this.props.permissions.fetching)
+    if (this.props.fetching)
       return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 
     return (
@@ -169,35 +150,12 @@ export class MembersPage
           onNodeExpand={this.onToggle}
           onNodeClick={this.onNodeClick}
         />
-        <If condition={!!this.props.permissions.error}>
-          <this.RenderError message={this.props.permissions.error!} />
+        <If condition={!!this.props.error}>
+          <this.RenderError message={this.props.error!} />
         </If>
         <Button
-          disabled={this.props.permissions.fetching}
+          disabled={this.props.fetching}
           onClick={this.props.fetchPermissionList}
-          iconName="refresh"
-          intent={Intent.SUCCESS}
-        >
-          Refresh
-        </Button>
-      </div>
-    );
-  }
-
-  private renderModerationLog = (): React.ReactElement<any> => {
-    if (this.props.moderationLog.fetching)
-      return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
-
-    return (
-      <div className="moderation-log">
-        <h2>Moderation Log</h2>
-        {this.renderModLog()}
-        <If condition={!!this.props.moderationLog.error}>
-          <this.RenderError message={this.props.moderationLog.error!} />
-        </If>
-        <Button
-          disabled={this.props.moderationLog.fetching}
-          onClick={this.props.fetchModerationLog}
           iconName="refresh"
           intent={Intent.SUCCESS}
         >
@@ -213,7 +171,7 @@ export class MembersPage
         <Title>Members</Title>
         <div className="members-page">
           {this.renderPermissionsTree()}
-          {this.renderModerationLog()}
+          <ModerationLog />
         </div>
         <If condition={this.props.canModify.length > 0}>
           <div>

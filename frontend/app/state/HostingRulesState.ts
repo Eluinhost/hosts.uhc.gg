@@ -1,17 +1,7 @@
-import { Action, createAction } from 'redux-actions';
-import { ThunkAction } from 'redux-thunk';
-import { ApplicationState } from './ApplicationState';
-import {
-  BadDataError,
-  ForbiddenError,
-  getHostingRules,
-  NotAuthenticatedError,
-  setHostingRules,
-} from '../api/index';
+import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../api';
 import { ReducerBuilder } from './ReducerBuilder';
-import { T, F, always } from 'ramda';
 import * as moment from 'moment-timezone';
-import { getAccessToken, getUsername, isLoggedIn } from './Selectors';
+import { GetHostingRules, SetHostingRules } from '../actions';
 
 export type HostingRules = {
   readonly content: string;
@@ -27,108 +17,63 @@ export type HostingRulesState = {
   readonly editing: boolean;
 };
 
-const startGetRulesFetch = createAction('GET_RULES_START_FETCH');
-const endGetRulesFetch = createAction<HostingRules>('GET_RULES_END_FETCH');
-const getRulesFetchError = createAction<string>('GET_RULES_FETCH_ERROR');
+const displayError = (err: Error): string => {
+  if (err instanceof BadDataError) {
+    return err.message;
+  } else if (err instanceof NotAuthenticatedError) {
+    return 'You are not logged in';
+  } else if (err instanceof ForbiddenError) {
+    return 'You do not have permissions to do this';
+  }
 
-const startSetRulesFetch = createAction<HostingRules>('SET_RULES_START_FETCH');
-const endSetRulesFetch = createAction('SET_RULES_END_FETCH');
-const setRulesFetchError = createAction<string>('SET_RULES_FETCH_ERROR');
-
-export const HostingRulesActions = {
-  openEditor: createAction('OPEN_RULES_EDITOR'),
-  closeEditor: createAction('CLOSE_RULES_EDITOR'),
-  getRules: (): ThunkAction<Promise<HostingRules>, ApplicationState, {}> =>
-    async (dispatch): Promise<HostingRules> => {
-      dispatch(startGetRulesFetch());
-
-      try {
-        const rules = await getHostingRules();
-
-        dispatch(endGetRulesFetch(rules));
-        return rules;
-      } catch (err) {
-        dispatch(getRulesFetchError('Unexpected response from the server'));
-
-        throw err;
-      }
-    },
-  setRules: (content: string): ThunkAction<Promise<void>, ApplicationState, {}> =>
-    async (dispatch, getState): Promise<void> => {
-      const state = getState();
-
-      if (!isLoggedIn(state)) {
-        dispatch(setRulesFetchError('User is not logged in'));
-        throw new Error('User is not logged in');
-      }
-
-      const accessToken = getAccessToken(state);
-
-      const optimistic: HostingRules = {
-        content,
-        author: getUsername(state) || 'ERROR NO USERNAME IN STATE',
-        modified: moment().utc(),
-      };
-
-      dispatch(startSetRulesFetch(optimistic));
-
-      try {
-        await setHostingRules(content, accessToken || 'ERROR NO ACCESS TOKEN IN STATE');
-
-        dispatch(endSetRulesFetch());
-      } catch (err) {
-        if (err instanceof BadDataError) {
-          dispatch(setRulesFetchError(err.message));
-        } else if (err instanceof NotAuthenticatedError) {
-          dispatch(setRulesFetchError('You are not logged in'));
-        } else if (err instanceof ForbiddenError) {
-          dispatch(setRulesFetchError('You do not have permissions to do this'));
-        } else {
-          dispatch(setRulesFetchError('Unexpected response from the server'));
-        }
-
-        throw err;
-      }
-    },
+  return 'Unexpected response from the server';
 };
 
 export const reducer = new ReducerBuilder<HostingRulesState>()
-  .handleEvolve(startGetRulesFetch, {
-    fetching: T,
-    error: always(null),
-  })
-  .handleEvolve(endGetRulesFetch, (action: Action<HostingRules>) => ({
-    fetching: F,
-    error: always(null),
-    data: always(action.payload),
+  .handle(GetHostingRules.started, (prev, action) => ({
+    ...prev,
+    fetching: true,
+    error: null,
   }))
-  .handleEvolve(getRulesFetchError, (action: Action<string>) => ({
-    fetching: F,
-    error: always(action.payload),
+  .handle(GetHostingRules.success, (prev, action) => ({
+    ...prev,
+    fetching: false,
+    error: null,
+    data: action.payload!.result,
   }))
-  .handleEvolve(startSetRulesFetch, (action: Action<HostingRules>, state: HostingRulesState) => ({
-    fetching: T,
-    error: always(null),
-    data: always(action.payload),
-    backupData: always(state.data),
+  .handle(GetHostingRules.failure, (prev, action) => ({
+    ...prev,
+    fetching: false,
+    error: displayError(action.payload!.error),
   }))
-  .handleEvolve(endSetRulesFetch, {
-    fetching: F,
-    error: always(null),
-    backupData: always(null),
-  })
-  .handleEvolve(setRulesFetchError, (action: Action<string>, state: HostingRulesState) => ({
-    fetching: F,
-    error: always(action.payload!),
-    data: always(state.backupData),
-    backupData: always(null),
+  .handle(SetHostingRules.started, (prev, action) => ({
+    ...prev,
+    fetching: true,
+    error: null,
+    data: action.payload!.result,
+    backupData: prev.data,
   }))
-  .handleEvolve(HostingRulesActions.openEditor, {
-    editing: T,
-  })
-  .handleEvolve(HostingRulesActions.closeEditor, {
-    editing: F,
-  })
+  .handle(SetHostingRules.success, (prev, action) => ({
+    ...prev,
+    fetching: false,
+    error: null,
+    backupData: null,
+  }))
+  .handle(SetHostingRules.failure, (prev, action) => ({
+    ...prev,
+    fetching: false,
+    error: displayError(action.payload!.error),
+    data: prev.backupData,
+    backupData: null,
+  }))
+  .handle(SetHostingRules.openEditor, (prev, action) => ({
+    ...prev,
+    editing: true,
+  }))
+  .handle(SetHostingRules.closeEditor, (prev, action) => ({
+    ...prev,
+    editing: false,
+  }))
   .build();
 
 export const initialValues = async (): Promise<HostingRulesState> => ({

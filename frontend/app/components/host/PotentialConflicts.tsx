@@ -1,44 +1,46 @@
-import { HostFormConflicts } from '../../state/HostFormState';
 import * as React from 'react';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
-import { map, addIndex } from 'ramda';
 import { Match } from '../../Match';
-import { MatchRow } from '../matches/MatchRow';
+import { MatchRow } from '../match-row';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../state/ApplicationState';
+import { always } from 'ramda';
+import { HostFormConflictsState } from '../../state/HostFormConflictsState';
 
-type ComponentStateProps = HostFormConflicts;
+type StateProps = HostFormConflictsState;
 
-const noop = () => undefined;
-const renderConflict = (m: Match, index: number) => (
-  <MatchRow
-    key={index}
-    match={m}
-    canApprove={false}
-    canRemove={false}
-    onRemovePress={noop}
-    onApprovePress={noop}
-    doNotLink
-  />
-);
+class PotentialConflictsComponent extends React.PureComponent<StateProps> {
+  private renderConflict = (m: Match, index: number) => (
+    <MatchRow
+      key={index}
+      match={m}
+      disableApproval
+      disableRemoval
+      disableLink
+    />
+  )
 
-const Component: React.SFC<ComponentStateProps> = ({ data, error, fetching }) => {
-  if (fetching)
-    return <NonIdealState visual={<Spinner />} title="Checking..." />;
+  public render() {
+    const { fetching, error, conflicts } = this.props;
 
-  if (error)
-    return <NonIdealState visual="warning-sign" title="Failed to check for potential conflicts" />;
+    if (fetching)
+      return <NonIdealState visual={<Spinner />} title="Checking..." />;
 
-  if (!data.length)
-    return <NonIdealState visual="tick" title="No conflicts found"/>;
-    
-  return (
-    <div>
-      {addIndex(map)(renderConflict, data)}
-    </div>
-  );
-};
+    if (error)
+      return <NonIdealState visual="warning-sign" title="Failed to check for potential conflicts" />;
 
-export const PotentialConflicts: React.ComponentClass = connect<ComponentStateProps, {}, {}>(
-  (state: ApplicationState): ComponentStateProps => state.hostForm.conflicts,
-)(Component);
+    if (!conflicts.length)
+      return <NonIdealState visual="tick" title="No conflicts found"/>;
+
+    return (
+      <div>
+        {conflicts.map(this.renderConflict)}
+      </div>
+    );
+  }
+}
+
+export const PotentialConflicts: React.ComponentClass = connect<StateProps, {}, {}>(
+  (state: ApplicationState): StateProps => state.hostFormConflicts,
+  always({}),
+)(PotentialConflictsComponent);

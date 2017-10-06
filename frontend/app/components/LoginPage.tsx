@@ -1,6 +1,5 @@
 import { Redirect, RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import { AuthenticationActions, LoginPayload } from '../state/AuthenticationState';
 import { isLoggedIn } from '../state/Selectors';
 import { connect } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
@@ -9,6 +8,7 @@ import { Dispatch } from 'redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
 import { If } from './If';
+import { Authentication, LoginPayload } from '../actions';
 
 type StateProps = {
   readonly loggedIn: boolean;
@@ -64,8 +64,6 @@ export const LoginPage: React.ComponentClass<RouteComponentProps<any>> =
   connect<StateProps, DispatchProps, RouteComponentProps<any>>(
     stateSelector,
     (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
-      login: (data: LoginPayload) => {
-        dispatch(AuthenticationActions.login(data));
-      },
+      login: (data: LoginPayload) => dispatch(Authentication.login(data)),
     }),
   )(LoginPageComponent);

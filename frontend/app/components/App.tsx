@@ -5,14 +5,14 @@ import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
-import { MatchesPage } from './matches';
+import { UpcomingMatchesPage } from './upcoming-matches-page';
 import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { MembersPage } from './members';
-import { ProfilePage } from './profile/index';
+import { ProfilePage } from './profile';
 import { WithPermission } from './WithPermission';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
-import { HistoryPage } from './history';
+import { HistoryPage } from './host-history-page';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
@@ -21,7 +21,7 @@ import { createSelector } from 'reselect';
 import { isDarkMode } from '../state/Selectors';
 import { always } from 'ramda';
 import { GlobalHotkeys } from './GlobalHotkeys';
-import { MatchDetailsPage } from './match-details';
+import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
 import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
@@ -29,42 +29,47 @@ import { HostingAlertsPage } from './hosting-alerts';
 
 reactGa.initialize('UA-71696797-2');
 
-const NotFoundPage: React.SFC = () => (
-  <NonIdealState
-    title="Not Found"
-    visual="geosearch"
-  />
-);
+class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
+  public render() {
+    return <NonIdealState title="Not Found" visual="geosearch"/>;
+  }
+}
 
-const NoPermission: React.SFC = () => (
-  <NonIdealState
-    title="Forbidden"
-    description="You do not have permission to use this. You may attempt to login with an authorised account below"
-    visual="warning-sign"
-    action={<LoginButton />}
-  />
-);
+class NoPermission extends React.PureComponent {
+  public render() {
+    return (
+      <NonIdealState
+        title="Forbidden"
+        description="You do not have permission to use this. You may attempt to login with an authorised account below"
+        visual="warning-sign"
+        action={<LoginButton />}
+      />
+    );
+  }
+}
 
 type AuthenticatedRouteProps = {
   readonly permission: string | string[];
 } & RouteProps;
 
-const AuthenticatedRoute: React.SFC<AuthenticatedRouteProps> = (props) => {
-  const { permission, ...routeProps } = props;
+class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
+  public render() {
+    const { permission, ...routeProps } = this.props;
 
-  const Component: React.ComponentType<RouteComponentProps<any> | undefined> = props.component!;
+    const Component: React.ComponentType<RouteComponentProps<any> | undefined> = this.props.component!;
 
-  const component: React.SFC<RouteComponentProps<any>> = props => (
-    <WithPermission permission={permission} alternative={NoPermission}>
-      <Component {...props}/>
-    </WithPermission>
-  );
+    const component: React.SFC<RouteComponentProps<any>> = props => (
+      <WithPermission permission={permission} alternative={NoPermission}>
+        <Component {...props}/>
+      </WithPermission>
+    );
 
-  return <Route {...routeProps} component={component}/>;
-};
+    return <Route {...routeProps} component={component}/>;
+  }
+}
 
-class RoutesComponent extends React.Component<RouteComponentProps<any>> {
-  componentDidMount() {
+class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
+  public componentDidMount() {
     const send = (location: Location) => {
       const path = location.pathname + location.search;
 
@@ -82,7 +87,7 @@ class RoutesComponent extends React.Component<RouteComponentProps<any>> {
         <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props}/>
         <Route path="/m/:id" component={MatchDetailsPage} />
         <Route path="/matches/:host" component={HistoryPage} />
-        <Route path="/matches" component={MatchesPage} />
+        <Route path="/matches" component={UpcomingMatchesPage} />
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />

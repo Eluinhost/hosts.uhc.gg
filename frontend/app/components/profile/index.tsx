@@ -1,27 +1,32 @@
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 import * as React from 'react';
-import { ProfileActions, ProfileState } from '../../state/ProfileState';
+import { ApiKeyState } from '../../state/ApiKeyState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { storage } from '../../storage';
 import { If } from '../If';
 import { Title } from '../Title';
+import { createSelector } from 'reselect';
+import { FetchApiKey, RegenerateApiKey } from '../../actions';
 
-export type ProfilePageStateProps = ProfileState;
-export type ProfilePageDispatchProps = {
-  readonly refreshApiKey: () => Promise<void>;
-  readonly regenerateApiKey: () => Promise<void>;
+export type StateProps = {
+  readonly apiKey: ApiKeyState;
+};
+
+export type DispatchProps = {
+  readonly refreshApiKey: () => void;
+  readonly regenerateApiKey: () => void;
   readonly resetStorage: () => void;
 };
 
-class Component extends React.Component<ProfilePageStateProps & ProfilePageDispatchProps & RouteComponentProps<any>> {
-  componentWillMount(): void {
+class Component extends React.PureComponent<StateProps & DispatchProps & RouteComponentProps<any>> {
+  public componentDidMount(): void {
     this.props.refreshApiKey();
   }
 
-  render() {
+  public render() {
     const { apiKey: { fetching, error, key }, refreshApiKey, regenerateApiKey, resetStorage } = this.props;
 
     if (fetching)
@@ -53,22 +58,22 @@ class Component extends React.Component<ProfilePageStateProps & ProfilePageDispa
   }
 }
 
-const mapStateToProps = (state: ApplicationState): ProfilePageStateProps => state.profile;
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): ProfilePageDispatchProps => ({
-  refreshApiKey: async (): Promise<void> => {
-    await dispatch(ProfileActions.getApiKey());
-  },
-  regenerateApiKey: async (): Promise<void> => {
-    await dispatch(ProfileActions.regenerateApiKey());
-  },
-  resetStorage: async (): Promise<void> => {
+const stateSelector = createSelector<ApplicationState, ApiKeyState, StateProps>(
+  state => state.apiKey,
+  apiKey => ({ apiKey }),
+);
+
+const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+  refreshApiKey: () => dispatch(FetchApiKey.start()),
+  regenerateApiKey: () => dispatch(RegenerateApiKey.start()),
+  resetStorage: async () => {
     await storage.clear();
     window.location.reload(true);
   },
 });
 
 export const ProfilePage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<ProfilePageStateProps, ProfilePageDispatchProps, RouteComponentProps<any>>(
-    mapStateToProps,
-    mapDispatchToProps,
+  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
+    stateSelector,
+    dispatch,
   )(Component);

@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 import { getAccessToken } from '../../state/Selectors';
 import { ApplicationState } from '../../state/ApplicationState';
 import { always } from 'ramda';
-import { createBan } from '../../api/index';
+import { createBan } from '../../api';
 import { Title } from '../Title';
 
 type Props = {

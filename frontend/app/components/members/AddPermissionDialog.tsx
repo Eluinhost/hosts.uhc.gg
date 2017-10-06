@@ -6,7 +6,8 @@ import { TextField } from '../fields/TextField';
 import { Spec, validate } from '../../validate';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { MembersActions } from '../../state/MembersState';
+import { AddPermissionDialogState } from '../../state/PermissionsState';
+import { AddPermission } from '../../actions';
 
 type AddPermissionDialogData = {
   username: string;
@@ -14,12 +15,11 @@ type AddPermissionDialogData = {
 
 type AddPermissionDialogDispatchProps = {
   readonly close: () => void;
-  readonly confirm: (usern: string) => Promise<void>;
+  readonly confirm: (usern: string) => void;
 };
 
 type AddPermissionDialogStateProps = {
-  readonly isOpen: boolean;
-  readonly permission: string;
+  readonly state: AddPermissionDialogState | null;
   readonly isDarkMode: boolean;
 };
 
@@ -27,12 +27,12 @@ const AddPermissionDialogComponent: React.SFC<
   AddPermissionDialogStateProps &
   AddPermissionDialogDispatchProps &
   FormProps<AddPermissionDialogData, {}, ApplicationState>> =
-  ({ handleSubmit, submitting, invalid, close, isOpen, permission, isDarkMode }) => (
+  ({ handleSubmit, submitting, invalid, close, state, isDarkMode }) => (
     <Dialog
       iconName="add"
-      isOpen={isOpen}
+      isOpen={!!state}
       onClose={close}
-      title={`Add '${permission}' role`}
+      title={`Add '${state ? state.permission : 'NOT OPEN'}' role`}
       className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body add-permission-body">
@@ -95,19 +95,13 @@ const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPerm
   })(AddPermissionDialogComponent);
 
 const mapStateToProps = (state: ApplicationState): AddPermissionDialogStateProps => ({
-  permission: state.members.dialogs.add.permission,
-  isOpen: state.members.dialogs.add.isOpen,
+  state: state.permissions.addDialog,
   isDarkMode: state.settings.isDarkMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): AddPermissionDialogDispatchProps => ({
-  close: (): void => {
-    dispatch(MembersActions.closeAddPermissionDialog());
-  },
-  confirm: (username: string): Promise<void> => {
-    dispatch(MembersActions.closeAddPermissionDialog());
-    return dispatch(MembersActions.addPermission(username));
-  },
+  close: () => dispatch(AddPermission.closeDialog()),
+  confirm: (username: string) => dispatch(AddPermission.start(username)),
 });
 
 export const AddPermissionDialog: React.ComponentClass =

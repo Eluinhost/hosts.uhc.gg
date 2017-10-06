@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
-import { HostingRules } from './HostingRules';
+import { HostingRules } from './hosting-rules';
 
 export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
   <div className="home-page">

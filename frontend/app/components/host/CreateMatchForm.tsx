@@ -13,13 +13,13 @@ import { SuggestionsField } from '../fields/SuggestionsField';
 import { TeamStyles } from '../../TeamStyles';
 import { Regions } from '../../Regions';
 import { TemplateField } from './TemplateField';
-import { MatchRow } from '../matches/MatchRow';
+import { MatchRow } from '../match-row';
 import { Match } from '../../Match';
 import { Button, Intent } from '@blueprintjs/core';
 import { validate } from '../../validate';
 import { asyncValidation, validation } from './validation';
-import { CreateMatchData } from '../../api/index';
-import { HostingRules } from '../HostingRules';
+import { CreateMatchData } from '../../api';
+import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { If } from '../If';
 import { SwitchField } from '../fields/SwitchField';
@@ -28,16 +28,13 @@ import { RcTimePickerProps } from 'rc-time-picker';
 import { Title } from '../Title';
 import { versions } from '../../versions';
 
-const noop = (): void => undefined;
-
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
   readonly templateContext: any;
   readonly username: string;
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
-  readonly createMatch: (data: CreateMatchData) => Promise<void>;
-  readonly recheckConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
+  readonly createMatch: (data: CreateMatchData) => void;
 };
 
 const disabledMinutes = range(0, 60).filter(m => m % 15 !== 0);
@@ -87,9 +84,7 @@ class CreateMatchFormComponent
     use12Hours: this.props.is12h,
   })
 
-  componentWillMount() {
-    // update the conflicts when form first loads
-    this.props.recheckConflicts(this.props.currentValues.region, this.props.currentValues.opens);
+  componentDidMount() {
     this.props.asyncValidate();
   }
 
@@ -316,11 +311,9 @@ class CreateMatchFormComponent
           <div style={{ paddingLeft: 10, paddingRight: 10 }}>
             <MatchRow
               match={preview}
-              canRemove={false}
-              canApprove={false}
-              onRemovePress={noop}
-              onApprovePress={noop}
-              doNotLink
+              disableRemoval
+              disableApproval
+              disableLink
             />
           </div>
         </fieldset>

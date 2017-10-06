@@ -4,7 +4,7 @@ import { WithPermission } from '../WithPermission';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { AppToaster } from '../../AppToaster';
 import { Link } from 'react-router-dom';
-import { deleteBan, editBan } from '../../api/index';
+import { deleteBan, editBan } from '../../api';
 import { BanData, BanDataForm } from './BanDataForm';
 
 type UblEntryRowProps = {

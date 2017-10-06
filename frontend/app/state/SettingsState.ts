@@ -1,10 +1,7 @@
-import { ThunkAction } from 'redux-thunk';
-import { ApplicationState } from './ApplicationState';
-import { Action, createAction } from 'redux-actions';
 import { ReducerBuilder } from './ReducerBuilder';
-import { always } from 'ramda';
 import { storage } from '../storage';
 import * as moment from 'moment-timezone';
+import { Settings } from '../actions';
 
 const storageKey = 'settings';
 
@@ -12,38 +9,31 @@ export type SettingsState = {
   readonly isDarkMode: boolean;
   readonly is12h: boolean;
   readonly timezone: string;
-};
-
-const setDarkMode = createAction<boolean>('SET_DARK_MODE');
-const setIs12h = createAction<boolean>('SET_IS_12_H_FORMAT');
-const setTimezone = createAction<string>('SET_TIMEZONE');
-
-export const SettingsActions = {
-  toggleDarkMode: (): ThunkAction<void, ApplicationState, {}> => (dispatch, getState) => {
-    const now = getState().settings.isDarkMode;
-    storage.setItem(`${storageKey}.isDarkMode`, !now);
-    dispatch(setDarkMode(!now));
-  },
-  toggle12hFormat: (): ThunkAction<void, ApplicationState, {}> => (dispatch, getState) => {
-    const existing = getState().settings.is12h;
-    storage.setItem(`${storageKey}.is12h`, !existing);
-    dispatch(setIs12h(!existing));
-  },
-  setTimezone: (timezone: string): ThunkAction<void, ApplicationState, {}> => (dispatch, getState) => {
-    storage.setItem<string>(`${storageKey}.timezone`, timezone);
-    dispatch(setTimezone(timezone));
-  },
+  readonly hideRemoved: boolean;
+  readonly showOwnRemoved: boolean;
+  readonly storageKey: string;
 };
 
 export const reducer = new ReducerBuilder<SettingsState>()
-  .handleEvolve(setDarkMode, (action: Action<boolean>) => ({
-    isDarkMode: always(action.payload),
+  .handle(Settings.setDarkMode, (prev, action) => ({
+    ...prev,
+    isDarkMode: action.payload!,
   }))
-  .handleEvolve(setIs12h, (action: Action<boolean>) => ({
-    is12h: always(action.payload),
+  .handle(Settings.setIs12h, (prev, action) => ({
+    ...prev,
+    is12h: action.payload!,
   }))
-  .handleEvolve(setTimezone, (action: Action<string>) => ({
-    timezone: always(action.payload),
+  .handle(Settings.setTimezone, (prev, action) => ({
+    ...prev,
+    timezone: action.payload!,
+  }))
+  .handle(Settings.setHideRemoved, (prev, action) => ({
+    ...prev,
+    hideRemoved: action.payload!,
+  }))
+  .handle(Settings.setShowOwnRemoved, (prev, action) => ({
+    ...prev,
+    showOwnRemoved: action.payload!,
   }))
   .build();
 
@@ -51,10 +41,15 @@ export const initialValues = async (): Promise<SettingsState> => {
   const savedDarkMode = await storage.getItem<boolean>(`${storageKey}.isDarkMode`);
   const saved12h = await storage.getItem<boolean>(`${storageKey}.is12h`);
   const savedTimezone = await storage.getItem<string>(`${storageKey}.timezone`);
+  const hideRemoved = await storage.getItem<boolean>(`${storageKey}.hideRemoved`);
+  const showOwnRemoved = await storage.getItem<boolean>(`${storageKey}.showOwnRemoved`);
 
   return {
+    storageKey,
     isDarkMode: savedDarkMode === null ? false : savedDarkMode,
     is12h: saved12h === null ? false : saved12h,
     timezone: savedTimezone === null ? moment.tz.guess() : savedTimezone,
+    hideRemoved: hideRemoved === null ? true : hideRemoved,
+    showOwnRemoved: showOwnRemoved === null ? true : showOwnRemoved,
   };
 };

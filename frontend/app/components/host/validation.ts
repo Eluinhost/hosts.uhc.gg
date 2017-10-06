@@ -1,16 +1,15 @@
 import { Spec } from '../../validate';
 import * as moment from 'moment-timezone';
 import { TeamStyles } from '../../TeamStyles';
-import { CreateMatchData } from '../../api/index';
+import { CreateMatchData } from '../../api';
 import {
-  prop, propEq, all, propSatisfies, curry, CurriedFunction2, find, map, take, pipe, drop, view, lensIndex, ifElse, T,
-  both, flip, gte, lte, cond, complement, always, filter,
+  all, map, take, pipe, drop, view, lensIndex, ifElse, T,
+  both, flip, gte, lte, cond, complement, always,
 } from 'ramda';
-import { Match } from '../../Match';
 import { isUndefined } from 'util';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
-import { CreateMatchFormProps } from './CreateMatchForm';
+import { HostFormConflicts } from '../../actions';
 
 export const validation: Spec<CreateMatchData> = {
   count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,
@@ -114,34 +113,6 @@ export const validation: Spec<CreateMatchData> = {
   tournament: always(undefined),
 };
 
-const isSameTime: CurriedFunction2<moment.Moment, moment.Moment, boolean> =
-  curry((a: moment.Moment, b: moment.Moment) => a.isSame(b));
-
-export const asyncValidation = async (
-  values: CreateMatchData,
-  dispatch: Dispatch<ApplicationState>,
-  props: CreateMatchFormProps,
-): Promise<void> => {
-  const conflicts = await props.recheckConflicts(values.region, values.opens);
-
-  const sameTime = filter<Match>(propSatisfies(isSameTime(values.opens), 'opens'), conflicts);
-
-  // no conflicts
-  if (!sameTime.length)
-    return undefined;
-
-  // if it's not a tournament it has a special case to be able to overhost tournaments
-  if (!values.tournament && all(prop('tournament'), sameTime))
-    return undefined;
-
-  // conflict should be whatever isn't a tournament, if they're all tournaments just return whatever is first
-  const conflict = find<Match>(propEq('tournament', false), sameTime) || sameTime[0];
-
-  // tslint:disable-next-line:max-line-length
-  const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm z')})`;
-
-  return Promise.reject({
-    opens: message,
-    region: message,
-  });
+export const asyncValidation = async (values: CreateMatchData, dispatch: Dispatch<ApplicationState>): Promise<void> => {
+  dispatch(HostFormConflicts.start({ data: values }));
 };

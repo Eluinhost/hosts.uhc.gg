@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
-import { AuthenticationActions } from '../state/AuthenticationState';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -10,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { getUsername, isLoggedIn } from '../state/Selectors';
 import { If } from './If';
+import { Authentication } from '../actions';
 
 type StateProps = {
   readonly isLoggedIn: boolean;
@@ -62,10 +62,9 @@ export const Username: React.ComponentClass = withRouter<{}>(
     stateSelector,
     (dispatch: Dispatch<ApplicationState>, ownProps: RouteComponentProps<any>): DispatchProps => ({
       logout: (): void => {
-        dispatch(AuthenticationActions.logout());
+        dispatch(Authentication.logout());
         ownProps.history.push('/');
       },
     }),
   )(UsernameComponent),
 );
-
