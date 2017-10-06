@@ -8,7 +8,7 @@ import { If } from '../If';
 import { Button, Intent } from '@blueprintjs/core';
 import { Spec, validate } from '../../validate';
 import { uuidRegex } from '../../uuidRegex';
-import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../../api/index';
+import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../../api';
 import { ReactDatePickerProps } from 'react-datepicker';
 
 export type BanDataFormProps = {

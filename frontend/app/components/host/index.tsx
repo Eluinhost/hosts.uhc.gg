@@ -7,16 +7,13 @@ import { Dispatch } from 'redux';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { Regions } from '../../Regions';
 import { renderTeamStyle, TeamStyles } from '../../TeamStyles';
-import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../../api/index';
+import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../../api';
 import { storage } from '../../storage';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { omit } from 'ramda';
 import { renderToMarkdown } from './TemplateField';
 import { presets } from './presets';
-import { Match } from '../../Match';
-import { HostFormActions } from '../../state/HostFormState';
-import * as moment from 'moment-timezone';
-import { getAccessToken, getUsername, isDarkMode, getTimezone, is12hFormat } from '../../state/Selectors';
+import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
 import { createSelector } from 'reselect';
 
 export type HostingPageStateProps = {
@@ -28,7 +25,6 @@ export type HostingPageStateProps = {
 
 export type HostingPageDispatchProps = {
   readonly changeTemplate: (newTemplate: string) => void;
-  readonly getConflicts: (region: string, opens: moment.Moment) => Promise<Match[]>;
 };
 
 export type HostingPageState = {
@@ -167,34 +163,31 @@ class HostingPageComponent extends React.Component<
         username={this.props.username}
         changeTemplate={this.props.changeTemplate}
         createMatch={this.handleCreateMatch}
-        recheckConflicts={this.props.getConflicts}
         is12h={this.props.is12h}
       />
     );
   }
 }
 
-const stateSelector =
-  createSelector<
-    ApplicationState, string | null, CreateMatchData, string | null, boolean, boolean, HostingPageStateProps
-  >(
-    getUsername,
-    valuesSelector,
-    getAccessToken,
-    isDarkMode,
-    is12hFormat,
-    (username, formValues, accessToken, isDarkMode, is12h) => ({
-      formValues,
-      is12h,
-      username: username || 'ERROR NO USERNAME IN STORE',
-      accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
-    }),
-  );
+const stateSelector = createSelector<
+  ApplicationState, string | null, CreateMatchData, string | null, boolean, boolean, HostingPageStateProps
+>(
+  getUsername,
+  valuesSelector,
+  getAccessToken,
+  isDarkMode,
+  is12hFormat,
+  (username, formValues, accessToken, isDarkMode, is12h) => ({
+    formValues,
+    is12h,
+    username: username || 'ERROR NO USERNAME IN STORE',
+    accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
+  }),
+);
 
 export const HostingPage = connect<HostingPageStateProps, HostingPageDispatchProps, RouteComponentProps<any>>(
   stateSelector,
   (dispatch: Dispatch<ApplicationState>): HostingPageDispatchProps => ({
     changeTemplate: (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
-    getConflicts: (region: string, opens: moment.Moment) => dispatch(HostFormActions.getConflicts(region, opens)),
   }),
 )(HostingPageComponent);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UsernameSearcher } from './UsernameSearcher';
 import { UblListing } from './UblListing';
-import { getAllCurrentBans } from '../../api/index';
+import { getAllCurrentBans } from '../../api';
 import { WithPermission } from '../WithPermission';
 import { Button, Intent } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';

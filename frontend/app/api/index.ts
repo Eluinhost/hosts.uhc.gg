@@ -2,8 +2,8 @@ import { Match } from '../Match';
 import { ApplicationError } from '../ApplicationError';
 import * as moment from 'moment-timezone';
 import { map, evolve, always, prop, Obj, contains } from 'ramda';
-import { PermissionsMap } from '../PermissionsMap';
-import { ModLogEntry } from '../ModLogEntry';
+import { PermissionsMap } from '../models/PermissionsMap';
+import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { HostingRules } from '../state/HostingRulesState';
 import { BanEntry } from '../BanEntry';
 import { BanData } from '../components/ubl/BanDataForm';
@@ -148,14 +148,15 @@ export const fetchPermissions = (): Promise<PermissionsMap> =>
     .then(verifyStatus(200))
     .then(toJson<PermissionsMap>());
 
-const convertModLogTimes = (m: ModLogEntry): ModLogEntry => evolve<ModLogEntry>({
-  at: convertUnixToMoment,
-}, m);
+const convertModLogTimes = (m: PermissionModerationLogEntry): PermissionModerationLogEntry =>
+  evolve<PermissionModerationLogEntry>({
+    at: convertUnixToMoment,
+  }, m);
 
-export const fetchModLog = (): Promise<ModLogEntry[]> =>
+export const fetchModLog = (): Promise<PermissionModerationLogEntry[]> =>
   fetch('/api/permissions/log')
     .then(verifyStatus(200))
-    .then(toJson<ModLogEntry[]>())
+    .then(toJson<PermissionModerationLogEntry[]>())
     .then(map(convertModLogTimes));
 
 export const addPermission = (permission: string, username: string, accessToken: string): Promise<void> =>

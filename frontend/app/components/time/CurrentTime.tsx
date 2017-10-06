@@ -3,10 +3,11 @@ import * as moment from 'moment-timezone';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { TimeSyncState, TimeSyncActions } from '../../state/TimeSyncState';
+import { TimeSyncState } from '../../state/TimeSyncState';
 import { memoize } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
+import { SyncTime } from '../../actions';
 
 type State = {
   readonly time: moment.Moment;
@@ -19,7 +20,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  readonly resync: () => Promise<number>;
+  readonly resync: () => void;
 };
 
 class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps, State> {
@@ -29,13 +30,14 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
 
   private timerId: number;
 
+  constructor() {
+    super();
+    this.timerId = window.setInterval(this.update, 1000);
+  }
+
   private update = (): void => this.setState({
     time: moment.utc(),
   })
-
-  public componentWillMount(): void {
-    this.timerId = window.setInterval(this.update, 1000);
-  }
 
   public componentWillUnmount(): void {
     window.clearInterval(this.timerId);
@@ -109,6 +111,6 @@ const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, s
 export const CurrentTime: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
   stateSelector,
   (dispatch): DispatchProps => ({
-    resync: () => dispatch(TimeSyncActions.sync()),
+    resync: () => dispatch(SyncTime.start()),
   }),
 )(CurrentTimeComponent);

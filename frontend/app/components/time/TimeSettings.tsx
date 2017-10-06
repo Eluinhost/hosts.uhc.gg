@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { connect } from 'react-redux';
-import { SettingsActions } from '../../state/SettingsState';
+import { Settings } from '../../actions';
 import { Popover2 } from '@blueprintjs/labs';
 import * as moment from 'moment-timezone';
 import { Button, Classes, MenuItem } from '@blueprintjs/core';
@@ -56,7 +56,8 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
     stuck: false,
   };
 
-  public componentWillMount(): void {
+  constructor() {
+    super();
     document.addEventListener('scroll', this.onScroll);
   }
 
@@ -170,7 +171,7 @@ const stateSelector = createSelector<ApplicationState, string, boolean, StatePro
 export const TimeSettings: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
   stateSelector,
   (dispatch): DispatchProps => ({
-    toggleTimeFormat: () => dispatch(SettingsActions.toggle12hFormat()),
-    changeTimezone: (timezone: string) => dispatch(SettingsActions.setTimezone(timezone)),
+    toggleTimeFormat: () => dispatch(Settings.toggleIs12h()),
+    changeTimezone: (timezone: string) => dispatch(Settings.setTimezone(timezone)),
   }),
 )(TimeSettingsComponent);

@@ -4,18 +4,17 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { MembersActions } from '../../state/MembersState';
+import { RemovePermissionDialogState } from '../../state/PermissionsState';
 import { If } from '../If';
+import { RemovePermission } from '../../actions';
 
 type RemovePermissionDialogDispatchProps = {
   readonly close: () => void;
-  readonly confirm: () => Promise<void>;
+  readonly confirm: () => void;
 };
 
 type RemovePermissionDialogStateProps = {
-  readonly isOpen: boolean;
-  readonly permission: string;
-  readonly username: string;
+  readonly state: RemovePermissionDialogState | null;
   readonly isDarkMode: boolean;
 };
 
@@ -23,16 +22,18 @@ const RemovePermissionDialogComponent: React.SFC<
   RemovePermissionDialogStateProps &
   RemovePermissionDialogDispatchProps &
   FormProps<{}, {}, ApplicationState>> =
-  ({ close, isOpen, permission, username, submitting, invalid, handleSubmit, error, isDarkMode }) => (
+  ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
     <Dialog
       iconName="remove"
-      isOpen={isOpen}
+      isOpen={!!state}
       onClose={close}
       title="Remove role"
       className={isDarkMode ? 'pt-dark' : ''}
     >
       <div className="pt-dialog-body remove-permission-body">
-        <h5>Are you sure you want to remove '{permission}' from /u/{username}</h5>
+        <h5>
+          Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
+        </h5>
         <If condition={!!error}>
           <span className="pt-intent-danger pt-callout">{error}</span>
         </If>
@@ -76,20 +77,13 @@ const RemovePermissionDialogForm: React.SFC<RemovePermissionDialogStateProps & R
   })(RemovePermissionDialogComponent);
 
 const mapStateToProps = (state: ApplicationState): RemovePermissionDialogStateProps => ({
-  username: state.members.dialogs.remove.username,
-  permission: state.members.dialogs.remove.permission,
-  isOpen: state.members.dialogs.remove.isOpen,
+  state: state.permissions.removeDialog,
   isDarkMode: state.settings.isDarkMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): RemovePermissionDialogDispatchProps => ({
-  close: (): void => {
-    dispatch(MembersActions.closeRemovePermissionDialog());
-  },
-  confirm: (): Promise<void> => {
-    dispatch(MembersActions.closeRemovePermissionDialog());
-    return dispatch(MembersActions.removePermission());
-  },
+  close: () => dispatch(RemovePermission.closeDialog()),
+  confirm: () => dispatch(RemovePermission.start()),
 });
 
 export const RemovePermissionDialog: React.ComponentClass =

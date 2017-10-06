@@ -2,7 +2,7 @@ import { ISelectItemRendererProps, Select } from '@blueprintjs/labs';
 import * as React from 'react';
 import { Button, MenuItem, Classes } from '@blueprintjs/core';
 import { Redirect } from 'react-router';
-import { searchBannedUsernames } from '../../api/index';
+import { searchBannedUsernames } from '../../api';
 import { map, Obj, pipe, mapObjIndexed, values, flatten } from 'ramda';
 import { uuidRegex } from '../../uuidRegex';
 

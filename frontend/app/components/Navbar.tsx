@@ -7,7 +7,7 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
 import { isDarkMode } from '../state/Selectors';
 import { connect, Dispatch } from 'react-redux';
-import { SettingsActions } from '../state/SettingsState';
+import { Settings } from '../actions';
 import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
@@ -100,7 +100,7 @@ export const Navbar: React.ComponentClass = withRouter<{}>(
   connect<StateProps, DispatchProps, RouteComponentProps<any>>(
     stateSelector,
     (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
-      toggleDarkMode: () => dispatch(SettingsActions.toggleDarkMode()),
+      toggleDarkMode: () => dispatch(Settings.toggleDarkMode()),
     }),
   )(NavbarComponent),
 );
