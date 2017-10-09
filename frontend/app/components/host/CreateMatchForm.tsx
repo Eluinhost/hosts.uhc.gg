@@ -10,11 +10,11 @@ import { range } from 'ramda';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
 import { SuggestionsField } from '../fields/SuggestionsField';
-import { TeamStyles } from '../../TeamStyles';
-import { Regions } from '../../Regions';
+import { TeamStyles } from '../../models/TeamStyles';
+import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
-import { Match } from '../../Match';
+import { Match } from '../../models/Match';
 import { Button, Intent } from '@blueprintjs/core';
 import { validate } from '../../validate';
 import { asyncValidation, validation } from './validation';
@@ -25,7 +25,7 @@ import { SwitchField } from '../fields/SwitchField';
 import { ReactDatePickerProps } from 'react-datepicker';
 import { RcTimePickerProps } from 'rc-time-picker';
 import { Title } from '../Title';
-import { versions } from '../../versions';
+import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
 
 export type CreateMatchFormProps = {
@@ -176,7 +176,7 @@ class CreateMatchFormComponent
               className="pt-fill"
               required
               disabled={submitting}
-              suggestions={versions}
+              suggestions={Versions}
               suggestionText="Choose"
             />
             <NumberField

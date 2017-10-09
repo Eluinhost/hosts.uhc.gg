@@ -1,7 +1,7 @@
 import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { FetchMatchDetailsParameters, FetchMatchDetails } from '../actions';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { Action } from 'redux-actions';
 import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
 import * as moment from 'moment-timezone';

@@ -1,5 +1,5 @@
 import { ReducerBuilder } from './ReducerBuilder';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { Reducer } from 'redux';
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';

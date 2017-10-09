@@ -1,4 +1,4 @@
-import { BanEntry } from '../../BanEntry';
+import { BanEntry } from '../../models/BanEntry';
 import * as React from 'react';
 import { WithPermission } from '../WithPermission';
 import { Button, Dialog, Intent } from '@blueprintjs/core';

@@ -1,4 +1,4 @@
-import { BanEntry } from '../../BanEntry';
+import { BanEntry } from '../../models/BanEntry';
 import { AutoSizer, List, ListRowProps, WindowScroller } from 'react-virtualized';
 import { If } from '../If';
 import { NonIdealState, Spinner } from '@blueprintjs/core';

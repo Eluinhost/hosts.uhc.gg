@@ -1,7 +1,7 @@
 import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { UpdateUpcoming } from '../actions';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 
 function* fetchUpcomingSaga(): SagaIterator {
   try {

@@ -1,7 +1,7 @@
 import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { HostFormConflicts, HostFormConflictsParameters } from '../actions';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { Action } from 'redux-actions';
 import { find } from 'ramda';
 import { startAsyncValidation, stopAsyncValidation } from 'redux-form';

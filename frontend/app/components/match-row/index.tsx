@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Match } from '../../Match';
+import { Match } from '../../models/Match';
 import { TeamStyle } from '../team-style';
 import { TagList } from '../tag-list';
 import { Button, Classes, Icon, Intent, Tag } from '@blueprintjs/core';

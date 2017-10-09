@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { HostingRules } from '../state/HostingRulesState';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { PermissionsMap } from '../models/PermissionsMap';

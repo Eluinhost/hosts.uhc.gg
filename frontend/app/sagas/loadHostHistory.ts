@@ -1,7 +1,7 @@
 import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { LoadHostHistory, LoadHostHistoryParameters } from '../actions';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { Action } from 'redux-actions';
 import { getHostingHistoryCursor } from '../state/Selectors';
 

@@ -1,4 +1,4 @@
-import { ApplicationError } from '../ApplicationError';
+import { ApplicationError } from '../models/ApplicationError';
 
 export class ApiError extends ApplicationError {}
 export class NotAuthenticatedError extends ApiError {}

@@ -3,7 +3,7 @@ import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/cor
 import { If } from '../If';
 import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
-import { Match } from '../../Match';
+import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
 import { connect, Dispatch } from 'react-redux';
 import { createSelector } from 'reselect';
