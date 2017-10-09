@@ -1,7 +1,7 @@
 import { SagaIterator, effects } from 'redux-saga';
 import { getAccessToken } from '../state/Selectors';
 import { FetchApiKey, RegenerateApiKey } from '../actions';
-import * as Api from '../api';
+import { ApiErrors, AuthenticationApi } from '../api';
 import { Action } from 'redux-actions';
 
 function* fetchApiKeySaga(): SagaIterator {
@@ -11,9 +11,9 @@ function* fetchApiKeySaga(): SagaIterator {
 
   try {
     if (!accessToken)
-      throw new Api.NotAuthenticatedError();
+      throw new ApiErrors.NotAuthenticatedError();
 
-    const result: string | null = yield effects.call(Api.getApiKey, accessToken);
+    const result: string | null = yield effects.call(AuthenticationApi.fetchApiKey, accessToken);
 
     yield effects.put(FetchApiKey.success({ result }));
   } catch (error) {
@@ -29,9 +29,9 @@ function* regenerateApiKeySaga(): SagaIterator {
 
   try {
     if (!accessToken)
-      throw new Api.NotAuthenticatedError();
+      throw new ApiErrors.NotAuthenticatedError();
 
-    const result: string = yield effects.call(Api.regenerateApiKey, accessToken);
+    const result: string = yield effects.call(AuthenticationApi.callRegenerateApiKey, accessToken);
 
     yield effects.put(RegenerateApiKey.success({ result }));
   } catch (error) {

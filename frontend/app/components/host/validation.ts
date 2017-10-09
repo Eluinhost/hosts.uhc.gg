@@ -1,7 +1,6 @@
 import { Spec } from '../../validate';
 import * as moment from 'moment-timezone';
 import { TeamStyles } from '../../TeamStyles';
-import { CreateMatchData } from '../../api';
 import {
   all, map, take, pipe, drop, view, lensIndex, ifElse, T,
   both, flip, gte, lte, cond, complement, always,
@@ -10,6 +9,7 @@ import { isUndefined } from 'util';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { HostFormConflicts } from '../../actions';
+import { CreateMatchData } from '../../models/CreateMatchData';
 
 export const validation: Spec<CreateMatchData> = {
   count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,

@@ -1,4 +1,4 @@
-import * as Api from '../api';
+import { ServerTimeApi } from '../api';
 import { SagaIterator, effects, delay } from 'redux-saga';
 import { SyncTime } from '../actions';
 import * as moment from 'moment-timezone';
@@ -7,7 +7,7 @@ function* fetchServerTimeSaga(): SagaIterator {
   try {
     yield effects.put(SyncTime.started());
 
-    const serverTime: moment.Moment = yield effects.call(Api.getServerTime);
+    const serverTime: moment.Moment = yield effects.call(ServerTimeApi.fetchServerTime);
 
     const diff = serverTime.diff(moment.utc());
 

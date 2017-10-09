@@ -4,7 +4,7 @@ import { WithPermission } from '../WithPermission';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { AppToaster } from '../../AppToaster';
 import { Link } from 'react-router-dom';
-import { deleteBan, editBan } from '../../api';
+import { UBLApi } from '../../api';
 import { BanData, BanDataForm } from './BanDataForm';
 
 type UblEntryRowProps = {
@@ -55,7 +55,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     this.closeDeleteDialog();
     this.props.onDeleteStart(ban);
 
-    deleteBan(ban.id, this.props.accessToken!)
+    UBLApi.callDeleteBan(ban.id, this.props.accessToken!)
       .then(() => {
         AppToaster.show({
           message: `Ban #${ban.id} deleted`,
@@ -82,7 +82,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     this.closeEditDialog();
     this.props.onEditStart(newBan, oldBan);
 
-    return editBan(oldBan.id, values, this.props.accessToken!)
+    return UBLApi.callEditBan(oldBan.id, values, this.props.accessToken!)
       .then(() => {
         AppToaster.show({
           message: `Ban #${oldBan.id} edited`,

@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { Regions } from '../../Regions';
 import { renderTeamStyle, TeamStyles } from '../../TeamStyles';
-import { BadDataError, createMatch, CreateMatchData, ForbiddenError, NotAuthenticatedError } from '../../api';
+import { MatchesApi, ApiErrors } from '../../api';
 import { storage } from '../../storage';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { omit } from 'ramda';
@@ -15,6 +15,7 @@ import { renderToMarkdown } from './TemplateField';
 import { presets } from './presets';
 import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
 import { createSelector } from 'reselect';
+import { CreateMatchData } from '../../models/CreateMatchData';
 
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
@@ -123,21 +124,21 @@ class HostingPageComponent extends React.Component<
 
     try {
       // fire API call
-      await createMatch(withRenderedTemplate, this.props.accessToken);
+      await MatchesApi.create(withRenderedTemplate, this.props.accessToken);
 
       // if success send them to the matches page to view it
       this.props.history.push('/matches');
     } catch (err) {
-      if (err instanceof BadDataError)
+      if (err instanceof ApiErrors.BadDataError)
         throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
-      if (err instanceof NotAuthenticatedError) {
+      if (err instanceof ApiErrors.NotAuthenticatedError) {
         // User cookie has expired, get them to reauthenticate
         window.location.href = '/authenticate?path=/host';
         return;
       }
 
-      if (err instanceof ForbiddenError)
+      if (err instanceof ApiErrors.ForbiddenError)
         throw new SubmissionError({ _error: 'You no longer have hosting permission' });
 
       throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });

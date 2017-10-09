@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { AlertRuleField, AlertRuleFields } from '../../models/AlertRule';
+import { AlertRuleField, AlertRuleFields, CreateAlertRuleData } from '../../models/AlertRule';
 import { Button, Classes, Intent } from '@blueprintjs/core';
-import { CreateAlertRulePayload } from '../../api';
 
 type Props = {
-  readonly onSubmit: (rule: CreateAlertRulePayload) => Promise<boolean>;
+  readonly onSubmit: (rule: CreateAlertRuleData) => Promise<boolean>;
 };
 
 type State = {
-  readonly data: CreateAlertRulePayload;
+  readonly data: CreateAlertRuleData;
   readonly validData: boolean;
 };
 
@@ -21,7 +20,7 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
       field: 'content',
       exact: false,
       alertOn: '',
-    } as CreateAlertRulePayload,
+    } as CreateAlertRuleData,
     validData: false,
   };
 

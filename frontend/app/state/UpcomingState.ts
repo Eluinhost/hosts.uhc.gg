@@ -1,6 +1,6 @@
 import { ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../Match';
-import { ForbiddenError, NotAuthenticatedError } from '../api';
+import { ApiErrors } from '../api';
 import { Reducer } from 'redux';
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
 import * as moment from 'moment-timezone';
@@ -13,10 +13,10 @@ export type UpcomingState = {
 };
 
 const displayError = (err: Error) => {
-  if (err instanceof NotAuthenticatedError)
+  if (err instanceof ApiErrors.NotAuthenticatedError)
     return 'You are not logged in';
 
-  if (err instanceof ForbiddenError)
+  if (err instanceof ApiErrors.ForbiddenError)
     return 'You do not have permissions to do this';
 
   return 'Unexpected response from the server';

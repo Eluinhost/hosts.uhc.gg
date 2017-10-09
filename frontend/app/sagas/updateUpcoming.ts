@@ -1,4 +1,4 @@
-import { fetchUpcomingMatches } from '../api';
+import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { UpdateUpcoming } from '../actions';
 import { Match } from '../Match';
@@ -7,7 +7,7 @@ function* fetchUpcomingSaga(): SagaIterator {
   try {
     yield effects.put(UpdateUpcoming.started());
 
-    const result: Match[] = yield effects.call(fetchUpcomingMatches);
+    const result: Match[] = yield effects.call(MatchesApi.fetchUpcomingMatches);
 
     yield effects.put(UpdateUpcoming.success({ result }));
   } catch (error) {

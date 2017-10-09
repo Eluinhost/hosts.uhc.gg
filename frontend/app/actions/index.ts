@@ -1,9 +1,9 @@
 import { createAction } from 'redux-actions';
 import { Match } from '../Match';
-import { CreateMatchData } from '../api';
 import { HostingRules } from '../state/HostingRulesState';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { PermissionsMap } from '../models/PermissionsMap';
+import { CreateMatchData } from '../models/CreateMatchData';
 
 export type WithResult<Result> = {
   readonly result: Result;

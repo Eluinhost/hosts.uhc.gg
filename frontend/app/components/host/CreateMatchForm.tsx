@@ -18,7 +18,6 @@ import { Match } from '../../Match';
 import { Button, Intent } from '@blueprintjs/core';
 import { validate } from '../../validate';
 import { asyncValidation, validation } from './validation';
-import { CreateMatchData } from '../../api';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { If } from '../If';
@@ -27,6 +26,7 @@ import { ReactDatePickerProps } from 'react-datepicker';
 import { RcTimePickerProps } from 'rc-time-picker';
 import { Title } from '../Title';
 import { versions } from '../../versions';
+import { CreateMatchData } from '../../models/CreateMatchData';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;

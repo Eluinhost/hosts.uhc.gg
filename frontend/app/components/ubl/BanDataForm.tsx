@@ -8,7 +8,7 @@ import { If } from '../If';
 import { Button, Intent } from '@blueprintjs/core';
 import { Spec, validate } from '../../validate';
 import { uuidRegex } from '../../uuidRegex';
-import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../../api';
+import { ApiErrors } from '../../api';
 import { ReactDatePickerProps } from 'react-datepicker';
 
 export type BanDataFormProps = {
@@ -98,16 +98,16 @@ export const BanDataForm: React.SFC<
   },
   validate: validate(validation),
   onSubmit: (values, dispatch, props) => props.onSubmit(values).catch((err) => {
-    if (err instanceof BadDataError)
+    if (err instanceof ApiErrors.BadDataError)
       throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
-    if (err instanceof NotAuthenticatedError) {
+    if (err instanceof ApiErrors.NotAuthenticatedError) {
       // User cookie has expired, get them to reauthenticate
       window.location.href = '/authenticate?path=/host';
       return;
     }
 
-    if (err instanceof ForbiddenError)
+    if (err instanceof ApiErrors.ForbiddenError)
       throw new SubmissionError({ _error: 'You no longer have permission to ban' });
 
     throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });

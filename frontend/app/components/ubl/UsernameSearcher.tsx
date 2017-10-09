@@ -2,7 +2,7 @@ import { ISelectItemRendererProps, Select } from '@blueprintjs/labs';
 import * as React from 'react';
 import { Button, MenuItem, Classes } from '@blueprintjs/core';
 import { Redirect } from 'react-router';
-import { searchBannedUsernames } from '../../api';
+import { UBLApi } from '../../api';
 import { map, Obj, pipe, mapObjIndexed, values, flatten } from 'ramda';
 import { uuidRegex } from '../../uuidRegex';
 
@@ -66,7 +66,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
     flatten,
   )(data)
 
-  onChange = (value: string): Promise<void> => searchBannedUsernames(value)
+  onChange = (value: string): Promise<void> => UBLApi.searchBannedUsernames(value)
     .then(this.convertToFlatList)
     .then(items => this.setState({
       items,

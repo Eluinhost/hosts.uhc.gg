@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 import { getAccessToken } from '../../state/Selectors';
 import { ApplicationState } from '../../state/ApplicationState';
 import { always } from 'ramda';
-import { createBan } from '../../api';
+import { UBLApi } from '../../api';
 import { Title } from '../Title';
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 
 class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentProps<any>> {
   handleSubmit = (values: BanData) =>
-    createBan(values, this.props.accessToken!)
+    UBLApi.callCreateBan(values, this.props.accessToken!)
       .then(() => {
         // if success send them to the current bans page to view it
         this.props.history.push('/ubl');

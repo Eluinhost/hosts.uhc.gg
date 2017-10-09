@@ -1,4 +1,4 @@
-import { getPotentialConflicts } from '../api';
+import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { HostFormConflicts, HostFormConflictsParameters } from '../actions';
 import { Match } from '../Match';
@@ -14,7 +14,7 @@ function* checkHostFormConflictsSaga(action: Action<HostFormConflictsParameters>
     yield effects.put(HostFormConflicts.started({ parameters }));
 
     const potentialConflicts: Match[] = yield effects.call(
-      getPotentialConflicts,
+      MatchesApi.fetchPotentialConflicts,
       parameters.data.region,
       parameters.data.opens,
     );
