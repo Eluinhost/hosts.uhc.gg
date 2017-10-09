@@ -6,10 +6,10 @@ import { TextField } from '../fields/TextField';
 import { DateTimeField } from '../fields/DateTimeField';
 import { If } from '../If';
 import { Button, Intent } from '@blueprintjs/core';
-import { Spec, validate } from '../../validate';
-import { uuidRegex } from '../../uuidRegex';
+import { isUuid } from '../../services/isUuid';
 import { ApiErrors } from '../../api';
 import { ReactDatePickerProps } from 'react-datepicker';
+import { Validator } from '../../services/Validator';
 
 export type BanDataFormProps = {
   readonly onSubmit: (values: BanData) => Promise<void>;
@@ -68,25 +68,12 @@ export const BanDataFormComponent: React.SFC<
   </form>
 );
 
-const minLength1 = (value: string) =>
-  value && value.length >= 1
-    ? undefined
-    : 'This field is required';
-
-const isUuid = (value: string) =>
-  uuidRegex.test(value)
-    ? undefined
-    : 'Must be a UUID (00000000-0000-0000-0000-000000000000)';
-
-const validation: Spec<BanData> = {
-  ign: minLength1,
-  uuid: isUuid,
-  reason: minLength1,
-  link: minLength1,
-  expires: (v: moment.Moment) => v && v.isValid()
-    ? undefined
-    : 'A valid date must be supplied',
-};
+const validator = new Validator<BanData>()
+  .withValidation('uuid', uuid => !isUuid(uuid), 'Must be a UUID (00000000-0000-0000-0000-000000000000)')
+  .required('ign')
+  .required('reason')
+  .required('link')
+  .withValidation('expires', expires => !expires || !expires.isValid(), 'A valid date must be supplied');
 
 export const BanDataForm: React.SFC<
   & FormProps<BanData, BanDataFormProps, ApplicationState>
@@ -96,7 +83,7 @@ export const BanDataForm: React.SFC<
   initialValues: {
     expires: earliest,
   },
-  validate: validate(validation),
+  validate: validator.validate,
   onSubmit: (values, dispatch, props) => props.onSubmit(values).catch((err) => {
     if (err instanceof ApiErrors.BadDataError)
       throw new SubmissionError({ _error: `Bad data: ${err.message}` });

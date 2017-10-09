@@ -5,7 +5,7 @@ import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
 import { Action } from 'redux-actions';
 import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
-import { AppToaster } from '../AppToaster';
+import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {

@@ -11,7 +11,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { contains } from 'ramda';
 import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
-import { AppToaster } from '../AppToaster';
+import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* fetchPermissionsSaga(): SagaIterator {

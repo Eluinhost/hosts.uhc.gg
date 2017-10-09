@@ -2,7 +2,7 @@ import { SagaIterator, effects } from 'redux-saga';
 import { Settings } from '../actions';
 import { ApplicationState } from '../state/ApplicationState';
 import * as Selectors from '../state/Selectors';
-import { storage } from '../storage';
+import { storage } from '../services/storage';
 import { Action } from 'redux-actions';
 
 const getStorageKey = (state: ApplicationState): string => state.settings.storageKey;

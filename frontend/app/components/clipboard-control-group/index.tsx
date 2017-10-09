@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Intent } from '@blueprintjs/core';
-import { AppToaster } from '../../AppToaster';
+import { AppToaster } from '../../services/AppToaster';
 
 type Props = {
   readonly value: string;

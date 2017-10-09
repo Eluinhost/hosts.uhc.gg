@@ -8,7 +8,7 @@ import { nextAvailableSlot } from './nextAvailableSlot';
 import { Regions } from '../../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { MatchesApi, ApiErrors } from '../../api';
-import { storage } from '../../storage';
+import { storage } from '../../services/storage';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { omit } from 'ramda';
 import { renderToMarkdown } from './TemplateField';

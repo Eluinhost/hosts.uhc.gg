@@ -3,11 +3,11 @@ import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { FormProps, reduxForm } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { SuggestionsField } from '../fields/SuggestionsField';
-import { Spec, validate } from '../../validate';
 import { RemoveMatch } from '../../actions';
 import { connect, Dispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { isDarkMode } from '../../state/Selectors';
+import { Validator } from '../../services/Validator';
 
 type RemovalModalData = {
   reason: string;
@@ -76,8 +76,8 @@ class RemovalModalComponent extends React.PureComponent<
   }
 }
 
-const validationSpec: Spec<RemovalModalData> = {
-  reason: (reason) => {
+const validator = new Validator<RemovalModalData>()
+  .withValidationFunction('reason', (reason) => {
     if (!reason)
       return 'This field is required';
 
@@ -88,13 +88,12 @@ const validationSpec: Spec<RemovalModalData> = {
       return 'Must be at most 256 characters long';
 
     return undefined;
-  },
-};
+  });
 
 const RemovalModalWithForm: React.ComponentClass<StateProps & DispatchProps> =
   reduxForm<RemovalModalData, StateProps & DispatchProps, ApplicationState>({
     form: RemoveMatch.formId,
-    validate: validate(validationSpec),
+    validate: validator.validate,
     onSubmit: (values, dispatch, props): void => {
       props.onConfirm(props.id!, values.reason);
     },

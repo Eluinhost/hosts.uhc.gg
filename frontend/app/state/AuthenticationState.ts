@@ -1,6 +1,6 @@
 import { ReducerBuilder } from './ReducerBuilder';
 import { Reducer, Store } from 'redux';
-import { storage } from '../storage';
+import { storage } from '../services/storage';
 import * as moment from 'moment-timezone';
 import { ApplicationState } from './ApplicationState';
 import { Authentication } from '../actions';

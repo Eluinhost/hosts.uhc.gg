@@ -1,5 +1,5 @@
 import { ReducerBuilder } from './ReducerBuilder';
-import { storage } from '../storage';
+import { storage } from '../services/storage';
 import * as moment from 'moment-timezone';
 import { Settings } from '../actions';
 
