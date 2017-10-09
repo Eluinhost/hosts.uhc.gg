@@ -3,11 +3,11 @@ import { FormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
 import { TextField } from '../fields/TextField';
-import { Spec, validate } from '../../validate';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { AddPermissionDialogState } from '../../state/PermissionsState';
 import { AddPermission } from '../../actions';
+import { Validator } from '../../services/Validator';
 
 type AddPermissionDialogData = {
   username: string;
@@ -61,8 +61,8 @@ const AddPermissionDialogComponent: React.SFC<
     </Dialog>
   );
 
-const validationSpec: Spec<AddPermissionDialogData> = {
-  username: (username) => {
+const validator = new Validator<AddPermissionDialogData>()
+  .withValidationFunction('username', (username) => {
     if (!username)
       return 'This field is required';
 
@@ -73,8 +73,7 @@ const validationSpec: Spec<AddPermissionDialogData> = {
       return 'Must be at most 256 characters long';
 
     return undefined;
-  },
-};
+  });
 
 const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> =
   reduxForm<
@@ -83,7 +82,7 @@ const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPerm
     ApplicationState
   >({
     form: 'add-permission-form',
-    validate: validate(validationSpec),
+    validate: validator.validate,
     onSubmit: async (values, dispatch, props): Promise<void> => {
       try {
         await props.confirm(values.username);

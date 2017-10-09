@@ -5,7 +5,7 @@ import { getAccessToken, getUsername } from '../state/Selectors';
 import { Action } from 'redux-actions';
 import { HostingRules } from '../state/HostingRulesState';
 import * as moment from 'moment-timezone';
-import { AppToaster } from '../AppToaster';
+import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* getHostingRulesSaga(): SagaIterator {

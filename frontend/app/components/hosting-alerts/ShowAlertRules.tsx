@@ -8,7 +8,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { getAccessToken } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { CreateAlertRule } from './CreateAlertRule';
-import { AppToaster } from '../../AppToaster';
+import { AppToaster } from '../../services/AppToaster';
 
 type Props = {
   readonly accessToken: string;

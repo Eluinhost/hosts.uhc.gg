@@ -16,8 +16,7 @@ import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
 import { Button, Intent } from '@blueprintjs/core';
-import { validate } from '../../validate';
-import { asyncValidation, validation } from './validation';
+import { asyncValidation, validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { If } from '../If';
@@ -352,7 +351,7 @@ class CreateMatchFormComponent
 export const CreateMatchForm:
   React.ComponentClass<CreateMatchFormProps & FormProps<CreateMatchData, {}, ApplicationState>> =
   reduxForm<CreateMatchData, CreateMatchFormProps>({
-    validate: validate(validation),
+    validate: validator.validate,
     asyncValidate: asyncValidation,
     asyncBlurFields: ['opens', 'region', 'tournament'],
   })(CreateMatchFormComponent);

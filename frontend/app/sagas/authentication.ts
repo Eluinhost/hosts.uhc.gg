@@ -1,7 +1,7 @@
 import { SagaIterator, effects, delay } from 'redux-saga';
 import { Authentication, LoginPayload } from '../actions';
 import { Action } from 'redux-actions';
-import { storage } from '../storage';
+import { storage } from '../services/storage';
 import { getAccessTokenClaims, getRefreshTokenClaims, isLoggedIn } from '../state/Selectors';
 import { ApiErrors, AuthenticationApi } from '../api';
 import * as moment from 'moment-timezone';

@@ -2,7 +2,6 @@ import { PermissionsMap } from '../models/PermissionsMap';
 import { ReducerBuilder } from './ReducerBuilder';
 import { contains, without } from 'ramda';
 import { getAccessToken } from './Selectors';
-import { AppToaster } from '../AppToaster';
 import { Intent } from '@blueprintjs/core';
 import {
   RefreshPermissionModerationLog, RefreshPermissions, ExpandedPermissionNodes, AddPermission, RemovePermission,

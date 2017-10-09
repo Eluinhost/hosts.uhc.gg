@@ -4,7 +4,7 @@ import { ApproveMatch, ApproveMatchParameters } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
 import { Action } from 'redux-actions';
-import { AppToaster } from '../AppToaster';
+import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator {

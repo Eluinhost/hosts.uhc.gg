@@ -5,7 +5,7 @@ import { ApiKeyState } from '../../state/ApiKeyState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { storage } from '../../storage';
+import { storage } from '../../services/storage';
 import { If } from '../If';
 import { Title } from '../Title';
 import { createSelector } from 'reselect';

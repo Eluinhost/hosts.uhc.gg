@@ -2,11 +2,11 @@ import * as React from 'react';
 import { FormProps, reduxForm } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Dialog, Intent } from '@blueprintjs/core';
-import { Spec, validate } from '../../validate';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RulesField } from './RulesField';
 import { SetHostingRules } from '../../actions';
+import { Validator } from '../../services/Validator';
 
 type SetRulesDialogData = {
   rules: string;
@@ -76,17 +76,8 @@ const SetRulesDialogComponent: React.SFC<
     </Dialog>
   );
 
-const validationSpec: Spec<SetRulesDialogData> = {
-  rules: (rules) => {
-    if (!rules)
-      return 'This field is required';
-
-    if (rules.length < 3)
-      return 'Must be at least 3 characters long';
-
-    return undefined;
-  },
-};
+const validator = new Validator<SetRulesDialogData>()
+  .withValidation('rules', rules => !rules || rules.length < 3, 'Must be at least 3 characters long');
 
 const SetRulesDialogForm: React.SFC<SetRulesDialogStateProps & SetRulesDialogDispatchProps> =
   reduxForm<
@@ -95,7 +86,7 @@ const SetRulesDialogForm: React.SFC<SetRulesDialogStateProps & SetRulesDialogDis
     ApplicationState
   >({
     form: 'set-rules-form',
-    validate: validate(validationSpec),
+    validate: validator.validate,
     onSubmit: (values, dispatch, props) => {
       dispatch(SetHostingRules.start(values.rules));
       props.close();

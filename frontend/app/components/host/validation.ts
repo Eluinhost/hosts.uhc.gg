@@ -1,6 +1,4 @@
-import { Spec } from '../../validate';
 import * as moment from 'moment-timezone';
-import { TeamStyles } from '../../models/TeamStyles';
 import {
   all, map, take, pipe, drop, view, lensIndex, ifElse, T,
   both, flip, gte, lte, cond, complement, always,
@@ -10,10 +8,16 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { HostFormConflicts } from '../../actions';
 import { CreateMatchData } from '../../models/CreateMatchData';
+import { Validator } from '../../services/Validator';
+import { TeamStyles } from '../../models/TeamStyles';
 
-export const validation: Spec<CreateMatchData> = {
-  count: count => !count || count < 0 ? 'Must provide a valid game #' : undefined,
-  opens: (opens) => {
+
+const asInt = (x: string): number => Number.parseInt(x, 10);
+const between = (l: number, r: number) => (a: number) => both(flip(gte)(l), flip(lte)(r))(a);
+
+export const validator: Validator<CreateMatchData> = new Validator<CreateMatchData>()
+  .withValidation('count', count => !count || count <= 0, 'Must provide a valid game #')
+  .withValidationFunction('opens', (opens) => {
     if (!opens)
       return 'Must provide an opening time';
 
@@ -24,8 +28,8 @@ export const validation: Spec<CreateMatchData> = {
       return 'Must be at least 30 minutes in advance';
 
     return undefined;
-  },
-  ip: (ip, obj) => {
+  })
+  .withValidationFunction('ip', (ip, obj) => {
     if (!ip) {
       if (!obj.address) {
         return 'IP must be provided if address is not provided';
@@ -36,9 +40,6 @@ export const validation: Spec<CreateMatchData> = {
 
     const matches: RegExpMatchArray | null =
       ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
-
-    const asInt = (x: string): number => Number.parseInt(x, 10);
-    const between = (l: number, r: number) => (a: number) => both(flip(gte)(l), flip(lte)(r))(a);
 
     const validMatches = (matches: string[] | null): boolean => matches !== null;
 
@@ -71,9 +72,8 @@ export const validation: Spec<CreateMatchData> = {
       [complement(validOctets), always('Segments in an IP must be between 0-255')],
       [T, always(undefined)],
     ])(matches);
-  },
-  region: region => region ? undefined : 'You must select a region',
-  teams: (teams, obj) => {
+  })
+  .withValidationFunction('teams', (teams, obj) => {
     if (!teams)
       return 'You must select a team style';
 
@@ -82,20 +82,21 @@ export const validation: Spec<CreateMatchData> = {
     if (style!.requiresTeamSize && (!obj.size || obj.size < 0 || obj.size > 32767))
       return 'Must provide a valid team size with this scenario';
 
-    if (style!.value === 'custom' && !obj.customStyle)
+    if (style!.value === 'custom' && (!obj.customStyle || obj.customStyle.trim().length === 0))
       return 'Must provide a custom style if \'custom\' is selected';
 
     return undefined;
-  },
-  content: content => content ? undefined : 'Must provide some content for the post',
-  scenarios: scenarios => scenarios && scenarios.length ? undefined : 'Must provide at least 1 scenario',
-  location: location => location ? undefined : 'Must provide a location',
-  version: version => version && version.length ? undefined :  'Must provide a version',
-  slots: slots => slots && slots > 1 ? undefined : 'Slots must be at least 2',
-  length: length => length && length >= 30 ? undefined : 'Must be at least 30 minutes',
-  mapSize: mapSize => mapSize && mapSize > 0 ? undefined : 'Must be positive',
-  pvpEnabledAt: pvpEnabledAt => pvpEnabledAt && pvpEnabledAt >= 0 ? undefined : 'Must be positive',
-  address: (address, obj) => {
+  })
+  .required('region')
+  .required('content')
+  .required('location')
+  .required('version')
+  .required('scenarios')
+  .withValidation('slots', slots => !slots || slots <= 1, 'Slots must be at least 2')
+  .withValidation('length', length => !length || length < 30, 'Must be at least 30 minutes')
+  .withValidation('mapSize', size => !size || size <= 0, 'Must be a positive number')
+  .withValidation('pvpEnabledAt', at => !at || at < 0, 'Must be positive')
+  .withValidationFunction('address', (address, obj) => {
     if (!address) {
       if (!obj.ip) {
         return 'Address must be provided if an IP is not provided';
@@ -105,13 +106,7 @@ export const validation: Spec<CreateMatchData> = {
     }
 
     return address.length >= 5 ? undefined : 'Address must be at least 5 characters';
-  },
-  tags: always(undefined),
-  size: always(undefined),
-  customStyle: always(undefined),
-  hostingName: always(undefined),
-  tournament: always(undefined),
-};
+  });
 
 export const asyncValidation = async (values: CreateMatchData, dispatch: Dispatch<ApplicationState>): Promise<void> => {
   dispatch(HostFormConflicts.start({ data: values }));
