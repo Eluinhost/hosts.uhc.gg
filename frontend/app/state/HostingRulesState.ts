@@ -1,4 +1,4 @@
-import { BadDataError, ForbiddenError, NotAuthenticatedError } from '../api';
+import { ApiErrors } from '../api';
 import { ReducerBuilder } from './ReducerBuilder';
 import * as moment from 'moment-timezone';
 import { GetHostingRules, SetHostingRules } from '../actions';
@@ -18,11 +18,11 @@ export type HostingRulesState = {
 };
 
 const displayError = (err: Error): string => {
-  if (err instanceof BadDataError) {
+  if (err instanceof ApiErrors.BadDataError) {
     return err.message;
-  } else if (err instanceof NotAuthenticatedError) {
+  } else if (err instanceof ApiErrors.NotAuthenticatedError) {
     return 'You are not logged in';
-  } else if (err instanceof ForbiddenError) {
+  } else if (err instanceof ApiErrors.ForbiddenError) {
     return 'You do not have permissions to do this';
   }
 

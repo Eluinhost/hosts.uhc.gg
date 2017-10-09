@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { getAllBansForUuid } from '../../api';
+import { UBLApi } from '../../api';
 import { any, CurriedFunction2, curry, propSatisfies } from 'ramda';
 import { Intent, Tag } from '@blueprintjs/core';
 import * as moment from 'moment-timezone';
@@ -46,7 +46,7 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
     }
   }
 
-  load = () => getAllBansForUuid(this.props.match.params.uuid).then((bans) => {
+  load = () => UBLApi.fetchAllBansForUuid(this.props.match.params.uuid).then((bans) => {
     this.updateFlag(bans);
     return bans;
   })

@@ -1,4 +1,4 @@
-import { approveMatch as approveApiCall, BadDataError } from '../api';
+import { MatchesApi, ApiErrors } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { ApproveMatch, ApproveMatchParameters } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
@@ -21,7 +21,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
         username,
       },
     }));
-    yield effects.call(approveApiCall, parameters.id, token);
+    yield effects.call(MatchesApi.callApprove, parameters.id, token);
     yield effects.put(ApproveMatch.success({ parameters }));
     yield effects.put(ApproveMatch.closeDialog());
 
@@ -37,7 +37,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof BadDataError
+      message: error instanceof ApiErrors.BadDataError
         ? error.message
         : `Failed to approve match #${parameters.id}`,
     });

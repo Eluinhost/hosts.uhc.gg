@@ -1,6 +1,6 @@
-import { BadDataError, removeMatch as removeApiCall } from '../api';
+import { ApiErrors, MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
-import { ApproveMatch, RemoveMatch, RemoveMatchParameters } from '../actions';
+import { RemoveMatch, RemoveMatchParameters } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
 import { Action } from 'redux-actions';
@@ -23,7 +23,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
       },
     }));
     yield effects.put(startSubmit(RemoveMatch.formId));
-    yield effects.call(removeApiCall, parameters.id, parameters.reason, token);
+    yield effects.call(MatchesApi.callRemove, parameters.id, parameters.reason, token);
     yield effects.put(stopSubmit(RemoveMatch.formId));
     yield effects.put(RemoveMatch.success({ parameters }));
     yield effects.put(RemoveMatch.closeDialog());
@@ -48,7 +48,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof BadDataError
+      message: error instanceof ApiErrors.BadDataError
         ? error.message
         : `Failed to remove match #${parameters.id}`,
     });

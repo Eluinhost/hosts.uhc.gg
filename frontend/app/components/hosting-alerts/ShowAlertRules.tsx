@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { AlertRule } from '../../models/AlertRule';
+import { AlertRule, CreateAlertRuleData } from '../../models/AlertRule';
 import { Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { ExistingAlertRule } from './ExistingAlertRule';
-import { createAlertRule, CreateAlertRulePayload, deleteAlertRule, getAllAlertRules } from '../../api';
+import { AlertsApi } from '../../api';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getAccessToken } from '../../state/Selectors';
@@ -32,7 +32,7 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
   }
 
   private onRefresh = () =>
-    getAllAlertRules(this.props.accessToken)
+    AlertsApi.fetchAllAlertRules(this.props.accessToken)
       .then((rules) => {
         this.setState({
           rules,
@@ -48,8 +48,8 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
         });
       })
 
-  private onSubmit = (rule: CreateAlertRulePayload): Promise<boolean> =>
-    createAlertRule(rule, this.props.accessToken)
+  private onSubmit = (rule: CreateAlertRuleData): Promise<boolean> =>
+    AlertsApi.callCreateAlertRule(rule, this.props.accessToken)
       .then((created) => {
         AppToaster.show({
           message: 'Created new alert',
@@ -71,7 +71,7 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
       })
 
   private onDelete = (id: number) =>
-    deleteAlertRule(id, this.props.accessToken)
+    AlertsApi.callDeleteAlertRule(id, this.props.accessToken)
       .then(() => {
         AppToaster.show({
           message: 'Alert deleted',

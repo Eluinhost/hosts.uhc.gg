@@ -1,4 +1,4 @@
-import { getMatch } from '../api';
+import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { FetchMatchDetailsParameters, FetchMatchDetails } from '../actions';
 import { Match } from '../Match';
@@ -25,7 +25,7 @@ function* fetchMatchDetailsSaga(action: Action<FetchMatchDetailsParameters>): Sa
     }
 
     if (!match) {
-      match = yield effects.call(getMatch, parameters.id);
+      match = yield effects.call(MatchesApi.fetchSingle, parameters.id);
     }
 
     yield effects.put(FetchMatchDetails.success({ parameters, result: match }));

@@ -1,4 +1,4 @@
-import * as Api from '../api';
+import { PermissionsApi, ApiErrors } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import {
   AddPermission, ExpandedPermissionNodes, PermissionParameters, RefreshPermissionModerationLog, RefreshPermissions,
@@ -18,7 +18,7 @@ function* fetchPermissionsSaga(): SagaIterator {
   try {
     yield effects.put(RefreshPermissions.started());
 
-    const result: PermissionsMap = yield effects.call(Api.fetchPermissions);
+    const result: PermissionsMap = yield effects.call(PermissionsApi.fetchPermissions);
 
     yield effects.put(RefreshPermissions.success({ result }));
   } catch (error) {
@@ -48,10 +48,10 @@ function* addPermission(action: Action<string>): SagaIterator {
       throw new Error('invalid state');
 
     if (!accessToken)
-      throw new Api.NotAuthenticatedError();
+      throw new ApiErrors.NotAuthenticatedError();
 
     yield effects.put(AddPermission.started({ parameters }));
-    yield effects.call(Api.addPermission, permission, username, accessToken);
+    yield effects.call(PermissionsApi.callAddPermission, permission, username, accessToken);
     yield effects.put(AddPermission.success({ parameters }));
     yield effects.put(AddPermission.closeDialog());
     yield effects.put(RefreshPermissions.start());
@@ -70,7 +70,7 @@ function* addPermission(action: Action<string>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof Api.BadDataError
+      message: error instanceof ApiErrors.BadDataError
         ? error.message
         : `Failed to add permission to /u/${parameters!.username}`,
     });
@@ -86,7 +86,7 @@ const getRemovePermissionState = createSelector<
   dialogState => dialogState,
 );
 
-function* removePermission(action: Action<void>): SagaIterator {
+function* removePermission(): SagaIterator {
   const accessToken: string | null = yield effects.select(getAccessToken);
   const parameters: RemovePermissionDialogState | null = yield effects.select(getRemovePermissionState);
 
@@ -95,10 +95,10 @@ function* removePermission(action: Action<void>): SagaIterator {
       throw new Error('invalid state');
 
     if (!accessToken)
-      throw new Api.NotAuthenticatedError();
+      throw new ApiErrors.NotAuthenticatedError();
 
     yield effects.put(RemovePermission.started({ parameters }));
-    yield effects.call(Api.removePermission, parameters.permission, parameters.username, accessToken);
+    yield effects.call(PermissionsApi.callRemovePermission, parameters.permission, parameters.username, accessToken);
     yield effects.put(RemovePermission.success({ parameters }));
     yield effects.put(RemovePermission.closeDialog());
     yield effects.put(RefreshPermissions.start());
@@ -117,7 +117,7 @@ function* removePermission(action: Action<void>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof Api.BadDataError
+      message: error instanceof ApiErrors.BadDataError
         ? error.message
         : `Failed to remove permission from /u/${parameters!.username}`,
     });

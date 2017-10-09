@@ -1,4 +1,4 @@
-import * as Api from '../api';
+import { ApiErrors, HostingRulesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { GetHostingRules, SetHostingRules } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
@@ -12,7 +12,7 @@ function* getHostingRulesSaga(): SagaIterator {
   try {
     yield effects.put(GetHostingRules.started());
 
-    const rules: HostingRules = yield effects.call(Api.getHostingRules);
+    const rules: HostingRules = yield effects.call(HostingRulesApi.fetchHostingRules);
 
     yield effects.put(GetHostingRules.success({ result: rules }));
   } catch (error) {
@@ -29,7 +29,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     const accessToken: string | null = yield effects.select(getAccessToken);
 
     if (!username || !accessToken) {
-      throw new Api.NotAuthenticatedError();
+      throw new ApiErrors.NotAuthenticatedError();
     }
 
     const rules: HostingRules = {
@@ -39,7 +39,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     };
 
     yield effects.put(SetHostingRules.started({ parameters, result: rules }));
-    yield effects.call(Api.setHostingRules, parameters, accessToken);
+    yield effects.call(HostingRulesApi.callSetHostingRules, parameters, accessToken);
     yield effects.put(SetHostingRules.success({ parameters, result: rules }));
 
     AppToaster.show({
@@ -53,7 +53,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof Api.BadDataError
+      message: error instanceof ApiErrors.BadDataError
         ? `Failed to update hosting rules: ${error.message}`
         : `Failed to update hosting rules`,
     });

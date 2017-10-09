@@ -1,4 +1,4 @@
-import { getHostingHistory } from '../api';
+import { MatchesApi } from '../api';
 import { SagaIterator, effects } from 'redux-saga';
 import { LoadHostHistory, LoadHostHistoryParameters } from '../actions';
 import { Match } from '../Match';
@@ -14,7 +14,7 @@ function* loadHostHistorySaga(action: Action<LoadHostHistoryParameters>): SagaIt
     const id: number | undefined = yield effects.select(getHostingHistoryCursor);
 
     const result: Match[] = yield effects.call(
-      getHostingHistory,
+      MatchesApi.fetchHistoryForHost,
       parameters.host,
       parameters.refresh ? undefined : id,
     );

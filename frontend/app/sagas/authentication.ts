@@ -3,7 +3,7 @@ import { Authentication, LoginPayload } from '../actions';
 import { Action } from 'redux-actions';
 import { storage } from '../storage';
 import { getAccessTokenClaims, getRefreshTokenClaims, isLoggedIn } from '../state/Selectors';
-import { ForbiddenError, NotAuthenticatedError, RefreshTokenResponse, refreshTokens } from '../api';
+import { ApiErrors, AuthenticationApi } from '../api';
 import * as moment from 'moment-timezone';
 import { ApplicationState } from '../state/ApplicationState';
 
@@ -60,8 +60,8 @@ function* attemptRefresh(): SagaIterator {
 
   try {
     // refresh token mustn't be null here as refreshClaims worked
-    const data: RefreshTokenResponse = yield effects.call(
-      refreshTokens,
+    const data: LoginPayload = yield effects.call(
+      AuthenticationApi.callRefreshTokens,
       (state.authentication.refreshToken || 'ERROR NO REFRESH TOKEN IN STATE'),
     );
 
@@ -72,7 +72,7 @@ function* attemptRefresh(): SagaIterator {
     console.error(err, 'error refreshing tokens');
 
     // force log them out if refresh token is broken
-    if (err instanceof ForbiddenError || err instanceof NotAuthenticatedError) {
+    if (err instanceof ApiErrors.ForbiddenError || err instanceof ApiErrors.NotAuthenticatedError) {
       yield effects.put(Authentication.logout());
     }
   }
