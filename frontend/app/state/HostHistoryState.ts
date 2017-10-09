@@ -1,5 +1,5 @@
 import { ReducerBuilder } from './ReducerBuilder';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { concat } from 'ramda';
 import { Reducer } from 'redux';

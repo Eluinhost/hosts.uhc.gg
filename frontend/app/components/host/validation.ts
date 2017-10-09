@@ -1,6 +1,6 @@
 import { Spec } from '../../validate';
 import * as moment from 'moment-timezone';
-import { TeamStyles } from '../../TeamStyles';
+import { TeamStyles } from '../../models/TeamStyles';
 import {
   all, map, take, pipe, drop, view, lensIndex, ifElse, T,
   both, flip, gte, lte, cond, complement, always,

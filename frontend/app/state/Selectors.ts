@@ -6,7 +6,7 @@ import {
 } from 'ramda';
 import { createSelector } from 'reselect';
 import { AccessTokenClaims, RefreshTokenClaims } from './AuthenticationState';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 
 export const isDarkMode = createSelector<ApplicationState, boolean, boolean>(
   state => state.settings.isDarkMode,

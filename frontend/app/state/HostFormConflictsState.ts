@@ -1,5 +1,5 @@
 import { ReducerBuilder } from './ReducerBuilder';
-import { Match } from '../Match';
+import { Match } from '../models/Match';
 import { HostFormConflicts } from '../actions';
 
 export type HostFormConflictsState = {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
-import { Match } from '../../Match';
+import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../state/ApplicationState';

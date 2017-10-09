@@ -6,7 +6,7 @@ import { Intent, Tag } from '@blueprintjs/core';
 import * as moment from 'moment-timezone';
 import { UblListing } from './UblListing';
 import { If } from '../If';
-import { BanEntry } from '../../BanEntry';
+import { BanEntry } from '../../models/BanEntry';
 import { Title } from '../Title';
 
 type Params = {

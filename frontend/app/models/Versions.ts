@@ -1,4 +1,4 @@
-export const versions = [
+export const Versions = [
   '1.12.1',
   '1.12',
   '1.11.2',

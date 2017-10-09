@@ -1,6 +1,6 @@
 
 import { Obj } from 'ramda';
-import { BanEntry } from '../BanEntry';
+import { BanEntry } from '../models/BanEntry';
 import { BanData } from '../components/ubl/BanDataForm';
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
 

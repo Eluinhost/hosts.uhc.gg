@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { renderTeamStyle, TeamStyles } from '../../TeamStyles';
+import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 
 type Props = {
   readonly style: string;
