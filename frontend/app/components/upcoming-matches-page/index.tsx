@@ -8,12 +8,9 @@ import { MatchListing } from '../match-listing';
 import { RouteComponentProps } from 'react-router';
 import { Title } from '../Title';
 import { UpdateUpcoming } from '../../actions';
+import { UpcomingState } from '../../state/UpcomingState';
 
-type StateProps = {
-  readonly matches: Match[];
-  readonly error: string | null;
-  readonly loading: boolean;
-};
+type StateProps = UpcomingState;
 
 type DispatchProps = {
   readonly refetch: () => void;
@@ -24,12 +21,8 @@ const dontLoadMore = () => {
 };
 
 class UpcomingMatchesPageComponent extends React.PureComponent<StateProps & DispatchProps & RouteComponentProps<any>> {
-  public componentDidMount() {
-    this.props.refetch();
-  }
-
   public render() {
-    const { matches, error, loading, refetch } = this.props;
+    const { matches, error, fetching, updated, refetch } = this.props;
 
     return (
       <div>
@@ -38,25 +31,21 @@ class UpcomingMatchesPageComponent extends React.PureComponent<StateProps & Disp
         <MatchListing
           matches={matches}
           error={error}
-          loading={loading}
+          loading={fetching}
           refetch={refetch}
+          autoRefreshSeconds={60}
           hasMore={false}
           loadMore={dontLoadMore}
+          lastUpdated={updated}
         />
       </div>
     );
   }
 }
 
-const stateSelector = createSelector<ApplicationState, Match[], string | null, boolean, StateProps>(
-  state => state.upcoming.matches,
-  state => state.upcoming.error,
-  state => state.upcoming.fetching,
-  (matches, error, loading) => ({
-    matches,
-    error,
-    loading,
-  }),
+const stateSelector = createSelector<ApplicationState, UpcomingState, StateProps>(
+  state => state.upcoming,
+  state => state,
 );
 
 export const UpcomingMatchesPage: React.ComponentClass<RouteComponentProps<any>> =

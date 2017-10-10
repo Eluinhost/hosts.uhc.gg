@@ -3,6 +3,7 @@ import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { concat } from 'ramda';
 import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
+import * as moment from 'moment-timezone';
 
 export type HostHistoryState = {
   readonly fetching: boolean;
@@ -10,6 +11,7 @@ export type HostHistoryState = {
   readonly matches: Match[];
   readonly host: string | null;
   readonly hasMorePages: boolean;
+  readonly updated: moment.Moment | null;
 };
 
 const displayError = (err: Error) => {
@@ -29,6 +31,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
     matches: [],
     host: null,
     hasMorePages: true,
+    updated: null,
   })
   .handle(LoadHostHistory.clear, () => ({
     fetching: false,
@@ -36,6 +39,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
     matches: [],
     host: null,
     hasMorePages: false,
+    updated: null,
   }))
   .handle(LoadHostHistory.started, (prev, action) => ({
     fetching: true,
@@ -43,6 +47,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
     host: action.payload!.parameters.host,
     matches: prev.matches,
     hasMorePages: prev.hasMorePages,
+    updated: prev.updated,
   }))
   .handle(LoadHostHistory.success, (prev, action) => ({
     fetching: false,
@@ -50,6 +55,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
     matches: concat(prev.matches, action.payload!.result),
     host: prev.host,
     hasMorePages: action.payload!.result.length > 0,
+    updated: moment.utc(),
   }))
   .handle(LoadHostHistory.failure, (prev, action) => ({
     fetching: false,
@@ -57,6 +63,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
     matches: prev.matches,
     host: prev.host,
     hasMorePages: prev.hasMorePages,
+    updated: prev.updated,
   }))
   .handle(RemoveMatch.started, (prev, action) => ({
     ...prev,
