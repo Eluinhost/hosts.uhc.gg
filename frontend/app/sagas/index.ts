@@ -8,10 +8,13 @@ import { watchAuthentication } from './authentication';
 import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
 import { watchHostingRules } from './hostingRules';
 import { watchSyncTime } from './timeSync';
-import { watchSettings } from './settings';
+import { watchSettingsToggle } from './watchSettingsToggle';
 import { watchPermissions } from './permissions';
 import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
 import { watchApiKey } from './apiKey';
+
+// Don't include watchSettingsToggle here, we run that once at the beggining of the store to make sure data
+// is loaded before first render
 
 export default function* rootSaga(): SagaIterator {
   yield effects.all([
@@ -24,7 +27,7 @@ export default function* rootSaga(): SagaIterator {
     effects.fork(watchCheckHostFormConflicts),
     effects.fork(watchHostingRules),
     effects.fork(watchSyncTime),
-    effects.fork(watchSettings),
+    effects.fork(watchSettingsToggle),
     effects.fork(watchPermissions),
     effects.fork(watchRefreshPermissionModerationLog),
     effects.fork(watchApiKey),

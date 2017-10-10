@@ -1,7 +1,6 @@
-import { ReducerBuilder } from './ReducerBuilder';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
-import { Reducer } from 'redux';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../actions';
 import * as moment from 'moment-timezone';
 
@@ -23,7 +22,13 @@ const displayError = (err: Error) => {
 };
 
 
-export const reducer: Reducer<MatchDetailsState> = new ReducerBuilder<MatchDetailsState>()
+export const reducer: ApplicationReducer<MatchDetailsState> = ReducerBuilder
+  .withInitialState<MatchDetailsState>({
+    match: null,
+    fetching: false,
+    error: null,
+    updated: null,
+  })
   .handle(FetchMatchDetails.started, (prev, action) => ({
     fetching: true,
     error: null,
@@ -101,10 +106,3 @@ export const reducer: Reducer<MatchDetailsState> = new ReducerBuilder<MatchDetai
     };
   })
   .build();
-
-export const initialValues = async (): Promise<MatchDetailsState> => ({
-  match: null,
-  fetching: false,
-  error: null,
-  updated: null,
-});

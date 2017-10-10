@@ -1,4 +1,4 @@
-import { ReducerBuilder } from './ReducerBuilder';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { FetchApiKey, RegenerateApiKey } from '../actions';
 
 export type ApiKeyState = {
@@ -7,7 +7,12 @@ export type ApiKeyState = {
   readonly key: string | null;
 };
 
-export const reducer = new ReducerBuilder<ApiKeyState>()
+export const reducer: ApplicationReducer<ApiKeyState> = ReducerBuilder
+  .withInitialState<ApiKeyState>({
+    fetching: false,
+    error: null,
+    key: null,
+  })
   .handle<void>(FetchApiKey.started, (prev, action) => ({
     ...prev,
     fetching: true,
@@ -41,9 +46,3 @@ export const reducer = new ReducerBuilder<ApiKeyState>()
     error: 'Failed to fetch API key from server',
   }))
   .build();
-
-export const initialValues = async (): Promise<ApiKeyState> => ({
-  fetching: false,
-  error: null,
-  key: null,
-});

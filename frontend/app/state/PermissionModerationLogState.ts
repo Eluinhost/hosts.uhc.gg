@@ -1,5 +1,4 @@
-import { ReducerBuilder } from './ReducerBuilder';
-import { Reducer } from 'redux';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { RefreshPermissionModerationLog } from '../actions';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 
@@ -9,7 +8,12 @@ export type PermissionModerationLogState = {
   readonly log: PermissionModerationLogEntry[];
 };
 
-export const reducer: Reducer<PermissionModerationLogState> = new ReducerBuilder<PermissionModerationLogState>()
+export const reducer: ApplicationReducer<PermissionModerationLogState> = ReducerBuilder
+  .withInitialState<PermissionModerationLogState>({
+    fetching: false,
+    error: null,
+    log: [],
+  })
   .handle(RefreshPermissionModerationLog.started, (prev, action) => ({
     fetching: true,
     error: null,
@@ -26,9 +30,3 @@ export const reducer: Reducer<PermissionModerationLogState> = new ReducerBuilder
     log: prev.log,
   }))
   .build();
-
-export const initialValues = async (): Promise<PermissionModerationLogState> => ({
-  fetching: false,
-  error: null,
-  log: [],
-});
