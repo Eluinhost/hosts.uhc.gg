@@ -204,3 +204,17 @@ export const RegenerateApiKey = {
   success: createAction<WithResult<string>>('REGENERATE_API_KEY_SUCCESS'),
   failure: createAction<WithError>('REGENERATE_API_KEY_FAILURE'),
 };
+
+export const ClearStorage = {
+  start: createAction('CLEAR_STORAGE_START'),
+  started: createAction('CLEAR_STORAGE_STARTED'),
+  success: createAction('CLEAR_STORAGE_SUCCESS'),
+  failure: createAction<WithError>('CLEAR_STORAGE_FAILURE'),
+};
+
+export const SetSavedHostFormData = {
+  start: createAction<CreateMatchData>('SET_SAVED_HOST_FORM_DATA_START'),
+  started: createAction<WithParameters<CreateMatchData>>('SET_SAVED_HOST_FORM_DATA_STARTED'),
+  success: createAction<WithParameters<CreateMatchData>>('SET_SAVED_HOST_FORM_DATA_SUCCESS'),
+  failure: createAction<WithParameters<CreateMatchData> & WithError>('SET_SAVED_HOST_FORM_DATA_FAILURE'),
+};
