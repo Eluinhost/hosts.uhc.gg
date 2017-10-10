@@ -5,11 +5,10 @@ import { ApiKeyState } from '../../state/ApiKeyState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { Button, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { storage } from '../../services/storage';
 import { If } from '../If';
 import { Title } from '../Title';
 import { createSelector } from 'reselect';
-import { FetchApiKey, RegenerateApiKey } from '../../actions';
+import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
 
 export type StateProps = {
   readonly apiKey: ApiKeyState;
@@ -66,10 +65,7 @@ const stateSelector = createSelector<ApplicationState, ApiKeyState, StateProps>(
 const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
   refreshApiKey: () => dispatch(FetchApiKey.start()),
   regenerateApiKey: () => dispatch(RegenerateApiKey.start()),
-  resetStorage: async () => {
-    await storage.clear();
-    window.location.reload(true);
-  },
+  resetStorage: () => dispatch(ClearStorage.start()),
 });
 
 export const ProfilePage: React.ComponentClass<RouteComponentProps<any>> =

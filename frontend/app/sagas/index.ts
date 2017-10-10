@@ -4,7 +4,7 @@ import { watchRemoveMatch } from './removeMatch';
 import { watchApproveMatch } from './approveMatch';
 import { watchLoadHostHistory } from './loadHostHistory';
 import { watchFetchMatchDetails } from './fetchMatchDetails';
-import { watchAuthentication } from './authentication';
+import { refreshAuthentication } from './refreshAuthentication';
 import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
 import { watchHostingRules } from './hostingRules';
 import { watchSyncTime } from './timeSync';
@@ -23,7 +23,7 @@ export default function* rootSaga(): SagaIterator {
     effects.fork(watchApproveMatch),
     effects.fork(watchLoadHostHistory),
     effects.fork(watchFetchMatchDetails),
-    effects.fork(watchAuthentication),
+    effects.fork(refreshAuthentication),
     effects.fork(watchCheckHostFormConflicts),
     effects.fork(watchHostingRules),
     effects.fork(watchSyncTime),

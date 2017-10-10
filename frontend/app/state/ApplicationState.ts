@@ -13,6 +13,7 @@ import { reducer as HostingRules, HostingRulesState } from './HostingRulesState'
 import { reducer as HostFormConflicts, HostFormConflictsState } from './HostFormConflictsState';
 import { reducer as Settings, SettingsState } from './SettingsState';
 import { reducer as TimeSync, TimeSyncState } from './TimeSyncState';
+import { reducer as HostFormSavedData, HostFormSavedDataState } from './HostFormSavedDataState';
 import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
@@ -30,6 +31,7 @@ export type ApplicationState = {
   readonly hostFormConflicts: HostFormConflictsState;
   readonly settings: SettingsState;
   readonly timeSync: TimeSyncState;
+  readonly hostFormSavedData: HostFormSavedDataState;
 };
 
 const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -52,6 +54,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       hostFormConflicts: HostFormConflicts,
       settings: Settings,
       timeSync: TimeSync,
+      hostFormSavedData: HostFormSavedData,
     }),
     {
       authentication: Authentication.initial,
@@ -67,6 +70,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       hostFormConflicts: HostFormConflicts.initial,
       settings: Settings.initial,
       timeSync: TimeSync.initial,
+      hostFormSavedData: HostFormSavedData.initial,
     },
     composeEnhancers(applyMiddleware(sagaMiddleware)),
   );
