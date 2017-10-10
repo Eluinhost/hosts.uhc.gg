@@ -87,7 +87,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
           <NonIdealState visual={<Spinner/>} title="Loading..."/>
         </If>
 
-        <If condition={this.props.matches.length > 0} alternative={this.noMatches}>
+        <If condition={this.props.filteredMatches.length > 0} alternative={this.noMatches}>
           <div>
             {this.props.filteredMatches.map(this.renderMatch)}
           </div>
