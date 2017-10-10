@@ -26,6 +26,7 @@ import * as reactGa from 'react-ga';
 import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
 import { HostingAlertsPage } from './hosting-alerts';
+import { Footer } from './footer';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -159,6 +160,8 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
               <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
               <Routes />
             </div>
+
+            <Footer />
           </div>
         </GlobalHotkeys>
       </BrowserRouter>
