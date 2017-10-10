@@ -1,4 +1,3 @@
-import thunkMiddleware from 'redux-thunk';
 import { FormStateMap, reducer as formReducer } from 'redux-form';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
@@ -69,7 +68,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       settings: Settings.initial,
       timeSync: TimeSync.initial,
     },
-    composeEnhancers(applyMiddleware(thunkMiddleware, sagaMiddleware)),
+    composeEnhancers(applyMiddleware(sagaMiddleware)),
   );
 
   sagaMiddleware.run(sagas);
