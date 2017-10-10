@@ -48,6 +48,9 @@ html, body, #root
   &.pt-dark
     background: $pt-dark-app-background-color
 
+  &.navbar-sticky
+    margin-top: 44px
+
 .app-container
   width: 100%
   max-width: 920px
@@ -177,9 +180,6 @@ html, body, #root
   justify-content: center
   padding: 1px 0 0 0
 
-  &.time-settings-stuck
-    position: fixed
-    top: 0
   .time-settings-popout
     position: absolute
     right: 0
@@ -192,6 +192,10 @@ html, body, #root
     margin: 0
     &:after
       display: none
+
+.navbar-sticky .pt-card.time-settings
+  position: fixed
+  top: 0
 
 .pt-navbar
   display: flex
@@ -308,10 +312,10 @@ a.username-link, span.username-link
     color: $pt-dark-text-color
 
 .pt-dark
-  .pt-card, .pt-navbar, .pt-dialog, .pt-card.time-settings-stuck
+  .pt-card, .pt-navbar, .pt-dialog, .navbar-sticky .pt-card.time-settings
     border-top: 3px solid $pt-intent-danger
 
-.pt-card, .pt-navbar, .pt-dialog, .pt-card.time-settings-stuck
+.pt-card, .pt-navbar, .pt-dialog, .navbar-sticky .pt-card.time-settings
   border-top: 3px solid $pt-intent-primary
   border-top-left-radius: 0
   border-top-right-radius: 0

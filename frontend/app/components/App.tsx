@@ -113,22 +113,58 @@ type AppProps = {
   readonly isDarkMode: boolean;
 };
 
-const AppComponent: React.SFC<AppProps> = ({ isDarkMode }) => (
-  <BrowserRouter>
-    <GlobalHotkeys>
-      <div className={`${isDarkMode ? 'pt-dark' : ''} full-page`}>
-        <div style={{ flexGrow: 0 }}>
-          <Navbar />
-          <TimeSettings />
-        </div>
-        <div className="app-container">
-          <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
-          <Routes />
-        </div>
-      </div>
-    </GlobalHotkeys>
-  </BrowserRouter>
-);
+type AppState = {
+  readonly navbarSticky: boolean;
+};
+
+class AppComponent extends React.PureComponent<AppProps, AppState> {
+  state = {
+    navbarSticky: window.scrollY > 50, // upper navbar is 50px
+  };
+
+  private onScroll = (): void => this.setState({
+    navbarSticky: window.scrollY > 50,
+  })
+
+  componentDidMount() {
+    document.addEventListener('scroll', this.onScroll);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('scroll', this.onScroll);
+  }
+
+  private wrapperClass = () => {
+    let base = 'full-page';
+
+    if (this.props.isDarkMode)
+      base += ' pt-dark';
+
+    if (this.state.navbarSticky)
+      base += ' navbar-sticky';
+
+    return base;
+  }
+
+  public render() {
+    return (
+      <BrowserRouter>
+        <GlobalHotkeys>
+          <div className={this.wrapperClass()}>
+            <div style={{ flexGrow: 0 }}>
+              <Navbar />
+              <TimeSettings />
+            </div>
+            <div className="app-container">
+              <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+              <Routes />
+            </div>
+          </div>
+        </GlobalHotkeys>
+      </BrowserRouter>
+    );
+  }
+}
 
 const stateSelector = createSelector<ApplicationState, boolean, AppProps>(
   isDarkMode,

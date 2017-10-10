@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Settings } from '../../actions';
 import { Popover2 } from '@blueprintjs/labs';
 import * as moment from 'moment-timezone';
-import { Button, Classes, MenuItem } from '@blueprintjs/core';
+import { Button, MenuItem } from '@blueprintjs/core';
 import { contains, toLower, filter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
@@ -46,24 +46,13 @@ type DispatchProps = {
 type State = {
   readonly filter: string;
   readonly open: boolean;
-  readonly stuck: boolean;
 };
 
 class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchProps, State> {
   state = {
     filter: '',
     open: false,
-    stuck: false,
   };
-
-  constructor() {
-    super();
-    document.addEventListener('scroll', this.onScroll);
-  }
-
-  private onScroll = (): void => this.setState({
-    stuck: window.scrollY > 50, // upper navbar is 50px
-  })
 
   private searchFilter = (query: string): ((item: string) => boolean) => {
     if (!query) {
@@ -99,7 +88,7 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
     const height = renderedHeight + 10; // 10px padding
 
     return (
-      <div className={`pt-card time-settings ${this.state.stuck ? 'time-settings-stuck' : ''}`}>
+      <div className="pt-card time-settings">
         <Button className="current-time pt-minimal pt-large">
           <CurrentTime/>
         </Button>
