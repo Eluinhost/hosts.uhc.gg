@@ -22,10 +22,6 @@ type DispatchProps = {
 };
 
 class HistoryPageComponent extends React.PureComponent<RouteComponentProps<RouteParams> & StateProps & DispatchProps> {
-  public componentDidMount() {
-    this.props.reload();
-  }
-
   public componentWillUnmount() {
     this.props.clear();
   }
@@ -47,6 +43,7 @@ class HistoryPageComponent extends React.PureComponent<RouteComponentProps<Route
           hasMore={this.props.hasMorePages}
           loadMore={this.props.next}
           refetch={this.props.reload}
+          lastUpdated={this.props.updated}
         />
       </div>
     );

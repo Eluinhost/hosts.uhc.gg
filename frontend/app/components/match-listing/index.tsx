@@ -10,6 +10,10 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
 import { Settings } from '../../actions';
+import * as moment from 'moment-timezone';
+import { RefreshButton } from './RefreshButton';
+import { isUndefined } from 'util';
+import { VisibilityDetector } from '../../services/VisibilityDetector';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -17,6 +21,8 @@ type MatchListingProps = {
   readonly error: string | null;
   readonly refetch: () => void;
   readonly loadMore: () => void;
+  readonly lastUpdated: moment.Moment | null;
+  readonly autoRefreshSeconds?: number;
   readonly hasMore: boolean;
   readonly disableRemove?: boolean;
   readonly disableApprove?: boolean;
@@ -35,6 +41,54 @@ type DispatchProps = {
 };
 
 class MatchListingComponent extends React.PureComponent<MatchListingProps & StateProps & DispatchProps> {
+  private timerId: number | null = null;
+
+  private visibilityDetector = new VisibilityDetector();
+
+  private onVisibilityChange = () => {
+    // always clear any existing timer first
+    this.stopTimer();
+
+    // if it's visible (or not supported) start the timer if required
+    if (!this.visibilityDetector.isHidden()) {
+      const { autoRefreshSeconds, lastUpdated } = this.props;
+
+      if (!isUndefined(autoRefreshSeconds) && autoRefreshSeconds < 1)
+        throw new Error('autorefresh shouldn\'t be < 1');
+
+      // if we are to auto refresh start a timer
+      if (autoRefreshSeconds) {
+        this.timerId = window.setInterval(this.props.refetch, autoRefreshSeconds! * 1000);
+      }
+
+      // data is stale if it has never been updated or the last update was before the refresh timer allows
+      const isDataStale: boolean = lastUpdated === null || (
+        !isUndefined(autoRefreshSeconds) && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds
+      );
+
+      if (isDataStale) {
+        this.props.refetch();
+      }
+    }
+  }
+
+  private stopTimer = () => {
+    if (this.timerId) {
+      window.clearInterval(this.timerId);
+      this.timerId = null;
+    }
+  }
+
+  public componentDidMount(): void {
+    this.visibilityDetector.addEventListener(this.onVisibilityChange);
+    this.onVisibilityChange();
+  }
+
+  public componentWillUnmount(): void {
+    this.stopTimer();
+    this.visibilityDetector.removeEventListener(this.onVisibilityChange);
+  }
+
   private renderMatch = (match: Match, index: number): React.ReactElement<any> => (
     <MatchRow
       key={match.id}
@@ -68,16 +122,12 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
               onChange={this.props.toggleShowOwnRemoved}
             />
           </If>
-          <Button
-            disabled={this.props.loading}
+          <RefreshButton
+            lastUpdated={this.props.lastUpdated}
             onClick={this.props.refetch}
-            iconName="refresh"
-            intent={Intent.SUCCESS}
-          >
-            Refresh
-          </Button>
+            loading={this.props.loading}
+          />
         </div>
-
 
         <If condition={!this.props.loading && !!this.props.error}>
           <div className="pt-callout pt-intent-danger"><h5>{this.props.error}</h5></div>
