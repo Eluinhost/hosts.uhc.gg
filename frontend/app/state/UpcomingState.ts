@@ -1,7 +1,6 @@
-import { ReducerBuilder } from './ReducerBuilder';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
-import { Reducer } from 'redux';
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
 import * as moment from 'moment-timezone';
 
@@ -22,7 +21,13 @@ const displayError = (err: Error) => {
   return 'Unexpected response from the server';
 };
 
-export const reducer: Reducer<UpcomingState> = new ReducerBuilder<UpcomingState>()
+export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
+  .withInitialState<UpcomingState>({
+    matches: [],
+    fetching: false,
+    error: null,
+    updated: null,
+  })
   .handle(UpdateUpcoming.started, (prev, action) => ({
     fetching: true,
     error: null,
@@ -94,10 +99,3 @@ export const reducer: Reducer<UpcomingState> = new ReducerBuilder<UpcomingState>
     }),
   }))
   .build();
-
-export const initialValues = async (): Promise<UpcomingState> => ({
-  matches: [],
-  fetching: false,
-  error: null,
-  updated: null,
-});

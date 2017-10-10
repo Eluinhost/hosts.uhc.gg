@@ -1,5 +1,5 @@
 import { ApiErrors } from '../api';
-import { ReducerBuilder } from './ReducerBuilder';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import * as moment from 'moment-timezone';
 import { GetHostingRules, SetHostingRules } from '../actions';
 
@@ -29,7 +29,14 @@ const displayError = (err: Error): string => {
   return 'Unexpected response from the server';
 };
 
-export const reducer = new ReducerBuilder<HostingRulesState>()
+export const reducer: ApplicationReducer<HostingRulesState> = ReducerBuilder
+  .withInitialState<HostingRulesState>({
+    fetching: false,
+    error: null,
+    data: null,
+    backupData: null,
+    editing: false,
+  })
   .handle(GetHostingRules.started, (prev, action) => ({
     ...prev,
     fetching: true,
@@ -75,11 +82,3 @@ export const reducer = new ReducerBuilder<HostingRulesState>()
     editing: false,
   }))
   .build();
-
-export const initialValues = async (): Promise<HostingRulesState> => ({
-  fetching: false,
-  error: null,
-  data: null,
-  backupData: null,
-  editing: false,
-});

@@ -1,4 +1,4 @@
-import { ReducerBuilder } from './ReducerBuilder';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../models/Match';
 import { HostFormConflicts } from '../actions';
 
@@ -8,7 +8,12 @@ export type HostFormConflictsState = {
   readonly fetching: boolean;
 };
 
-export const reducer = new ReducerBuilder<HostFormConflictsState>()
+export const reducer: ApplicationReducer<HostFormConflictsState> = ReducerBuilder
+  .withInitialState<HostFormConflictsState>({
+    conflicts: [],
+    fetching: false,
+    error: null,
+  })
   .handle(HostFormConflicts.started, (prev, action) => ({
     conflicts: [],
     fetching: true,
@@ -25,9 +30,3 @@ export const reducer = new ReducerBuilder<HostFormConflictsState>()
     error: 'Unable to fetch conflicts',
   }))
   .build();
-
-export const initialValues = async (): Promise<HostFormConflictsState> => ({
-  conflicts: [],
-  fetching: false,
-  error: null,
-});

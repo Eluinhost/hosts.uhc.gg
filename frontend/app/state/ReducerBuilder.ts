@@ -1,11 +1,27 @@
 import { ActionCreator } from 'react-redux';
 import { Action, Reducer } from 'redux-actions';
 import { clone } from 'ramda';
+import { AnyAction } from 'redux';
+
+export type ApplicationReducer<TState> = {
+  (state: TState, action: AnyAction): TState;
+  readonly initial: TState;
+};
 
 export class ReducerBuilder<TState> {
+  static withInitialState<TState>(state: TState): ReducerBuilder<TState> {
+    return new ReducerBuilder<TState>(state);
+  }
+
+  public readonly initialState: TState;
+
   private actions: {
     [action: string]: Reducer<TState, any>;
   } = {};
+
+  private constructor(state: TState) {
+    this.initialState = state;
+  }
 
   handle<TPayload>(
     creator: ActionCreator<Action<TPayload>>,
@@ -22,12 +38,14 @@ export class ReducerBuilder<TState> {
     return this;
   }
 
-  build(): Reducer<TState, Action<any>> {
+  build(): ApplicationReducer<TState> {
     const cloned = clone(this.actions);
 
-    return (state: TState = {} as any, action: Action<any>) => {
+    const reducer =  (state: TState = {} as any, action: Action<any>) => {
       const handler = cloned[action.type];
       return handler ? handler(state, action) : state;
     };
+
+    return Object.assign(reducer, { initial: clone(this.initialState) });
   }
 }

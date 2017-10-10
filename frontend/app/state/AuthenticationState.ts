@@ -1,10 +1,8 @@
-import { ReducerBuilder } from './ReducerBuilder';
-import { Reducer, Store } from 'redux';
-import { storage } from '../services/storage';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import * as moment from 'moment-timezone';
-import { ApplicationState } from './ApplicationState';
 import { Authentication } from '../actions';
 
+// TODO move key to saga and out of state
 const storageKey = 'authentication';
 
 export type AuthenticationState = {
@@ -24,7 +22,12 @@ export type RefreshTokenClaims = {
   readonly username: string;
 };
 
-export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<AuthenticationState>()
+export const reducer: ApplicationReducer<AuthenticationState> = ReducerBuilder
+  .withInitialState<AuthenticationState>({
+    storageKey,
+    accessToken: null,
+    refreshToken: null,
+  })
   .handle(Authentication.login, (prev, action) => ({
     storageKey: prev.storageKey,
     accessToken: action.payload!.accessToken,
@@ -36,13 +39,3 @@ export const reducer: Reducer<AuthenticationState> = new ReducerBuilder<Authenti
     refreshToken: null,
   }))
   .build();
-
-export const initialValues = async (): Promise<AuthenticationState> => ({
-  storageKey,
-  accessToken: await storage.getItem<string>(`${storageKey}.accessToken`),
-  refreshToken: await storage.getItem<string>(`${storageKey}.refreshToken`),
-});
-
-export const postInit = (store: Store<ApplicationState>): void  => {
-
-};

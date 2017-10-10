@@ -1,11 +1,7 @@
 import { PermissionsMap } from '../models/PermissionsMap';
-import { ReducerBuilder } from './ReducerBuilder';
-import { contains, without } from 'ramda';
-import { getAccessToken } from './Selectors';
-import { Intent } from '@blueprintjs/core';
-import {
-  RefreshPermissionModerationLog, RefreshPermissions, ExpandedPermissionNodes, AddPermission, RemovePermission,
-} from '../actions';
+import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { without } from 'ramda';
+import { RefreshPermissions, ExpandedPermissionNodes, AddPermission, RemovePermission } from '../actions';
 
 export type AddPermissionDialogState = {
   readonly permission: string;
@@ -25,7 +21,15 @@ export type PermissionsState = {
   readonly removeDialog: RemovePermissionDialogState | null;
 };
 
-export const reducer = new ReducerBuilder<PermissionsState>()
+export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
+  .withInitialState<PermissionsState>({
+    fetching: false,
+    error: null,
+    permissions: {},
+    expandedNodes: ['permission-admin'],
+    removeDialog: null,
+    addDialog: null,
+  })
   .handle(RefreshPermissions.started, (prev, action) => ({
     ...prev,
     fetching: true,
@@ -72,12 +76,3 @@ export const reducer = new ReducerBuilder<PermissionsState>()
     removeDialog: null,
   }))
   .build();
-
-export const initialValues = async (): Promise<PermissionsState> => ({
-  fetching: false,
-  error: null,
-  permissions: {},
-  expandedNodes: ['permission-admin'],
-  removeDialog: null,
-  addDialog: null,
-});
