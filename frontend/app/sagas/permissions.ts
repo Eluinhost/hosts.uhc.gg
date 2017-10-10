@@ -22,7 +22,7 @@ function* fetchPermissionsSaga(): SagaIterator {
 
     yield effects.put(RefreshPermissions.success({ result }));
   } catch (error) {
-    console.log(error, 'error fetching permissions');
+    console.error(error, 'error fetching permissions');
     yield effects.put(RefreshPermissions.failure({ error }));
   }
 }

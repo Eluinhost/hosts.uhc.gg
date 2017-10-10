@@ -31,7 +31,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
       message: `Approved match #${parameters.id}`,
     });
   } catch (error) {
-    console.log(error, 'error approving match');
+    console.error(error, 'error approving match');
     yield effects.put(ApproveMatch.failure({ parameters, error }));
 
     AppToaster.show({

@@ -16,7 +16,7 @@ function* getHostingRulesSaga(): SagaIterator {
 
     yield effects.put(GetHostingRules.success({ result: rules }));
   } catch (error) {
-    console.log(error, 'error getting hosting rules');
+    console.error(error, 'error getting hosting rules');
     yield effects.put(GetHostingRules.failure({ error }));
   }
 }
@@ -48,7 +48,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
       message: `Updated hosting rules`,
     });
   } catch (error) {
-    console.log(error, 'error setting hosting rules');
+    console.error(error, 'error setting hosting rules');
     yield effects.put(SetHostingRules.failure({ parameters, error }));
     AppToaster.show({
       intent: Intent.DANGER,
