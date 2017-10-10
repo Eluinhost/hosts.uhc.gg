@@ -23,6 +23,12 @@ type DispatchProps = {
   readonly resync: () => void;
 };
 
+const MILLIS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60;
+const MILLIS_PER_MINUTE = MILLIS_PER_SECOND * SECONDS_PER_MINUTE;
+const MINUTES_PER_HOUR = 60;
+const MILLIS_PER_HOUR = MILLIS_PER_MINUTE * MINUTES_PER_HOUR;
+
 class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps, State> {
   state = {
     time: moment.utc(),
@@ -54,18 +60,22 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
       o *= -1;
     }
 
-    if (o > 3600) {
-      output += `${Math.floor(o / 3600)}h `;
-      o %= 3600;
+    if (o > MILLIS_PER_HOUR) {
+      output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
+      o %= MILLIS_PER_HOUR;
     }
 
-    if (o > 60) {
-      output += `${Math.floor(o / 60)}m `;
-      o %= 60;
+    if (o > MILLIS_PER_MINUTE) {
+      output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
+      o %= MILLIS_PER_MINUTE;
     }
 
-    if (o > 0 || (o === 0 && (output === '' || output === '-'))) {
-      output += `${o}s`;
+    if (o > MILLIS_PER_SECOND) {
+      const display: number = offset < 10 * MILLIS_PER_SECOND
+        ? o / MILLIS_PER_SECOND
+        : Math.floor(o / MILLIS_PER_SECOND);
+
+      output += `${display}s `;
     }
 
     return output.trim();
@@ -73,7 +83,7 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
 
   private tooltipText = (): string =>
     this.props.timeSync.synced
-      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset / 1000)} offset. Click to resync`
+      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset)} offset. Click to resync`
       : 'Not synced with the server'
 
   private timeText = () =>
