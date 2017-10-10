@@ -11,7 +11,7 @@ function* fetchUpcomingSaga(): SagaIterator {
 
     yield effects.put(UpdateUpcoming.success({ result }));
   } catch (error) {
-    console.log(error, 'error updating upcoming');
+    console.error(error, 'error updating upcoming');
     yield effects.put(UpdateUpcoming.failure({ error }));
   }
 }

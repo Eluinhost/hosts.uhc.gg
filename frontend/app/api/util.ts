@@ -25,12 +25,8 @@ export const toJson = <T>() => (response: Response): Promise<T> => response.json
 
 export const convertUnixToMoment = (x: string) => moment(x).utc();
 
-export const mapMomentProps = <T extends Object>(props: (keyof T)[]) => (t: T): T => {
-  console.log('mapping', t);
-  const res = props.reduce((obj, prop) => Object.assign({}, obj, { [prop]: convertUnixToMoment(t[prop]) }), t);
-  console.log('mapped', res);
-  return res;
-};
+export const mapMomentProps = <T extends Object>(props: (keyof T)[]) => (t: T): T =>
+  props.reduce((obj, prop) => Object.assign({}, obj, { [prop]: convertUnixToMoment(t[prop]) }), t);
 
 export const authHeaders = (accessToken: string) => ({
   Authorization: `Bearer ${accessToken}`,

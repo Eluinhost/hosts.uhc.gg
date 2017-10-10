@@ -13,7 +13,7 @@ function* fetchServerTimeSaga(): SagaIterator {
 
     yield effects.put(SyncTime.success({ result: diff }));
   } catch (error) {
-    console.log(error, 'error updating upcoming');
+    console.error(error, 'error updating upcoming');
     yield effects.put(SyncTime.failure({ error }));
   }
 }

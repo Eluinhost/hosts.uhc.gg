@@ -35,7 +35,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
     });
 
   } catch (error) {
-    console.log(error, 'error removing match');
+    console.error(error, 'error removing match');
 
     if (error instanceof SubmissionError) {
       yield effects.put(stopSubmit(RemoveMatch.formId, error.errors));

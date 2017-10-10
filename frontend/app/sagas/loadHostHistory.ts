@@ -21,7 +21,7 @@ function* loadHostHistorySaga(action: Action<LoadHostHistoryParameters>): SagaIt
 
     yield effects.put(LoadHostHistory.success({ parameters, result }));
   } catch (error) {
-    console.log(error, 'error loading hosting history');
+    console.error(error, 'error loading hosting history');
     yield effects.put(LoadHostHistory.failure({ parameters, error }));
   }
 }

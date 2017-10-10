@@ -11,7 +11,7 @@ function* fetchPermissionModerationLogSaga(): SagaIterator {
 
     yield effects.put(RefreshPermissionModerationLog.success({ result }));
   } catch (error) {
-    console.log(error, 'error fetching mod log');
+    console.error(error, 'error fetching mod log');
     yield effects.put(RefreshPermissionModerationLog.failure({ error }));
   }
 }

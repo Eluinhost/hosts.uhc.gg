@@ -44,7 +44,7 @@ function* checkHostFormConflictsSaga(action: Action<HostFormConflictsParameters>
       yield effects.put(stopAsyncValidation('create-match-form'));
     }
   } catch (error) {
-    console.log(error, 'error checking conflicts');
+    console.error(error, 'error checking conflicts');
     yield effects.put(HostFormConflicts.failure({ parameters, error }));
     yield effects.put(stopAsyncValidation('create-match-form', {
       opens: 'Failed to lookup conflicts',

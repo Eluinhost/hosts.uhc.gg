@@ -30,7 +30,7 @@ function* fetchMatchDetailsSaga(action: Action<FetchMatchDetailsParameters>): Sa
 
     yield effects.put(FetchMatchDetails.success({ parameters, result: match }));
   } catch (error) {
-    console.log(error, 'error fetching match');
+    console.error(error, 'error fetching match');
     yield effects.put(FetchMatchDetails.failure({ parameters, error }));
   }
 }
