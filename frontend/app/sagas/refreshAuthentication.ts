@@ -52,17 +52,6 @@ function* attemptRefresh(): SagaIterator {
   }
 }
 
-export function* autoAttemptRefreshTokens(): SagaIterator {
-  // check every minute if we need to refresh our authentication tokens
-  while (true) {
-    yield effects.call(delay, 60000);
-    yield effects.put(Authentication.attemptRefresh());
-  }
-}
-
 export function* refreshAuthentication(): SagaIterator {
-  yield effects.all([
-    effects.takeEvery(Authentication.attemptRefresh, attemptRefresh),
-    effects.fork(autoAttemptRefreshTokens),
-  ]);
+  yield effects.takeEvery(Authentication.attemptRefresh, attemptRefresh);
 }

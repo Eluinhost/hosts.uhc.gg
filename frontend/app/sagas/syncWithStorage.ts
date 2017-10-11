@@ -1,4 +1,4 @@
-import { effects, SagaIterator } from 'redux-saga';
+import { delay, effects, SagaIterator } from 'redux-saga';
 import { Action, ActionFunction1 } from 'redux-actions';
 import { Authentication, ClearStorage, SetSavedHostFormData, Settings } from '../actions';
 import * as localForage from 'localforage';
@@ -77,6 +77,17 @@ function* syncHostFormData(): SagaIterator {
   });
 }
 
+function* authentication(): SagaIterator {
+  yield effects.call(genericSaveAndListen, Authentication.login, 'authentication');
+  // check every minute if we need to refresh our authentication tokens
+  yield effects.spawn(function* (): SagaIterator {
+    while (true) {
+      yield effects.put(Authentication.attemptRefresh());
+      yield effects.call(delay, 60000);
+    }
+  });
+}
+
 // This saga needs to complete, once it is done the first render will happen
 export function* syncWithStorage(): SagaIterator {
   yield effects.all([
@@ -85,7 +96,7 @@ export function* syncWithStorage(): SagaIterator {
     effects.call(genericSaveAndListen, Settings.setHideRemoved, 'hideRemoved'),
     effects.call(genericSaveAndListen, Settings.setShowOwnRemoved, 'showOwnRemoved'),
     effects.call(genericSaveAndListen, Settings.setTimezone, 'timezone'),
-    effects.call(genericSaveAndListen, Authentication.login, 'authentication'),
+    effects.call(authentication),
     effects.call(syncHostFormData),
     effects.spawn(watchLogout), // start separately
     effects.spawn(watchClearStorage),
