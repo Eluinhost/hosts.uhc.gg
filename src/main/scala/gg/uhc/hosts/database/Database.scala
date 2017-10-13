@@ -92,6 +92,18 @@ class Database(transactor: HikariTransactor[IOLite]) extends Instrumented {
     case _ ⇒ delay(Unit)
   }
 
+  def getUserCountForEachPermission(): ConnectionIO[Map[String, Int]] =
+    queries.getUserCountForEachPermission.list.map(_.toMap)
+
+  def getAllUsersForPermission(permission: String, count: Int): ConnectionIO[List[String]] =
+    queries.getAllUsersForPermission(permission, count).list
+
+  def getUserCountForPermissionByFirstLetter(permission: String): ConnectionIO[Map[String, Int]] =
+    queries.getUserCountForPermissionByFirstLetter(permission).list.map(_.toMap)
+
+  def getUsersForPermissionStartingWithLetter(permission: String, letter: String): ConnectionIO[List[String]] =
+    queries.getUsersForPermissionStartingWithLetter(permission, letter).list
+
   def getPermissions(username: String): ConnectionIO[List[String]] =
     queries.getPermissions(username).list
 
@@ -137,9 +149,6 @@ class Database(transactor: HikariTransactor[IOLite]) extends Instrumented {
 
   def getPermissionModerationLog(before: Option[Int], count: Int): ConnectionIO[List[PermissionModerationLogRow]] =
     queries.getPermissionModerationLog(before, count).list
-
-  def getAllPermissions: ConnectionIO[Map[String, List[String]]] =
-    queries.getAllRoleMembers.list.map(_.toMap)
 
   def updateAuthenticationLog(username: String, ip: InetAddress): ConnectionIO[Unit] =
     queries.updateAuthenticationLog(username, ip).run.map(_ ⇒ Unit)

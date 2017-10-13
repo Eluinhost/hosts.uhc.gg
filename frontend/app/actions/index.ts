@@ -2,8 +2,8 @@ import { createAction } from 'redux-actions';
 import { Match } from '../models/Match';
 import { HostingRules } from '../state/HostingRulesState';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import { PermissionsMap } from '../models/PermissionsMap';
 import { CreateMatchData } from '../models/CreateMatchData';
+import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
 export type WithResult<Result> = {
   readonly result: Result;
@@ -155,17 +155,52 @@ export const RefreshPermissionModerationLog = {
   failure: createAction<WithError>('REFRESH_PERMISSION_MODERATION_LOG_FAILURE'),
 };
 
-export const RefreshPermissions = {
-  start: createAction('REFRESH_PERMISSIONS_START'),
-  started: createAction('REFRESH_PERMISSIONS_STARTED'),
-  success: createAction<WithResult<PermissionsMap>>('REFRESH_PERMISSIONS_SUCCESS'),
-  failure: createAction<WithError>('REFRESH_PERMISSIONS_FAILURE'),
+export const FetchUserCountPerPermission = {
+  start: createAction('FETCH_USER_COUNT_PER_PERMISSION_START'),
+  started: createAction('FETCH_USER_COUNT_PER_PERMISSION_STARTED'),
+  success: createAction<WithResult<UserCountPerPermission>>('FETCH_USER_COUNT_PER_PERMISSION_SUCCESS'),
+  failure: createAction<WithError>('FETCH_USER_COUNT_PER_PERMISSION_FAILURE'),
 };
 
-export const ExpandedPermissionNodes = {
+export const PermissionNode = {
   open: createAction<string>('OPEN_PERMISSION_NODE'),
   close: createAction<string>('CLOSE_PERMISSION_NODE'),
-  toggle: createAction<string>('TOGGLE_PERMISSION_NODE'),
+};
+
+export type ExpandPermissionLetterNodeParameters = {
+  readonly permission: string;
+  readonly letter: string;
+};
+
+export const PermissionLetterNode = {
+  open: createAction<ExpandPermissionLetterNodeParameters>('OPEN_PERMISSION_LETTER_NODE'),
+  close: createAction<ExpandPermissionLetterNodeParameters>('CLOSE_PERMISSION_LETTER_NODE'),
+  toggle: createAction<ExpandPermissionLetterNodeParameters>('TOGGLE_PERMISSION_LETTER_NODE'),
+};
+
+export const FetchUsersInPermission = {
+  start: createAction<string>('FETCH_USERS_IN_PERMISSION_START'),
+  started: createAction<WithParameters<string>>('FETCH_USERS_IN_PERMISSION_STARTED'),
+  success: createAction<WithParameters<string> & WithResult<UsersInPermission>>('FETCH_USERS_IN_PERMISSION_SUCCESS'),
+  failure: createAction<WithParameters<string> & WithError>('FETCH_USERS_IN_PERMISSION_FAILURE'),
+};
+
+export type FetchUsersInPermissionWithLetterParameters = {
+  readonly permission: string;
+  readonly letter: string;
+};
+
+export const FetchUsersInPermissionWithLetter = {
+  start: createAction<FetchUsersInPermissionWithLetterParameters>('FETCH_USERS_IN_PERMISSION_WITH_LETTER_START'),
+  started: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters>>(
+    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_STARTED',
+  ),
+  success: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters> & WithResult<string[]>>(
+    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_SUCCESS',
+  ),
+  failure: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters> & WithError>(
+    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_FAILURE',
+  ),
 };
 
 export type PermissionParameters = {

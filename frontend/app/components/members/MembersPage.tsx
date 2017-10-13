@@ -1,21 +1,19 @@
 import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import {
-  map, sortBy, toLower, contains, toPairs, pipe, concat,
-  toUpper, head, tail, converge, groupBy, Obj, unless, chain, prop,
-} from 'ramda';
-import { Button, Intent, ITreeNode, NonIdealState, Spinner, Tree } from '@blueprintjs/core';
-import { PermissionsState } from '../../state/PermissionsState';
+import { Button, Intent, NonIdealState, Spinner, Tree } from '@blueprintjs/core';
+import { BasicNode, LetterFolder, PermissionsState, UsernameNode } from '../../state/PermissionsState';
 import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
-import { PermissionsMap } from '../../models/PermissionsMap';
 import { If } from '../If';
 import { Title } from '../Title';
 import { ModerationLog } from './ModerationLog';
 
 export type MembersPageDispatchProps = {
   readonly fetchPermissionList: () => void;
-  readonly toggleNodeExpanded: (perm: string) => void;
+  readonly expandPermissionNode: (permission: string) => void;
+  readonly expandLetterNode: (permission: string, letter: string) => void;
+  readonly collapsePermissionNode: (permission: string) => void;
+  readonly collapseLetterNode: (permission: string, letter: string) => void;
   readonly openAddPermission: (perm: string) => void;
   readonly openRemovePermission: (perm: string, username: string) => void;
 };
@@ -23,27 +21,6 @@ export type MembersPageDispatchProps = {
 export type MembersPageStateProps = PermissionsState & {
   readonly canModify: string[];
 };
-
-const permissionGroupNames: Obj<string> = {
-  admin: 'Administrators',
-  host: 'Verified Hosts',
-  'hosting advisor': 'Hosting Advisors',
-  'hosting banned': 'Hosting Banned',
-  'trial host': 'Trial Hosts',
-  'ubl moderator': 'UBL Moderators',
-};
-
-const getGroupName = (permission: string) =>
-  permissionGroupNames[permission] || (converge<string>(concat, [pipe(head, toUpper), tail])(permission) + 's');
-
-interface PermissionTreeNode extends ITreeNode {
-  readonly type: 'permission folder' | 'alpha folder' | 'username';
-  readonly permission: string;
-}
-
-interface UsernameTreeNode extends PermissionTreeNode {
-  readonly username: string;
-}
 
 export class MembersPage
   extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
@@ -53,108 +30,66 @@ export class MembersPage
 
   private canModify = (permission: string): boolean => this.props.canModify.indexOf(permission) >= 0;
 
-  private createUsernameNode = (permission: string, username: string): UsernameTreeNode => ({
-    username,
-    permission,
-    type: 'username',
-    iconName: 'user',
-    label: username,
-    className: this.canModify(permission) ? 'permission-node' : '',
-    id: `username-${permission}-${username}`,
-  })
-
-  private headChar = (s: string): string => s.charAt(0).toUpperCase();
-
-  private shouldGroup = (items: PermissionTreeNode[]): boolean => items.length > 20;
-
-  private createAlphaNumericFolders = (permission: string, members: string[]): PermissionTreeNode[] => pipe<
-    string[],
-    Obj<string[]>,
-    Obj<UsernameTreeNode[]>,
-    [string, UsernameTreeNode[]][],
-    [string, UsernameTreeNode[]][],
-    PermissionTreeNode[]
-  >(
-    groupBy<string>(this.headChar), // map[first char, members]
-    map<string[], UsernameTreeNode[]>(
-      map<string, UsernameTreeNode>(member => this.createUsernameNode(permission, member)),
-    ), // map[string[], UsernameTreeNode[]]
-    toPairs, // array[[first char, treenodes]]
-    sortBy<[string, UsernameTreeNode[]]>(head),
-    map<[string, UsernameTreeNode[]], PermissionTreeNode>(([char, memberNodes]): PermissionTreeNode => ({
-      permission,
-      id: `alpha-${char}-${permission}`,
-      type: 'alpha folder',
-      label: char,
-      hasCaret: true,
-      isExpanded: contains(`alpha-${char}-${permission}`, this.props.expandedNodes),
-      childNodes: memberNodes,
-    })),
-  )(members)
-
-  private createPermissionFolderNode = (permission: string, members: string[]): PermissionTreeNode => ({
-    permission,
-    type: 'permission folder',
-    iconName: 'folder-close',
-    hasCaret: true,
-    id: `permission-${permission}`,
-    className: this.canModify(permission) ? 'permission-folder' : '',
-    label: getGroupName(permission),
-    isExpanded: contains(`permission-${permission}`, this.props.expandedNodes),
-    childNodes: unless<PermissionTreeNode[], PermissionTreeNode[]>(
-      this.shouldGroup, // Remove nested alpha when there is no need to use it
-      chain<PermissionTreeNode, PermissionTreeNode>(prop('childNodes')),
-    )(this.createAlphaNumericFolders(permission, members)),
-  })
-
-  private generateTree = (): PermissionTreeNode[] => pipe(
-    toPairs as (p: PermissionsMap) => [string, string[]][],
-    sortBy<[string, string[]]>(
-      pipe(
-        head,
-        toLower,
-      ),
-    ),
-    map(([permission, members]) => this.createPermissionFolderNode(permission, members)),
-  )(this.props.permissions)
-
-  private onNodeClick = (node: ITreeNode) => {
-    const permissionNode = node as PermissionTreeNode;
-
-    if (!this.canModify(permissionNode.permission))
+  private onNodeClick = (node: BasicNode) => {
+    if (!this.canModify(node.permission))
       return;
 
-    if (permissionNode.type === 'permission folder') {
-      this.props.openAddPermission(permissionNode.permission);
-    } else if (permissionNode.type === 'username') {
-      this.props.openRemovePermission(permissionNode.permission, (permissionNode as UsernameTreeNode).username);
+    switch (node.type) {
+      case 'permission':
+        this.props.openAddPermission(node.permission);
+        break;
+      case 'username':
+        this.props.openRemovePermission(node.permission, (node as UsernameNode).username);
     }
   }
 
-  private onToggle = (node: ITreeNode): void => this.props.toggleNodeExpanded(node.id as string);
+  private collapseNode = (node: BasicNode): void => {
+    switch (node.type) {
+      case 'permission':
+        this.props.collapsePermissionNode(node.permission);
+        break;
+      case 'letter':
+        this.props.collapseLetterNode(node.permission, (node as LetterFolder).letter);
+        break;
+    }
+  }
 
-  RenderError: React.SFC<{ message: string }> = ({ message }) => (
-    <div className="pt-callout pt-intent-danger"><h5>{message}</h5></div>
-  )
+  private expandNode = (node: BasicNode): void => {
+    switch (node.type) {
+      case 'permission':
+        this.props.expandPermissionNode(node.permission);
+        break;
+      case 'letter':
+        this.props.expandLetterNode(node.permission, (node as LetterFolder).letter);
+        break;
+    }
+  }
+
+  private nodesWithClassNames = (): BasicNode[] => this.props.nodes.map((node) => {
+    if (!this.canModify(node.permission))
+      return node;
+
+    return {
+      ...node,
+      className: `${node.className} editable-permission-node`,
+    };
+  })
 
   private renderPermissionsTree = (): React.ReactElement<any> => {
-    if (this.props.fetching)
+    if (this.props.isFetching)
       return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
 
     return (
       <div className="permissions-tree">
         <h2>All members</h2>
         <Tree
-          contents={this.generateTree()}
-          onNodeCollapse={this.onToggle}
-          onNodeExpand={this.onToggle}
+          contents={this.nodesWithClassNames()}
+          onNodeCollapse={this.collapseNode}
+          onNodeExpand={this.expandNode}
           onNodeClick={this.onNodeClick}
         />
-        <If condition={!!this.props.error}>
-          <this.RenderError message={this.props.error!} />
-        </If>
         <Button
-          disabled={this.props.fetching}
+          disabled={this.props.isFetching}
           onClick={this.props.fetchPermissionList}
           iconName="refresh"
           intent={Intent.SUCCESS}
