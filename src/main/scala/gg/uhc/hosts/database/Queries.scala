@@ -231,6 +231,45 @@ class Queries(logger: LogHandler) {
           id = $id
       """.asInstanceOf[Fragment].query[String].map(_ == username)
 
+  val getUserCountForEachPermission: Query0[(String, Int)] =
+    sql"""
+      SELECT
+        type,
+        count(*)
+      FROM permissions
+      GROUP BY type
+      """.asInstanceOf[Fragment].query[(String, Int)]
+
+  def getAllUsersForPermission(permission: String, count: Int): Query0[String] =
+    sql"""
+      SELECT
+        username
+      FROM permissions
+      WHERE type = $permission
+      LIMIT $count
+      """.asInstanceOf[Fragment].query[String]
+
+  def getUserCountForPermissionByFirstLetter(permission: String): Query0[(String, Int)] =
+    sql"""
+      SELECT
+        lower(left(username, 1)),
+        count(*)
+      FROM permissions
+      WHERE type = $permission
+      GROUP BY lower(left(username, 1))
+      """.asInstanceOf[Fragment].query[(String, Int)]
+
+  def getUsersForPermissionStartingWithLetter(permission: String, letter: String): Query0[String] =
+    sql"""
+      SELECT
+        username
+      FROM permissions
+      WHERE
+        type = $permission
+        AND
+        lower(left(username, 1)) = lower(${letter.take(1)})
+      """.asInstanceOf[Fragment].query[String]
+
   def getPermissions(username: String): Query0[String] =
     sql"""
       SELECT
@@ -280,11 +319,6 @@ class Queries(logger: LogHandler) {
         )
         ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
     ).query[PermissionModerationLogRow]
-
-  val getAllRoleMembers: Query0[(String, List[String])] =
-    sql"SELECT type, array_agg(username) FROM permissions GROUP BY type"
-      .asInstanceOf[Fragment]
-      .query[(String, List[String])]
 
   def updateAuthenticationLog(username: String, ip: InetAddress): Update0 =
     sql"""

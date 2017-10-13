@@ -1,29 +1,79 @@
 import { PermissionsApi, ApiErrors } from '../api';
-import { SagaIterator, effects } from 'redux-saga';
+import { SagaIterator, effects, delay } from 'redux-saga';
 import {
-  AddPermission, ExpandedPermissionNodes, PermissionParameters, RefreshPermissionModerationLog, RefreshPermissions,
+  AddPermission, ExpandPermissionLetterNodeParameters, FetchUserCountPerPermission, FetchUsersInPermission,
+  FetchUsersInPermissionWithLetter,
+  FetchUsersInPermissionWithLetterParameters, PermissionLetterNode, PermissionNode,
+  PermissionParameters,
+  RefreshPermissionModerationLog,
   RemovePermission,
 } from '../actions';
-import { PermissionsMap } from '../models/PermissionsMap';
 import { Action } from 'redux-actions';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
-import { contains } from 'ramda';
 import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
 import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { fetchUsersInPermission } from '../api/Permissions';
 
 function* fetchPermissionsSaga(): SagaIterator {
   try {
-    yield effects.put(RefreshPermissions.started());
+    yield effects.put(FetchUserCountPerPermission.started());
 
-    const result: PermissionsMap = yield effects.call(PermissionsApi.fetchPermissions);
+    const result: UserCountPerPermission = yield effects.call(PermissionsApi.fetchUserCountPerPermission);
 
-    yield effects.put(RefreshPermissions.success({ result }));
+    yield effects.put(FetchUserCountPerPermission.success({ result }));
   } catch (error) {
     console.error(error, 'error fetching permissions');
-    yield effects.put(RefreshPermissions.failure({ error }));
+    yield effects.put(FetchUserCountPerPermission.failure({ error }));
+    AppToaster.show({
+      intent: Intent.DANGER,
+      message: `Failed to lookup permission list`,
+    });
+  }
+}
+
+function* fetchUsersInPermissionSaga(action: Action<string>): SagaIterator {
+  const parameters: string = action.payload!;
+
+  try {
+    yield effects.put(FetchUsersInPermission.started({ parameters }));
+
+    const result: UsersInPermission = yield effects.call(PermissionsApi.fetchUsersInPermission, parameters);
+
+    yield effects.put(FetchUsersInPermission.success({ parameters, result }));
+  } catch (error) {
+    console.error(error, 'error fetching permission content');
+    yield effects.put(FetchUsersInPermission.failure({ parameters, error }));
+    AppToaster.show({
+      intent: Intent.DANGER,
+      message: `Failed to lookup permission members`,
+    });
+  }
+}
+
+function* fetchUsersInPermissionWithLetterSaga(a: Action<FetchUsersInPermissionWithLetterParameters>): SagaIterator {
+  const parameters: FetchUsersInPermissionWithLetterParameters = a.payload!;
+
+  try {
+    yield effects.put(FetchUsersInPermissionWithLetter.started({ parameters }));
+
+    const result: string[] = yield effects.call(
+      PermissionsApi.fetchUsersInPermissionWithLetter,
+      parameters.permission,
+      parameters.letter,
+    );
+
+    yield effects.put(FetchUsersInPermissionWithLetter.success({ parameters, result }));
+  } catch (error) {
+    console.error(error, 'error fetching permission with letter content');
+    yield effects.put(FetchUsersInPermissionWithLetter.failure({ parameters, error }));
+    AppToaster.show({
+      intent: Intent.DANGER,
+      message: `Failed to lookup permission members`,
+    });
   }
 }
 
@@ -54,7 +104,7 @@ function* addPermission(action: Action<string>): SagaIterator {
     yield effects.call(PermissionsApi.callAddPermission, permission, username, accessToken);
     yield effects.put(AddPermission.success({ parameters }));
     yield effects.put(AddPermission.closeDialog());
-    yield effects.put(RefreshPermissions.start());
+    yield effects.put(FetchUserCountPerPermission.start());
     yield effects.put(RefreshPermissionModerationLog.start());
 
     AppToaster.show({
@@ -101,7 +151,7 @@ function* removePermission(): SagaIterator {
     yield effects.call(PermissionsApi.callRemovePermission, parameters.permission, parameters.username, accessToken);
     yield effects.put(RemovePermission.success({ parameters }));
     yield effects.put(RemovePermission.closeDialog());
-    yield effects.put(RefreshPermissions.start());
+    yield effects.put(FetchUserCountPerPermission.start());
     yield effects.put(RefreshPermissionModerationLog.start());
 
     AppToaster.show({
@@ -124,28 +174,18 @@ function* removePermission(): SagaIterator {
   }
 }
 
-const getExpanded = createSelector<ApplicationState, string[], string[]>(
-  state => state.permissions.expandedNodes,
-  it => it,
-);
-
-function* togglePermissionNode(action: Action<string>): SagaIterator {
-  const id: string = action.payload!;
-
-  const expanded: string[] = yield effects.select(getExpanded);
-
-  if (contains(id, expanded)) {
-    yield effects.put(ExpandedPermissionNodes.close(id));
-  } else {
-    yield effects.put(ExpandedPermissionNodes.open(id));
-  }
-}
-
 export function* watchPermissions(): SagaIterator {
   yield effects.all([
     effects.takeEvery<Action<string>>(AddPermission.start, addPermission),
     effects.takeEvery<Action<void>>(RemovePermission.start, removePermission),
-    effects.takeLatest<Action<void>>(RefreshPermissions.start, fetchPermissionsSaga),
-    effects.takeEvery<Action<string>>(ExpandedPermissionNodes.toggle, togglePermissionNode),
+    effects.takeLatest<Action<void>>(FetchUserCountPerPermission.start, fetchPermissionsSaga),
+    effects.takeLatest<Action<string>>(FetchUsersInPermission.start, fetchUsersInPermissionSaga),
+    effects.takeLatest<Action<string>>(PermissionNode.open, fetchUsersInPermissionSaga), // fetch users when expanded
+    effects.takeLatest<Action<FetchUsersInPermissionWithLetterParameters>>(
+      FetchUsersInPermissionWithLetter.start, fetchUsersInPermissionWithLetterSaga,
+    ),
+    effects.takeLatest<Action<ExpandPermissionLetterNodeParameters>>(
+      PermissionLetterNode.open, fetchUsersInPermissionWithLetterSaga,
+    ),
   ]);
 }

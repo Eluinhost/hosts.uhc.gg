@@ -703,8 +703,8 @@ paths:
     get:
       tags:
         - Permissions
-      summary: List all users with roles
-      description: Shows all users grouped by role
+      summary: List count for each permission ID
+      description: Shows all permissions and how many users have that permission
       responses:
         '200':
           description: Success
@@ -712,23 +712,17 @@ paths:
             application/json:
               schema:
                 type: object
-                description: a map of role name to members of each role
+                description: a map of permission name to number of members with that permission
                 additionalProperties:
-                  type: array
-                  items:
-                    type: string
-                    description: username
+                  type: number
+                  description: Number of users with this permission
                 example:
-                  trial host:
-                    - user 1
-                    - user 2
-                    - user 3
-                  host:
-                    - user 4
-                    - user 5
-                  hosting advisor:
-                    - user 3
-                    - user 5
+                  admin: 5
+                  host: 117
+                  hosting advisor: 13
+                  hosting banned: 3
+                  trial host: 808
+                  ubl moderator: 1
   /permissions/log:
     get:
       tags:
@@ -790,7 +784,61 @@ paths:
                       type: boolean
                       required: true
                       description: Whether the role was added or removed
-  /permissions/{username}/{permission}:
+  /permissions/{permission}:
+    get:
+      tags:
+        - Permissions
+      summary: List users with a permission
+      description: Either shows a list of usernames with the given permission OR an object of `first letter of username` -> number of users
+      parameters:
+        - in: path
+          name: permission
+          description: The id of the permission to look up
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                description: a map of `first letter of usernam` to number of members
+                additionalProperties:
+                  type: number
+                example:
+                  a: 50
+                  h: 11
+                  hosting banned: 3
+                  t: 8
+                  u: 1
+  /permissions/{permission}/{letter}:
+    get:
+      tags:
+        - Permissions
+      summary: Lists users with the permission that start with the letter
+      description: Shows all members of the given permission that start with the given letter
+      parameters:
+        - in: path
+          name: permission
+          description: The id of the permission to lookup
+        - in: path
+          name: letter
+          description: The first letter of the username to lookup
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: the username of the member
+                example:
+                  - aaa
+                  - abb
+                  - acc
+                  - ADD
+  /permissions/{permission}/{username}:
     post:
       tags:
         - Permissions
@@ -809,7 +857,7 @@ paths:
           name: permission
           schema:
             type: string
-            description: The name of the role to grant
+          description: The name of the role to grant
           required: true
       responses:
         '201':
@@ -838,7 +886,7 @@ paths:
           name: permission
           schema:
             type: string
-            description: The name of the role to grant
+          description: The name of the role to grant
           required: true
       responses:
         '204':

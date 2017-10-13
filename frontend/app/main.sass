@@ -272,15 +272,16 @@ a.match-row-link:hover
   > div
     min-width: 50%
 
-.permission-node:hover
-  > div > span.pt-tree-node-icon:before
-    content: $pt-icon-remove
-    color: $pt-intent-danger
+.editable-permission-node:hover
+  &.permission-folder-node
+    > div > span.pt-tree-node-icon:before
+      content: $pt-icon-add
+      color: $pt-intent-success
 
-.permission-folder:hover
-  > div > span.pt-tree-node-icon:before
-    content: $pt-icon-add
-    color: $pt-intent-success
+  .username-node:hover
+    > div > span.pt-tree-node-icon:before
+      content: $pt-icon-remove
+      color: $pt-intent-danger
 
 .hosting-rules
   margin-bottom: 10px
