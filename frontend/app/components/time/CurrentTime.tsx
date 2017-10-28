@@ -70,13 +70,11 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
       o %= MILLIS_PER_MINUTE;
     }
 
-    if (o > MILLIS_PER_SECOND) {
-      const display: number = offset < 10 * MILLIS_PER_SECOND
-        ? o / MILLIS_PER_SECOND
-        : Math.floor(o / MILLIS_PER_SECOND);
+    const display: number = offset < 10 * MILLIS_PER_SECOND
+      ? o / MILLIS_PER_SECOND
+      : Math.floor(o / MILLIS_PER_SECOND);
 
-      output += `${display}s `;
-    }
+    output += `${display}s `;
 
     return output.trim();
   });
