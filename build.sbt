@@ -37,6 +37,6 @@ bashScriptExtraDefines ++= Seq(
   "addJava \"-Duser.timezone=UTC\""
 )
 batScriptExtraDefines += """set _JAVA_OPTS=%_JAVA_OPTS% -Dconfig.file=%HOSTS_HOME%\\conf\\application.conf -Duser.timezone=UTC"""
-javaOptions in reStart ++= Seq("-Dconfig.file=conf/application.conf", "-Duser.timezone=UTC")
+javaOptions in reStart ++= Seq(s"-Dconfig.file=${baseDirectory.value.getAbsolutePath}/conf/application.conf", "-Duser.timezone=UTC")
 
 enablePlugins(SbtTwirl, JavaAppPackaging)
