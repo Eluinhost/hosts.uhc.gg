@@ -48,10 +48,10 @@ const stateSelector = createSelector<ApplicationState, UpcomingState, StateProps
   state => state,
 );
 
-export const UpcomingMatchesPage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
-    stateSelector,
-    (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
-      refetch: () => dispatch(UpdateUpcoming.start()),
-    }),
-  )(UpcomingMatchesPageComponent);
+export const UpcomingMatchesPage: React.ComponentClass<RouteComponentProps<any>> = connect<
+  StateProps,
+  DispatchProps,
+  RouteComponentProps<any>
+>(stateSelector, (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+  refetch: () => dispatch(UpdateUpcoming.start()),
+}))(UpcomingMatchesPageComponent);

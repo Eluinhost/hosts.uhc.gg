@@ -8,12 +8,13 @@ export type HostFormConflictsState = {
   readonly fetching: boolean;
 };
 
-export const reducer: ApplicationReducer<HostFormConflictsState> = ReducerBuilder
-  .withInitialState<HostFormConflictsState>({
-    conflicts: [],
-    fetching: false,
-    error: null,
-  })
+export const reducer: ApplicationReducer<HostFormConflictsState> = ReducerBuilder.withInitialState<
+  HostFormConflictsState
+>({
+  conflicts: [],
+  fetching: false,
+  error: null,
+})
   .handle(HostFormConflicts.started, (prev, action) => ({
     conflicts: [],
     fetching: true,

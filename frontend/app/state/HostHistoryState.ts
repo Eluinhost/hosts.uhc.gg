@@ -15,24 +15,21 @@ export type HostHistoryState = {
 };
 
 const displayError = (err: Error) => {
-  if (err instanceof ApiErrors.NotAuthenticatedError)
-    return 'You are not logged in';
+  if (err instanceof ApiErrors.NotAuthenticatedError) return 'You are not logged in';
 
-  if (err instanceof ApiErrors.ForbiddenError)
-    return 'You do not have permissions to do this';
+  if (err instanceof ApiErrors.ForbiddenError) return 'You do not have permissions to do this';
 
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
-  .withInitialState<HostHistoryState>({
-    fetching: false,
-    error: null,
-    matches: [],
-    host: null,
-    hasMorePages: true,
-    updated: null,
-  })
+export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder.withInitialState<HostHistoryState>({
+  fetching: false,
+  error: null,
+  matches: [],
+  host: null,
+  hasMorePages: true,
+  updated: null,
+})
   .handle(LoadHostHistory.clear, () => ({
     fetching: false,
     error: null,
@@ -67,9 +64,8 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
   }))
   .handle(RemoveMatch.started, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -81,9 +77,8 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
   }))
   .handle(RemoveMatch.failure, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -95,9 +90,8 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
   }))
   .handle(ApproveMatch.started, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -107,9 +101,8 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder
   }))
   .handle(ApproveMatch.failure, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,

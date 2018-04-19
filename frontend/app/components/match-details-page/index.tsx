@@ -12,7 +12,7 @@ export class MatchDetailsPage extends React.PureComponent<RouteComponentProps<Pa
   public render() {
     return (
       <div>
-        <MatchDetails id={Number(this.props.match.params.id)}/>
+        <MatchDetails id={Number(this.props.match.params.id)} />
         <ApprovalModal />
         <RemovalModal />
       </div>

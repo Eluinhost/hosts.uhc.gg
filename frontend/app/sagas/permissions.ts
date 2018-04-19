@@ -1,9 +1,14 @@
 import { PermissionsApi, ApiErrors } from '../api';
 import { SagaIterator, effects, delay } from 'redux-saga';
 import {
-  AddPermission, ExpandPermissionLetterNodeParameters, FetchUserCountPerPermission, FetchUsersInPermission,
+  AddPermission,
+  ExpandPermissionLetterNodeParameters,
+  FetchUserCountPerPermission,
+  FetchUsersInPermission,
   FetchUsersInPermissionWithLetter,
-  FetchUsersInPermissionWithLetterParameters, PermissionLetterNode, PermissionNode,
+  FetchUsersInPermissionWithLetterParameters,
+  PermissionLetterNode,
+  PermissionNode,
   PermissionParameters,
   RefreshPermissionModerationLog,
   RemovePermission,
@@ -79,7 +84,7 @@ function* fetchUsersInPermissionWithLetterSaga(a: Action<FetchUsersInPermissionW
 
 const getAddPermission = createSelector<ApplicationState, AddPermissionDialogState | null, string | null>(
   state => state.permissions.addDialog,
-  dialogState => dialogState ? dialogState.permission : null,
+  dialogState => (dialogState ? dialogState.permission : null),
 );
 
 function* addPermission(action: Action<string>): SagaIterator {
@@ -94,11 +99,9 @@ function* addPermission(action: Action<string>): SagaIterator {
   };
 
   try {
-    if (!permission)
-      throw new Error('invalid state');
+    if (!permission) throw new Error('invalid state');
 
-    if (!accessToken)
-      throw new ApiErrors.NotAuthenticatedError();
+    if (!accessToken) throw new ApiErrors.NotAuthenticatedError();
 
     yield effects.put(AddPermission.started({ parameters }));
     yield effects.call(PermissionsApi.callAddPermission, permission, username, accessToken);
@@ -120,9 +123,10 @@ function* addPermission(action: Action<string>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof ApiErrors.BadDataError
-        ? error.message
-        : `Failed to add permission to /u/${parameters!.username}`,
+      message:
+        error instanceof ApiErrors.BadDataError
+          ? error.message
+          : `Failed to add permission to /u/${parameters!.username}`,
     });
   }
 }
@@ -131,21 +135,16 @@ const getRemovePermissionState = createSelector<
   ApplicationState,
   RemovePermissionDialogState | null,
   RemovePermissionDialogState | null
->(
-  state => state.permissions.removeDialog,
-  dialogState => dialogState,
-);
+>(state => state.permissions.removeDialog, dialogState => dialogState);
 
 function* removePermission(): SagaIterator {
   const accessToken: string | null = yield effects.select(getAccessToken);
   const parameters: RemovePermissionDialogState | null = yield effects.select(getRemovePermissionState);
 
   try {
-    if (!parameters)
-      throw new Error('invalid state');
+    if (!parameters) throw new Error('invalid state');
 
-    if (!accessToken)
-      throw new ApiErrors.NotAuthenticatedError();
+    if (!accessToken) throw new ApiErrors.NotAuthenticatedError();
 
     yield effects.put(RemovePermission.started({ parameters }));
     yield effects.call(PermissionsApi.callRemovePermission, parameters.permission, parameters.username, accessToken);
@@ -167,9 +166,10 @@ function* removePermission(): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof ApiErrors.BadDataError
-        ? error.message
-        : `Failed to remove permission from /u/${parameters!.username}`,
+      message:
+        error instanceof ApiErrors.BadDataError
+          ? error.message
+          : `Failed to remove permission from /u/${parameters!.username}`,
     });
   }
 }
@@ -182,10 +182,12 @@ export function* watchPermissions(): SagaIterator {
     effects.takeLatest<Action<string>>(FetchUsersInPermission.start, fetchUsersInPermissionSaga),
     effects.takeLatest<Action<string>>(PermissionNode.open, fetchUsersInPermissionSaga), // fetch users when expanded
     effects.takeLatest<Action<FetchUsersInPermissionWithLetterParameters>>(
-      FetchUsersInPermissionWithLetter.start, fetchUsersInPermissionWithLetterSaga,
+      FetchUsersInPermissionWithLetter.start,
+      fetchUsersInPermissionWithLetterSaga,
     ),
     effects.takeLatest<Action<ExpandPermissionLetterNodeParameters>>(
-      PermissionLetterNode.open, fetchUsersInPermissionWithLetterSaga,
+      PermissionLetterNode.open,
+      fetchUsersInPermissionWithLetterSaga,
     ),
   ]);
 }

@@ -34,23 +34,20 @@ class Dropdown extends React.PureComponent<DropdownStateProps & DropdownDispatch
       this.props.getRules();
     }
     this.setState(prev => ({ areRulesOpen: !prev.areRulesOpen }));
-  }
+  };
 
   stopPropagation = (e: React.MouseEvent<any>): void => e.stopPropagation();
 
   rulesToShow = (): string | null => {
-    if (this.props.rules.data)
-      return this.props.rules.data.content;
+    if (this.props.rules.data) return this.props.rules.data.content;
 
-    if (this.props.rules.fetching)
-      return 'Loading...';
+    if (this.props.rules.fetching) return 'Loading...';
 
     return this.props.rules.error;
-  }
+  };
 
   headerInfo = (): string | null => {
-    if (this.props.rules.fetching)
-      return 'Loading...';
+    if (this.props.rules.fetching) return 'Loading...';
 
     if (this.props.rules.data) {
       const time = this.props.rules.data.modified.format('MMM Do HH:mm z');
@@ -59,17 +56,16 @@ class Dropdown extends React.PureComponent<DropdownStateProps & DropdownDispatch
     }
 
     return this.props.rules.error;
-  }
+  };
 
   render() {
     const rules = this.rulesToShow();
 
     return (
-      <div
-        className={`hosting-rules pt-callout ${this.iconClasses()}`}
-        onClick={this.toggleDropdown}
-      >
-        <h3>Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small></h3>
+      <div className={`hosting-rules pt-callout ${this.iconClasses()}`} onClick={this.toggleDropdown}>
+        <h3>
+          Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small>
+        </h3>
         <Collapse isOpen={this.state.areRulesOpen}>
           <div onClick={this.stopPropagation}>
             <WithPermission permission="hosting advisor">

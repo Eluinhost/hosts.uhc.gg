@@ -18,7 +18,7 @@ function* attemptRefresh(): SagaIterator {
   const now = moment();
 
   // If the access token still has time left do nothing
-  if (getAccessTokenClaims(state)!.expires.isAfter(now.add(5 , 'minutes'))) {
+  if (getAccessTokenClaims(state)!.expires.isAfter(now.add(5, 'minutes'))) {
     console.log('Authentication token not stale');
     return;
   }
@@ -36,7 +36,7 @@ function* attemptRefresh(): SagaIterator {
     // refresh token mustn't be null here as refreshClaims worked
     const data: LoginPayload = yield effects.call(
       AuthenticationApi.callRefreshTokens,
-      (state.authentication.refreshToken || 'ERROR NO REFRESH TOKEN IN STATE'),
+      state.authentication.refreshToken || 'ERROR NO REFRESH TOKEN IN STATE',
     );
 
     yield effects.put(Authentication.login(data));

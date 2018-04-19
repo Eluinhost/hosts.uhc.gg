@@ -17,12 +17,14 @@ const renderSelect: React.SFC<WrappedFieldProps<any> & SelectFieldProps> = props
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <div className={`pt-select ${props.className || ''}`}>
       <select {...props.input} disabled={props.disabled}>
-        {props.options.map(option => <option key={option.value} value={option.value}>{option.display}</option>)}
+        {props.options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.display}
+          </option>
+        ))}
       </select>
     </div>
   </FieldWrapper>
 );
 
-export const SelectField: React.SFC<SelectFieldProps> = props => (
-  <Field {...props} component={renderSelect} />
-);
+export const SelectField: React.SFC<SelectFieldProps> = props => <Field {...props} component={renderSelect} />;

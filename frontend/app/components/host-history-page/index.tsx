@@ -61,8 +61,8 @@ const dispatch = (dispatch: Dispatch<ApplicationState>, ownProps: RouteComponent
   clear: () => dispatch(LoadHostHistory.clear()),
 });
 
-export const HistoryPage: React.ComponentClass<RouteComponentProps<RouteParams>> = 
-  connect<StateProps, DispatchProps, RouteComponentProps<RouteParams>>(
-    stateSelector,
-    dispatch,
-  )(HistoryPageComponent);
+export const HistoryPage: React.ComponentClass<RouteComponentProps<RouteParams>> = connect<
+  StateProps,
+  DispatchProps,
+  RouteComponentProps<RouteParams>
+>(stateSelector, dispatch)(HistoryPageComponent);

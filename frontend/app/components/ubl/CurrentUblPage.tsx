@@ -15,7 +15,9 @@ export const CurrentUblPage: React.SFC = () => (
       <UsernameSearcher />
       <WithPermission permission="ubl moderator">
         <Link to="/ubl/create">
-          <Button intent={Intent.SUCCESS} iconName="take-action">Create New Ban</Button>
+          <Button intent={Intent.SUCCESS} iconName="take-action">
+            Create New Ban
+          </Button>
         </Link>
       </WithPermission>
     </div>

@@ -16,18 +16,22 @@ type NavBarButtonProps = {
   readonly to: string;
 };
 
-const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<any>> =
-  ({ text, icon, to, location }) => (
-    <Link to={to}>
-      <Button
-        className="pt-minimal"
-        iconName={icon}
-        active={location.pathname === to || location.pathname.startsWith(`${to}/`)}
-      >
-        {text}
-      </Button>
-    </Link>
-  );
+const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<any>> = ({
+  text,
+  icon,
+  to,
+  location,
+}) => (
+  <Link to={to}>
+    <Button
+      className="pt-minimal"
+      iconName={icon}
+      active={location.pathname === to || location.pathname.startsWith(`${to}/`)}
+    >
+      {text}
+    </Button>
+  </Link>
+);
 
 const NavbarButton: React.ComponentClass<NavBarButtonProps> = withRouter<NavBarButtonProps>(NavBarButtonComponent);
 
@@ -50,51 +54,28 @@ const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, to
       </Link>
     </div>
     <div className="pt-navbar-group">
-      <NavbarButton
-        to="/host"
-        text="Host"
-        icon="cloud-upload"
-      />
-      <NavbarButton
-        to="/matches"
-        text="Matches"
-        icon="numbered-list"
-      />
-      <NavbarButton
-        to="/members"
-        text="Members"
-        icon="user"
-      />
+      <NavbarButton to="/host" text="Host" icon="cloud-upload" />
+      <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
+      <NavbarButton to="/members" text="Members" icon="user" />
       {/*<NavbarButton*/}
-        {/*to="/ubl"*/}
-        {/*text="Ban List"*/}
-        {/*icon="take-action"*/}
+      {/*to="/ubl"*/}
+      {/*text="Ban List"*/}
+      {/*icon="take-action"*/}
       {/*/>*/}
       <WithPermission permission="hosting advisor">
-        <NavbarButton
-          to="/hosting-alerts"
-          text="Hosting Alerts"
-          icon="notifications"
-        />
+        <NavbarButton to="/hosting-alerts" text="Hosting Alerts" icon="notifications" />
       </WithPermission>
     </div>
     <div className="pt-navbar-group">
       <Username />
-      <Button
-        className="pt-minimal"
-        iconName={isDarkMode ? 'moon' : 'flash'}
-        onClick={toggleDarkMode}
-      />
+      <Button className="pt-minimal" iconName={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
     </div>
   </nav>
 );
 
-const stateSelector = createSelector<ApplicationState, boolean, StateProps>(
+const stateSelector = createSelector<ApplicationState, boolean, StateProps>(isDarkMode, isDarkMode => ({
   isDarkMode,
-  isDarkMode => ({
-    isDarkMode,
-  }),
-);
+}));
 
 export const Navbar: React.ComponentClass = withRouter<{}>(
   connect<StateProps, DispatchProps, RouteComponentProps<any>>(

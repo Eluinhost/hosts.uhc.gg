@@ -26,12 +26,18 @@ class Component extends React.PureComponent<StateProps & DispatchProps & RouteCo
   }
 
   public render() {
-    const { apiKey: { fetching, error, key }, refreshApiKey, regenerateApiKey, resetStorage } = this.props;
+    const {
+      apiKey: { fetching, error, key },
+      refreshApiKey,
+      regenerateApiKey,
+      resetStorage,
+    } = this.props;
 
-    if (fetching)
-      return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
+    if (fetching) {
+      return <NonIdealState visual={<Spinner />} title="Loading..." />;
+    }
 
-    if (error)
+    if (error) {
       return (
         <NonIdealState
           visual="warning-sign"
@@ -39,6 +45,7 @@ class Component extends React.PureComponent<StateProps & DispatchProps & RouteCo
           action={<Button onClick={refreshApiKey}>Click here to reload</Button>}
         />
       );
+    }
 
     return (
       <div>
@@ -51,7 +58,9 @@ class Component extends React.PureComponent<StateProps & DispatchProps & RouteCo
             <span>{key}</span>
           </If>
         </pre>
-        <Button intent={Intent.DANGER} onClick={resetStorage}>Reset All Data</Button>
+        <Button intent={Intent.DANGER} onClick={resetStorage}>
+          Reset All Data
+        </Button>
       </div>
     );
   }
@@ -68,8 +77,8 @@ const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
   resetStorage: () => dispatch(ClearStorage.start()),
 });
 
-export const ProfilePage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
-    stateSelector,
-    dispatch,
-  )(Component);
+export const ProfilePage: React.ComponentClass<RouteComponentProps<any>> = connect<
+  StateProps,
+  DispatchProps,
+  RouteComponentProps<any>
+>(stateSelector, dispatch)(Component);

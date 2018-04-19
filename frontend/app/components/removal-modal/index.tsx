@@ -24,9 +24,8 @@ type DispatchProps = {
 };
 
 class RemovalModalComponent extends React.PureComponent<
-  & StateProps
-  & DispatchProps
-  & FormProps<RemovalModalData, {}, ApplicationState>> {
+  StateProps & DispatchProps & FormProps<RemovalModalData, {}, ApplicationState>
+> {
   public render() {
     const { id, isDarkMode, onClose, handleSubmit, submitting, invalid } = this.props;
 
@@ -55,18 +54,10 @@ class RemovalModalComponent extends React.PureComponent<
         </div>
         <div className={`${Classes.DIALOG_FOOTER}`}>
           <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
-            <Button
-              onClick={onClose}
-              iconName="arrow-left"
-            >
+            <Button onClick={onClose} iconName="arrow-left">
               Cancel
             </Button>
-            <Button
-              intent={Intent.DANGER}
-              onClick={handleSubmit}
-              disabled={invalid || submitting}
-              iconName="delete"
-            >
+            <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={invalid || submitting} iconName="delete">
               Confirm Removal
             </Button>
           </div>
@@ -76,28 +67,27 @@ class RemovalModalComponent extends React.PureComponent<
   }
 }
 
-const validator = new Validator<RemovalModalData>()
-  .withValidationFunction('reason', (reason) => {
-    if (!reason)
-      return 'This field is required';
+const validator = new Validator<RemovalModalData>().withValidationFunction('reason', reason => {
+  if (!reason) return 'This field is required';
 
-    if (reason.length < 3)
-      return 'Must be at least 3 characters long';
+  if (reason.length < 3) return 'Must be at least 3 characters long';
 
-    if (reason.length > 256)
-      return 'Must be at most 256 characters long';
+  if (reason.length > 256) return 'Must be at most 256 characters long';
 
-    return undefined;
-  });
+  return undefined;
+});
 
-const RemovalModalWithForm: React.ComponentClass<StateProps & DispatchProps> =
-  reduxForm<RemovalModalData, StateProps & DispatchProps, ApplicationState>({
-    form: RemoveMatch.formId,
-    validate: validator.validate,
-    onSubmit: (values, dispatch, props): void => {
-      props.onConfirm(props.id!, values.reason);
-    },
-  })(RemovalModalComponent);
+const RemovalModalWithForm: React.ComponentClass<StateProps & DispatchProps> = reduxForm<
+  RemovalModalData,
+  StateProps & DispatchProps,
+  ApplicationState
+>({
+  form: RemoveMatch.formId,
+  validate: validator.validate,
+  onSubmit: (values, dispatch, props): void => {
+    props.onConfirm(props.id!, values.reason);
+  },
+})(RemovalModalComponent);
 
 const stateSelector = createSelector<ApplicationState, number | null, boolean, StateProps>(
   state => state.matchModeration.removalModalId,
@@ -110,7 +100,6 @@ const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
   onConfirm: (id: number, reason: string) => dispatch(RemoveMatch.start({ id, reason })),
 });
 
-export const RemovalModal: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
-  stateSelector,
-  dispatch,
-)(RemovalModalWithForm);
+export const RemovalModal: React.ComponentClass = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
+  RemovalModalWithForm,
+);

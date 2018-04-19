@@ -53,9 +53,10 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof ApiErrors.BadDataError
-        ? `Failed to update hosting rules: ${error.message}`
-        : `Failed to update hosting rules`,
+      message:
+        error instanceof ApiErrors.BadDataError
+          ? `Failed to update hosting rules: ${error.message}`
+          : `Failed to update hosting rules`,
     });
   }
 }

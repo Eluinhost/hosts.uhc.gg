@@ -8,5 +8,5 @@ export type MarkdownProps = {
 };
 
 export const Markdown: React.SFC<MarkdownProps> = ({ markdown }) => (
-  <div className="rendered-markdown" dangerouslySetInnerHTML={{ __html: parser.render(markdown) }}/>
+  <div className="rendered-markdown" dangerouslySetInnerHTML={{ __html: parser.render(markdown) }} />
 );

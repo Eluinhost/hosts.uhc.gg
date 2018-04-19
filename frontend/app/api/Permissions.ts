@@ -2,9 +2,10 @@ import { authHeaders, callApi, fetchArray, fetchObject } from './util';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
-export const fetchUserCountPerPermission = (): Promise<UserCountPerPermission> => fetchObject<UserCountPerPermission>({
-  url: `/api/permissions`,
-});
+export const fetchUserCountPerPermission = (): Promise<UserCountPerPermission> =>
+  fetchObject<UserCountPerPermission>({
+    url: `/api/permissions`,
+  });
 
 export const fetchUsersInPermission = (permission: string): Promise<UsersInPermission> =>
   fetchObject<UsersInPermission>({

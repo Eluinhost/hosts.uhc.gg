@@ -4,9 +4,7 @@ import { If } from '../If';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
-import {
-  filter, propEq, complement, always, map, when, toLower, curry, CurriedFunction2, any, pipe,
-} from 'ramda';
+import { filter, propEq, complement, always, map, when, toLower, curry, CurriedFunction2, any, pipe } from 'ramda';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -57,79 +55,85 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     this.props
       .refetch()
-      .then(bans => this.setState(prev => ({
-        bans,
-        filtered: this.filterBans(prev.filter, bans),
-        loading: false,
-        error: null,
-      })))
-      .catch(err => this.setState({
-        error: 'Failed to fetch list from server',
-        loading: false,
-      }));
-  }
+      .then(bans =>
+        this.setState(prev => ({
+          bans,
+          filtered: this.filterBans(prev.filter, bans),
+          loading: false,
+          error: null,
+        })),
+      )
+      .catch(err =>
+        this.setState({
+          error: 'Failed to fetch list from server',
+          loading: false,
+        }),
+      );
+  };
 
   // Delete immediately + store backup list
-  onRowDeleteStart = (ban: BanEntry) => this.setState((prev) => {
-    const bans = filter(complement(propEq('id', ban.id)), prev.bans);
+  onRowDeleteStart = (ban: BanEntry) =>
+    this.setState(prev => {
+      const bans = filter(complement(propEq('id', ban.id)), prev.bans);
 
-    if (this.props.onListUpdate)
-      this.props.onListUpdate(bans);
+      if (this.props.onListUpdate) this.props.onListUpdate(bans);
 
-    return {
-      bans,
-      filtered: this.filterBans(prev.filter, bans),
-      backup: prev.bans,
-    };
-  })
+      return {
+        bans,
+        filtered: this.filterBans(prev.filter, bans),
+        backup: prev.bans,
+      };
+    });
 
   // make the change immediately + save backup
-  onRowEditStart = (newBan: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
-    const bans = map(when(propEq('id', oldBan.id), always(newBan)), prev.bans);
+  onRowEditStart = (newBan: BanEntry, oldBan: BanEntry) =>
+    this.setState(prev => {
+      const bans = map(when(propEq('id', oldBan.id), always(newBan)), prev.bans);
 
-    if (this.props.onListUpdate)
-      this.props.onListUpdate(bans);
+      if (this.props.onListUpdate) this.props.onListUpdate(bans);
 
-    return {
-      bans,
-      filtered: this.filterBans(prev.filter, bans),
-      backup: prev.bans,
-    };
-  })
+      return {
+        bans,
+        filtered: this.filterBans(prev.filter, bans),
+        backup: prev.bans,
+      };
+    });
 
   // Clear backup on confirm
-  onRowDeleted = () => this.setState({
-    backup: null,
-  })
+  onRowDeleted = () =>
+    this.setState({
+      backup: null,
+    });
 
   // clear backup
-  onRowEdited = () => this.setState({
-    backup: null,
-  })
+  onRowEdited = () =>
+    this.setState({
+      backup: null,
+    });
 
   // restore from backup
-  onRowDeleteFailed = (ban: BanEntry) => this.setState((prev) => {
-    if (this.props.onListUpdate)
-      this.props.onListUpdate(prev.backup!);
+  onRowDeleteFailed = (ban: BanEntry) =>
+    this.setState(prev => {
+      if (this.props.onListUpdate) this.props.onListUpdate(prev.backup!);
 
-    return {
-      bans: prev.backup,
-      filtered: this.filterBans(prev.filter, prev.backup!),
-      backup: null,
-    };
-  })
+      return {
+        bans: prev.backup,
+        filtered: this.filterBans(prev.filter, prev.backup!),
+        backup: null,
+      };
+    });
 
   // restore from backup
-  onRowEditFailed = (newBan: BanEntry, oldBan: BanEntry) => this.setState((prev) => {
-    if (this.props.onListUpdate)
-      this.props.onListUpdate(prev.backup!);
+  onRowEditFailed = (newBan: BanEntry, oldBan: BanEntry) =>
+    this.setState(prev => {
+      if (this.props.onListUpdate) this.props.onListUpdate(prev.backup!);
 
-    return {
-      bans: prev.backup,
-      filtered: this.filterBans(prev.filter, prev.backup!),
-      backup: null,
-    };
-  })
+      return {
+        bans: prev.backup,
+        filtered: this.filterBans(prev.filter, prev.backup!),
+        backup: null,
+      };
+    });
 
   renderRow = (props: ListRowProps) => {
     const ban = this.state.filtered[props.index];
@@ -150,7 +154,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
         />
       </div>
     );
-  }
+  };
 
   onFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFilter = e.target.value;
@@ -159,27 +163,20 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
       filter: newFilter,
       filtered: this.filterBans(newFilter, prev.bans),
     }));
-  }
+  };
 
   filterBans = (filterString: string, bans: BanEntry[]): BanEntry[] => {
-    if (filterString === '')
-      return bans;
+    if (filterString === '') return bans;
 
     const filterPred = caseInsensitiveContains(filterString);
 
-    return filter<BanEntry>(
-      pipe(
-        (ban: BanEntry) => [ban.ign, ban.uuid, ban.reason, ban.link],
-        any(filterPred),
-      ),
-      bans,
-    );
-  }
+    return filter<BanEntry>(pipe((ban: BanEntry) => [ban.ign, ban.uuid, ban.reason, ban.link], any(filterPred)), bans);
+  };
 
   render() {
     return (
       <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-        <div className={`pt-input-group ${this.state.filter !== '' ? 'pt-intent-primary' : '' }`}>
+        <div className={`pt-input-group ${this.state.filter !== '' ? 'pt-intent-primary' : ''}`}>
           <span className="pt-icon pt-icon-filter" />
           <input
             type="text"
@@ -191,19 +188,21 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
         </div>
         <If condition={this.state.loading}>
           <div style={{ flexGrow: 0 }}>
-            <NonIdealState title="Loading..." visual={<Spinner/>}/>
+            <NonIdealState title="Loading..." visual={<Spinner />} />
           </div>
         </If>
 
         <If condition={!!this.state.error}>
-          <div style={{ flexGrow: 0 }} className="pt-callout pt-intent-danger"><h5>{this.state.error}</h5></div>
+          <div style={{ flexGrow: 0 }} className="pt-callout pt-intent-danger">
+            <h5>{this.state.error}</h5>
+          </div>
         </If>
 
         <div style={{ flex: '1 0 auto' }}>
           <WindowScroller>
-            {/*tslint:disable-next-line jsx-no-multiline-js*/({ height, isScrolling, scrollTop }) => (
+            {/*tslint:disable-next-line jsx-no-multiline-js*/ ({ height, isScrolling, scrollTop }) => (
               <AutoSizer disableHeight>
-                {/*tslint:disable-next-line jsx-no-multiline-js*/({ width }) => (
+                {/*tslint:disable-next-line jsx-no-multiline-js*/ ({ width }) => (
                   <List
                     renderHelper={this.props}
                     renderHelper2={this.state}
@@ -218,7 +217,7 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
                 )}
               </AutoSizer>
             )}
-          </WindowScroller >
+          </WindowScroller>
         </div>
       </div>
     );

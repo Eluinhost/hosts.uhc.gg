@@ -22,28 +22,17 @@ type DispatchProps = {
 
 const UserMenu: React.SFC<DispatchProps> = ({ logout }) => (
   <Menu>
-    <Link
-      to="/profile"
-    >
-      <MenuItem
-        iconName="cog"
-        text="Profile"
-      />
+    <Link to="/profile">
+      <MenuItem iconName="cog" text="Profile" />
     </Link>
-    <MenuItem
-      iconName="log-out"
-      onClick={logout}
-      text="Logout"
-    />
+    <MenuItem iconName="log-out" onClick={logout} text="Logout" />
   </Menu>
 );
 
 const UsernameComponent: React.SFC<StateProps & DispatchProps> = ({ logout, username, isLoggedIn }) => (
   <If condition={isLoggedIn} alternative={LoginButton}>
     <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
-          <span className="pt-button pt-minimal pt-icon-user">
-            {username}
-          </span>
+      <span className="pt-button pt-minimal pt-icon-user">{username}</span>
     </Popover>
   </If>
 );

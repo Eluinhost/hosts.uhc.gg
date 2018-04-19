@@ -22,8 +22,9 @@ export type MembersPageStateProps = PermissionsState & {
   readonly canModify: string[];
 };
 
-export class MembersPage
-  extends React.Component<MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>> {
+export class MembersPage extends React.Component<
+  MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>
+> {
   componentDidMount(): void {
     this.props.fetchPermissionList();
   }
@@ -31,8 +32,7 @@ export class MembersPage
   private canModify = (permission: string): boolean => this.props.canModify.indexOf(permission) >= 0;
 
   private onNodeClick = (node: BasicNode) => {
-    if (!this.canModify(node.permission))
-      return;
+    if (!this.canModify(node.permission)) return;
 
     switch (node.type) {
       case 'permission':
@@ -41,7 +41,7 @@ export class MembersPage
       case 'username':
         this.props.openRemovePermission(node.permission, (node as UsernameNode).username);
     }
-  }
+  };
 
   private collapseNode = (node: BasicNode): void => {
     switch (node.type) {
@@ -52,7 +52,7 @@ export class MembersPage
         this.props.collapseLetterNode(node.permission, (node as LetterFolder).letter);
         break;
     }
-  }
+  };
 
   private expandNode = (node: BasicNode): void => {
     switch (node.type) {
@@ -63,21 +63,20 @@ export class MembersPage
         this.props.expandLetterNode(node.permission, (node as LetterFolder).letter);
         break;
     }
-  }
+  };
 
-  private nodesWithClassNames = (): BasicNode[] => this.props.nodes.map((node) => {
-    if (!this.canModify(node.permission))
-      return node;
+  private nodesWithClassNames = (): BasicNode[] =>
+    this.props.nodes.map(node => {
+      if (!this.canModify(node.permission)) return node;
 
-    return {
-      ...node,
-      className: `${node.className} editable-permission-node`,
-    };
-  })
+      return {
+        ...node,
+        className: `${node.className} editable-permission-node`,
+      };
+    });
 
   private renderPermissionsTree = (): React.ReactElement<any> => {
-    if (this.props.isFetching)
-      return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
+    if (this.props.isFetching) return <NonIdealState visual={<Spinner />} title="Loading..." />;
 
     return (
       <div className="permissions-tree">
@@ -98,7 +97,7 @@ export class MembersPage
         </Button>
       </div>
     );
-  }
+  };
 
   public render() {
     return (

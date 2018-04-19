@@ -23,21 +23,21 @@ function* genericSaveAndListen<T>(setAction: ActionFunction1<T, Action<T>>, stor
   }
 
   // start a separate task to listen for changes to save them
-  yield effects.spawn(function* (): SagaIterator {
-    yield effects.takeLatest(setAction, function* (action: Action<T>): SagaIterator {
+  yield effects.spawn(function*(): SagaIterator {
+    yield effects.takeLatest(setAction, function*(action: Action<T>): SagaIterator {
       yield effects.call([storage, storage.setItem], key, action.payload);
     });
   });
 }
 
 function* watchLogout(): SagaIterator {
-  yield effects.takeEvery(Authentication.logout, function* (): SagaIterator {
+  yield effects.takeEvery(Authentication.logout, function*(): SagaIterator {
     yield effects.call([storage, storage.removeItem], `${baseKey}.authentication`);
   });
 }
 
 function* watchClearStorage(): SagaIterator {
-  yield effects.takeEvery(ClearStorage.start, function* (): SagaIterator {
+  yield effects.takeEvery(ClearStorage.start, function*(): SagaIterator {
     yield effects.put(ClearStorage.started());
 
     try {
@@ -60,8 +60,8 @@ function* syncHostFormData(): SagaIterator {
     yield effects.put(SetSavedHostFormData.started({ parameters: stored }));
   }
 
-  yield effects.spawn(function* (): SagaIterator {
-    yield effects.takeLatest(SetSavedHostFormData.start, function* (action: Action<CreateMatchData>): SagaIterator {
+  yield effects.spawn(function*(): SagaIterator {
+    yield effects.takeLatest(SetSavedHostFormData.start, function*(action: Action<CreateMatchData>): SagaIterator {
       const parameters = action.payload!;
 
       yield effects.put(SetSavedHostFormData.started({ parameters }));
@@ -80,7 +80,7 @@ function* syncHostFormData(): SagaIterator {
 function* authentication(): SagaIterator {
   yield effects.call(genericSaveAndListen, Authentication.login, 'authentication');
   // check every minute if we need to refresh our authentication tokens
-  yield effects.spawn(function* (): SagaIterator {
+  yield effects.spawn(function*(): SagaIterator {
     while (true) {
       yield effects.put(Authentication.attemptRefresh());
       yield effects.call(delay, 60000);

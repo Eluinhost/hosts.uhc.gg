@@ -28,17 +28,16 @@ class ModerationLogComponent extends React.PureComponent<StateProps & DispatchPr
       title={`Actioned by ${row.modifier}`}
     >
       <span className="pt-monospace-text">
-        <MatchOpens time={row.at}/>
+        <MatchOpens time={row.at} />
       </span>
-      <Icon iconName={row.added ? 'add' : 'remove'}/>
+      <Icon iconName={row.added ? 'add' : 'remove'} />
       <span>{row.permission}</span>
       <span className="moderation-log-entry-affected">/u/{row.username}</span>
     </Tag>
-  )
+  );
 
   public render() {
-    if (this.props.fetching)
-      return <NonIdealState visual={<Spinner/>} title="Loading..."/>;
+    if (this.props.fetching) return <NonIdealState visual={<Spinner />} title="Loading..." />;
 
     return (
       <div className="moderation-log">
@@ -49,12 +48,7 @@ class ModerationLogComponent extends React.PureComponent<StateProps & DispatchPr
             <h5>{this.props.error}</h5>
           </div>
         </If>
-        <Button
-          disabled={this.props.fetching}
-          onClick={this.props.refresh}
-          iconName="refresh"
-          intent={Intent.SUCCESS}
-        >
+        <Button disabled={this.props.fetching} onClick={this.props.refresh} iconName="refresh" intent={Intent.SUCCESS}>
           Refresh
         </Button>
       </div>
@@ -71,7 +65,6 @@ const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
   refresh: () => dispatch(RefreshPermissionModerationLog.start()),
 });
 
-export const ModerationLog: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
-  stateSelector,
-  dispatch,
-)(ModerationLogComponent);
+export const ModerationLog: React.ComponentClass = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
+  ModerationLogComponent,
+);

@@ -10,30 +10,31 @@ export class Validator<T extends DataShape> {
   private spec = new Map<keyof T, SpecFn<T, keyof T>>();
 
   public required = (prop: keyof T, message: string = 'This field is required'): Validator<T> =>
-    this.withValidation(prop, (value) => {
-      if (!value)
-        return true;
+    this.withValidation(
+      prop,
+      value => {
+        if (!value) return true;
 
-      if (isArray(value) && value.length === 0)
-        return true;
+        if (isArray(value) && value.length === 0) return true;
 
-      if (isString(value) && value.trim().length === 0)
-        return true;
+        if (isString(value) && value.trim().length === 0) return true;
 
-      return false;
-    }, message)
+        return false;
+      },
+      message,
+    );
 
   public withValidation = <P extends keyof T>(
     prop: P,
     pred: (value: T[P], obj: T) => boolean,
     result: ValidationResult,
   ): Validator<T> => {
-    const validationFunction: SpecFn<T, P> = (value, obj) => pred(value, obj) ? result : undefined;
+    const validationFunction: SpecFn<T, P> = (value, obj) => (pred(value, obj) ? result : undefined);
 
     this.spec.set(prop, validationFunction);
 
     return this;
-  }
+  };
 
   public withValidationFunction = <P extends keyof T>(
     prop: P,
@@ -42,7 +43,7 @@ export class Validator<T extends DataShape> {
     this.spec.set(prop, f);
 
     return this;
-  }
+  };
 
   public validate = (obj: T): FormErrors<T> => {
     const result: FormErrors<T> = {};
@@ -53,5 +54,5 @@ export class Validator<T extends DataShape> {
     });
 
     return result;
-  }
+  };
 }

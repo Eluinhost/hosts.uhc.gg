@@ -32,7 +32,7 @@ reactGa.initialize('UA-71696797-2');
 
 class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
   public render() {
-    return <NonIdealState title="Not Found" visual="geosearch"/>;
+    return <NonIdealState title="Not Found" visual="geosearch" />;
   }
 }
 
@@ -61,11 +61,11 @@ class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
 
     const component: React.SFC<RouteComponentProps<any>> = props => (
       <WithPermission permission={permission} alternative={NoPermission}>
-        <Component {...props}/>
+        <Component {...props} />
       </WithPermission>
     );
 
-    return <Route {...routeProps} component={component}/>;
+    return <Route {...routeProps} component={component} />;
   }
 }
 
@@ -85,7 +85,7 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
   public render() {
     return (
       <Switch>
-        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props}/>
+        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
         <Route path="/m/:id" component={MatchDetailsPage} />
         <Route path="/matches/:host" component={HistoryPage} />
         <Route path="/matches" component={UpcomingMatchesPage} />
@@ -101,7 +101,7 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
           permission="hosting advisor"
           {...this.props}
         />
-        <Route path="/" exact component={HomePage}/>
+        <Route path="/" exact component={HomePage} />
         <Route component={NotFoundPage} />
       </Switch>
     );
@@ -123,9 +123,10 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
     navbarSticky: window.scrollY > 50, // upper navbar is 50px
   };
 
-  private onScroll = (): void => this.setState({
-    navbarSticky: window.scrollY > 50,
-  })
+  private onScroll = (): void =>
+    this.setState({
+      navbarSticky: window.scrollY > 50,
+    });
 
   componentDidMount() {
     document.addEventListener('scroll', this.onScroll);
@@ -138,14 +139,12 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
   private wrapperClass = () => {
     let base = 'full-page';
 
-    if (this.props.isDarkMode)
-      base += ' pt-dark';
+    if (this.props.isDarkMode) base += ' pt-dark';
 
-    if (this.state.navbarSticky)
-      base += ' navbar-sticky';
+    if (this.state.navbarSticky) base += ' navbar-sticky';
 
     return base;
-  }
+  };
 
   public render() {
     return (
@@ -169,14 +168,8 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
   }
 }
 
-const stateSelector = createSelector<ApplicationState, boolean, AppProps>(
+const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDarkMode, isDarkMode => ({
   isDarkMode,
-  isDarkMode => ({
-    isDarkMode,
-  }),
-);
+}));
 
-export const App: React.ComponentClass = connect<AppProps, {}, {}>(
-  stateSelector,
-  always({}),
-)(AppComponent);
+export const App: React.ComponentClass = connect<AppProps, {}, {}>(stateSelector, always({}))(AppComponent);

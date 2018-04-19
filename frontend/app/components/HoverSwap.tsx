@@ -16,15 +16,11 @@ export class HoverSwap extends React.Component<{}, HoverSwapState> {
 
   public render() {
     const [notHovered, hovered] = React.Children.toArray(this.props.children);
-    
+
     return (
       <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        <If condition={!this.state.isHovered}>
-          {notHovered}
-        </If>
-        <If condition={this.state.isHovered}>
-          {hovered}
-        </If>
+        <If condition={!this.state.isHovered}>{notHovered}</If>
+        <If condition={this.state.isHovered}>{hovered}</If>
       </div>
     );
   }

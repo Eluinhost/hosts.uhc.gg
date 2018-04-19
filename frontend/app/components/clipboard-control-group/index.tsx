@@ -25,9 +25,9 @@ export class ClipboardControlGroup extends React.PureComponent<Props> {
         message: 'Your browser does not support copy, you must copy manually',
       });
     }
-  }
+  };
 
-  private saveRef = (ref: HTMLInputElement | null) => this.inputRef = ref;
+  private saveRef = (ref: HTMLInputElement | null) => (this.inputRef = ref);
 
   public render() {
     return (

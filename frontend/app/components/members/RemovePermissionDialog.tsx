@@ -19,62 +19,49 @@ type RemovePermissionDialogStateProps = {
 };
 
 const RemovePermissionDialogComponent: React.SFC<
-  RemovePermissionDialogStateProps &
-  RemovePermissionDialogDispatchProps &
-  FormProps<{}, {}, ApplicationState>> =
-  ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
-    <Dialog
-      iconName="remove"
-      isOpen={!!state}
-      onClose={close}
-      title="Remove role"
-      className={isDarkMode ? 'pt-dark' : ''}
-    >
-      <div className="pt-dialog-body remove-permission-body">
-        <h5>
-          Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
-        </h5>
-        <If condition={!!error}>
-          <span className="pt-intent-danger pt-callout">{error}</span>
-        </If>
+  RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & FormProps<{}, {}, ApplicationState>
+> = ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
+  <Dialog
+    iconName="remove"
+    isOpen={!!state}
+    onClose={close}
+    title="Remove role"
+    className={isDarkMode ? 'pt-dark' : ''}
+  >
+    <div className="pt-dialog-body remove-permission-body">
+      <h5>
+        Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
+      </h5>
+      <If condition={!!error}>
+        <span className="pt-intent-danger pt-callout">{error}</span>
+      </If>
+    </div>
+    <div className="pt-dialog-footer">
+      <div className="pt-dialog-footer-actions">
+        <Button onClick={close} iconName="arrow-left">
+          Cancel
+        </Button>
+        <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} iconName="remove">
+          Remove permission
+        </Button>
       </div>
-      <div className="pt-dialog-footer">
-        <div className="pt-dialog-footer-actions">
-          <Button
-            onClick={close}
-            iconName="arrow-left"
-          >
-            Cancel
-          </Button>
-          <Button
-            intent={Intent.DANGER}
-            onClick={handleSubmit}
-            disabled={submitting || invalid}
-            iconName="remove"
-          >
-            Remove permission
-          </Button>
-        </div>
-      </div>
-    </Dialog>
-  );
+    </div>
+  </Dialog>
+);
 
-const RemovePermissionDialogForm: React.SFC<RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps> =
-  reduxForm<
-    {},
-    RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps,
-    ApplicationState
-  >({
-    form: 'remove-permission-form',
-    onSubmit: async (values, dispatch, props): Promise<void> => {
-      try {
-        await props.confirm();
-        props.close();
-      } catch (err) {
-        throw new SubmissionError({ __error: 'Unexpected response from the server' });
-      }
-    },
-  })(RemovePermissionDialogComponent);
+const RemovePermissionDialogForm: React.SFC<
+  RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps
+> = reduxForm<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps, ApplicationState>({
+  form: 'remove-permission-form',
+  onSubmit: async (values, dispatch, props): Promise<void> => {
+    try {
+      await props.confirm();
+      props.close();
+    } catch (err) {
+      throw new SubmissionError({ __error: 'Unexpected response from the server' });
+    }
+  },
+})(RemovePermissionDialogComponent);
 
 const mapStateToProps = (state: ApplicationState): RemovePermissionDialogStateProps => ({
   state: state.permissions.removeDialog,
@@ -86,8 +73,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): RemovePermiss
   confirm: () => dispatch(RemovePermission.start()),
 });
 
-export const RemovePermissionDialog: React.ComponentClass =
-  connect<RemovePermissionDialogStateProps, RemovePermissionDialogDispatchProps, {}>(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(RemovePermissionDialogForm);
+export const RemovePermissionDialog: React.ComponentClass = connect<
+  RemovePermissionDialogStateProps,
+  RemovePermissionDialogDispatchProps,
+  {}
+>(mapStateToProps, mapDispatchToProps)(RemovePermissionDialogForm);

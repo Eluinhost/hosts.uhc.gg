@@ -23,7 +23,12 @@ export type BanData = {
   link: string;
 };
 
-const earliest = moment.utc().set('hour', 0).set('minute', 0).set('second', 0).add(1, 'day');
+const earliest = moment
+  .utc()
+  .set('hour', 0)
+  .set('minute', 0)
+  .set('second', 0)
+  .add(1, 'day');
 
 const dateProps: Partial<ReactDatePickerProps> = {
   minDate: earliest,
@@ -32,10 +37,12 @@ const dateProps: Partial<ReactDatePickerProps> = {
   monthsShown: 2,
 };
 
-export const BanDataFormComponent: React.SFC<
-  & StrictFormProps<BanData, {}, ApplicationState>
-  & BanDataFormProps
-> = ({ handleSubmit, submitting, valid, error }) => (
+export const BanDataFormComponent: React.SFC<StrictFormProps<BanData, {}, ApplicationState> & BanDataFormProps> = ({
+  handleSubmit,
+  submitting,
+  valid,
+  error,
+}) => (
   <form onSubmit={handleSubmit}>
     <DateTimeField
       name="expires"
@@ -51,7 +58,9 @@ export const BanDataFormComponent: React.SFC<
     <TextField name="link" label="Case Link" disabled={submitting} required />
 
     <If condition={!!error}>
-      <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>
+      <div className="pt-callout pt-intent-danger">
+        <h5>{error}</h5>
+      </div>
     </If>
 
     <div>
@@ -76,27 +85,26 @@ const validator = new Validator<BanData>()
   .withValidation('expires', expires => !expires || !expires.isValid(), 'A valid date must be supplied');
 
 export const BanDataForm: React.SFC<
-  & FormProps<BanData, BanDataFormProps, ApplicationState>
-  & BanDataFormProps
+  FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps
 > = reduxForm<BanData, BanDataFormProps>({
   form: 'ban-data-form',
   initialValues: {
     expires: earliest,
   },
   validate: validator.validate,
-  onSubmit: (values, dispatch, props) => props.onSubmit(values).catch((err) => {
-    if (err instanceof ApiErrors.BadDataError)
-      throw new SubmissionError({ _error: `Bad data: ${err.message}` });
+  onSubmit: (values, dispatch, props) =>
+    props.onSubmit(values).catch(err => {
+      if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
-    if (err instanceof ApiErrors.NotAuthenticatedError) {
-      // User cookie has expired, get them to reauthenticate
-      window.location.href = '/authenticate?path=/host';
-      return;
-    }
+      if (err instanceof ApiErrors.NotAuthenticatedError) {
+        // User cookie has expired, get them to reauthenticate
+        window.location.href = '/authenticate?path=/host';
+        return;
+      }
 
-    if (err instanceof ApiErrors.ForbiddenError)
-      throw new SubmissionError({ _error: 'You no longer have permission to ban' });
+      if (err instanceof ApiErrors.ForbiddenError)
+        throw new SubmissionError({ _error: 'You no longer have permission to ban' });
 
-    throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
-  }),
+      throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
+    }),
 })(BanDataFormComponent);

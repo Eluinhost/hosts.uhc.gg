@@ -8,12 +8,13 @@ export type PermissionModerationLogState = {
   readonly log: PermissionModerationLogEntry[];
 };
 
-export const reducer: ApplicationReducer<PermissionModerationLogState> = ReducerBuilder
-  .withInitialState<PermissionModerationLogState>({
-    fetching: false,
-    error: null,
-    log: [],
-  })
+export const reducer: ApplicationReducer<PermissionModerationLogState> = ReducerBuilder.withInitialState<
+  PermissionModerationLogState
+>({
+  fetching: false,
+  error: null,
+  log: [],
+})
   .handle(RefreshPermissionModerationLog.started, (prev, action) => ({
     fetching: true,
     error: null,

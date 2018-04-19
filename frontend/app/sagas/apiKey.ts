@@ -10,8 +10,7 @@ function* fetchApiKeySaga(): SagaIterator {
   yield effects.put(FetchApiKey.started());
 
   try {
-    if (!accessToken)
-      throw new ApiErrors.NotAuthenticatedError();
+    if (!accessToken) throw new ApiErrors.NotAuthenticatedError();
 
     const result: string | null = yield effects.call(AuthenticationApi.fetchApiKey, accessToken);
 
@@ -28,8 +27,7 @@ function* regenerateApiKeySaga(): SagaIterator {
   yield effects.put(RegenerateApiKey.started());
 
   try {
-    if (!accessToken)
-      throw new ApiErrors.NotAuthenticatedError();
+    if (!accessToken) throw new ApiErrors.NotAuthenticatedError();
 
     const result: string = yield effects.call(AuthenticationApi.callRegenerateApiKey, accessToken);
 

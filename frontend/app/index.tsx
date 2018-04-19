@@ -8,19 +8,16 @@ import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 import { Provider } from 'react-redux';
 
-createReduxStore()
-  .then((store) => {
-    // Add root element for React to body for rendering to
-    const root = document.createElement('div');
-    root.id = 'root';
-    document.body.appendChild(root);
+createReduxStore().then(store => {
+  // Add root element for React to body for rendering to
+  const root = document.createElement('div');
+  root.id = 'root';
+  document.body.appendChild(root);
 
-    ReactDOM.render(
-      <Provider store={store}>
-        <App/>
-      </Provider>,
-      root,
-    );
-  });
-
-
+  ReactDOM.render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+    root,
+  );
+});

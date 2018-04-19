@@ -6,11 +6,10 @@ export type MatchModerationState = {
   readonly approvalModalId: number | null;
 };
 
-export const reducer: ApplicationReducer<MatchModerationState> = ReducerBuilder
-  .withInitialState<MatchModerationState>({
-    removalModalId: null,
-    approvalModalId: null,
-  })
+export const reducer: ApplicationReducer<MatchModerationState> = ReducerBuilder.withInitialState<MatchModerationState>({
+  removalModalId: null,
+  approvalModalId: null,
+})
   .handle(RemoveMatch.openDialog, (prev, action) => ({
     removalModalId: action.payload!,
     approvalModalId: null,

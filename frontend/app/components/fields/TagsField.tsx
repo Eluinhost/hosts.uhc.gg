@@ -14,18 +14,16 @@ export type TagsFieldProps = BaseFieldProps & {
 const combineTags = (a: string[], b: string[]) => uniqBy(toLower, union(a, b));
 
 const onAdd = (input?: WrappedFieldInputProps) => (newValues: string[]): void => {
-  if (!input)
-    return;
+  if (!input) return;
 
-  const current = input.value as string[] || [];
+  const current = (input.value as string[]) || [];
   const combined = combineTags(current, newValues);
 
   input.onChange(combined, combined, current);
 };
 
 const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => {
-  if (!input)
-    return;
+  if (!input) return;
 
   const current = (input.value as string[]) || [];
 

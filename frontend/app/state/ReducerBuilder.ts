@@ -30,7 +30,7 @@ export class ReducerBuilder<TState> {
     const type = creator.toString();
 
     if (this.actions[type]) {
-      throw new Error (`Already handling an action with type ${type}`);
+      throw new Error(`Already handling an action with type ${type}`);
     }
 
     this.actions[type] = reducer;
@@ -41,7 +41,7 @@ export class ReducerBuilder<TState> {
   build(): ApplicationReducer<TState> {
     const cloned = clone(this.actions);
 
-    const reducer =  (state: TState = {} as any, action: Action<any>) => {
+    const reducer = (state: TState = {} as any, action: Action<any>) => {
       const handler = cloned[action.type];
       return handler ? handler(state, action) : state;
     };

@@ -15,7 +15,7 @@ type RulesFieldProps = BaseFieldProps & {
 };
 
 const RulesTab: React.SFC<WrappedFieldProps<any> & RulesFieldProps> = ({ input, disabled }) => (
-  <textarea {...input} disabled={disabled} className="pt-fill pt-input" rows={15}/>
+  <textarea {...input} disabled={disabled} className="pt-fill pt-input" rows={15} />
 );
 
 const PreviewTab: React.SFC<WrappedFieldProps<any> & RulesFieldProps> = ({ input }) => (
@@ -29,17 +29,12 @@ const RulesFieldComponent: React.SFC<WrappedFieldProps<any> & RulesFieldProps> =
         <RenderLabel label={props.label!} required={props.required} />
       </If>
       <Tabs2 id="rules-form-tabs">
-        <Tab2 id="rules-form-rules" title="Template" panel={<RulesTab {...props}/>}/>
-        <Tab2 id="rules-form-preview" title="Preview" panel={<PreviewTab {...props}/>}/>
+        <Tab2 id="rules-form-rules" title="Template" panel={<RulesTab {...props} />} />
+        <Tab2 id="rules-form-preview" title="Preview" panel={<PreviewTab {...props} />} />
       </Tabs2>
     </div>
     <RenderErrors {...props.meta} />
   </FieldWrapper>
 );
 
-export const RulesField: React.SFC<RulesFieldProps> = props => (
-  <Field
-    {...props}
-    component={RulesFieldComponent}
-  />
-);
+export const RulesField: React.SFC<RulesFieldProps> = props => <Field {...props} component={RulesFieldComponent} />;

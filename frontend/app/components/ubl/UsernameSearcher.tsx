@@ -29,11 +29,9 @@ export class UsernameSearcher extends React.Component<{}, State> {
   debounceId: number | null;
 
   noResults = () => {
-    if (this.state.loading)
-      return <MenuItem disabled text="Loading...." />;
-    else
-      return <MenuItem disabled text="No results." />;
-  }
+    if (this.state.loading) return <MenuItem disabled text="Loading...." />;
+    else return <MenuItem disabled text="No results." />;
+  };
 
   renderItem = ({ handleClick, isActive, item }: ISelectItemRendererProps<UsernameEntry>) => {
     return (
@@ -45,7 +43,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
         text={item.username}
       />
     );
-  }
+  };
 
   onItemSelect = (item: UsernameEntry | undefined) => {
     if (item) {
@@ -53,32 +51,37 @@ export class UsernameSearcher extends React.Component<{}, State> {
         selected: item.uuid,
       });
     }
-  }
+  };
 
-  convertEntryInMap = (uuids: string[], username: string) => map<string, UsernameEntry>(uuid => ({
-    username,
-    uuid,
-  }), uuids)
+  convertEntryInMap = (uuids: string[], username: string) =>
+    map<string, UsernameEntry>(
+      uuid => ({
+        username,
+        uuid,
+      }),
+      uuids,
+    );
 
-  convertToFlatList = (data: Obj<string[]>): UsernameEntry[] => pipe(
-    mapObjIndexed(this.convertEntryInMap),
-    values,
-    flatten,
-  )(data)
+  convertToFlatList = (data: Obj<string[]>): UsernameEntry[] =>
+    pipe(mapObjIndexed(this.convertEntryInMap), values, flatten)(data);
 
-  onChange = (value: string): Promise<void> => UBLApi.searchBannedUsernames(value)
-    .then(this.convertToFlatList)
-    .then(items => this.setState({
-      items,
-      loading: false,
-    }))
-    .catch(err => this.setState({
-      loading: false, // TODO errors
-    }))
+  onChange = (value: string): Promise<void> =>
+    UBLApi.searchBannedUsernames(value)
+      .then(this.convertToFlatList)
+      .then(items =>
+        this.setState({
+          items,
+          loading: false,
+        }),
+      )
+      .catch(err =>
+        this.setState({
+          loading: false, // TODO errors
+        }),
+      );
 
   debouncedChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (this.debounceId !== null)
-      clearTimeout(this.debounceId);
+    if (this.debounceId !== null) clearTimeout(this.debounceId);
 
     this.setState({
       loading: true,
@@ -107,11 +110,10 @@ export class UsernameSearcher extends React.Component<{}, State> {
     } else {
       this.debounceId = window.setTimeout(() => this.onChange(value), 300);
     }
-  }
+  };
 
   render() {
-    if (this.state.selected)
-      return <Redirect to={`/ubl/${this.state.selected}`} />;
+    if (this.state.selected) return <Redirect to={`/ubl/${this.state.selected}`} />;
 
     return (
       <UsernameEntrySelect
@@ -122,10 +124,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
         inputProps={{ onChange: this.debouncedChange }}
         popoverProps={{ popoverClassName: Classes.MINIMAL }}
       >
-        <Button
-          rightIconName="caret-down"
-          text="Show full ban history for username/UUID"
-        />
+        <Button rightIconName="caret-down" text="Show full ban history for username/UUID" />
       </UsernameEntrySelect>
     );
   }

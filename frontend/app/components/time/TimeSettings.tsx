@@ -23,13 +23,7 @@ class TimezoneItem extends React.PureComponent<TimezoneItemProps> {
   private onSelect = () => this.props.onSelect(this.props.timezone);
 
   public render() {
-    return (
-      <MenuItem
-        key={this.props.timezone}
-        text={this.props.timezone}
-        onClick={this.onSelect}
-      />
-    );
+    return <MenuItem key={this.props.timezone} text={this.props.timezone} onClick={this.onSelect} />;
   }
 }
 
@@ -62,10 +56,10 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
     const loweredQuery = toLower(query);
 
     return (item: string) => contains(loweredQuery, toLower(item));
-  }
+  };
 
   private onFilterChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ filter: event.target.value })
+    this.setState({ filter: event.target.value });
 
   private onSelect = (timezone: string): void => this.props.changeTimezone(timezone);
 
@@ -83,14 +77,14 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
     );
 
     const rowHeight = 30;
-    const allRowsHeight = Math.min(490, (filtered.length * rowHeight));
+    const allRowsHeight = Math.min(490, filtered.length * rowHeight);
     const renderedHeight = Math.max(rowHeight, allRowsHeight); // keep space for at least 1 row even if 0 length
     const height = renderedHeight + 10; // 10px padding
 
     return (
       <div className="pt-card time-settings">
         <Button className="current-time pt-minimal pt-large">
-          <CurrentTime/>
+          <CurrentTime />
         </Button>
         <div className="time-settings-popout">
           <If condition={this.state.open}>
@@ -103,14 +97,7 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
           </If>
           <If condition={this.state.open}>
             <div style={{ position: 'relative' }}>
-              <Popover2
-                canEscapeKeyClose
-                inheritDarkTheme
-                lazy
-                minimal
-                inline
-                placement="bottom-end"
-              >
+              <Popover2 canEscapeKeyClose inheritDarkTheme lazy minimal inline placement="bottom-end">
                 <Button
                   text={this.props.timezone}
                   rightIconName="double-caret-vertical"

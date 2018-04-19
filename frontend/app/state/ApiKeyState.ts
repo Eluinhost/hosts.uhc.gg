@@ -7,12 +7,11 @@ export type ApiKeyState = {
   readonly key: string | null;
 };
 
-export const reducer: ApplicationReducer<ApiKeyState> = ReducerBuilder
-  .withInitialState<ApiKeyState>({
-    fetching: false,
-    error: null,
-    key: null,
-  })
+export const reducer: ApplicationReducer<ApiKeyState> = ReducerBuilder.withInitialState<ApiKeyState>({
+  fetching: false,
+  error: null,
+  key: null,
+})
   .handle<void>(FetchApiKey.started, (prev, action) => ({
     ...prev,
     fetching: true,

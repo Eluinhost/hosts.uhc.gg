@@ -11,8 +11,11 @@ type State = {
   readonly validData: boolean;
 };
 
-const options: React.ReactElement<any>[] =
-  AlertRuleFields.map(field => (<option key={field} value={field}>{field}</option>));
+const options: React.ReactElement<any>[] = AlertRuleFields.map(field => (
+  <option key={field} value={field}>
+    {field}
+  </option>
+));
 
 export class CreateAlertRule extends React.PureComponent<Props, State> {
   state = {
@@ -24,14 +27,15 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
     validData: false,
   };
 
-  private reset = () => this.setState({
-    data: {
-      field: 'content',
-      exact: false,
-      alertOn: '',
-    },
-    validData: false,
-  })
+  private reset = () =>
+    this.setState({
+      data: {
+        field: 'content',
+        exact: false,
+        alertOn: '',
+      },
+      validData: false,
+    });
 
   private onFieldChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newField = e.target.value as AlertRuleField;
@@ -42,7 +46,7 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
         field: newField,
       },
     }));
-  }
+  };
 
   private onAlertOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -54,7 +58,7 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
       },
       validData: newValue.trim().length > 0,
     }));
-  }
+  };
 
   private toggleExact = (e: React.MouseEvent<HTMLButtonElement>) =>
     this.setState(prev => ({
@@ -62,17 +66,20 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
         ...prev.data,
         exact: !prev.data.exact,
       },
-    }))
+    }));
 
-  submit = () => this.props.onSubmit(this.state.data)
-    .then((reset) => {
+  submit = () =>
+    this.props.onSubmit(this.state.data).then(reset => {
       if (reset) {
         this.reset();
       }
-    })
+    });
 
   render() {
-    const { data: { field, alertOn, exact }, validData } = this.state;
+    const {
+      data: { field, alertOn, exact },
+      validData,
+    } = this.state;
 
     return (
       <div className={`${Classes.CONTROL_GROUP} ${validData ? Classes.INTENT_SUCCESS : Classes.INTENT_DANGER}`}>
@@ -89,11 +96,7 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
         >
           {exact ? '=' : '~'}
         </Button>
-        <input
-          className={`${Classes.INPUT} ${Classes.FILL}`}
-          value={alertOn}
-          onChange={this.onAlertOnChange}
-        />
+        <input className={`${Classes.INPUT} ${Classes.FILL}`} value={alertOn} onChange={this.onAlertOnChange} />
         <Button
           intent={validData ? Intent.SUCCESS : Intent.WARNING}
           disabled={!validData}

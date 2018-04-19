@@ -44,12 +44,7 @@ class FooterComponent extends React.PureComponent<StateProps> {
           >
             Issues
           </AnchorButton>
-          <AnchorButton
-            href="/api/docs/"
-            intent={intent}
-            iconName="build"
-            target="_blank"
-          >
+          <AnchorButton href="/api/docs/" intent={intent} iconName="build" target="_blank">
             API
           </AnchorButton>
         </div>
@@ -58,14 +53,8 @@ class FooterComponent extends React.PureComponent<StateProps> {
   }
 }
 
-const selector = createSelector<ApplicationState, boolean, StateProps>(
+const selector = createSelector<ApplicationState, boolean, StateProps>(isDarkMode, (isDarkMode): StateProps => ({
   isDarkMode,
-  (isDarkMode): StateProps => ({
-    isDarkMode,
-  }),
-);
+}));
 
-export const Footer: React.ComponentClass = connect<StateProps, {}, {}>(
-  selector,
-  always({}),
-)(FooterComponent);
+export const Footer: React.ComponentClass = connect<StateProps, {}, {}>(selector, always({}))(FooterComponent);

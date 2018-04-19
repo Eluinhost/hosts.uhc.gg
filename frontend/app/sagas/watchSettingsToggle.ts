@@ -8,12 +8,13 @@ const genericToggle = (
   listen: ActionFunction0<Action<void>>,
   setter: ActionFunction1<boolean, Action<boolean>>,
   selector: (state: ApplicationState) => boolean,
-) => function* (): SagaIterator {
-  yield effects.takeLatest(listen, function* (): SagaIterator {
-    const current: boolean = yield effects.select(selector);
-    yield effects.put(setter(!current));
-  });
-};
+) =>
+  function*(): SagaIterator {
+    yield effects.takeLatest(listen, function*(): SagaIterator {
+      const current: boolean = yield effects.select(selector);
+      yield effects.put(setter(!current));
+    });
+  };
 
 export function* watchSettingsToggle(): SagaIterator {
   yield effects.all([

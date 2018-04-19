@@ -22,12 +22,11 @@ export type RefreshTokenClaims = {
   readonly username: string;
 };
 
-export const reducer: ApplicationReducer<AuthenticationState> = ReducerBuilder
-  .withInitialState<AuthenticationState>({
-    storageKey,
-    accessToken: null,
-    refreshToken: null,
-  })
+export const reducer: ApplicationReducer<AuthenticationState> = ReducerBuilder.withInitialState<AuthenticationState>({
+  storageKey,
+  accessToken: null,
+  refreshToken: null,
+})
   .handle(Authentication.login, (prev, action) => ({
     storageKey: prev.storageKey,
     accessToken: action.payload!.accessToken,

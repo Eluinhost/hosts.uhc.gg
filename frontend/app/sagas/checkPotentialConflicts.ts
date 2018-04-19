@@ -21,8 +21,7 @@ function* checkHostFormConflictsSaga(action: Action<HostFormConflictsParameters>
 
     yield effects.put(HostFormConflicts.success({ parameters, result: potentialConflicts }));
 
-    let confirmedConflicts = potentialConflicts
-      .filter(conflict => conflict.opens.isSame(parameters.data.opens));
+    let confirmedConflicts = potentialConflicts.filter(conflict => conflict.opens.isSame(parameters.data.opens));
 
     // If the game being hosted is not a tournament it is allowed to overhost tournaments
     if (!parameters.data.tournament) {
@@ -34,22 +33,28 @@ function* checkHostFormConflictsSaga(action: Action<HostFormConflictsParameters>
       const conflict = find<Match>(m => !m.tournament, confirmedConflicts) || confirmedConflicts[0];
 
       // tslint:disable-next-line:max-line-length
-      const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${conflict.region} - ${conflict.opens.format('HH:mm z')})`;
+      const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${
+        conflict.region
+      } - ${conflict.opens.format('HH:mm z')})`;
 
-      yield effects.put(stopAsyncValidation('create-match-form', {
-        opens: message,
-        region: message,
-      }));
+      yield effects.put(
+        stopAsyncValidation('create-match-form', {
+          opens: message,
+          region: message,
+        }),
+      );
     } else {
       yield effects.put(stopAsyncValidation('create-match-form'));
     }
   } catch (error) {
     console.error(error, 'error checking conflicts');
     yield effects.put(HostFormConflicts.failure({ parameters, error }));
-    yield effects.put(stopAsyncValidation('create-match-form', {
-      opens: 'Failed to lookup conflicts',
-      region: 'Failed to lookup conflicts',
-    }));
+    yield effects.put(
+      stopAsyncValidation('create-match-form', {
+        opens: 'Failed to lookup conflicts',
+        region: 'Failed to lookup conflicts',
+      }),
+    );
   }
 }
 

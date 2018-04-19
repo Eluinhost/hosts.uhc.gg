@@ -16,12 +16,14 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
     const token = getAccessToken(state) || 'NO ACCESS TOKEN IN STATE';
     const username = getUsername(state) || 'NO USERNAME IN STATE';
 
-    yield effects.put(RemoveMatch.started({
-      parameters,
-      result: {
-        username,
-      },
-    }));
+    yield effects.put(
+      RemoveMatch.started({
+        parameters,
+        result: {
+          username,
+        },
+      }),
+    );
     yield effects.put(startSubmit(RemoveMatch.formId));
     yield effects.call(MatchesApi.callRemove, parameters.id, parameters.reason, token);
     yield effects.put(stopSubmit(RemoveMatch.formId));
@@ -33,7 +35,6 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
       iconName: 'tick',
       message: `Removed match #${parameters.id}`,
     });
-
   } catch (error) {
     console.error(error, 'error removing match');
 
@@ -48,9 +49,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof ApiErrors.BadDataError
-        ? error.message
-        : `Failed to remove match #${parameters.id}`,
+      message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to remove match #${parameters.id}`,
     });
   }
 }

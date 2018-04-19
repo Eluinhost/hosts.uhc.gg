@@ -6,7 +6,7 @@ export type AlertRule = {
   alertOn: string;
   exact: boolean;
   createdBy: string;
-  created: moment.Moment
+  created: moment.Moment;
 };
 
 export type AlertRuleField = 'ip' | 'address' | 'hosting name' | 'content' | 'tags';

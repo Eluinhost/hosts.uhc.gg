@@ -11,12 +11,11 @@ export interface SwitchFieldProps extends BaseFieldProps {
 
 class Switcher extends React.Component<WrappedFieldProps<any> & SwitchFieldProps> {
   onChange = (): void => {
-    if (this.props.disabled)
-      return;
+    if (this.props.disabled) return;
 
     this.props.input!.onChange(!this.props.input!.value, undefined, undefined);
     this.props.input!.onBlur(!this.props.input!.value, undefined, undefined);
-  }
+  };
 
   render() {
     return (

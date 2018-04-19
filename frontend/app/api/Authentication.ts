@@ -2,16 +2,17 @@ import { LoginPayload } from '../actions';
 import { authHeaders, fetchObject } from './util';
 import { prop } from 'ramda';
 
-export const callRefreshTokens = (refreshToken: string): Promise<LoginPayload> => fetchObject({
-  url: `/authenticate/refresh`,
-  config: {
-    method: 'POST',
-    headers: {
-      ...authHeaders(refreshToken),
-      'Content-Type': 'application/json',
+export const callRefreshTokens = (refreshToken: string): Promise<LoginPayload> =>
+  fetchObject({
+    url: `/authenticate/refresh`,
+    config: {
+      method: 'POST',
+      headers: {
+        ...authHeaders(refreshToken),
+        'Content-Type': 'application/json',
+      },
     },
-  },
-});
+  });
 
 export const callRegenerateApiKey = (accessToken: string): Promise<string> =>
   fetchObject<{ readonly key: string }>({

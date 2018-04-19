@@ -68,9 +68,7 @@ export type LoadHostHistoryParameters = {
 export const LoadHostHistory = {
   start: createAction<LoadHostHistoryParameters>('LOAD_HOST_HISTORY_START'),
   started: createAction<WithParameters<LoadHostHistoryParameters>>('LOAD_HOST_HISTORY_STARTED'),
-  success: createAction<WithParameters<LoadHostHistoryParameters> & WithResult<Match[]>>(
-    'LOAD_HOST_HISTORY_SUCCESS',
-  ),
+  success: createAction<WithParameters<LoadHostHistoryParameters> & WithResult<Match[]>>('LOAD_HOST_HISTORY_SUCCESS'),
   failure: createAction<WithParameters<LoadHostHistoryParameters> & WithError>('LOAD_HOST_HISTORY_FAILURE'),
   clear: createAction('CLEAR_HOST_HISTORY'),
 };

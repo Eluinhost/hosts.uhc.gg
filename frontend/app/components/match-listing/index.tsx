@@ -53,8 +53,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
     if (!this.visibilityDetector.isHidden()) {
       const { autoRefreshSeconds, lastUpdated } = this.props;
 
-      if (!isUndefined(autoRefreshSeconds) && autoRefreshSeconds < 1)
-        throw new Error('autorefresh shouldn\'t be < 1');
+      if (!isUndefined(autoRefreshSeconds) && autoRefreshSeconds < 1) throw new Error("autorefresh shouldn't be < 1");
 
       // if we are to auto refresh start a timer
       if (autoRefreshSeconds) {
@@ -62,22 +61,22 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
       }
 
       // data is stale if it has never been updated or the last update was before the refresh timer allows
-      const isDataStale: boolean = lastUpdated === null || (
-        !isUndefined(autoRefreshSeconds) && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds
-      );
+      const isDataStale: boolean =
+        lastUpdated === null ||
+        (!isUndefined(autoRefreshSeconds) && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
 
       if (isDataStale) {
         this.props.refetch();
       }
     }
-  }
+  };
 
   private stopTimer = () => {
     if (this.timerId) {
       window.clearInterval(this.timerId);
       this.timerId = null;
     }
-  }
+  };
 
   public componentDidMount(): void {
     this.visibilityDetector.addEventListener(this.onVisibilityChange);
@@ -96,25 +95,17 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
       disableApproval={this.props.disableApprove}
       disableRemoval={this.props.disableRemove}
     />
-  )
+  );
 
   private noMatches: React.ReactElement<any> = (
-    <NonIdealState
-      title="Nothing to see!"
-      visual="geosearch"
-      description="There are currently no matches"
-    />
+    <NonIdealState title="Nothing to see!" visual="geosearch" description="There are currently no matches" />
   );
 
   render() {
     return (
       <div>
         <div>
-          <Switch
-            checked={this.props.hideRemoved}
-            label="Hide Removed"
-            onChange={this.props.toggleHideRemoved}
-          />
+          <Switch checked={this.props.hideRemoved} label="Hide Removed" onChange={this.props.toggleHideRemoved} />
           <If condition={!!this.props.username && this.props.hideRemoved}>
             <Switch
               checked={this.props.showOwnRemoved}
@@ -130,17 +121,17 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
         </div>
 
         <If condition={!this.props.loading && !!this.props.error}>
-          <div className="pt-callout pt-intent-danger"><h5>{this.props.error}</h5></div>
+          <div className="pt-callout pt-intent-danger">
+            <h5>{this.props.error}</h5>
+          </div>
         </If>
 
         <If condition={this.props.loading}>
-          <NonIdealState visual={<Spinner/>} title="Loading..."/>
+          <NonIdealState visual={<Spinner />} title="Loading..." />
         </If>
 
         <If condition={this.props.filteredMatches.length > 0} alternative={this.noMatches}>
-          <div>
-            {this.props.filteredMatches.map(this.renderMatch)}
-          </div>
+          <div>{this.props.filteredMatches.map(this.renderMatch)}</div>
         </If>
 
         <If condition={this.props.hasMore}>
@@ -163,23 +154,21 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
 
 const visibleMatches = createSelector<
   ApplicationState, // STATE
-  MatchListingProps,  // PROPS
+  MatchListingProps, // PROPS
   Match[], // prop matches
   string | null, // getUsername
   boolean, // filters
   boolean, // filters
   Match[] // OUTPUT
-  >(
+>(
   (state, props) => props.matches, // get matches from the props
   getUsername, // get current username if exists
   state => state.settings.hideRemoved,
   state => state.settings.showOwnRemoved,
   (matches, username, hideRemoved, showOwnRemoved) => {
-    if (!hideRemoved)
-      return matches;
+    if (!hideRemoved) return matches;
 
-    if (!showOwnRemoved)
-      return matches.filter(m => !m.removed);
+    if (!showOwnRemoved) return matches.filter(m => !m.removed);
 
     return matches.filter(m => !m.removed || m.author === username);
   },
@@ -193,25 +182,24 @@ const stateSelector = createSelector<
   boolean, // filters
   boolean, // filters
   StateProps // OUTPUT
-  >(
+>(
   getUsername,
   visibleMatches,
   state => state.settings.hideRemoved,
   state => state.settings.showOwnRemoved,
-  (username, matches, hideRemoved, showOwnRemoved): StateProps =>
-    ({
-      username,
-      hideRemoved,
-      showOwnRemoved,
-      filteredMatches: matches,
-    }),
+  (username, matches, hideRemoved, showOwnRemoved): StateProps => ({
+    username,
+    hideRemoved,
+    showOwnRemoved,
+    filteredMatches: matches,
+  }),
 );
 
-export const MatchListing: React.ComponentClass<MatchListingProps> =
-  connect<StateProps, DispatchProps, MatchListingProps>(
-    stateSelector,
-    (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
-      toggleHideRemoved: () => dispatch(Settings.toggleHideRemoved()),
-      toggleShowOwnRemoved: () => dispatch(Settings.toggleShowOwnRemoved()),
-    }),
-  )(MatchListingComponent);
+export const MatchListing: React.ComponentClass<MatchListingProps> = connect<
+  StateProps,
+  DispatchProps,
+  MatchListingProps
+>(stateSelector, (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+  toggleHideRemoved: () => dispatch(Settings.toggleHideRemoved()),
+  toggleShowOwnRemoved: () => dispatch(Settings.toggleShowOwnRemoved()),
+}))(MatchListingComponent);

@@ -5,12 +5,12 @@
   "scripts": {
     "build": "webpack -p --env.production",
     "dev": "webpack -d --env.development --watch",
-    "prettier": "prettier --write 'app/**/*.{json,js,ts,tsx,sass}'",
-    "prettier:watch": "onchange '**/*.{json,js,ts,tsx,sass}' -- prettier --write {{changed}}",
+    "prettier": "prettier --write \"app/**/*.{json,js,ts,tsx}\"",
+    "prettier:watch": "onchange \"**/*.{json,js,ts,tsx}\" -- prettier --write {{changed}}",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.{json,js,ts,tsx,sass}": ["prettier --write", "git add"]
+    "*.{json,js,ts,tsx}": ["prettier --write", "git add"]
   },
   "license": "MIT",
   "dependencies": {
@@ -74,9 +74,11 @@
     "sass-loader": "^6.0.6",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
-    "tslint-config-airbnb": "^5.2.1",
-    "tslint-loader": "^3.5.3",
-    "tslint-react": "^3.0.0",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.8.0",
+    "tslint-config-prettier": "^1.12.0",
+    "tslint-loader": "^3.6.0",
+    "tslint-react": "^3.5.1",
     "typescript": "2.3.4",
     "webpack": "^3.2.0",
     "webpack-bundle-analyzer": "^2.8.3"

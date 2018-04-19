@@ -66,22 +66,16 @@ const TeamSizeField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled })
 );
 
 const CustomStyleField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled }) => (
-  <TextField
-    name="customStyle"
-    required
-    label="Custom Team Style"
-    disabled={disabled}
-    className="pt-fill"
-  />
+  <TextField name="customStyle" required label="Custom Team Style" disabled={disabled} className="pt-fill" />
 );
 
-class CreateMatchFormComponent
-  extends React.Component<StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps> {
-
+class CreateMatchFormComponent extends React.Component<
+  StrictFormProps<CreateMatchData, {}, ApplicationState> & CreateMatchFormProps
+> {
   private timeProps = (): Partial<RcTimePickerProps> => ({
     ...openingTimeProps,
     use12Hours: this.props.is12h,
-  })
+  });
 
   componentDidMount() {
     this.props.asyncValidate();
@@ -101,7 +95,7 @@ class CreateMatchFormComponent
       asyncValidating,
     } = this.props;
 
-    const disabledAsync = submitting || (asyncValidating !== false); // asyncvalidating is string | boolean
+    const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
 
     const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
 
@@ -127,7 +121,7 @@ class CreateMatchFormComponent
     return (
       <form className="host-form" onSubmit={handleSubmit(createMatch)}>
         <Title>Create a match</Title>
-        <HostingRules/>
+        <HostingRules />
 
         <fieldset className="opening-time">
           <legend>Opening Time</legend>
@@ -141,7 +135,9 @@ class CreateMatchFormComponent
             <div className="pt-callout pt-intent-danger pt-icon-warning-sign">
               <h5>
                 <span> All times must be entered as </span>
-                <a href="https://time.is/compare/UTC" target="_blank">UTC</a>
+                <a href="https://time.is/compare/UTC" target="_blank">
+                  UTC
+                </a>
               </h5>
             </div>
           </DateTimeField>
@@ -149,7 +145,12 @@ class CreateMatchFormComponent
         <fieldset>
           <legend>Game Details</legend>
           <div className="host-form-row">
-            <SwitchField name="tournament" label="Is this a Tournament?" disabled={disabledAsync} className="pt-large"/>
+            <SwitchField
+              name="tournament"
+              label="Is this a Tournament?"
+              disabled={disabledAsync}
+              className="pt-large"
+            />
           </div>
           <div className="host-form-row">
             <TextField
@@ -159,14 +160,7 @@ class CreateMatchFormComponent
               required={false}
               disabled={submitting}
             />
-            <NumberField
-              name="count"
-              label="Game Number"
-              className="pt-fill"
-              min={1}
-              required
-              disabled={submitting}
-            />
+            <NumberField name="count" label="Game Number" className="pt-fill" min={1} required disabled={submitting} />
           </div>
           <div className="host-form-row">
             <SuggestionsField
@@ -210,12 +204,7 @@ class CreateMatchFormComponent
         <fieldset>
           <legend>Scenarios + Teams</legend>
           <div className="host-form-row" onKeyPress={stopEnterSubmit}>
-            <TagsField
-              name="scenarios"
-              label="Scenarios"
-              required
-              disabled={submitting}
-            />
+            <TagsField name="scenarios" label="Scenarios" required disabled={submitting} />
           </div>
           <div className="host-form-row">
             <SelectField
@@ -228,10 +217,10 @@ class CreateMatchFormComponent
             />
 
             <If condition={teamStyle.requiresTeamSize}>
-              <TeamSizeField disabled={submitting}/>
+              <TeamSizeField disabled={submitting} />
             </If>
             <If condition={teamStyle.value === 'custom'}>
-              <CustomStyleField disabled={submitting}/>
+              <CustomStyleField disabled={submitting} />
             </If>
           </div>
         </fieldset>
@@ -240,13 +229,7 @@ class CreateMatchFormComponent
           <legend>Server Details</legend>
 
           <div className="host-form-row">
-            <TextField
-              name="ip"
-              className="pt-fill"
-              disabled={submitting}
-              label="Server IP Address"
-              required={false}
-            />
+            <TextField name="ip" className="pt-fill" disabled={submitting} label="Server IP Address" required={false} />
             <TextField
               name="address"
               className="pt-fill"
@@ -264,13 +247,7 @@ class CreateMatchFormComponent
               required
               options={Regions}
             />
-            <TextField
-              name="location"
-              className="pt-fill"
-              disabled={submitting}
-              label="Location"
-              required
-            />
+            <TextField name="location" className="pt-fill" disabled={submitting} label="Location" required />
           </div>
           <div className="host-form-row">
             <NumberField
@@ -282,12 +259,7 @@ class CreateMatchFormComponent
               min={2}
             />
             <div onKeyPress={stopEnterSubmit}>
-              <TagsField
-                name="tags"
-                label="Tags"
-                required={false}
-                disabled={submitting}
-              />
+              <TagsField name="tags" label="Tags" required={false} disabled={submitting} />
             </div>
           </div>
         </fieldset>
@@ -308,12 +280,7 @@ class CreateMatchFormComponent
           <legend>Game preview</legend>
 
           <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-            <MatchRow
-              match={preview}
-              disableRemoval
-              disableApproval
-              disableLink
-            />
+            <MatchRow match={preview} disableRemoval disableApproval disableLink />
           </div>
         </fieldset>
 
@@ -324,12 +291,14 @@ class CreateMatchFormComponent
             avoid your game being removed
           </p>
           <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-            <PotentialConflicts/>
+            <PotentialConflicts />
           </div>
         </fieldset>
 
         <If condition={!!error}>
-          <div className="pt-callout pt-intent-danger"><h5>{error}</h5></div>
+          <div className="pt-callout pt-intent-danger">
+            <h5>{error}</h5>
+          </div>
         </If>
 
         <div className="host-form-actions">
@@ -348,10 +317,10 @@ class CreateMatchFormComponent
   }
 }
 
-export const CreateMatchForm:
-  React.ComponentClass<CreateMatchFormProps & FormProps<CreateMatchData, {}, ApplicationState>> =
-  reduxForm<CreateMatchData, CreateMatchFormProps>({
-    validate: validator.validate,
-    asyncValidate: asyncValidation,
-    asyncBlurFields: ['opens', 'region', 'tournament'],
-  })(CreateMatchFormComponent);
+export const CreateMatchForm: React.ComponentClass<
+  CreateMatchFormProps & FormProps<CreateMatchData, {}, ApplicationState>
+> = reduxForm<CreateMatchData, CreateMatchFormProps>({
+  validate: validator.validate,
+  asyncValidate: asyncValidation,
+  asyncBlurFields: ['opens', 'region', 'tournament'],
+})(CreateMatchFormComponent);

@@ -18,7 +18,7 @@ import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
 export type ApplicationState = {
-  readonly authentication: AuthenticationState,
+  readonly authentication: AuthenticationState;
   readonly form: FormStateMap;
   readonly upcoming: UpcomingState;
   readonly matchModeration: MatchModerationState;

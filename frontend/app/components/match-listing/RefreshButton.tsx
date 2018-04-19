@@ -24,7 +24,10 @@ export class RefreshButtonComponent extends React.PureComponent<OwnProps & State
     if (this.props.loading) {
       buttonContent = 'Refreshing...';
     } else if (this.props.lastUpdated) {
-      buttonContent = `Refreshed @ ${this.props.lastUpdated.clone().tz(this.props.timezone).format(this.props.format)}`;
+      buttonContent = `Refreshed @ ${this.props.lastUpdated
+        .clone()
+        .tz(this.props.timezone)
+        .format(this.props.format)}`;
     } else {
       buttonContent = `Refresh`;
     }
@@ -36,7 +39,7 @@ export class RefreshButtonComponent extends React.PureComponent<OwnProps & State
         onClick={this.props.onClick}
         disabled={this.props.loading}
       >
-        <Icon iconName="refresh"/> {buttonContent}
+        <Icon iconName="refresh" /> {buttonContent}
       </Button>
     );
   }

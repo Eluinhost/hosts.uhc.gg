@@ -2,7 +2,19 @@ import * as decodeJwt from 'jwt-decode';
 import * as moment from 'moment-timezone';
 import { ApplicationState } from './ApplicationState';
 import {
-  always, when, equals, complement, tryCatch, prop, ifElse, pipe, intersection, isEmpty, memoize, identity, contains,
+  always,
+  when,
+  equals,
+  complement,
+  tryCatch,
+  prop,
+  ifElse,
+  pipe,
+  intersection,
+  isEmpty,
+  memoize,
+  identity,
+  contains,
 } from 'ramda';
 import { createSelector } from 'reselect';
 import { AccessTokenClaims, RefreshTokenClaims } from './AuthenticationState';
@@ -13,19 +25,13 @@ export const isDarkMode = createSelector<ApplicationState, boolean, boolean>(
   identity,
 );
 
-export const getTimezone = createSelector<ApplicationState, string, string>(
-  state => state.settings.timezone,
-  identity,
-);
+export const getTimezone = createSelector<ApplicationState, string, string>(state => state.settings.timezone, identity);
 
-export const is12hFormat = createSelector<ApplicationState, boolean, boolean>(
-  state => state.settings.is12h,
-  identity,
-);
+export const is12hFormat = createSelector<ApplicationState, boolean, boolean>(state => state.settings.is12h, identity);
 
 export const getTimeFormat = createSelector<ApplicationState, boolean, string>(
   is12hFormat,
-  is12h => is12h ? 'h:mm A' : 'HH:mm',
+  is12h => (is12h ? 'h:mm A' : 'HH:mm'),
 );
 
 export const shouldHideRemoved = createSelector<ApplicationState, boolean, boolean>(
@@ -79,9 +85,8 @@ export const getAccessTokenClaims = createSelector<ApplicationState, string | nu
 
 export const getHostingHistoryCursor = createSelector<ApplicationState, Match[], number | undefined>(
   state => state.hostHistory.matches,
-  (matches) => {
-    if (matches.length === 0)
-      return;
+  matches => {
+    if (matches.length === 0) return;
 
     return matches[matches.length - 1].id;
   },
@@ -121,42 +126,28 @@ export const isLoggedIn = createSelector<ApplicationState, AccessTokenClaims | n
 
 export const getUsername = createSelector<ApplicationState, AccessTokenClaims | null, string | null>(
   getAccessTokenClaims,
-  when(
-    complement(equals(null)),
-    prop('username'),
-  ),
+  when(complement(equals(null)), prop('username')),
 );
 
 export const getPermissions = createSelector<ApplicationState, AccessTokenClaims | null, string[]>(
   getAccessTokenClaims,
-  ifElse(
-    equals(null),
-    always([]),
-    prop('permissions'),
-  ),
+  ifElse(equals(null), always([]), prop('permissions')),
 );
 
 const toArray = <T>(a: T | T[]): T[] => when<T | T[], T[]>(complement(Array.isArray), Array.of)(a);
-const containsAny = <T>(required: T[]) => (toCheck: T[]): boolean => pipe(
-  intersection(required),
-  complement(isEmpty),
-)(toCheck);
+const containsAny = <T>(required: T[]) => (toCheck: T[]): boolean =>
+  pipe(intersection(required), complement(isEmpty))(toCheck);
 
 /**
  * Check if the user has any of the permissions, empty array/string
  * means every user passes as long as they are logged in
  */
-export const matchesPermissions = memoize(
-  (required: string | string[]) => createSelector<ApplicationState, boolean, string[], boolean>(
-    isLoggedIn,
-    getPermissions,
-    (logged, perms): boolean => {
-      if (!logged)
-        return false;
+export const matchesPermissions = memoize((required: string | string[]) =>
+  createSelector<ApplicationState, boolean, string[], boolean>(isLoggedIn, getPermissions, (logged, perms): boolean => {
+    if (!logged) return false;
 
-      return isEmpty(required) || containsAny(toArray(required))(perms);
-    },
-  ),
+    return isEmpty(required) || containsAny(toArray(required))(perms);
+  }),
 );
 
 export const getUpcomingMatches = createSelector<ApplicationState, Match[], Match[]>(

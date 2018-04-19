@@ -6,7 +6,7 @@ export type FieldWrapperProps = {
   readonly label?: string | React.ReactElement<any>;
   readonly required?: boolean;
   readonly meta: WrappedFieldMetaProps<any>;
-  readonly hideErrors?: boolean
+  readonly hideErrors?: boolean;
   readonly className?: string;
 };
 
@@ -23,24 +23,24 @@ export const errorClasses = (meta: WrappedFieldMetaProps<any>) => {
 };
 
 export const RenderErrors: React.SFC<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
-  if (error)
-    return <div className="pt-form-helper-text">{error}</div>;
+  if (error) return <div className="pt-form-helper-text">{error}</div>;
 
-  if (warning)
-    return <div className="pt-form-helper-text">{warning}</div>;
+  if (warning) return <div className="pt-form-helper-text">{warning}</div>;
 
   return null;
 };
 
-export const RenderLabel: React.SFC<{ label: string | React.ReactElement<any>, required?: boolean }> =
-  ({ label, required = false }) => (
-    <label className="pt-label">
-      {label}
-      <If condition={required}>
-        <span className="required-star">*</span>
-      </If>
-    </label>
-  );
+export const RenderLabel: React.SFC<{ label: string | React.ReactElement<any>; required?: boolean }> = ({
+  label,
+  required = false,
+}) => (
+  <label className="pt-label">
+    {label}
+    <If condition={required}>
+      <span className="required-star">*</span>
+    </If>
+  </label>
+);
 
 export const FieldWrapper: React.SFC<FieldWrapperProps> = props => (
   <div className={`pt-form-group ${errorClasses(props.meta)} ${props.className ? props.className : ''}`}>
@@ -57,4 +57,3 @@ export const FieldWrapper: React.SFC<FieldWrapperProps> = props => (
     </div>
   </div>
 );
-

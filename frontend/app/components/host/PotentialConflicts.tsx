@@ -11,32 +11,19 @@ type StateProps = HostFormConflictsState;
 
 class PotentialConflictsComponent extends React.PureComponent<StateProps> {
   private renderConflict = (m: Match, index: number) => (
-    <MatchRow
-      key={index}
-      match={m}
-      disableApproval
-      disableRemoval
-      disableLink
-    />
-  )
+    <MatchRow key={index} match={m} disableApproval disableRemoval disableLink />
+  );
 
   public render() {
     const { fetching, error, conflicts } = this.props;
 
-    if (fetching)
-      return <NonIdealState visual={<Spinner />} title="Checking..." />;
+    if (fetching) return <NonIdealState visual={<Spinner />} title="Checking..." />;
 
-    if (error)
-      return <NonIdealState visual="warning-sign" title="Failed to check for potential conflicts" />;
+    if (error) return <NonIdealState visual="warning-sign" title="Failed to check for potential conflicts" />;
 
-    if (!conflicts.length)
-      return <NonIdealState visual="tick" title="No conflicts found"/>;
+    if (!conflicts.length) return <NonIdealState visual="tick" title="No conflicts found" />;
 
-    return (
-      <div>
-        {conflicts.map(this.renderConflict)}
-      </div>
-    );
+    return <div>{conflicts.map(this.renderConflict)}</div>;
   }
 }
 

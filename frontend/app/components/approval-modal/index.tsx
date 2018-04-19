@@ -21,7 +21,7 @@ class ApprovalModalComponent extends React.PureComponent<StateProps & DispatchPr
     if (this.props.id !== null) {
       this.props.onConfirm(this.props.id);
     }
-  }
+  };
 
   public render() {
     const { id, isDarkMode, onClose } = this.props;
@@ -39,17 +39,10 @@ class ApprovalModalComponent extends React.PureComponent<StateProps & DispatchPr
         </div>
         <div className={`${Classes.DIALOG_FOOTER}`}>
           <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
-            <Button
-              onClick={onClose}
-              iconName="arrow-left"
-            >
+            <Button onClick={onClose} iconName="arrow-left">
               Cancel
             </Button>
-            <Button
-              intent={Intent.SUCCESS}
-              onClick={this.onConfirm}
-              iconName="tick"
-            >
+            <Button intent={Intent.SUCCESS} onClick={this.onConfirm} iconName="tick">
               Confirm Approval
             </Button>
           </div>
@@ -70,7 +63,4 @@ const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
   onClose: () => dispatch(ApproveMatch.closeDialog()),
 });
 
-export const ApprovalModal = connect<StateProps, DispatchProps, {}>(
-  stateSelector,
-  dispatch,
-)(ApprovalModalComponent);
+export const ApprovalModal = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(ApprovalModalComponent);

@@ -40,21 +40,20 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
     event.preventDefault();
 
     this.props.openApprovalModal(this.props.match.id);
-  }
+  };
 
   private onRemovePress = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
     event.preventDefault();
 
     this.props.openRemovalModal(this.props.match.id);
-  }
+  };
 
   private authorElement = (m: Match): React.ReactElement<any> => {
-    if (m.hostingName)
-      return <small>/u/{m.author}</small>;
+    if (m.hostingName) return <small>/u/{m.author}</small>;
 
     return <span>/u/{m.author}</span>;
-  }
+  };
 
   public render() {
     const { match, canRemove, canApprove, disableApproval, disableRemoval, disableLink } = this.props;
@@ -63,7 +62,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
       <div className={`match-row ${Classes.CARD} ${Classes.INTERACTIVE} ${match.removed ? Classes.INTENT_DANGER : ''}`}>
         <div className="match-top-left-ribbon">
           <MatchOpensTag opens={match.opens} created={match.created} />
-          <TimeFromNowTag time={match.opens} className={`${Classes.LARGE} match-opens`} title="Opens"/>
+          <TimeFromNowTag time={match.opens} className={`${Classes.LARGE} match-opens`} title="Opens" />
           <Tag intent={Intent.SUCCESS} className={`${Classes.LARGE} match-region`} title="Region / Location">
             <HoverSwap>
               <span>{match.region}</span>
@@ -80,7 +79,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} iconName="tag" />
           <If condition={match.tournament}>
             <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-              <Icon iconName="timeline-bar-chart"/> Tournament
+              <Icon iconName="timeline-bar-chart" /> Tournament
             </Tag>
           </If>
         </div>
@@ -98,25 +97,25 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           </h4>
           <div className="match-tags">
             <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
-              <Icon iconName="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle}/>
+              <Icon iconName="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
             </Tag>
             <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
           </div>
           <div className="server-tags">
             <If condition={!!match.ip}>
-              <ServerTag title="Server IP" text={match.ip!}/>
+              <ServerTag title="Server IP" text={match.ip!} />
             </If>
             <If condition={!!match.address}>
-              <ServerTag title="Server Address" text={match.address!}/>
+              <ServerTag title="Server Address" text={match.address!} />
             </If>
             <ServerTag title="slots" text={`${match.slots} Slots`} />
             <ServerTag title="Map Size" text={`${match.mapSize}x${match.mapSize}`} />
             <ServerTag title="Version" text={match.version} />
-            <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`}/>
+            <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`} />
           </div>
         </div>
         <If condition={match.removed}>
-          <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!}/>
+          <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!} />
         </If>
 
         {/* Only show actions if the match isn't removed. Removed matches shouldn't be modified */}
@@ -133,21 +132,11 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
               </If>
 
               <If condition={!!match.approvedBy}>
-                <Button
-                  intent={Intent.SUCCESS}
-                  title={`Approved by /u/${match.approvedBy}`}
-                  active
-                  iconName="tick"
-                />
+                <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active iconName="tick" />
               </If>
 
               <If condition={!disableRemoval && canRemove}>
-                <Button
-                  intent={Intent.DANGER}
-                  iconName="trash"
-                  onClick={this.onRemovePress}
-                  title="Remove"
-                />
+                <Button intent={Intent.DANGER} iconName="trash" onClick={this.onRemovePress} title="Remove" />
               </If>
             </div>
           </div>
@@ -155,8 +144,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
       </div>
     );
 
-    if (disableLink)
-      return card;
+    if (disableLink) return card;
 
     return (
       <Link to={`/m/${match.id}`} className="match-row-link">
@@ -172,7 +160,8 @@ const stateSelector = createSelector<
   boolean, // isHostingAdvisor
   string | null, // username
   string, // author
-  StateProps>(
+  StateProps
+>(
   matchesPermissions('hosting advisor'),
   getUsername,
   (_, props) => props.match.author,

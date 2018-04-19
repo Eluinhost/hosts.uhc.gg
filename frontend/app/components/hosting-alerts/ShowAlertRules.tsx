@@ -33,24 +33,24 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
 
   private onRefresh = () =>
     AlertsApi.fetchAllAlertRules(this.props.accessToken)
-      .then((rules) => {
+      .then(rules => {
         this.setState({
           rules,
           loading: false,
           error: null,
         });
       })
-      .catch((err) => {
+      .catch(err => {
         console.error(err);
         this.setState({
           loading: false,
           error: err,
         });
-      })
+      });
 
   private onSubmit = (rule: CreateAlertRuleData): Promise<boolean> =>
     AlertsApi.callCreateAlertRule(rule, this.props.accessToken)
-      .then((created) => {
+      .then(created => {
         AppToaster.show({
           message: 'Created new alert',
           intent: Intent.SUCCESS,
@@ -58,7 +58,7 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
         this.setState(prev => ({
           rules: [...prev.rules, created],
         }));
-        
+
         return true;
       })
       .catch(() => {
@@ -66,9 +66,9 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
           message: `Error deleting alert`,
           intent: Intent.DANGER,
         });
-        
+
         return false;
-      })
+      });
 
   private onDelete = (id: number) =>
     AlertsApi.callDeleteAlertRule(id, this.props.accessToken)
@@ -86,7 +86,7 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
           message: `Error deleting alert`,
           intent: Intent.DANGER,
         });
-      })
+      });
 
   render() {
     let top;
@@ -119,14 +119,10 @@ class ShowAlertRulesComponent extends React.PureComponent<Props, State> {
   }
 }
 
-const stateSelector = createSelector<ApplicationState, string | null, Props>(
-  getAccessToken,
-  accessToken => ({
-    accessToken: accessToken || 'NO ACCESS TOKEN IN STORE',
-  }),
-);
+const stateSelector = createSelector<ApplicationState, string | null, Props>(getAccessToken, accessToken => ({
+  accessToken: accessToken || 'NO ACCESS TOKEN IN STORE',
+}));
 
-export const ShowAlertRules: React.ComponentClass = connect<Props, {}, Props>(
-  stateSelector,
-  () => ({}),
-)(ShowAlertRulesComponent);
+export const ShowAlertRules: React.ComponentClass = connect<Props, {}, Props>(stateSelector, () => ({}))(
+  ShowAlertRulesComponent,
+);

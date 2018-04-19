@@ -6,11 +6,10 @@ export type TimeSyncState = {
   readonly offset: number;
 };
 
-export const reducer: ApplicationReducer<TimeSyncState> = ReducerBuilder
-  .withInitialState<TimeSyncState>({
-    synced: false,
-    offset: 0,
-  })
+export const reducer: ApplicationReducer<TimeSyncState> = ReducerBuilder.withInitialState<TimeSyncState>({
+  synced: false,
+  offset: 0,
+})
   .handle(SyncTime.started, (prev, action) => ({
     synced: false,
     offset: prev.offset,

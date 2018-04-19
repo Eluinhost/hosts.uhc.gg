@@ -10,37 +10,31 @@ export const HomePage: React.SFC<RouteComponentProps<any>> = () => (
     <Link to="/host">
       <div className="pt-card pt-interactive">
         <h4>Create a match</h4>
-        <p>
-          Create a new match post
-        </p>
+        <p>Create a new match post</p>
       </div>
     </Link>
 
     <Link to="/matches">
       <div className="pt-card pt-interactive">
         <h4>Matches</h4>
-        <p>
-          View a list of upcoming + removed matches
-        </p>
+        <p>View a list of upcoming + removed matches</p>
       </div>
     </Link>
 
     <Link to="/members">
       <div className="pt-card pt-interactive">
         <h4>Members</h4>
-        <p>
-          View member roles and member moderation log
-        </p>
+        <p>View member roles and member moderation log</p>
       </div>
     </Link>
 
     {/*<Link to="/ubl">*/}
-      {/*<div className="pt-card pt-interactive">*/}
-        {/*<h4>Universal Ban List</h4>*/}
-        {/*<p>*/}
-          {/*View the universal ban list*/}
-        {/*</p>*/}
-      {/*</div>*/}
+    {/*<div className="pt-card pt-interactive">*/}
+    {/*<h4>Universal Ban List</h4>*/}
+    {/*<p>*/}
+    {/*View the universal ban list*/}
+    {/*</p>*/}
+    {/*</div>*/}
     {/*</Link>*/}
   </div>
 );

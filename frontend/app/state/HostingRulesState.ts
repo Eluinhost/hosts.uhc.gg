@@ -20,23 +20,26 @@ export type HostingRulesState = {
 const displayError = (err: Error): string => {
   if (err instanceof ApiErrors.BadDataError) {
     return err.message;
-  } else if (err instanceof ApiErrors.NotAuthenticatedError) {
+  }
+
+  if (err instanceof ApiErrors.NotAuthenticatedError) {
     return 'You are not logged in';
-  } else if (err instanceof ApiErrors.ForbiddenError) {
+  }
+
+  if (err instanceof ApiErrors.ForbiddenError) {
     return 'You do not have permissions to do this';
   }
 
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<HostingRulesState> = ReducerBuilder
-  .withInitialState<HostingRulesState>({
-    fetching: false,
-    error: null,
-    data: null,
-    backupData: null,
-    editing: false,
-  })
+export const reducer: ApplicationReducer<HostingRulesState> = ReducerBuilder.withInitialState<HostingRulesState>({
+  fetching: false,
+  error: null,
+  data: null,
+  backupData: null,
+  editing: false,
+})
   .handle(GetHostingRules.started, (prev, action) => ({
     ...prev,
     fetching: true,

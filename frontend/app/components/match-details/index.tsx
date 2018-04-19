@@ -48,30 +48,53 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
     this.props.clear();
   }
 
-  private renderTags = (tags: string[]): React.ReactElement<any>[] => tags.map((tag, index) => (
-    <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
-      <Icon iconName="tag"/> {tag}
-    </Tag>
-  ))
+  private renderTags = (tags: string[]): React.ReactElement<any>[] =>
+    tags.map((tag, index) => (
+      <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
+        <Icon iconName="tag" /> {tag}
+      </Tag>
+    ));
 
-  private renderScenarios = (scenarios: string[]): React.ReactElement<any>[] => scenarios.map((scenario, index) => (
-    <Tag intent={Intent.NONE} className={`${Classes.LARGE}`} title="Scenario" key={index}>{scenario}</Tag>
-  ))
+  private renderScenarios = (scenarios: string[]): React.ReactElement<any>[] =>
+    scenarios.map((scenario, index) => (
+      <Tag intent={Intent.NONE} className={`${Classes.LARGE}`} title="Scenario" key={index}>
+        {scenario}
+      </Tag>
+    ));
 
   public render() {
-    if (this.props.details.fetching)
-      return <Spinner />;
+    if (this.props.details.fetching) return <Spinner />;
 
-    if (this.props.details.error)
-      return <NonIdealState visual="warning-sign" title="Error loading data" />;
+    if (this.props.details.error) return <NonIdealState visual="warning-sign" title="Error loading data" />;
 
-    if (this.props.details.match == null)
-      return <NonIdealState visual="geosearch" title="Not found" />;
+    if (this.props.details.match == null) return <NonIdealState visual="geosearch" title="Not found" />;
 
-    const { opens, region, location, hostingName, author, count,
-      tags, pvpEnabledAt, mapSize, slots, removed, size, teams,
-      customStyle, tournament, scenarios, ip, address, content,
-      length, version, removedBy, removedReason, approvedBy } = this.props.details.match;
+    const {
+      opens,
+      region,
+      location,
+      hostingName,
+      author,
+      count,
+      tags,
+      pvpEnabledAt,
+      mapSize,
+      slots,
+      removed,
+      size,
+      teams,
+      customStyle,
+      tournament,
+      scenarios,
+      ip,
+      address,
+      content,
+      length,
+      version,
+      removedBy,
+      removedReason,
+      approvedBy,
+    } = this.props.details.match;
 
     const { canApprove, canRemove, approve, remove } = this.props;
 
@@ -79,41 +102,43 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       <div className={`${Classes.CARD} match-details`}>
         <div className="match-details__header">
           <div className="match-details__header__floating-tags__top">
-            <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens"/>
+            <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens" />
             <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
               <Icon iconName="globe" /> {region} - {location}
             </Tag>
             <If condition={tournament}>
               <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-                <Icon iconName="timeline-bar-chart"/> Tournament
+                <Icon iconName="timeline-bar-chart" /> Tournament
               </Tag>
             </If>
             <If condition={removed}>
               <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
-                <Icon iconName="warning-sign"/> REMOVED
+                <Icon iconName="warning-sign" /> REMOVED
               </Tag>
             </If>
           </div>
 
           <div className="match-details__header__content">
-            <h2>{hostingName || author}'s #{count}</h2>
-            <h4><MatchOpens time={opens}/></h4>
+            <h2>
+              {hostingName || author}'s #{count}
+            </h2>
+            <h4>
+              <MatchOpens time={opens} />
+            </h4>
             <UsernameLink username={author} />
           </div>
 
           <div className="match-details__header__floating-tags__bottom">
             <div>
               <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
-                <Icon iconName="people"/> <TeamStyle size={size} style={teams} custom={customStyle}/>
+                <Icon iconName="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
               </Tag>
               <Tag intent={Intent.PRIMARY} title="Version" className={`${Classes.LARGE}`}>
-                <Icon iconName="settings"/> {version}
+                <Icon iconName="settings" /> {version}
               </Tag>
               {this.renderTags(tags)}
             </div>
-            <div className="match-details__scenarios">
-              {this.renderScenarios(scenarios)}
-            </div>
+            <div className="match-details__scenarios">{this.renderScenarios(scenarios)}</div>
           </div>
         </div>
         <div className="match-details__server-address">
@@ -136,12 +161,12 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
             />
           </label>
 
-          <label className={`${Classes.LABEL}`} >
+          <label className={`${Classes.LABEL}`}>
             Meetup @
             <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${length} minutes`} readOnly />
           </label>
 
-          <label className={`${Classes.LABEL}`} >
+          <label className={`${Classes.LABEL}`}>
             Map
             <input
               className={`${Classes.INPUT} ${Classes.FILL}`}
@@ -150,7 +175,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
               readOnly
             />
           </label>
-          <label className={`${Classes.LABEL}`} >
+          <label className={`${Classes.LABEL}`}>
             Slots
             <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${slots} slots`} readOnly />
           </label>
@@ -158,35 +183,31 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
         <div className="match-details__content">
           <If condition={removed}>
             <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-              <h5><Icon iconName="warning-sign"/> REMOVED</h5>
+              <h5>
+                <Icon iconName="warning-sign" /> REMOVED
+              </h5>
               <p>This game is no longer on the calendar:</p>
-              <p>{removedReason} - /u/{removedBy}</p>
+              <p>
+                {removedReason} - /u/{removedBy}
+              </p>
             </div>
           </If>
 
           <If condition={!removed && !!approvedBy}>
             <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
-              <h5><Icon iconName="tick"/> Approved by /u/{approvedBy}</h5>
+              <h5>
+                <Icon iconName="tick" /> Approved by /u/{approvedBy}
+              </h5>
             </div>
           </If>
 
           <If condition={canApprove || canRemove}>
             <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
               <If condition={canApprove}>
-                <Button
-                  intent={Intent.SUCCESS}
-                  iconName="confirm"
-                  title="Approve Match"
-                  onClick={approve}
-                />
+                <Button intent={Intent.SUCCESS} iconName="confirm" title="Approve Match" onClick={approve} />
               </If>
               <If condition={canRemove}>
-                <Button
-                  intent={Intent.DANGER}
-                  iconName="trash"
-                  onClick={remove}
-                  title="Remove"
-                />
+                <Button intent={Intent.DANGER} iconName="trash" onClick={remove} title="Remove" />
               </If>
             </div>
           </If>
@@ -204,9 +225,10 @@ const stateSelector = createSelector<ApplicationState, MatchDetailsState, boolea
   (details, isHostingAdvisor, username): StateProps => ({
     details,
     canApprove: details.match !== null && !details.match.removed && !details.match.approvedBy && isHostingAdvisor,
-    canRemove: details.match !== null && !details.match.removed && (
-      isHostingAdvisor || (username != null && username === details.match.author)
-    ),
+    canRemove:
+      details.match !== null &&
+      !details.match.removed &&
+      (isHostingAdvisor || (username != null && username === details.match.author)),
   }),
 );
 

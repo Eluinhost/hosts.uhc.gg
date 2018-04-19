@@ -33,16 +33,14 @@ const valuesSelector: (state: ApplicationState) => CreateMatchData = getFormValu
 
 // Main goal of this is to save form data back to local storage when the component unmounts
 class HostingPageComponent extends React.PureComponent<
-  & HostingPageStateProps
-  & HostingPageDispatchProps
-  & RouteComponentProps<any>> {
-
+  HostingPageStateProps & HostingPageDispatchProps & RouteComponentProps<any>
+> {
   public onUnload = (): void => {
     // only save if we have values we can replace it with
     if (this.props.formValues) {
       this.props.saveData(this.props.formValues);
     }
-  }
+  };
 
   public componentDidMount(): void {
     // when mounting we want to register for page unloads + load the stored values from local storage
@@ -68,7 +66,7 @@ class HostingPageComponent extends React.PureComponent<
       teamStyle: teams.value,
       author: this.props.username,
     };
-  }
+  };
 
   private handleCreateMatch = async (values: CreateMatchData): Promise<void> => {
     const withRenderedTemplate = {
@@ -89,8 +87,7 @@ class HostingPageComponent extends React.PureComponent<
       // if success send them to the matches page to view it
       this.props.history.push('/matches');
     } catch (err) {
-      if (err instanceof ApiErrors.BadDataError)
-        throw new SubmissionError({ _error: `Bad data: ${err.message}` });
+      if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
       if (err instanceof ApiErrors.NotAuthenticatedError) {
         // User cookie has expired, get them to reauthenticate
@@ -98,12 +95,13 @@ class HostingPageComponent extends React.PureComponent<
         return;
       }
 
-      if (err instanceof ApiErrors.ForbiddenError)
+      if (err instanceof ApiErrors.ForbiddenError) {
         throw new SubmissionError({ _error: 'You no longer have hosting permission' });
+      }
 
       throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
     }
-  }
+  };
 
   public render() {
     // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)

@@ -17,23 +17,20 @@ export interface DateTimeFieldProps extends BaseFieldProps {
 }
 
 class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFieldProps> {
-
   triggerBlur = (date: moment.Moment): void => this.props.input!.onBlur(date, undefined, undefined);
 
   onDateChange = (date: moment.Moment): void => {
-    if (this.props.disabled)
-      return;
+    if (this.props.disabled) return;
 
     this.props.input!.onChange(date, undefined, undefined);
     setTimeout(() => this.triggerBlur(this.props.input!.value), 0);
-  }
+  };
 
   onTimeChange = (date: moment.Moment): void => {
-    if (this.props.disabled)
-      return;
+    if (this.props.disabled) return;
 
     this.props.input!.onChange(date, undefined, undefined);
-  }
+  };
 
   onTimeClose = (): void => this.triggerBlur(this.props.input!.value);
 
@@ -41,13 +38,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
     const { meta, label, required, datePickerProps, input, disabled, timePickerProps, children } = this.props;
 
     return (
-      <FieldWrapper
-        meta={meta}
-        label={label}
-        required={required}
-        hideErrors
-        className="date-time-field"
-      >
+      <FieldWrapper meta={meta} label={label} required={required} hideErrors className="date-time-field">
         <DatePicker
           {...datePickerProps}
           dateFormat="YYYY-MM-DD"
@@ -72,21 +63,10 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
             {children}
           </div>
         </DatePicker>
-        <Overlay
-          isOpen={!!disabled}
-          inline
-          autoFocus={false}
-          canEscapeKeyClose={false}
-          canOutsideClickClose={false}
-        />
+        <Overlay isOpen={!!disabled} inline autoFocus={false} canEscapeKeyClose={false} canOutsideClickClose={false} />
       </FieldWrapper>
     );
   }
 }
 
-export const DateTimeField: React.SFC<DateTimeFieldProps> = props => (
-  <Field
-    {...props}
-    component={DateTimePicker}
-  />
-);
+export const DateTimeField: React.SFC<DateTimeFieldProps> = props => <Field {...props} component={DateTimePicker} />;

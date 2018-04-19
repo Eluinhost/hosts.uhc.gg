@@ -25,14 +25,14 @@ export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProp
     if (this.props.onClick) {
       this.setState({ isAlertOpen: true });
     }
-  }
+  };
 
   private onConfirm = () => {
     if (this.props.onClick) {
       this.props.onClick(this.props.rule.id);
     }
     this.onCancel();
-  }
+  };
 
   private onCancel = () => this.setState({ isAlertOpen: false });
 
@@ -59,9 +59,7 @@ export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProp
           {this.props.rule.exact ? '=' : '~'}
         </Tag>
 
-        <Tag className={`${Classes.LARGE} ${Classes.MINIMAL}`}>
-          {this.props.rule.alertOn}
-        </Tag>
+        <Tag className={`${Classes.LARGE} ${Classes.MINIMAL}`}>{this.props.rule.alertOn}</Tag>
 
         <Alert
           isOpen={this.state.isAlertOpen}
@@ -71,9 +69,7 @@ export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProp
           cancelButtonText="Cancel"
           intent={Intent.DANGER}
         >
-          <p>
-            Are you sure you want to delete this alert?
-          </p>
+          <p>Are you sure you want to delete this alert?</p>
         </Alert>
       </div>
     );

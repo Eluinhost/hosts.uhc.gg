@@ -15,12 +15,14 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
     const token = getAccessToken(state) || 'NO ACCESS TOKEN IN STATE';
     const username = getUsername(state) || 'NO USERNAME IN STATE';
 
-    yield effects.put(ApproveMatch.started({
-      parameters,
-      result: {
-        username,
-      },
-    }));
+    yield effects.put(
+      ApproveMatch.started({
+        parameters,
+        result: {
+          username,
+        },
+      }),
+    );
     yield effects.call(MatchesApi.callApprove, parameters.id, token);
     yield effects.put(ApproveMatch.success({ parameters }));
     yield effects.put(ApproveMatch.closeDialog());
@@ -37,9 +39,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
     AppToaster.show({
       intent: Intent.DANGER,
       iconName: 'warning-sign',
-      message: error instanceof ApiErrors.BadDataError
-        ? error.message
-        : `Failed to approve match #${parameters.id}`,
+      message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to approve match #${parameters.id}`,
     });
   }
 }

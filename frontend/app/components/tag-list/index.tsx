@@ -10,20 +10,12 @@ type Props = {
 
 export class TagList extends React.PureComponent<Props> {
   private renderItem = (item: string, index: number): React.ReactElement<any> => (
-    <Tag
-      key={index}
-      intent={this.props.intent}
-      className={`${Classes.LARGE}`}
-    >
+    <Tag key={index} intent={this.props.intent} className={`${Classes.LARGE}`}>
       <Icon iconName={this.props.iconName} /> {item}
     </Tag>
-  )
+  );
 
   public render() {
-    return (
-      <span>
-        {this.props.items.map(this.renderItem)}
-      </span>
-    );
+    return <span>{this.props.items.map(this.renderItem)}</span>;
   }
 }

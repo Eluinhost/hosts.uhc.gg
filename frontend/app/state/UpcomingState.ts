@@ -12,22 +12,19 @@ export type UpcomingState = {
 };
 
 const displayError = (err: Error) => {
-  if (err instanceof ApiErrors.NotAuthenticatedError)
-    return 'You are not logged in';
+  if (err instanceof ApiErrors.NotAuthenticatedError) return 'You are not logged in';
 
-  if (err instanceof ApiErrors.ForbiddenError)
-    return 'You do not have permissions to do this';
+  if (err instanceof ApiErrors.ForbiddenError) return 'You do not have permissions to do this';
 
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
-  .withInitialState<UpcomingState>({
-    matches: [],
-    fetching: false,
-    error: null,
-    updated: null,
-  })
+export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder.withInitialState<UpcomingState>({
+  matches: [],
+  fetching: false,
+  error: null,
+  updated: null,
+})
   .handle(UpdateUpcoming.started, (prev, action) => ({
     fetching: true,
     error: null,
@@ -48,9 +45,8 @@ export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
   }))
   .handle(RemoveMatch.started, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -62,9 +58,8 @@ export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
   }))
   .handle(RemoveMatch.failure, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -76,9 +71,8 @@ export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
   }))
   .handle(ApproveMatch.started, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,
@@ -88,9 +82,8 @@ export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder
   }))
   .handle(ApproveMatch.failure, (prev, action) => ({
     ...prev,
-    matches: prev.matches.map((match) => {
-      if (match.id !== action.payload!.parameters.id)
-        return match;
+    matches: prev.matches.map(match => {
+      if (match.id !== action.payload!.parameters.id) return match;
 
       return {
         ...match,

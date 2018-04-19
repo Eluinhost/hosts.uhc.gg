@@ -1,8 +1,13 @@
 import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { concat, converge, head, Obj, pipe, tail, toPairs, toUpper } from 'ramda';
 import {
-  AddPermission, RemovePermission, FetchUserCountPerPermission, PermissionNode,
-  FetchUsersInPermission, PermissionLetterNode, FetchUsersInPermissionWithLetter,
+  AddPermission,
+  RemovePermission,
+  FetchUserCountPerPermission,
+  PermissionNode,
+  FetchUsersInPermission,
+  PermissionLetterNode,
+  FetchUsersInPermissionWithLetter,
 } from '../actions';
 import { isArray } from 'util';
 import { Classes, ITreeNode, Spinner } from '@blueprintjs/core';
@@ -63,7 +68,7 @@ const permissionGroupNames: Obj<string> = {
 };
 
 const getGroupName = (permission: string) =>
-  permissionGroupNames[permission] || (converge<string>(concat, [pipe(head, toUpper), tail])(permission) + 's');
+  permissionGroupNames[permission] || converge<string>(concat, [pipe(head, toUpper), tail])(permission) + 's';
 
 const createPermissionFolder = (permission: string, count: number): PermissionFolder => ({
   permission,
@@ -104,17 +109,16 @@ export type PermissionsState = {
 
 const loadingIcon: React.ReactElement<any> = React.createElement(Spinner, { className: Classes.SMALL });
 
-export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
-  .withInitialState<PermissionsState>({
-    isFetching: false,
-    nodes: [],
-    removeDialog: null,
-    addDialog: null,
-    allowableModifications: {
-      'hosting advisor': ['host', 'trial host', 'hosting banned'],
-      admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator'],
-    },
-  })
+export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.withInitialState<PermissionsState>({
+  isFetching: false,
+  nodes: [],
+  removeDialog: null,
+  addDialog: null,
+  allowableModifications: {
+    'hosting advisor': ['host', 'trial host', 'hosting banned'],
+    admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator'],
+  },
+})
   .handle(FetchUserCountPerPermission.started, (prev, action) => ({
     ...prev,
     isFetching: true,
@@ -122,8 +126,9 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   .handle(FetchUserCountPerPermission.success, (prev, action) => ({
     ...prev,
     isFetching: false,
-    nodes: toPairs<number>(action.payload!.result)
-      .map<PermissionFolder>(pair => createPermissionFolder(pair[0], pair[1])),
+    nodes: toPairs<number>(action.payload!.result).map<PermissionFolder>(pair =>
+      createPermissionFolder(pair[0], pair[1]),
+    ),
   }))
   .handle(FetchUserCountPerPermission.failure, (prev, action) => ({
     ...prev,
@@ -131,9 +136,8 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermission.started, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map<PermissionFolder>((node) => {
-      if (node.permission !== action.payload!.parameters)
-        return node;
+    nodes: prev.nodes.map<PermissionFolder>(node => {
+      if (node.permission !== action.payload!.parameters) return node;
 
       return {
         ...node,
@@ -144,9 +148,8 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermission.success, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map<PermissionFolder>((node) => {
-      if (node.permission !== action.payload!.parameters)
-        return node;
+    nodes: prev.nodes.map<PermissionFolder>(node => {
+      if (node.permission !== action.payload!.parameters) return node;
 
       const permission = action.payload!.parameters;
 
@@ -176,9 +179,8 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermission.failure, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map((node) => {
-      if (node.permission !== action.payload!.parameters)
-        return node;
+    nodes: prev.nodes.map(node => {
+      if (node.permission !== action.payload!.parameters) return node;
 
       return {
         ...node,
@@ -189,15 +191,13 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermissionWithLetter.started, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map<PermissionFolder>((permNode) => {
-      if (permNode.permission !== action.payload!.parameters.permission)
-        return permNode;
+    nodes: prev.nodes.map<PermissionFolder>(permNode => {
+      if (permNode.permission !== action.payload!.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map((letterNode) => {
-          if (letterNode.letter !== action.payload!.parameters.letter)
-            return letterNode;
+        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
+          if (letterNode.letter !== action.payload!.parameters.letter) return letterNode;
 
           return {
             ...letterNode,
@@ -210,22 +210,20 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermissionWithLetter.success, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map<PermissionFolder>((permNode) => {
-      if (permNode.permission !== action.payload!.parameters.permission)
-        return permNode;
+    nodes: prev.nodes.map<PermissionFolder>(permNode => {
+      if (permNode.permission !== action.payload!.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map((letterNode) => {
-          if (letterNode.letter !== action.payload!.parameters.letter)
-            return letterNode;
+        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
+          if (letterNode.letter !== action.payload!.parameters.letter) return letterNode;
 
           return {
             ...letterNode,
             isFetching: false,
             secondaryLabel: undefined,
-            childNodes: action.payload!.result
-              .sort((left, right) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
+            childNodes: action
+              .payload!.result.sort((left, right) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
               .map(name => createUsernameNode(action.payload!.parameters.permission, name)),
           };
         }),
@@ -234,15 +232,13 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(FetchUsersInPermissionWithLetter.failure, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map<PermissionFolder>((permNode) => {
-      if (permNode.permission !== action.payload!.parameters.permission)
-        return permNode;
+    nodes: prev.nodes.map<PermissionFolder>(permNode => {
+      if (permNode.permission !== action.payload!.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map((letterNode) => {
-          if (letterNode.letter !== action.payload!.parameters.letter)
-            return letterNode;
+        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
+          if (letterNode.letter !== action.payload!.parameters.letter) return letterNode;
 
           return {
             ...letterNode,
@@ -255,9 +251,8 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(PermissionNode.open, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map((node) => {
-      if (node.permission !== action.payload!)
-        return node;
+    nodes: prev.nodes.map(node => {
+      if (node.permission !== action.payload!) return node;
 
       return <PermissionFolder>{
         ...node,
@@ -268,9 +263,8 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(PermissionNode.close, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map((node) => {
-      if (node.permission !== action.payload!)
-        return node;
+    nodes: prev.nodes.map(node => {
+      if (node.permission !== action.payload!) return node;
 
       return <PermissionFolder>{
         ...node,
@@ -281,16 +275,14 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(PermissionLetterNode.open, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map((permNode) => {
-      if (permNode.permission !== action.payload!.permission)
-        return permNode;
+    nodes: prev.nodes.map(permNode => {
+      if (permNode.permission !== action.payload!.permission) return permNode;
 
       return {
         ...permNode,
         isExpanded: true,
-        childNodes: (permNode.childNodes as LetterFolder[]).map((letterNode) => {
-          if (letterNode.letter !== action.payload!.letter)
-            return letterNode;
+        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
+          if (letterNode.letter !== action.payload!.letter) return letterNode;
 
           return <LetterFolder>{
             ...letterNode,
@@ -303,15 +295,13 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder
   }))
   .handle(PermissionLetterNode.close, (prev, action) => ({
     ...prev,
-    nodes: prev.nodes.map((permNode) => {
-      if (permNode.permission !== action.payload!.permission)
-        return permNode;
+    nodes: prev.nodes.map(permNode => {
+      if (permNode.permission !== action.payload!.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map((letterNode) => {
-          if (letterNode.letter !== action.payload!.letter)
-            return letterNode;
+        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
+          if (letterNode.letter !== action.payload!.letter) return letterNode;
 
           return <LetterFolder>{
             ...letterNode,

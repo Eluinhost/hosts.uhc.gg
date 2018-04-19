@@ -24,8 +24,9 @@ enum BanState {
   CurrentlyBanned,
 }
 
-const isAfter: CurriedFunction2<moment.Moment, moment.Moment, boolean> =
-  curry((a: moment.Moment, b: moment.Moment) => b.isAfter(a));
+const isAfter: CurriedFunction2<moment.Moment, moment.Moment, boolean> = curry((a: moment.Moment, b: moment.Moment) =>
+  b.isAfter(a),
+);
 
 export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>, State> {
   state = {
@@ -44,12 +45,13 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
           : BanState.AllExpired,
       });
     }
-  }
+  };
 
-  load = () => UBLApi.fetchAllBansForUuid(this.props.match.params.uuid).then((bans) => {
-    this.updateFlag(bans);
-    return bans;
-  })
+  load = () =>
+    UBLApi.fetchAllBansForUuid(this.props.match.params.uuid).then(bans => {
+      this.updateFlag(bans);
+      return bans;
+    });
 
   render() {
     return (

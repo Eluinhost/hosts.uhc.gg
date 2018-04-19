@@ -4,8 +4,7 @@ import { isArray } from 'util';
 import * as moment from 'moment-timezone';
 
 export const verifyStatus = (expected: number[] | number = 200) => async (response: Response): Promise<Response> => {
-  if (contains(response.status, isArray(expected) ? expected : [expected]))
-    return response;
+  if (contains(response.status, isArray(expected) ? expected : [expected])) return response;
 
   switch (response.status) {
     case 400:
@@ -49,9 +48,8 @@ export const fetchObject = <T>(options: FetchApiCallParams<T>): Promise<T> =>
     .then(mapMomentProps<T>(options.momentProps || []));
 
 export const maybeFetchObject = <T>(options: FetchApiCallParams<T>): Promise<T | null> =>
-  fetchObject(options).catch((err) => {
-    if (err instanceof NotFoundError)
-      return null;
+  fetchObject(options).catch(err => {
+    if (err instanceof NotFoundError) return null;
 
     throw err;
   });

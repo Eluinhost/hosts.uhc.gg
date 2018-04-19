@@ -32,22 +32,25 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     isDeleteOpen: false,
   };
 
-  openDeleteDialog = () => this.setState({
-    isDeleteOpen: true,
-  })
+  openDeleteDialog = () =>
+    this.setState({
+      isDeleteOpen: true,
+    });
 
-  openEditDialog = () => this.setState({
-    isEditOpen: true,
-  })
+  openEditDialog = () =>
+    this.setState({
+      isEditOpen: true,
+    });
 
-  closeDeleteDialog = () => this.setState({
-    isDeleteOpen: false,
-  })
+  closeDeleteDialog = () =>
+    this.setState({
+      isDeleteOpen: false,
+    });
 
-  closeEditDialog = () => this.setState({
-    isEditOpen: false,
-  })
-
+  closeEditDialog = () =>
+    this.setState({
+      isEditOpen: false,
+    });
 
   confirmDelete = () => {
     const ban = this.props.ban;
@@ -70,7 +73,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         });
         this.props.onDeleteFailed(ban);
       });
-  }
+  };
 
   confirmEdit = (values: BanData) => {
     const oldBan = this.props.ban;
@@ -97,7 +100,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         });
         this.props.onEditFailed(newBan, oldBan);
       });
-  }
+  };
 
   renderCaseLink = (link: string) => {
     if (/^https?/.test(link)) {
@@ -123,7 +126,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         disabled={this.props.disabled}
       />
     );
-  }
+  };
 
   render() {
     const { ban } = this.props;
@@ -131,7 +134,9 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
     return (
       <div className={`pt-card ubl-card ${this.props.className || ''}`}>
         <div>
-          <span style={{ fontWeight: 'bold' }} title="IGN">{ban.ign}</span>
+          <span style={{ fontWeight: 'bold' }} title="IGN">
+            {ban.ign}
+          </span>
           <span style={{ float: 'right' }}>
             <span title="Created">{ban.created.format('MMM Do, YYYY')}</span>
             <span> → </span>
@@ -145,7 +150,9 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           <span style={{ float: 'right' }}>/u/{ban.createdBy}</span>
         </div>
         <div>
-          <em>{ban.reason} - {ban.expires.from(ban.created, true)}</em>
+          <em>
+            {ban.reason} - {ban.expires.from(ban.created, true)}
+          </em>
           <div style={{ float: 'right' }}>
             {this.renderCaseLink(ban.link)}
             <WithPermission permission="ubl moderator">
@@ -178,7 +185,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           onClose={this.closeEditDialog}
         >
           <div className="pt-dialog-body">
-            <BanDataForm onSubmit={this.confirmEdit} initialValues={this.props.ban}/>
+            <BanDataForm onSubmit={this.confirmEdit} initialValues={this.props.ban} />
           </div>
           <div className="pt-dialog-footer">
             <div className="pt-dialog-footer-actions">
@@ -196,19 +203,14 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         >
           <div className="pt-dialog-body">
             <p>
-              Are you sure you want to delete this? It cannot be undone.
-              If you want to make a Ban expire early you should edit it instead
+              Are you sure you want to delete this? It cannot be undone. If you want to make a Ban expire early you
+              should edit it instead
             </p>
           </div>
           <div className="pt-dialog-footer">
             <div className="pt-dialog-footer-actions">
               <Button text="Close" onClick={this.closeDeleteDialog} />
-              <Button
-                intent={Intent.DANGER}
-                onClick={this.confirmDelete}
-                text="Delete"
-                iconName="trash"
-              />
+              <Button intent={Intent.DANGER} onClick={this.confirmDelete} text="Delete" iconName="trash" />
             </div>
           </div>
         </Dialog>

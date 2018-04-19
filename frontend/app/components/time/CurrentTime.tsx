@@ -41,9 +41,10 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
     this.timerId = window.setInterval(this.update, 1000);
   }
 
-  private update = (): void => this.setState({
-    time: moment.utc(),
-  })
+  private update = (): void =>
+    this.setState({
+      time: moment.utc(),
+    });
 
   public componentWillUnmount(): void {
     window.clearInterval(this.timerId);
@@ -70,9 +71,7 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
       o %= MILLIS_PER_MINUTE;
     }
 
-    const display: number = offset < 10 * MILLIS_PER_SECOND
-      ? o / MILLIS_PER_SECOND
-      : Math.floor(o / MILLIS_PER_SECOND);
+    const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
 
     output += `${display}s `;
 
@@ -82,14 +81,14 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
   private tooltipText = (): string =>
     this.props.timeSync.synced
       ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset)} offset. Click to resync`
-      : 'Not synced with the server'
+      : 'Not synced with the server';
 
   private timeText = () =>
     this.state.time
       .add(this.props.timeSync.offset, 'milliseconds')
       .clone()
       .tz(this.props.timezone)
-      .format(this.props.timeFormat)
+      .format(this.props.timeFormat);
 
   render() {
     return (

@@ -19,15 +19,14 @@ export type SettingsState = {
   readonly storageKey: string;
 };
 
-export const reducer: ApplicationReducer<SettingsState> = ReducerBuilder
-  .withInitialState<SettingsState>({
-    storageKey,
-    isDarkMode: false ,
-    is12h: false,
-    timezone: moment.tz.guess(),
-    hideRemoved: true,
-    showOwnRemoved: true,
-  })
+export const reducer: ApplicationReducer<SettingsState> = ReducerBuilder.withInitialState<SettingsState>({
+  storageKey,
+  isDarkMode: false,
+  is12h: false,
+  timezone: moment.tz.guess(),
+  hideRemoved: true,
+  showOwnRemoved: true,
+})
   .handle(Settings.setDarkMode, (prev, action) => ({
     ...prev,
     isDarkMode: action.payload!,

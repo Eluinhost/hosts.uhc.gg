@@ -13,7 +13,11 @@ export type SuggestionsFieldProps = BaseFieldProps & {
   readonly suggestionText: string;
 };
 
-const renderOptions = map<string, React.ReactElement<any>>(it => <option key={it} value={it}>{it}</option>);
+const renderOptions = map<string, React.ReactElement<any>>(it => (
+  <option key={it} value={it}>
+    {it}
+  </option>
+));
 
 const renderField: React.SFC<WrappedFieldProps<any> & SuggestionsFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
@@ -32,7 +36,6 @@ const renderField: React.SFC<WrappedFieldProps<any> & SuggestionsFieldProps> = p
         </select>
       </div>
     </div>
-
   </FieldWrapper>
 );
 

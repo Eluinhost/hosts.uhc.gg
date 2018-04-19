@@ -15,11 +15,10 @@ type Props = {
 
 class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentProps<any>> {
   handleSubmit = (values: BanData) =>
-    UBLApi.callCreateBan(values, this.props.accessToken!)
-      .then(() => {
-        // if success send them to the current bans page to view it
-        this.props.history.push('/ubl');
-      })
+    UBLApi.callCreateBan(values, this.props.accessToken!).then(() => {
+      // if success send them to the current bans page to view it
+      this.props.history.push('/ubl');
+    });
 
   render() {
     return (
@@ -32,13 +31,12 @@ class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentP
   }
 }
 
-const stateSelector = createSelector<ApplicationState, string | null, Props>(
-  getAccessToken,
-  accessToken => ({ accessToken }),
-);
+const stateSelector = createSelector<ApplicationState, string | null, Props>(getAccessToken, accessToken => ({
+  accessToken,
+}));
 
-export const CreateBanPage: React.ComponentClass<RouteComponentProps<any>> =
-  connect<Props, {}, RouteComponentProps<any>>(
-    stateSelector,
-    always({}),
-  )(CreateBanPageComponent);
+export const CreateBanPage: React.ComponentClass<RouteComponentProps<any>> = connect<
+  Props,
+  {},
+  RouteComponentProps<any>
+>(stateSelector, always({}))(CreateBanPageComponent);

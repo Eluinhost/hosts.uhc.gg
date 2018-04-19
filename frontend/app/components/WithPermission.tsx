@@ -15,20 +15,16 @@ export type WithPermissionProps = {
   readonly alternative?: React.ComponentType;
 };
 
-const WithPermissionComponent: React.SFC<StateProps & WithPermissionProps> =
-  ({ show, alternative, children }) => (
-    <If condition={show} alternative={alternative}>
-      {children}
-    </If>
-  );
+const WithPermissionComponent: React.SFC<StateProps & WithPermissionProps> = ({ show, alternative, children }) => (
+  <If condition={show} alternative={alternative}>
+    {children}
+  </If>
+);
 
-const memoizedStateSelector = memoize(
-  (perms: string | string[]) => createSelector(
-    matchesPermissions(perms),
-    show => ({
-      show,
-    }),
-  ),
+const memoizedStateSelector = memoize((perms: string | string[]) =>
+  createSelector(matchesPermissions(perms), show => ({
+    show,
+  })),
 );
 
 export const WithPermission = connect<StateProps, {}, WithPermissionProps>(
