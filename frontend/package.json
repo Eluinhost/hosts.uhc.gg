@@ -4,7 +4,13 @@
   "description": "",
   "scripts": {
     "build": "webpack -p --env.production",
-    "dev": "webpack -d --env.development --watch"
+    "dev": "webpack -d --env.development --watch",
+    "prettier": "prettier --write 'app/**/*.{json,js,ts,tsx,sass}'",
+    "prettier:watch": "onchange '**/*.{json,js,ts,tsx,sass}' -- prettier --write {{changed}}",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{json,js,ts,tsx,sass}": ["prettier --write", "git add"]
   },
   "license": "MIT",
   "dependencies": {
@@ -60,7 +66,11 @@
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4",
     "node-sass": "^4.5.3",
+    "onchange": "^3.3.0",
+    "prettier": "^1.12.1",
     "sass-loader": "^6.0.6",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
