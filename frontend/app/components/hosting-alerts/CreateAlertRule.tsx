@@ -100,7 +100,7 @@ export class CreateAlertRule extends React.PureComponent<Props, State> {
         <Button
           intent={validData ? Intent.SUCCESS : Intent.WARNING}
           disabled={!validData}
-          iconName="plus"
+          icon="plus"
           text="Add new Rule"
           onClick={this.submit}
         />

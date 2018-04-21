@@ -53,7 +53,7 @@ class TimeFromNowComponent extends React.PureComponent<Props & StateProps, State
 
     return (
       <Tag {...this.props} intent={intent}>
-        <Icon iconName="time" /> {text}
+        <Icon icon="time" /> {text}
       </Tag>
     );
   }

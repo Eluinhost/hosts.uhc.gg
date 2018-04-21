@@ -90,7 +90,7 @@ export class MembersPage extends React.Component<
         <Button
           disabled={this.props.isFetching}
           onClick={this.props.fetchPermissionList}
-          iconName="refresh"
+          icon="refresh"
           intent={Intent.SUCCESS}
         >
           Refresh

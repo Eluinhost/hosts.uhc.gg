@@ -47,7 +47,7 @@ export class ExistingAlertRule extends React.PureComponent<ExistingAlertRuleProp
           title={this.props.rule.field}
           onClick={this.onClick}
         >
-          <Icon iconName={this.state.isHovered && this.props.onClick ? 'trash' : 'notifications'} />
+          <Icon icon={this.state.isHovered && this.props.onClick ? 'trash' : 'notifications'} />
           <span>{this.props.rule.field}</span>
         </Tag>
 

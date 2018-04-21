@@ -76,10 +76,10 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           </If>
         </div>
         <div className="match-top-right-ribbon">
-          <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} iconName="tag" />
+          <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon="tag" />
           <If condition={match.tournament}>
             <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-              <Icon iconName="timeline-bar-chart" /> Tournament
+              <Icon icon="timeline-bar-chart" /> Tournament
             </Tag>
           </If>
         </div>
@@ -97,7 +97,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           </h4>
           <div className="match-tags">
             <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
-              <Icon iconName="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
+              <Icon icon="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
             </Tag>
             <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
           </div>
@@ -123,20 +123,15 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           <div className="match-moderation-actions">
             <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.VERTICAL} ${Classes.LARGE}`}>
               <If condition={!disableApproval && canApprove && !match.approvedBy}>
-                <Button
-                  intent={Intent.SUCCESS}
-                  iconName="confirm"
-                  title="Approve Match"
-                  onClick={this.onApprovePress}
-                />
+                <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={this.onApprovePress} />
               </If>
 
               <If condition={!!match.approvedBy}>
-                <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active iconName="tick" />
+                <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon="tick" />
               </If>
 
               <If condition={!disableRemoval && canRemove}>
-                <Button intent={Intent.DANGER} iconName="trash" onClick={this.onRemovePress} title="Remove" />
+                <Button intent={Intent.DANGER} icon="trash" onClick={this.onRemovePress} title="Remove" />
               </If>
             </div>
           </div>

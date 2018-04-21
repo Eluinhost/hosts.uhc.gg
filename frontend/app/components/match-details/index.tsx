@@ -51,7 +51,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
   private renderTags = (tags: string[]): React.ReactElement<any>[] =>
     tags.map((tag, index) => (
       <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
-        <Icon iconName="tag" /> {tag}
+        <Icon icon="tag" /> {tag}
       </Tag>
     ));
 
@@ -104,16 +104,16 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           <div className="match-details__header__floating-tags__top">
             <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens" />
             <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
-              <Icon iconName="globe" /> {region} - {location}
+              <Icon icon="globe" /> {region} - {location}
             </Tag>
             <If condition={tournament}>
               <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-                <Icon iconName="timeline-bar-chart" /> Tournament
+                <Icon icon="timeline-bar-chart" /> Tournament
               </Tag>
             </If>
             <If condition={removed}>
               <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
-                <Icon iconName="warning-sign" /> REMOVED
+                <Icon icon="warning-sign" /> REMOVED
               </Tag>
             </If>
           </div>
@@ -131,10 +131,10 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           <div className="match-details__header__floating-tags__bottom">
             <div>
               <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
-                <Icon iconName="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
+                <Icon icon="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
               </Tag>
               <Tag intent={Intent.PRIMARY} title="Version" className={`${Classes.LARGE}`}>
-                <Icon iconName="settings" /> {version}
+                <Icon icon="settings" /> {version}
               </Tag>
               {this.renderTags(tags)}
             </div>
@@ -184,7 +184,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           <If condition={removed}>
             <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
               <h5>
-                <Icon iconName="warning-sign" /> REMOVED
+                <Icon icon="warning-sign" /> REMOVED
               </h5>
               <p>This game is no longer on the calendar:</p>
               <p>
@@ -196,7 +196,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           <If condition={!removed && !!approvedBy}>
             <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
               <h5>
-                <Icon iconName="tick" /> Approved by /u/{approvedBy}
+                <Icon icon="tick" /> Approved by /u/{approvedBy}
               </h5>
             </div>
           </If>
@@ -204,10 +204,10 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           <If condition={canApprove || canRemove}>
             <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
               <If condition={canApprove}>
-                <Button intent={Intent.SUCCESS} iconName="confirm" title="Approve Match" onClick={approve} />
+                <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={approve} />
               </If>
               <If condition={canRemove}>
-                <Button intent={Intent.DANGER} iconName="trash" onClick={remove} title="Remove" />
+                <Button intent={Intent.DANGER} icon="trash" onClick={remove} title="Remove" />
               </If>
             </div>
           </If>

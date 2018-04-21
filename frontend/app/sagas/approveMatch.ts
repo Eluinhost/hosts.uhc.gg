@@ -29,7 +29,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
 
     AppToaster.show({
       intent: Intent.SUCCESS,
-      iconName: 'tick',
+      icon: 'tick',
       message: `Approved match #${parameters.id}`,
     });
   } catch (error) {
@@ -38,7 +38,7 @@ function* approveMatchSaga(action: Action<ApproveMatchParameters>): SagaIterator
 
     AppToaster.show({
       intent: Intent.DANGER,
-      iconName: 'warning-sign',
+      icon: 'warning-sign',
       message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to approve match #${parameters.id}`,
     });
   }

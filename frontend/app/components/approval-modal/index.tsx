@@ -28,7 +28,7 @@ class ApprovalModalComponent extends React.PureComponent<StateProps & DispatchPr
 
     return (
       <Dialog
-        iconName="tick"
+        icon="tick"
         isOpen={id !== null}
         onClose={onClose}
         title="Approve match"
@@ -39,12 +39,8 @@ class ApprovalModalComponent extends React.PureComponent<StateProps & DispatchPr
         </div>
         <div className={`${Classes.DIALOG_FOOTER}`}>
           <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
-            <Button onClick={onClose} iconName="arrow-left">
-              Cancel
-            </Button>
-            <Button intent={Intent.SUCCESS} onClick={this.onConfirm} iconName="tick">
-              Confirm Approval
-            </Button>
+            <Button onClick={onClose} icon="arrow-left" text="Cancel" />
+            <Button intent={Intent.SUCCESS} onClick={this.onConfirm} icon="tick" text="Confirm Approval" />
           </div>
         </div>
       </Dialog>

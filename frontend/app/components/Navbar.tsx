@@ -25,7 +25,7 @@ const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<a
   <Link to={to}>
     <Button
       className="pt-minimal"
-      iconName={icon}
+      icon={icon}
       active={location.pathname === to || location.pathname.startsWith(`${to}/`)}
     >
       {text}
@@ -68,7 +68,7 @@ const NavbarComponent: React.SFC<StateProps & DispatchProps> = ({ isDarkMode, to
     </div>
     <div className="pt-navbar-group">
       <Username />
-      <Button className="pt-minimal" iconName={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
+      <Button className="pt-minimal" icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
     </div>
   </nav>
 );

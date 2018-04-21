@@ -30,7 +30,7 @@ class ModerationLogComponent extends React.PureComponent<StateProps & DispatchPr
       <span className="pt-monospace-text">
         <MatchOpens time={row.at} />
       </span>
-      <Icon iconName={row.added ? 'add' : 'remove'} />
+      <Icon icon={row.added ? 'add' : 'remove'} />
       <span>{row.permission}</span>
       <span className="moderation-log-entry-affected">/u/{row.username}</span>
     </Tag>
@@ -48,7 +48,7 @@ class ModerationLogComponent extends React.PureComponent<StateProps & DispatchPr
             <h5>{this.props.error}</h5>
           </div>
         </If>
-        <Button disabled={this.props.fetching} onClick={this.props.refresh} iconName="refresh" intent={Intent.SUCCESS}>
+        <Button disabled={this.props.fetching} onClick={this.props.refresh} icon="refresh" intent={Intent.SUCCESS}>
           Refresh
         </Button>
       </div>

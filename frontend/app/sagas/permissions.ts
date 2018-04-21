@@ -122,7 +122,7 @@ function* addPermission(action: Action<string>): SagaIterator {
 
     AppToaster.show({
       intent: Intent.DANGER,
-      iconName: 'warning-sign',
+      icon: 'warning-sign',
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
@@ -165,7 +165,7 @@ function* removePermission(): SagaIterator {
 
     AppToaster.show({
       intent: Intent.DANGER,
-      iconName: 'warning-sign',
+      icon: 'warning-sign',
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message

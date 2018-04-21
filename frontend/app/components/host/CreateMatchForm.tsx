@@ -133,7 +133,7 @@ class CreateMatchFormComponent extends React.Component<
             timePickerProps={this.timeProps()}
           >
             <div className="pt-callout pt-intent-danger pt-icon-warning-sign">
-              <h5>
+              <h5 className="pt-callout-title">
                 <span> All times must be entered as </span>
                 <a href="https://time.is/compare/UTC" target="_blank">
                   UTC
@@ -305,7 +305,7 @@ class CreateMatchFormComponent extends React.Component<
           <Button
             type="submit"
             disabled={disabledAsync || !valid}
-            iconName="cloud-upload"
+            icon="cloud-upload"
             loading={submitting}
             intent={valid ? Intent.SUCCESS : Intent.WARNING}
           >

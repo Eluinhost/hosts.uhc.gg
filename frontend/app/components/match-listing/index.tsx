@@ -139,7 +139,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
             loading={this.props.loading}
             disabled={this.props.loading}
             onClick={this.props.loadMore}
-            iconName="refresh"
+            icon="refresh"
             intent={Intent.SUCCESS}
             text="Load more"
           />

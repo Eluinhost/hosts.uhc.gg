@@ -3,9 +3,8 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { connect } from 'react-redux';
 import { Settings } from '../../actions';
-import { Popover2 } from '@blueprintjs/labs';
 import * as moment from 'moment-timezone';
-import { Button, MenuItem } from '@blueprintjs/core';
+import { Popover, Button, MenuItem, Position } from '@blueprintjs/core';
 import { contains, toLower, filter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
@@ -90,19 +89,15 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
           <If condition={this.state.open}>
             <Button
               text={this.props.is12h ? '12h' : '24h'}
-              iconName="time"
+              icon="time"
               className="pt-minimal pt-large"
               onClick={this.props.toggleTimeFormat}
             />
           </If>
           <If condition={this.state.open}>
             <div style={{ position: 'relative' }}>
-              <Popover2 canEscapeKeyClose inheritDarkTheme lazy minimal inline placement="bottom-end">
-                <Button
-                  text={this.props.timezone}
-                  rightIconName="double-caret-vertical"
-                  className="pt-minimal pt-large"
-                />
+              <Popover canEscapeKeyClose inheritDarkTheme lazy minimal usePortal={false} position={Position.BOTTOM}>
+                <Button text={this.props.timezone} rightIcon="double-caret-vertical" className="pt-minimal pt-large" />
                 <div>
                   <input
                     autoFocus
@@ -121,12 +116,12 @@ class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchPro
                     noRowsRenderer={this.noRows}
                   />
                 </div>
-              </Popover2>
+              </Popover>
             </div>
           </If>
           <Button
             className="toggle-time-settings pt-large pt-minimal"
-            iconName={this.state.open ? 'chevron-right' : 'cog'}
+            icon={this.state.open ? 'chevron-right' : 'cog'}
             onClick={this.toggleOpen}
           />
         </div>

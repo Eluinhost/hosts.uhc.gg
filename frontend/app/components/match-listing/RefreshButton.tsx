@@ -39,7 +39,7 @@ export class RefreshButtonComponent extends React.PureComponent<OwnProps & State
         onClick={this.props.onClick}
         disabled={this.props.loading}
       >
-        <Icon iconName="refresh" /> {buttonContent}
+        <Icon icon="refresh" /> {buttonContent}
       </Button>
     );
   }

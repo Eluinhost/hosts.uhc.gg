@@ -40,7 +40,7 @@ const SetRulesDialogComponent: React.SFC<
   SetRulesDialogStateProps & SetRulesDialogDispatchProps & FormProps<SetRulesDialogData, {}, ApplicationState>
 > = ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change, isDarkMode }) => (
   <Dialog
-    iconName="take-action"
+    icon="take-action"
     isOpen={isOpen}
     onClose={close}
     title="Modify Rules"
@@ -54,10 +54,10 @@ const SetRulesDialogComponent: React.SFC<
     </div>
     <div className="pt-dialog-footer">
       <div className="pt-dialog-footer-actions">
-        <Button onClick={close} iconName="arrow-left">
+        <Button onClick={close} icon="arrow-left">
           Cancel
         </Button>
-        <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} iconName="add">
+        <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
           Update Rules
         </Button>
       </div>

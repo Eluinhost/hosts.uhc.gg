@@ -1,4 +1,4 @@
-import { ISelectItemRendererProps, Select } from '@blueprintjs/labs';
+import { IItemRendererProps, ISelectProps, Select } from '@blueprintjs/select';
 import * as React from 'react';
 import { Button, MenuItem, Classes } from '@blueprintjs/core';
 import { Redirect } from 'react-router';
@@ -11,7 +11,9 @@ type UsernameEntry = {
   readonly uuid: string;
 };
 
-const UsernameEntrySelect: new () => Select<UsernameEntry> = Select.ofType<UsernameEntry>();
+const UsernameEntrySelect: new (props: ISelectProps<UsernameEntry>) => Select<UsernameEntry> = Select.ofType<
+  UsernameEntry
+>();
 
 type State = {
   readonly loading: boolean;
@@ -30,17 +32,18 @@ export class UsernameSearcher extends React.Component<{}, State> {
 
   noResults = () => {
     if (this.state.loading) return <MenuItem disabled text="Loading...." />;
-    else return <MenuItem disabled text="No results." />;
+
+    return <MenuItem disabled text="No results." />;
   };
 
-  renderItem = ({ handleClick, isActive, item }: ISelectItemRendererProps<UsernameEntry>) => {
+  renderItem = ({ uuid, username }: UsernameEntry, { handleClick, modifiers }: IItemRendererProps) => {
     return (
       <MenuItem
-        className={isActive ? Classes.ACTIVE : ''}
-        label={item.uuid}
-        key={item.username + ' | ' + item.uuid}
+        className={modifiers.active ? Classes.ACTIVE : ''}
+        label={uuid}
+        key={username + ' | ' + uuid}
         onClick={handleClick}
-        text={item.username}
+        text={username}
       />
     );
   };
@@ -74,7 +77,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
           loading: false,
         }),
       )
-      .catch(err =>
+      .catch(() =>
         this.setState({
           loading: false, // TODO errors
         }),
@@ -102,7 +105,9 @@ export class UsernameSearcher extends React.Component<{}, State> {
       });
 
       return;
-    } else if (value.trim() === '') {
+    }
+
+    if (value.trim() === '') {
       this.setState({
         loading: false,
         items: [],
@@ -124,7 +129,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
         inputProps={{ onChange: this.debouncedChange }}
         popoverProps={{ popoverClassName: Classes.MINIMAL }}
       >
-        <Button rightIconName="caret-down" text="Show full ban history for username/UUID" />
+        <Button rightIcon="caret-down" text="Show full ban history for username/UUID" />
       </UsernameEntrySelect>
     );
   }

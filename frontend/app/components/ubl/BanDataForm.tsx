@@ -67,7 +67,7 @@ export const BanDataFormComponent: React.SFC<StrictFormProps<BanData, {}, Applic
       <Button
         type="submit"
         disabled={!valid}
-        iconName="take-action"
+        icon="take-action"
         loading={submitting}
         intent={valid ? Intent.SUCCESS : Intent.WARNING}
       >

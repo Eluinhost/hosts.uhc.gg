@@ -54,7 +54,7 @@ const createUsernameNode = (permission: string, username: string): UsernameNode 
   id: `p~${permission}~u~${username}`,
   label: username,
   type: 'username',
-  iconName: 'user',
+  icon: 'user',
   className: 'username-node',
 });
 
@@ -78,7 +78,7 @@ const createPermissionFolder = (permission: string, count: number): PermissionFo
   hasCaret: true,
   isFetching: false,
   isExpanded: false,
-  iconName: 'folder-close',
+  icon: 'folder-close',
   type: 'permission',
   childNodes: [],
   className: 'permission-folder-node',
@@ -91,7 +91,7 @@ const createLetterFolder = (permission: string, letter: string, count: number): 
   id: `p~${permission}~l~${letter}`,
   label: `${letter} (${count})`,
   hasCaret: true,
-  iconName: 'folder-close',
+  icon: 'folder-close',
   isFetching: false,
   isExpanded: false,
   type: 'letter',
@@ -257,7 +257,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
       return <PermissionFolder>{
         ...node,
         isExpanded: true,
-        iconName: 'folder-open',
+        icon: 'folder-open',
       };
     }),
   }))
@@ -269,7 +269,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
       return <PermissionFolder>{
         ...node,
         isExpanded: false,
-        iconName: 'folder-close',
+        icon: 'folder-close',
       };
     }),
   }))
@@ -287,7 +287,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
           return <LetterFolder>{
             ...letterNode,
             isExpanded: true,
-            iconName: 'folder-open',
+            icon: 'folder-open',
           };
         }),
       };
@@ -306,7 +306,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
           return <LetterFolder>{
             ...letterNode,
             isExpanded: false,
-            iconName: 'folder-close',
+            icon: 'folder-close',
           };
         }),
       };

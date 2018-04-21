@@ -31,7 +31,7 @@ class RemovalModalComponent extends React.PureComponent<
 
     return (
       <Dialog
-        iconName="delete"
+        icon="delete"
         isOpen={id !== null}
         onClose={close}
         title="Remove match"
@@ -54,10 +54,10 @@ class RemovalModalComponent extends React.PureComponent<
         </div>
         <div className={`${Classes.DIALOG_FOOTER}`}>
           <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
-            <Button onClick={onClose} iconName="arrow-left">
+            <Button onClick={onClose} icon="arrow-left">
               Cancel
             </Button>
-            <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={invalid || submitting} iconName="delete">
+            <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={invalid || submitting} icon="delete">
               Confirm Removal
             </Button>
           </div>

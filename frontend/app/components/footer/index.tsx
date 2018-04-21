@@ -17,13 +17,7 @@ class FooterComponent extends React.PureComponent<StateProps> {
     return (
       <div className={`${Classes.CARD} application-footer`}>
         <div className={`${Classes.MINIMAL} application-footer-left`}>
-          <AnchorButton
-            href="https://uhc.gg/discord"
-            intent={intent}
-            className={`${Classes.MINIMAL}`}
-            iconName="comment"
-            target="_blank"
-          >
+          <AnchorButton href="https://uhc.gg/discord" intent={intent} icon="comment" minimal target="_blank">
             Discord
           </AnchorButton>
         </div>
@@ -31,7 +25,7 @@ class FooterComponent extends React.PureComponent<StateProps> {
           <AnchorButton
             href="https://github.com/Eluinhost/hosts.uhc.gg"
             intent={intent}
-            iconName="git-repo"
+            icon="git-repo"
             target="_blank"
           >
             Source
@@ -39,12 +33,12 @@ class FooterComponent extends React.PureComponent<StateProps> {
           <AnchorButton
             href="https://github.com/Eluinhost/hosts.uhc.gg/issues"
             intent={intent}
-            iconName="issue"
+            icon="issue"
             target="_blank"
           >
             Issues
           </AnchorButton>
-          <AnchorButton href="/api/docs/" intent={intent} iconName="build" target="_blank">
+          <AnchorButton href="/api/docs/" intent={intent} icon="build" target="_blank">
             API
           </AnchorButton>
         </div>

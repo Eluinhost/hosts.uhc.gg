@@ -29,7 +29,7 @@ const AddPermissionDialogComponent: React.SFC<
     FormProps<AddPermissionDialogData, {}, ApplicationState>
 > = ({ handleSubmit, submitting, invalid, close, state, isDarkMode }) => (
   <Dialog
-    iconName="add"
+    icon="add"
     isOpen={!!state}
     onClose={close}
     title={`Add '${state ? state.permission : 'NOT OPEN'}' role`}
@@ -42,10 +42,10 @@ const AddPermissionDialogComponent: React.SFC<
     </div>
     <div className="pt-dialog-footer">
       <div className="pt-dialog-footer-actions">
-        <Button onClick={close} iconName="arrow-left">
+        <Button onClick={close} icon="arrow-left">
           Cancel
         </Button>
-        <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} iconName="add">
+        <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
           Add Permission
         </Button>
       </div>

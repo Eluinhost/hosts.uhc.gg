@@ -1,6 +1,6 @@
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
-import { Tab2, Tabs2 } from '@blueprintjs/core';
+import { Tab, Tabs } from '@blueprintjs/core';
 import * as React from 'react';
 import * as snuownd from 'snuownd';
 import { If } from '../If';
@@ -28,10 +28,10 @@ const RulesFieldComponent: React.SFC<WrappedFieldProps<any> & RulesFieldProps> =
       <If condition={!!props.label}>
         <RenderLabel label={props.label!} required={props.required} />
       </If>
-      <Tabs2 id="rules-form-tabs">
-        <Tab2 id="rules-form-rules" title="Template" panel={<RulesTab {...props} />} />
-        <Tab2 id="rules-form-preview" title="Preview" panel={<PreviewTab {...props} />} />
-      </Tabs2>
+      <Tabs id="rules-form-tabs">
+        <Tab id="rules-form-rules" title="Template" panel={<RulesTab {...props} />} />
+        <Tab id="rules-form-preview" title="Preview" panel={<PreviewTab {...props} />} />
+      </Tabs>
     </div>
     <RenderErrors {...props.meta} />
   </FieldWrapper>

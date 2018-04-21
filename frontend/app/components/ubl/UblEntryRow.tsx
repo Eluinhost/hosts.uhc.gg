@@ -109,7 +109,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           <Button
             intent={Intent.PRIMARY}
             className="pt-minimal"
-            iconName="take-action"
+            icon="take-action"
             title="Open case link"
             disabled={this.props.disabled}
           />
@@ -121,7 +121,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
       <Button
         intent={Intent.DANGER}
         className="pt-minimal"
-        iconName="take-action"
+        icon="take-action"
         title="No case link available"
         disabled={this.props.disabled}
       />
@@ -160,7 +160,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
                 <Button
                   intent={Intent.WARNING}
                   className="pt-minimal"
-                  iconName="edit"
+                  icon="edit"
                   title="Modify Ban"
                   onClick={this.openEditDialog}
                   disabled={this.props.disabled}
@@ -168,7 +168,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
                 <Button
                   intent={Intent.DANGER}
                   className="pt-minimal"
-                  iconName="trash"
+                  icon="trash"
                   title="Delete Ban"
                   onClick={this.openDeleteDialog}
                   disabled={this.props.disabled}
@@ -181,7 +181,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           title="Edit Ban"
           className={this.props.isDarkMode ? 'pt-dark' : ''}
           isOpen={this.state.isEditOpen}
-          iconName="trash"
+          icon="trash"
           onClose={this.closeEditDialog}
         >
           <div className="pt-dialog-body">
@@ -198,7 +198,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           title="Delete Ban"
           className={this.props.isDarkMode ? 'pt-dark' : ''}
           isOpen={this.state.isDeleteOpen}
-          iconName="trash"
+          icon="trash"
           onClose={this.closeDeleteDialog}
         >
           <div className="pt-dialog-body">
@@ -210,7 +210,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           <div className="pt-dialog-footer">
             <div className="pt-dialog-footer-actions">
               <Button text="Close" onClick={this.closeDeleteDialog} />
-              <Button intent={Intent.DANGER} onClick={this.confirmDelete} text="Delete" iconName="trash" />
+              <Button intent={Intent.DANGER} onClick={this.confirmDelete} text="Delete" icon="trash" />
             </div>
           </div>
         </Dialog>

@@ -21,7 +21,7 @@ $dark-input-shadow-color-focus: $pt-intent-danger
 $pt-dark-link-color: $pt-intent-danger
 
 @import "~@blueprintjs/core/src/blueprint.scss"
-@import "~@blueprintjs/labs/src/blueprint-labs.scss"
+@import "~@blueprintjs/icons/lib/css/blueprint-icons.css"
 
 .pt-dark .pt-dialog-header
   background-color: $dark-card-background-color
@@ -276,15 +276,11 @@ a.match-row-link:hover
     min-width: 50%
 
 .editable-permission-node:hover
-  &.permission-folder-node
-    > div > span.pt-tree-node-icon:before
-      content: $pt-icon-add
-      color: $pt-intent-success
+  &.permission-folder-node > div > svg
+    color: $pt-intent-success
 
-  .username-node:hover
-    > div > span.pt-tree-node-icon:before
-      content: $pt-icon-remove
-      color: $pt-intent-danger
+  .username-node:hover > div > svg
+    color: $pt-intent-danger
 
 .hosting-rules
   margin-bottom: 10px

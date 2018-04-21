@@ -3,7 +3,7 @@ import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import * as Mark from 'markup-js';
 import * as moment from 'moment-timezone';
-import { Button, Intent, Tab2, Tabs2 } from '@blueprintjs/core';
+import { Button, Intent, Tab, Tabs } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
 import { memoize } from 'ramda';
 import { If } from '../If';
@@ -85,7 +85,7 @@ const HelpTab: React.SFC<WrappedFieldProps<any> & TemplateFieldProps> = ({ input
       </a>
       <span> for generating content. Here are some template examples:</span>
     </div>
-    <table className="pt-table pt-bordered pt-condensed pt-striped">
+    <table className="pt-html-table pt-html-table-bordered pt-small pt-html-table-striped">
       <thead>
         <tr>
           <th>Example</th>
@@ -146,12 +146,12 @@ class TemplateFieldComponent extends React.Component<
           <If condition={!!this.props.label}>
             <RenderLabel label={this.props.label!} required={this.props.required} />
           </If>
-          <Tabs2 id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
-            <Tab2 id="host-form-template-tab-template" title="Template" panel={Template} />
-            <Tab2 id="host-form-template-tab-preview" title="Preview" panel={Preview} />
-            <Tab2 id="host-form-template-tab-help" title="Help" panel={Help} />
-            <Tab2 id="host-form-template-tab-presets" title="Presets" panel={Presets} />
-          </Tabs2>
+          <Tabs id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
+            <Tab id="host-form-template-tab-template" title="Template" panel={Template} />
+            <Tab id="host-form-template-tab-preview" title="Preview" panel={Preview} />
+            <Tab id="host-form-template-tab-help" title="Help" panel={Help} />
+            <Tab id="host-form-template-tab-presets" title="Presets" panel={Presets} />
+          </Tabs>
         </div>
         <RenderErrors {...this.props.meta} />
       </FieldWrapper>

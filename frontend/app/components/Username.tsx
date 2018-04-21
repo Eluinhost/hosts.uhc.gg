@@ -23,9 +23,9 @@ type DispatchProps = {
 const UserMenu: React.SFC<DispatchProps> = ({ logout }) => (
   <Menu>
     <Link to="/profile">
-      <MenuItem iconName="cog" text="Profile" />
+      <MenuItem icon="cog" text="Profile" />
     </Link>
-    <MenuItem iconName="log-out" onClick={logout} text="Logout" />
+    <MenuItem icon="log-out" onClick={logout} text="Logout" />
   </Menu>
 );
 

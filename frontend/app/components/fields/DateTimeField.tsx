@@ -63,7 +63,16 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
             {children}
           </div>
         </DatePicker>
-        <Overlay isOpen={!!disabled} inline autoFocus={false} canEscapeKeyClose={false} canOutsideClickClose={false} />
+        <Overlay
+          hasBackdrop
+          isOpen={!!disabled}
+          usePortal={false}
+          autoFocus={false}
+          canEscapeKeyClose={false}
+          canOutsideClickClose={false}
+        >
+          <div />
+        </Overlay>
       </FieldWrapper>
     );
   }

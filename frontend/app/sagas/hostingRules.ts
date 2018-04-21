@@ -44,7 +44,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
 
     AppToaster.show({
       intent: Intent.SUCCESS,
-      iconName: 'tick',
+      icon: 'tick',
       message: `Updated hosting rules`,
     });
   } catch (error) {
@@ -52,7 +52,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     yield effects.put(SetHostingRules.failure({ parameters, error }));
     AppToaster.show({
       intent: Intent.DANGER,
-      iconName: 'warning-sign',
+      icon: 'warning-sign',
       message:
         error instanceof ApiErrors.BadDataError
           ? `Failed to update hosting rules: ${error.message}`

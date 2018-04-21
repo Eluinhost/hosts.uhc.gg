@@ -21,13 +21,7 @@ type RemovePermissionDialogStateProps = {
 const RemovePermissionDialogComponent: React.SFC<
   RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & FormProps<{}, {}, ApplicationState>
 > = ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
-  <Dialog
-    iconName="remove"
-    isOpen={!!state}
-    onClose={close}
-    title="Remove role"
-    className={isDarkMode ? 'pt-dark' : ''}
-  >
+  <Dialog icon="remove" isOpen={!!state} onClose={close} title="Remove role" className={isDarkMode ? 'pt-dark' : ''}>
     <div className="pt-dialog-body remove-permission-body">
       <h5>
         Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
@@ -38,10 +32,10 @@ const RemovePermissionDialogComponent: React.SFC<
     </div>
     <div className="pt-dialog-footer">
       <div className="pt-dialog-footer-actions">
-        <Button onClick={close} iconName="arrow-left">
+        <Button onClick={close} icon="arrow-left">
           Cancel
         </Button>
-        <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} iconName="remove">
+        <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon="remove">
           Remove permission
         </Button>
       </div>

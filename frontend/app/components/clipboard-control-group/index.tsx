@@ -33,7 +33,7 @@ export class ClipboardControlGroup extends React.PureComponent<Props> {
     return (
       <div className="pt-control-group pt-large pt-fill">
         <input type="text" className="pt-input pt-large" value={this.props.value} readOnly ref={this.saveRef} />
-        <Button iconName="clipboard" className="pt-large pt-minimal pt-fixed" onClick={this.triggerCopy} />
+        <Button large minimal icon="clipboard" className="pt-fixed" onClick={this.triggerCopy} />
       </div>
     );
   }

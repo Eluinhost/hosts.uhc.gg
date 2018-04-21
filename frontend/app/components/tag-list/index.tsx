@@ -5,13 +5,13 @@ type Props = {
   readonly intent: Intent;
   readonly title: string;
   readonly items: string[];
-  readonly iconName?: IconName;
+  readonly icon?: IconName;
 };
 
 export class TagList extends React.PureComponent<Props> {
   private renderItem = (item: string, index: number): React.ReactElement<any> => (
     <Tag key={index} intent={this.props.intent} className={`${Classes.LARGE}`}>
-      <Icon iconName={this.props.iconName} /> {item}
+      <Icon icon={this.props.icon} /> {item}
     </Tag>
   );
 

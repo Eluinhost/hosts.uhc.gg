@@ -32,7 +32,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
 
     AppToaster.show({
       intent: Intent.SUCCESS,
-      iconName: 'tick',
+      icon: 'tick',
       message: `Removed match #${parameters.id}`,
     });
   } catch (error) {
@@ -48,7 +48,7 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
 
     AppToaster.show({
       intent: Intent.DANGER,
-      iconName: 'warning-sign',
+      icon: 'warning-sign',
       message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to remove match #${parameters.id}`,
     });
   }
