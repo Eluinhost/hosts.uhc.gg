@@ -24,7 +24,7 @@ export const TeamStyles: TeamStyle[] = [
   new TeamStyle('Random', 'random', true),
   new TeamStyle('Captains', 'captains', true),
   new TeamStyle('Picked', 'picked', true),
-  new TeamStyle('SlaveMarket', 'market', false),
+  new TeamStyle('Auction', 'market', false),
   new TeamStyle('Mystery', 'mystery', true),
   new TeamStyle('Red vs Blue', 'rvb', false),
   new TeamStyle('Custom', 'custom', false),

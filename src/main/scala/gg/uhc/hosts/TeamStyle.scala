@@ -24,7 +24,7 @@ object TeamStyles {
   val random      = SizedTeamStyle("Random", "random")
   val captains    = SizedTeamStyle("Captains", "captains")
   val picked      = SizedTeamStyle("Picked", "picked")
-  val slaveMarket = SimpleTeamStyle("SlaveMarket", "market")
+  val slaveMarket = SimpleTeamStyle("Auction", "market")
   val mystery     = SizedTeamStyle("Mystery", "mystery")
   val rvb         = SimpleTeamStyle("Red Vs Blue", "rvb")
   val custom      = CustomTeamStyle
