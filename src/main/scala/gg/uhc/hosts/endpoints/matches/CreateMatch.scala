@@ -66,8 +66,8 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       length = payload.length,
       mapSize = payload.mapSize,
       pvpEnabledAt = payload.pvpEnabledAt,
-      scenarios = payload.scenarios.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
-      tags = payload.tags.groupBy(_.toLowerCase).map(_._2.head).toList, // removes duplicates
+      scenarios = payload.scenarios.distinctBy(_.toLowerCase), // removes duplicates
+      tags = payload.tags.distinctBy(_.toLowerCase), // removes duplicates
       tournament = payload.tournament,
       // non-user payload.vars below
       id = -1,
