@@ -17,7 +17,7 @@ class MatchesRoute(
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
-      segment.flatMap { string ⇒
+      segment.flatMap { string =>
         Try {
           System.out.println(string)
           System.out.println(Instant.parse(string))
@@ -30,14 +30,14 @@ class MatchesRoute(
     concat(
       (pathEndOrSingleSlash & post)(createMatch()),
       (get & path("upcoming"))(listMatches()),
-      pathPrefix(IntNumber) { id ⇒
+      pathPrefix(IntNumber) { id =>
         concat(
           (post & path("approve"))(approveMatch(id)),
           (get & pathEndOrSingleSlash)(showMatch(id)),
           (delete & pathEndOrSingleSlash)(removeMatch(id))
         )
       },
-      (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant)) { (region, date) ⇒
+      (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant)) { (region, date) =>
         checkConflicts(region, date)
       }
     )

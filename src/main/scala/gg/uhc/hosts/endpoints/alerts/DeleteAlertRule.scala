@@ -11,11 +11,11 @@ class DeleteAlertRule(customDirectives: CustomDirectives, database: Database) {
 
   def apply(id: Long): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { session ⇒
+      requireAuthentication { session =>
         requirePermission("hosting advisor", session.username) {
           requireSucessfulQuery(database.deleteAlertRule(id)) {
-            case 0 ⇒ complete(StatusCodes.NotFound) // None updated
-            case _ ⇒ complete(StatusCodes.NoContent)
+            case 0 => complete(StatusCodes.NotFound) // None updated
+            case _ => complete(StatusCodes.NoContent)
           }
         }
       }

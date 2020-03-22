@@ -5,9 +5,8 @@ import gg.uhc.hosts.database.MatchRow
 import io.circe.JsonObject
 import io.circe.syntax._
 import io.circe.generic.AutoDerivation
-import io.circe.java8.time.TimeInstances
 
-trait CustomJsonCodec extends FailFastCirceSupport with AutoDerivation with TimeInstances
+trait CustomJsonCodec extends FailFastCirceSupport with AutoDerivation
 
 object CustomJsonCodec extends CustomJsonCodec {
   implicit class MatchRowExtensions(m: MatchRow) {

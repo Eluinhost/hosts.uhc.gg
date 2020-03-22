@@ -17,7 +17,7 @@ class UblRoute(
 
   implicit class SegmentExtensions(segment: PathMatcher1[String]) {
     def asUuid: PathMatcher1[UUID] =
-      segment.flatMap { string ⇒
+      segment.flatMap { string =>
         Try {
           UUID.fromString(string)
         }.toOption

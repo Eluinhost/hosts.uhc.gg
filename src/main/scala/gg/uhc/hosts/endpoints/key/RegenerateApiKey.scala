@@ -13,8 +13,8 @@ class RegenerateApiKey(directives: CustomDirectives, database: Database) {
   case class Response(key: String)
 
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
-    requireJwtAuthentication { authentication ⇒
-      requireSucessfulQuery(database.regnerateApiKey(authentication.username)) { key ⇒
+    requireJwtAuthentication { authentication =>
+      requireSucessfulQuery(database.regnerateApiKey(authentication.username)) { key =>
         complete(Response(key))
       }
     }

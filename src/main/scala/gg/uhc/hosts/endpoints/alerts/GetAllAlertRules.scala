@@ -13,10 +13,10 @@ class GetAllAlertRules(customDirectives: CustomDirectives, database: Database) {
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { session ⇒
+      requireAuthentication { session =>
         requirePermission("hosting advisor", session.username) {
-          requireSucessfulQuery(database.getAllAlertRules()) { rules ⇒
-            complete(StatusCodes.OK → rules)
+          requireSucessfulQuery(database.getAllAlertRules()) { rules =>
+            complete(StatusCodes.OK -> rules)
           }
         }
       }

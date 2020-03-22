@@ -18,7 +18,7 @@ class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
       val start = date.minus(15, ChronoUnit.MINUTES)
       val end = date.plus(15, ChronoUnit.MINUTES)
 
-      requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(start, end, region.toUpperCase)) { conflicts ⇒
+      requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(start, end, region.toUpperCase)) { conflicts =>
         complete(conflicts)
       }
     }

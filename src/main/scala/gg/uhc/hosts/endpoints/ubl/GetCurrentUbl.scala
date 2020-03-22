@@ -13,8 +13,8 @@ class GetCurrentUbl(directives: CustomDirectives, database: Database, cache: Bas
 
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
     onComplete(cache.getCurrentUbl) {
-      case Success(value) ⇒ complete(value)
-      case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
+      case Success(value) => complete(value)
+      case Failure(t)     => reject(DatabaseErrorRejection(t))
     }
   }
 }

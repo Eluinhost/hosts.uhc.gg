@@ -23,10 +23,10 @@ class PermissionsRoute(
     concat(
       (get & pathEndOrSingleSlash)(listUserCountForEachPermission()),
       (get & path("log"))(permissionModerationLog()),
-      pathPrefix(Segment) { permission ⇒
+      pathPrefix(Segment) { permission =>
         concat(
           (get & pathEndOrSingleSlash)(listUsersInPermission(permission)),
-          path(Segment) { segment ⇒
+          path(Segment) { segment =>
             concat(
               post(addPermission(username = segment, permission = permission)),
               delete(removePermission(username = segment, permission = permission)),

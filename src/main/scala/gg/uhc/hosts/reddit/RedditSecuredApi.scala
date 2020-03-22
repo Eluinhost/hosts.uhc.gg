@@ -23,9 +23,9 @@ class RedditSecuredApi(queueSize: Int)
     actorSystem.log.debug(s"Fetching username using access token $accessToken, request $request")
 
     for {
-      response ← queueRequest(request)
+      response <- queueRequest(request)
       if response.status == StatusCodes.OK
-      parsed ← Unmarshal(response).to[MeResponse]
+      parsed <- Unmarshal(response).to[MeResponse]
     } yield parsed.name
   }
 }

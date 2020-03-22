@@ -11,11 +11,11 @@ class GetHostingHistory(directives: CustomDirectives, database: Database) {
   import directives._
 
   def apply(host: String): Route =
-    parameters(('before.as[Long].?, 'count ? 20)) { (before, count) ⇒
+    parameters(("before".as[Long].?, "count" ? 20)) { (before, count) =>
       handleRejections(EndpointRejectionHandler()) {
         validate(count >= 1 && count <= 50, "Count must be between 1-50") {
-          requireSucessfulQuery(database.getHostingHistory(host, before, count)) { history ⇒
-            requireSucessfulQuery(database.getPermissions(host)) { roles ⇒
+          requireSucessfulQuery(database.getHostingHistory(host, before, count)) { history =>
+            requireSucessfulQuery(database.getPermissions(host)) { roles =>
               complete(history.map(_.toJsonWithRoles(roles)))
             }
           }

@@ -10,8 +10,8 @@ object Permissions {
 
   // Map of user permission to allowed permissions for adding/removal
   val allowedModifications: Map[String, List[String]] = Map(
-    "hosting advisor" → List("trial host", "host", "hosting banned"),
-    "admin"           → base.filter(_ != "admin")
+    "hosting advisor" -> List("trial host", "host", "hosting banned"),
+    "admin"           -> base.filter(_ != "admin")
   )
 
   def requireCanModifyPermission(userPermissions: List[String], attempting: String): Directive0 = {

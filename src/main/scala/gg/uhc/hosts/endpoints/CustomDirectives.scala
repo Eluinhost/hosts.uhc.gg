@@ -7,26 +7,26 @@ import akka.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2Be
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.Credentials
 import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
+import cats.data.OptionT
 import doobie.free.connection
-import doobie.imports._
+import doobie._
 import gg.uhc.hosts.authentication.Session.{Authenticated, RefreshToken}
 import gg.uhc.hosts.database.Database
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import scalaz.OptionT
 
 class CustomDirectives(database: Database) {
   def requireRemoteIp: Directive1[InetAddress] =
     extractClientIP flatMap {
-      case RemoteAddress.Unknown   ⇒ reject(MissingIpErrorRejection())
-      case RemoteAddress.IP(ip, _) ⇒ provide(ip)
+      case RemoteAddress.Unknown   => reject(MissingIpErrorRejection())
+      case RemoteAddress.IP(ip, _) => provide(ip)
     }
 
   def checkHasAtLeastOnePermission(permissions: Iterable[String], username: String): Directive1[Boolean] =
     requireSucessfulQuery(database.getPermissions(username)).flatMap {
-      case l if l.intersect(permissions.toList).nonEmpty ⇒ provide(true)
-      case _                                             ⇒ provide(false)
+      case l if l.intersect(permissions.toList).nonEmpty => provide(true)
+      case _                                             => provide(false)
     }
 
   def checkHasPermission(permission: String, username: String): Directive1[Boolean] =
@@ -34,8 +34,8 @@ class CustomDirectives(database: Database) {
 
   def requireAtLeastOnePermission(permissions: Iterable[String], username: String): Directive0 =
     checkHasAtLeastOnePermission(permissions, username) flatMap {
-      case true ⇒ pass
-      case false ⇒
+      case true => pass
+      case false =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsRejected,
@@ -52,8 +52,8 @@ class CustomDirectives(database: Database) {
     */
   val optionalJwtAuthentication: Directive1[Option[Authenticated]] =
     optionalHeaderValuePF {
-      case Authorization(OAuth2BearerToken(token)) ⇒ token
-    } flatMap { maybeToken ⇒
+      case Authorization(OAuth2BearerToken(token)) => token
+    } flatMap { maybeToken =>
       provide(maybeToken.flatMap(Authenticated.fromJwt))
     }
 
@@ -62,9 +62,9 @@ class CustomDirectives(database: Database) {
     */
   val requireJwtAuthentication: Directive1[Authenticated] =
     optionalJwtAuthentication.flatMap {
-      case Some(token) ⇒
+      case Some(token) =>
         provide(token)
-      case None ⇒
+      case None =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,
@@ -75,16 +75,16 @@ class CustomDirectives(database: Database) {
 
   val optionalRefreshAuthentication: Directive1[Option[RefreshToken]] =
     optionalHeaderValuePF {
-      case Authorization(OAuth2BearerToken(token)) ⇒ token
-    } flatMap { maybeToken ⇒
+      case Authorization(OAuth2BearerToken(token)) => token
+    } flatMap { maybeToken =>
       provide(maybeToken.flatMap(RefreshToken.fromJwt))
     }
 
   val requireRefreshAuthentication: Directive1[RefreshToken] =
     optionalRefreshAuthentication.flatMap {
-      case Some(token) ⇒
+      case Some(token) =>
         provide(token)
-      case None ⇒
+      case None =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,
@@ -95,29 +95,29 @@ class CustomDirectives(database: Database) {
 
   def apiTokenAuthenticator(credentials: Credentials): Future[Option[Authenticated]] =
     credentials match {
-      case p @ Credentials.Provided(id) ⇒
-        val query = (for {
-          key ← OptionT[ConnectionIO, String] {
+      case p @ Credentials.Provided(id) =>
+        val query: OptionT[ConnectionIO, Authenticated] = (for {
+          key <- OptionT[ConnectionIO, String] {
             database.getUserApiKey(id)
           }
-          _ ← OptionT[ConnectionIO, Unit] {
-            if (p.verify(key)) connection.raw(_ ⇒ Some(Unit))
-            else connection.raw(_ ⇒ None)
+          _ <- OptionT[ConnectionIO, Unit] {
+            if (p.verify(key)) connection.raw(_ => Some(()))
+            else connection.raw(_ => None)
           }
-          perms ← OptionT[ConnectionIO, List[String]](
+          perms <- OptionT[ConnectionIO, List[String]](
             database.getPermissions(id).map(Some(_))
           )
-        } yield Authenticated(username = id, permissions = perms)).run
+        } yield Authenticated(username = id, permissions = perms))
 
-        database.run(query)
-      case _ ⇒ Future.successful(None)
+        database.run(query.value)
+      case _ => Future.successful(None)
     }
 
   def requireApiTokenAuthentication: Directive1[Authenticated] =
     optionalApiTokenAuthentication.flatMap {
-      case Some(token) ⇒
+      case Some(token) =>
         provide(token)
-      case None ⇒
+      case None =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,
@@ -131,14 +131,14 @@ class CustomDirectives(database: Database) {
 
   def requireAuthentication: Directive1[Authenticated] =
     optionalJwtAuthentication.flatMap {
-      case Some(a) ⇒ provide(a)
-      case None    ⇒ requireApiTokenAuthentication
+      case Some(a) => provide(a)
+      case None    => requireApiTokenAuthentication
     }
 
   def optionalAuthentication: Directive1[Option[Authenticated]] =
     optionalJwtAuthentication.flatMap {
-      case a @ Some(_) ⇒ provide(a)
-      case None        ⇒ optionalApiTokenAuthentication
+      case a @ Some(_) => provide(a)
+      case None        => optionalApiTokenAuthentication
     }
 
   /**
@@ -146,8 +146,8 @@ class CustomDirectives(database: Database) {
     */
   def requireSucessfulQuery[T](query: ConnectionIO[T]): Directive1[T] = {
     onComplete(database.run(query)) flatMap {
-      case Success(value) ⇒ provide(value)
-      case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
+      case Success(value) => provide(value)
+      case Failure(t)     => reject(DatabaseErrorRejection(t))
     }
   }
 }

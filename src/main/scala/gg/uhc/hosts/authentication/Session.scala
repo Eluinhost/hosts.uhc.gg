@@ -18,8 +18,8 @@ object Session {
   private[this] val config = ConfigFactory.load()
   private[this] val jwtSecret: String    = config.getString("jwt.secret")
   private[this] val jwtAlgorithm: JwtHmacAlgorithm = JwtAlgorithm.fromString(config.getString("jwt.algorithm")) match {
-    case e: JwtHmacAlgorithm ⇒ e
-    case _                   ⇒ throw new IllegalArgumentException("Expected a HMAC algorithm")
+    case e: JwtHmacAlgorithm => e
+    case _                   => throw new IllegalArgumentException("Expected a HMAC algorithm")
   }
   private[this] val authSessionTimeout: Duration    = config.getDuration("jwt.timeout")
   private[this] val refreshSessionTimeout: Duration = config.getDuration("jwt.refreshTimeout")
@@ -38,8 +38,8 @@ object Session {
 
   private[this] def parseTokenContents(jwt: String): Option[Json] =
     for {
-      claim ← JwtCirce.decode(jwt, jwtSecret, Seq(jwtAlgorithm)).toOption
-      json  ← parse(claim.content).toOption
+      claim <- JwtCirce.decode(jwt, jwtSecret, Seq(jwtAlgorithm)).toOption
+      json  <- parse(claim.content).toOption
     } yield json
 
   /**

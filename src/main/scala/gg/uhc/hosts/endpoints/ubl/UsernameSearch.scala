@@ -11,7 +11,7 @@ class UsernameSearch(directives: CustomDirectives, database: Database) {
   import directives._
 
   def apply(username: String): Route = handleRejections(EndpointRejectionHandler()) {
-    requireSucessfulQuery(database.searchUblUsername(username)) { map ⇒
+    requireSucessfulQuery(database.searchUblUsername(username)) { map =>
       complete(map)
     }
   }

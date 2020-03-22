@@ -23,8 +23,8 @@ class ApiConsumer(actorSystemName: String, host: String, queueSize: Int) {
     .throttle(30, 1.minute, 1, ThrottleMode.Shaping)
     .via(pool)
     .toMat(Sink.foreach({
-      case ((Success(response), promise))  ⇒ promise.success(response)
-      case ((Failure(exception), promise)) ⇒ promise.failure(exception)
+      case ((Success(response), promise))  => promise.success(response)
+      case ((Failure(exception), promise)) => promise.failure(exception)
     }))(Keep.left)
     .run()
 
@@ -32,12 +32,12 @@ class ApiConsumer(actorSystemName: String, host: String, queueSize: Int) {
     val promise = Promise[HttpResponse]()
 
     queue
-      .offer(request → promise)
+      .offer(request -> promise)
       .flatMap {
-        case QueueOfferResult.Enqueued    ⇒ promise.future
-        case QueueOfferResult.Dropped     ⇒ Future failed new RuntimeException("Queue overflowed")
-        case QueueOfferResult.Failure(ex) ⇒ Future failed ex
-        case QueueOfferResult.QueueClosed ⇒ Future failed new RuntimeException("Queue closed")
+        case QueueOfferResult.Enqueued    => promise.future
+        case QueueOfferResult.Dropped     => Future failed new RuntimeException("Queue overflowed")
+        case QueueOfferResult.Failure(ex) => Future failed ex
+        case QueueOfferResult.QueueClosed => Future failed new RuntimeException("Queue closed")
       }
   }
 }

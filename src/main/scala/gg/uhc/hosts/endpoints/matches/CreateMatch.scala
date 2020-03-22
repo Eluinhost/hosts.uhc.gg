@@ -11,7 +11,7 @@ import gg.uhc.hosts._
 import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 import doobie.free.connection.delay
-import doobie.imports.ConnectionIO
+import doobie._
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
@@ -93,11 +93,11 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       // Its valid if:
       //  - there are no conflicts
       //  - this is a non-tournament and conflicts are all tournaments
-      case conflicts if conflicts.isEmpty ⇒
+      case conflicts if conflicts.isEmpty =>
         pass
-      case conflicts if !row.tournament && conflicts.forall(_.tournament) ⇒
+      case conflicts if !row.tournament && conflicts.forall(_.tournament) =>
         pass
-      case conflicts ⇒
+      case conflicts =>
         val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
 
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first
@@ -106,9 +106,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours)"))
     }
 
-  private[this] def optionalValidate[T](data: Option[T], message: String)(p: (T ⇒ Boolean)) =
+  private[this] def optionalValidate[T](data: Option[T], message: String)(p: T => Boolean) =
     data
-      .map { item ⇒
+      .map { item =>
         validate(p(item), message)
       }
       .getOrElse(pass)
@@ -121,16 +121,16 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
     if (valIp.isEmpty && valAddress.isEmpty)
       reject(ValidationRejection("Either an IP or an address must be provided (or both)"))
 
-    val ipCheck = optionalValidate(valIp, "Invalid IP supplied, expected format 111.222.333.444[:55555]") { ip ⇒
-      """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(ip).exists { m ⇒
-        val octets = (1 to 4).map(m.group(_).toInt).forall(i ⇒ i >= 0 && i <= 255)
+    val ipCheck = optionalValidate(valIp, "Invalid IP supplied, expected format 111.222.333.444[:55555]") { ip =>
+      """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(ip).exists { m =>
+        val octets = (1 to 4).map(m.group(_).toInt).forall(i => i >= 0 && i <= 255)
         val port   = Option(m.group(5)).map(_.toInt)
 
         octets && (port.isEmpty || port.exists(p => p <= 65535 && p >= 1))
       }
     }
 
-    val addressCheck = optionalValidate(valAddress.map(_.trim), "Address must be at least 5 chars") { address ⇒
+    val addressCheck = optionalValidate(valAddress.map(_.trim), "Address must be at least 5 chars") { address =>
       address.length >= 5
     }
 
@@ -167,7 +167,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(
         // either doesn't require size or size is within range
         !TeamStyles.byCode(row.teams).isInstanceOf[SizedTeamStyle]
-          || row.size.exists(size ⇒ size >= 0 && size <= 32767),
+          || row.size.exists(size => size >= 0 && size <= 32767),
         "Invalid value for size"
       ) &
       validate(
@@ -179,11 +179,11 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   private[this] def createMatchAndAlerts(row: MatchRow): ConnectionIO[MatchRow] =
     for {
-      id       ← database.insertMatch(row)
-      allRules ← database.getAllAlertRules()
+      id       <- database.insertMatch(row)
+      allRules <- database.getAllAlertRules()
       matchedRules = allRules.filter { _.matchesRow(row) }
-      addedAlertCount ← matchedRules.foldLeft(delay(0)) { (prev, rule) ⇒ // reduce to run each in series, one for each alert
-        prev.flatMap { count ⇒
+      addedAlertCount <- matchedRules.foldLeft(delay(0)) { (prev, rule) => // reduce to run each in series, one for each alert
+        prev.flatMap { count =>
           database.createAlert(matchId = id, triggeredRuleId = rule.id).map(_ + count)
         }
       }
@@ -191,15 +191,15 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { session ⇒
+      requireAuthentication { session =>
         requireAtLeastOnePermission("host" :: "trial host" :: Nil, session.username) {
           // parse the entity
-          entity(as[CreateMatchPayload]) { entity ⇒
-            convertPayload(entity, session.username) { row ⇒
+          entity(as[CreateMatchPayload]) { entity =>
+            convertPayload(entity, session.username) { row =>
               validateRow(row) {
-                requireSucessfulQuery(createMatchAndAlerts(row)) { inserted ⇒
+                requireSucessfulQuery(createMatchAndAlerts(row)) { inserted =>
                   cache.invalidateUpcomingMatches()
-                  complete(StatusCodes.Created → inserted)
+                  complete(StatusCodes.Created -> inserted)
                 }
               }
             }

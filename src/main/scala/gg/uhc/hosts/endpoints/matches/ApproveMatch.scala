@@ -11,11 +11,11 @@ class ApproveMatch(customDirectives: CustomDirectives, database: Database, cache
 
   def apply(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { authentication ⇒
+      requireAuthentication { authentication =>
         requirePermission("hosting advisor", authentication.username) {
           requireSucessfulQuery(database.approveMatch(id, authentication.username)) {
-            case false ⇒ complete(StatusCodes.NotFound) // None updated
-            case _     ⇒
+            case false => complete(StatusCodes.NotFound) // None updated
+            case _     =>
               cache.invalidateUpcomingMatches()
               complete(StatusCodes.OK)
           }

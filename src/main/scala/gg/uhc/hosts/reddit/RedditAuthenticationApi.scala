@@ -30,18 +30,18 @@ class RedditAuthenticationApi(clientId: String, secret: String, redirectUri: Str
       method = HttpMethods.POST,
       headers = clientCredentialsHeader :: Nil,
       entity = FormData(
-        "code"         → authCode,
-        "grant_type"   → "authorization_code",
-        "redirect_uri" → redirectUri
+        "code"         -> authCode,
+        "grant_type"   -> "authorization_code",
+        "redirect_uri" -> redirectUri
       ).toEntity
     )
 
     actorSystem.log.debug(s"Fetching access token from auth code $authCode, request $request")
 
     for {
-      response ← queueRequest(request)
+      response <- queueRequest(request)
       if response.status == StatusCodes.OK
-      parsed ← Unmarshal(response).to[AccessTokenResponse]
+      parsed <- Unmarshal(response).to[AccessTokenResponse]
     } yield parsed
   }
 }

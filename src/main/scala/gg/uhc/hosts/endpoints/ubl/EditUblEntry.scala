@@ -13,8 +13,8 @@ class EditUblEntry(directives: CustomDirectives, database: Database, cache: Basi
 
   def getExistingIfExists(id: Long): Directive1[UblRow] =
     requireSucessfulQuery(database.getUblEntry(id)).flatMap {
-      case None      ⇒ complete(StatusCodes.NotFound)
-      case Some(row) ⇒ provide(row)
+      case None      => complete(StatusCodes.NotFound)
+      case Some(row) => provide(row)
     }
 
   def merge(existing: UblRow, edit: UblEntryPayload, username: String): UblRow = existing.copy(
@@ -28,14 +28,14 @@ class EditUblEntry(directives: CustomDirectives, database: Database, cache: Basi
   )
 
   def apply(id: Long): Route = handleRejections(EndpointRejectionHandler()) {
-    requireAuthentication { session ⇒
+    requireAuthentication { session =>
       requirePermission("ubl moderator", session.username) {
-        entity(as[UblEntryPayload]) { entity ⇒
+        entity(as[UblEntryPayload]) { entity =>
           entity.requireValid {
-            getExistingIfExists(id) { existing ⇒
+            getExistingIfExists(id) { existing =>
               val toUpdate = merge(existing, entity, session.username)
 
-              requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ ⇒
+              requireSucessfulQuery(database.editUblEntry(toUpdate)) { _ =>
                 cache.invalidateCurrentUbl()
                 complete(toUpdate)
               }

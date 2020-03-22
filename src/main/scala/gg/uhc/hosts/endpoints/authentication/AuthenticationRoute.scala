@@ -11,7 +11,7 @@ class AuthenticationRoute(
 
   def apply(): Route =
     concat(
-      (pathEndOrSingleSlash & parameter('path ? "/")) { path ⇒
+      (pathEndOrSingleSlash & parameter("path" ? "/")) { path =>
         authenticate(path)
       },
       path("callback")(authenticateCallback()),

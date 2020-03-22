@@ -17,8 +17,8 @@ class ListUpcomingMatches(cache: BasicCache) extends Instrumented {
     (timed(upcomingMatchesTimer) & counting(upcomingMatchesCounter)) {
       handleRejections(EndpointRejectionHandler()) {
         onComplete(cache.getUpcomingMatches) {
-          case Success(value) ⇒ complete(value)
-          case Failure(t)     ⇒ reject(DatabaseErrorRejection(t))
+          case Success(value) => complete(value)
+          case Failure(t)     => reject(DatabaseErrorRejection(t))
         }
       }
     }

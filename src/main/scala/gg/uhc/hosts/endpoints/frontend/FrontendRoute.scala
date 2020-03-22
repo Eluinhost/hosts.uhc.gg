@@ -2,8 +2,8 @@ package gg.uhc.hosts.endpoints.frontend
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akkahttptwirl.TwirlSupport
 import gg.uhc.hosts.database.Database
+import gg.uhc.hosts.endpoints.TwirlSupport
 import play.twirl.api.HtmlFormat
 
 import scala.util.{Failure, Success}
@@ -23,14 +23,14 @@ class FrontendRoute(database: Database) extends TwirlSupport {
       path("outdatedbrowser.html") {
         getFromResource("outdatedbrowser.html")
       },
-      path("m" / IntNumber) { id ⇒
+      path("m" / IntNumber) { id =>
         onComplete(database.run(database.matchById(id))) {
           // if it fails to lookup just return the regular frontend
-          case Failure(_) ⇒ complete(basicFrontend)
+          case Failure(_) => complete(basicFrontend)
           // send the frontend with the basic details about the game for previewers to view
-          case Success(m) ⇒
+          case Success(m) =>
             m.map(_.legacyTitle())
-              .map { title ⇒
+              .map { title =>
                 complete(html.frontend.render(title = title, description = "Match Post"))
               }
               .getOrElse(complete(basicFrontend))

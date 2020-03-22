@@ -32,12 +32,12 @@ class CreateAlertRule(customDirectives: CustomDirectives, database: Database) {
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { session ⇒
+      requireAuthentication { session =>
         requirePermission("hosting advisor", session.username) {
-          entity(as[CreateAlertRulePayload]) { entity ⇒
-            convertPayload(entity, session.username) { row ⇒
-              (validateRow(row) & requireSucessfulQuery(database.createAlertRule(row))) { id ⇒
-                complete(StatusCodes.Created → row.copy(id = id))
+          entity(as[CreateAlertRulePayload]) { entity =>
+            convertPayload(entity, session.username) { row =>
+              (validateRow(row) & requireSucessfulQuery(database.createAlertRule(row))) { id =>
+                complete(StatusCodes.Created -> row.copy(id = id))
               }
             }
           }

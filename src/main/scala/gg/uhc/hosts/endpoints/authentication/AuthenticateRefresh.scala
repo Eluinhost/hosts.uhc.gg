@@ -4,7 +4,7 @@ import java.net.InetAddress
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import doobie.imports.ConnectionIO
+import doobie._
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.authentication.Session
 import gg.uhc.hosts.database.Database
@@ -22,15 +22,15 @@ class AuthenticateRefresh(directives: CustomDirectives, database: Database) {
 
   def dbQuery(username: String, ip: InetAddress): ConnectionIO[List[String]] =
     for {
-      _ ← database.updateAuthenticationLog(username, ip)
-      perms ← database.getPermissions(username)
+      _ <- database.updateAuthenticationLog(username, ip)
+      perms <- database.getPermissions(username)
     } yield perms
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireRefreshAuthentication { refresh ⇒
-        requireRemoteIp { ip ⇒
-          requireSucessfulQuery(dbQuery(refresh.username, ip)) { perms ⇒
+      requireRefreshAuthentication { refresh =>
+        requireRemoteIp { ip =>
+          requireSucessfulQuery(dbQuery(refresh.username, ip)) { perms =>
             complete(
               AuthenticateRefreshResponse(
                 accessToken = Session.Authenticated(username = refresh.username, permissions = perms).toJwt,

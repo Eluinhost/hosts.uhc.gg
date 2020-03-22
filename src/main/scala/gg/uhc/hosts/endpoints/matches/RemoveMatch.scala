@@ -29,9 +29,9 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   def requireOwner(id: Long, username: String): Directive0 =
     requireSucessfulQuery(database.isOwnerOfMatch(id, username)) flatMap {
-      case true ⇒
+      case true =>
         pass
-      case false ⇒
+      case false =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsRejected,
@@ -42,13 +42,13 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   def apply(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireAuthentication { authentication ⇒
+      requireAuthentication { authentication =>
         (requirePermission("hosting advisor", authentication.username) | requireOwner(id, authentication.username)) {
-          entity(as[RemoveMatchPayload]) { data ⇒
+          entity(as[RemoveMatchPayload]) { data =>
             validate(data) {
               requireSucessfulQuery(database.removeMatch(id, data.reason, authentication.username)) {
-                case 0 ⇒ complete(StatusCodes.NotFound) // None updated
-                case _ ⇒
+                case 0 => complete(StatusCodes.NotFound) // None updated
+                case _ =>
                   cache.invalidateUpcomingMatches()
                   complete(StatusCodes.NoContent)
               }

@@ -14,7 +14,7 @@ object EndpointRejectionHandler {
   private[this] case class Op(op: CursorOp)           extends Selection
 
   private[this] def decodingFailure2String(d: DecodingFailure): String = {
-    val selections = d.history.foldRight(List[Selection]()) { (historyOp, sels) ⇒
+    val selections = d.history.foldRight(List[Selection]()) { (historyOp, sels) =>
       (historyOp, sels) match {
         case (DownField(k), _)                   => SelectField(k) :: sels
         case (DownArray, _)                      => SelectIndex(0) :: sels
@@ -39,32 +39,32 @@ object EndpointRejectionHandler {
   val handler: RejectionHandler = RejectionHandler
     .newBuilder()
     .handle {
-      case MissingIpErrorRejection() ⇒
-        complete(StatusCodes.InternalServerError → "Unable to find client IP address")
-      case DatabaseErrorRejection(t) ⇒ // when database explodes
-        extractActorSystem { system ⇒
+      case MissingIpErrorRejection() =>
+        complete(StatusCodes.InternalServerError -> "Unable to find client IP address")
+      case DatabaseErrorRejection(t) => // when database explodes
+        extractActorSystem { system =>
           system.log.error("DB error", t)
           t.printStackTrace()
           complete(StatusCodes.InternalServerError)
         }
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _) ⇒ // when no perms
+      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _) => // when no perms
         complete(StatusCodes.Forbidden)
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsMissing, _) ⇒ // when no session
+      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsMissing, _) => // when no session
         complete(StatusCodes.Unauthorized)
-      case ValidationRejection(m, _) ⇒ // when invalid data
-        complete(StatusCodes.BadRequest → m)
-      case MalformedRequestContentRejection(_, t: DecodingFailure) ⇒
-        extractActorSystem { system ⇒
+      case ValidationRejection(m, _) => // when invalid data
+        complete(StatusCodes.BadRequest -> m)
+      case MalformedRequestContentRejection(_, t: DecodingFailure) =>
+        extractActorSystem { system =>
           system.log.error(t, "Malformed request")
-          complete(StatusCodes.BadRequest → s"Invalid request data: ${decodingFailure2String(t)}")
+          complete(StatusCodes.BadRequest -> s"Invalid request data: ${decodingFailure2String(t)}")
         }
-      case MalformedRequestContentRejection(_, t: ParsingFailure) ⇒
-        extractActorSystem { system ⇒
+      case MalformedRequestContentRejection(_, t: ParsingFailure) =>
+        extractActorSystem { system =>
           system.log.error(t, "Parsing failure")
-          complete(StatusCodes.BadRequest → s"Parsing Failure: ${t.message}")
+          complete(StatusCodes.BadRequest -> s"Parsing Failure: ${t.message}")
         }
-      case t ⇒
-        extractActorSystem { system ⇒
+      case t =>
+        extractActorSystem { system =>
           system.log.error(s"Unknown rejection type $t")
           complete(StatusCodes.InternalServerError)
         }

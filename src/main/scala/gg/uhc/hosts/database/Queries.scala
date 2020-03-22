@@ -5,15 +5,15 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-import doobie.imports._
-import doobie.postgres.imports._
+import doobie._
+import doobie.implicits._
+import doobie.postgres._
+import doobie.postgres.implicits._
+import doobie.postgres.pgisimplicits._
+import doobie.implicits.legacy.instant._
 
-import scalaz.NonEmptyList
+import cats.data.NonEmptyList
 
-/*
-  NOTE - The massive use of .asInstanceOf[Fragment] is not required here for the code to work. It is a fix for the IDE
-  to work correctly, /shrug
- */
 class Queries(logger: LogHandler) {
   private[this] implicit val logHandler: LogHandler = logger
 
@@ -25,7 +25,7 @@ class Queries(logger: LogHandler) {
         removedReason = $reason,
         removedBy = $remover
       WHERE id = $id
-     """.asInstanceOf[Fragment].update
+     """.update
 
   def getUpcomingMatches: Query0[MatchRow] =
     sql"""
@@ -59,7 +59,7 @@ class Queries(logger: LogHandler) {
        FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
-    """.asInstanceOf[Fragment].query[MatchRow]
+    """.query[MatchRow]
 
   def hostingHistory(host: String, before: Option[Long], count: Int): Query0[MatchRow] =
     (
@@ -92,12 +92,12 @@ class Queries(logger: LogHandler) {
           hostingName,
           tournament
         FROM matches
-      """.asInstanceOf[Fragment]
+      """
         ++ Fragments.whereAndOpt(
-          Some(fr"author = $host".asInstanceOf[Fragment]),
-          before.map(b ⇒ fr"id < $b".asInstanceOf[Fragment])
+          Some(fr"author = $host"),
+          before.map(b => fr"id < $b")
         )
-        ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
+        ++ fr" ORDER BY id DESC LIMIT $count"
     ).query[MatchRow]
 
   def matchById(id: Long): Query0[MatchRow] =
@@ -131,7 +131,7 @@ class Queries(logger: LogHandler) {
         tournament
        FROM matches
        WHERE id = $id
-    """.asInstanceOf[Fragment].query[MatchRow]
+    """.query[MatchRow]
 
   def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] =
     (sql"""
@@ -163,7 +163,7 @@ class Queries(logger: LogHandler) {
         hostingName,
         tournament
        FROM matches
-       WHERE """.asInstanceOf[Fragment] ++ Fragments.in(fr"id".asInstanceOf[Fragment], ids)).query[MatchRow]
+       WHERE """ ++ Fragments.in(fr"id", ids)).query[MatchRow]
 
   def insertMatch(m: MatchRow): Update0 =
     sql"""
@@ -219,7 +219,7 @@ class Queries(logger: LogHandler) {
         ${m.approvedBy},
         ${m.hostingName},
         ${m.tournament}
-      );""".asInstanceOf[Fragment].update
+      );""".update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =
     sql"""
@@ -229,7 +229,7 @@ class Queries(logger: LogHandler) {
           matches
         WHERE
           id = $id
-      """.asInstanceOf[Fragment].query[String].map(_ == username)
+      """.query[String].map(_ == username)
 
   val getUserCountForEachPermission: Query0[(String, Int)] =
     sql"""
@@ -238,7 +238,7 @@ class Queries(logger: LogHandler) {
         count(*)
       FROM permissions
       GROUP BY type
-      """.asInstanceOf[Fragment].query[(String, Int)]
+      """.query[(String, Int)]
 
   def getAllUsersForPermission(permission: String, count: Int): Query0[String] =
     sql"""
@@ -247,7 +247,7 @@ class Queries(logger: LogHandler) {
       FROM permissions
       WHERE type = $permission
       LIMIT $count
-      """.asInstanceOf[Fragment].query[String]
+      """.query[String]
 
   def getUserCountForPermissionByFirstLetter(permission: String): Query0[(String, Int)] =
     sql"""
@@ -257,7 +257,7 @@ class Queries(logger: LogHandler) {
       FROM permissions
       WHERE type = $permission
       GROUP BY lower(left(username, 1))
-      """.asInstanceOf[Fragment].query[(String, Int)]
+      """.query[(String, Int)]
 
   def getUsersForPermissionStartingWithLetter(permission: String, letter: String): Query0[String] =
     sql"""
@@ -268,7 +268,7 @@ class Queries(logger: LogHandler) {
         type = $permission
         AND
         lower(left(username, 1)) = lower(${letter.take(1)})
-      """.asInstanceOf[Fragment].query[String]
+      """.query[String]
 
   def getPermissions(username: String): Query0[String] =
     sql"""
@@ -278,25 +278,25 @@ class Queries(logger: LogHandler) {
         permissions
       WHERE
         username = $username
-     """.asInstanceOf[Fragment].query[String]
+     """.query[String]
 
   def getPermissions(usernames: NonEmptyList[String]): Query0[PermissionSetRow] =
     (
-      sql"SELECT username, array_agg(type) FROM permissions ".asInstanceOf[Fragment] ++
+      sql"SELECT username, array_agg(type) FROM permissions " ++
         Fragments.whereAnd(
-          Fragments.in(fr"username".asInstanceOf[Fragment], usernames)
+          Fragments.in(fr"username", usernames)
         ) ++
-        fr"GROUP BY username".asInstanceOf[Fragment]
+        fr"GROUP BY username"
     ).query[PermissionSetRow]
 
   def addPermission(username: String, permission: String): Update0 =
     sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING"""
-      .asInstanceOf[Fragment]
+      
       .update
 
   def removePermission(username: String, permission: String): Update0 =
     sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission"""
-      .asInstanceOf[Fragment]
+      
       .update
 
   def addPermissionModerationLog(username: String, permission: String, modifier: String, added: Boolean): Update0 =
@@ -309,15 +309,15 @@ class Queries(logger: LogHandler) {
       ${Instant.now()},
       $permission,
       $added
-    )""".asInstanceOf[Fragment].update
+    )""".update
 
   def getPermissionModerationLog(before: Option[Int], count: Int): Query0[PermissionModerationLogRow] =
     (
-      sql"SELECT id, modifier, username, at, permission, added FROM permission_moderation_log ".asInstanceOf[Fragment]
+      sql"SELECT id, modifier, username, at, permission, added FROM permission_moderation_log "
         ++ Fragments.whereAndOpt(
-          before.map(id ⇒ fr"id < $id".asInstanceOf[Fragment])
+          before.map(id => fr"id < $id")
         )
-        ++ fr" ORDER BY id DESC LIMIT $count".asInstanceOf[Fragment]
+        ++ fr" ORDER BY id DESC LIMIT $count"
     ).query[PermissionModerationLogRow]
 
   def updateAuthenticationLog(username: String, ip: InetAddress): Update0 =
@@ -331,7 +331,7 @@ class Queries(logger: LogHandler) {
           authentication_log.username = $username
           AND
           authentication_log.ip = $ip
-    """.asInstanceOf[Fragment].update
+    """.update
 
   def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): Query0[MatchRow] =
     sql"""
@@ -344,10 +344,10 @@ class Queries(logger: LogHandler) {
         opens BETWEEN $start AND $end
         AND
         removed = false
-      """.asInstanceOf[Fragment].query[MatchRow]
+      """.query[MatchRow]
 
   def getUserApiKey(username: String): Query0[String] =
-    sql"SELECT apiKey FROM user_api_keys WHERE username = $username".asInstanceOf[Fragment].query[String]
+    sql"SELECT apiKey FROM user_api_keys WHERE username = $username".query[String]
 
   def setUserApiKey(username: String, key: String): Update0 =
     sql"""
@@ -358,7 +358,7 @@ class Queries(logger: LogHandler) {
           SET apiKey = $key
         WHERE
           user_api_keys.username = $username
-       """.asInstanceOf[Fragment].update
+       """.update
 
   val getLatestRules: Query0[RulesRow] =
     sql"""
@@ -370,7 +370,7 @@ class Queries(logger: LogHandler) {
       FROM rules
       ORDER BY id DESC
       LIMIT 1
-      """.asInstanceOf[Fragment].query[RulesRow]
+      """.query[RulesRow]
 
   def setRules(author: String, content: String): Update0 =
     sql"""
@@ -379,7 +379,7 @@ class Queries(logger: LogHandler) {
         NOW(),
         $content
       )
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def approveMatch(id: Long, approver: String): Update0 =
     sql"""
@@ -388,7 +388,7 @@ class Queries(logger: LogHandler) {
         approvedBy = $approver
       WHERE
         id = $id
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def getCurrentUbl: Query0[UblRow] =
     sql"""
@@ -405,7 +405,7 @@ class Queries(logger: LogHandler) {
       WHERE
         expires > NOW()
       ORDER BY created DESC
-      """.asInstanceOf[Fragment].query[UblRow]
+      """.query[UblRow]
 
   def createUblEntry(entry: UblRow): Update0 =
     sql"""
@@ -419,7 +419,7 @@ class Queries(logger: LogHandler) {
         ${entry.link},
         ${entry.createdBy}
       )
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def getUblEntriesForUuid(uuid: UUID): Query0[UblRow] =
     sql"""
@@ -436,7 +436,7 @@ class Queries(logger: LogHandler) {
       WHERE
         uuid = $uuid
       ORDER BY created DESC
-      """.asInstanceOf[Fragment].query[UblRow]
+      """.query[UblRow]
 
   def getUblEntry(id: Long): Query0[UblRow] =
     sql"""
@@ -452,7 +452,7 @@ class Queries(logger: LogHandler) {
       FROM ubl
       WHERE
         id = $id
-      """.asInstanceOf[Fragment].query[UblRow]
+      """.query[UblRow]
 
   def searchUblUsername(username: String): Query0[(String, List[UUID])] =
     sql"""
@@ -464,7 +464,7 @@ class Queries(logger: LogHandler) {
         ign ILIKE ${s"%$username%"}
       GROUP BY ign
       LIMIT 21
-      """.asInstanceOf[Fragment].query[(String, List[UUID])]
+      """.query[(String, List[UUID])]
 
   def editUblEntry(row: UblRow): Update0 =
     sql"""
@@ -478,13 +478,13 @@ class Queries(logger: LogHandler) {
         link = ${row.link},
         createdBy = ${row.createdBy}
       WHERE id = ${row.id}
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def deleteUblEntry(id: Long): Update0 =
     sql"""
       DELETE FROM ubl
       WHERE id = $id
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def getUnprocessedDiscordMatches: Query0[MatchRow] =
     sql"""
@@ -522,7 +522,7 @@ class Queries(logger: LogHandler) {
         removed = false
         AND
         opens > now()
-    """.asInstanceOf[Fragment].query[MatchRow]
+    """.query[MatchRow]
 
   def flagMatchesAsProcessedForDiscord(ids: NonEmptyList[Long]): Update0 =
     (sql"""
@@ -530,8 +530,8 @@ class Queries(logger: LogHandler) {
         matches
       SET
         handledDiscord = true
-      WHERE """.asInstanceOf[Fragment] ++
-      Fragments.in(fr"id".asInstanceOf[Fragment], ids)).update
+      WHERE """ ++
+      Fragments.in(fr"id", ids)).update
 
   val unapprovedUpcomingMatchesCount: Query0[Int] =
     sql"""
@@ -544,7 +544,7 @@ class Queries(logger: LogHandler) {
         removed = FALSE
         AND
         opens > NOW()
-      """.asInstanceOf[Fragment].query[Int]
+      """.query[Int]
 
   def createAlertRule(rule: AlertRuleRow): Update0 =
     sql"""
@@ -552,7 +552,7 @@ class Queries(logger: LogHandler) {
         (field, alertOn, exact, createdBy, created)
       VALUES
         (${rule.field}, ${rule.alertOn}, ${rule.exact}, ${rule.createdBy}, ${rule.created})
-      """.asInstanceOf[Fragment].update
+      """.update
 
   val getAllAlertRules: Query0[AlertRuleRow] =
     sql"""
@@ -565,13 +565,13 @@ class Queries(logger: LogHandler) {
         created
       FROM
         alert_rules
-      """.asInstanceOf[Fragment].query[AlertRuleRow]
+      """.query[AlertRuleRow]
 
   def deleteAlertRule(id: Long): Update0 =
     sql"""
       DELETE FROM alert_rules
       WHERE id = $id
-      """.asInstanceOf[Fragment].update
+      """.update
 
   def createAlert(matchId: Long, triggeredRuleId: Long): Update0 =
     sql"""
@@ -579,7 +579,7 @@ class Queries(logger: LogHandler) {
         (matchId, triggeredRuleId)
       VALUES
         ($matchId, $triggeredRuleId)
-      """.asInstanceOf[Fragment].update
+      """.update
 
   val getAlertsForDiscord: Query0[AlertRow] =
     sql"""
@@ -589,7 +589,7 @@ class Queries(logger: LogHandler) {
         alerts
       WHERE
         discord = false
-      """.asInstanceOf[Fragment].query[AlertRow]
+      """.query[AlertRow]
 
   def setAlertsHandledForDiscord(matchId: Long): Update0 =
     sql"""
@@ -599,5 +599,5 @@ class Queries(logger: LogHandler) {
         discord = true
       WHERE
         matchId = $matchId
-      """.asInstanceOf[Fragment].update
+      """.update
 }

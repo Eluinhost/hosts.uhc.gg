@@ -13,7 +13,7 @@ class GetUblForUuid(directives: CustomDirectives, database: Database) {
   import directives._
 
   def apply(uuid: UUID): Route = handleRejections(EndpointRejectionHandler()) {
-    requireSucessfulQuery(database.getUblEntriesForUuid(uuid)) { ubl ⇒
+    requireSucessfulQuery(database.getUblEntriesForUuid(uuid)) { ubl =>
       complete(ubl)
     }
   }

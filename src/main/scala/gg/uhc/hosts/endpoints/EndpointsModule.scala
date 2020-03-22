@@ -1,15 +1,10 @@
 package gg.uhc.hosts.endpoints
 
 import com.softwaremill.macwire.wire
-import gg.uhc.hosts.database.DatabaseModule
+import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
-import gg.uhc.hosts.endpoints.authentication.{
-  Authenticate,
-  AuthenticateCallback,
-  AuthenticateRefresh,
-  AuthenticationRoute
-}
+import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
@@ -21,7 +16,9 @@ import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
 import gg.uhc.hosts.endpoints.ubl._
 import gg.uhc.hosts.reddit.RedditModule
 
-trait EndpointsModule extends DatabaseModule with RedditModule {
+trait EndpointsModule extends RedditModule {
+  def database: Database
+
   lazy val customDirectives: CustomDirectives = wire[CustomDirectives]
 
   lazy val listUpcomingEndpoint: ListUpcomingMatches                      = wire[ListUpcomingMatches]

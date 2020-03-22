@@ -17,19 +17,19 @@ object Alerts {
 
   def findViolationText(rule: AlertRuleRow, m: MatchRow): Option[String] = {
     val listToSearch: List[String] = rule.field match {
-      case "tags"         ⇒ m.tags
-      case "ip"           ⇒ m.ip.toList
-      case "address"      ⇒ m.address.toList
-      case "hosting name" ⇒ m.hostingName.toList
-      case "content"      ⇒ List(m.content)
+      case "tags"         => m.tags
+      case "ip"           => m.ip.toList
+      case "address"      => m.address.toList
+      case "hosting name" => m.hostingName.toList
+      case "content"      => List(m.content)
     }
 
     val alertOn = rule.alertOn.toLowerCase
 
     if (rule.exact) {
-      listToSearch.find(item ⇒ item.toLowerCase == alertOn)
+      listToSearch.find(item => item.toLowerCase == alertOn)
     } else {
-      listToSearch.find(item ⇒ item.toLowerCase.contains(alertOn))
+      listToSearch.find(item => item.toLowerCase.contains(alertOn))
     }
   }
 }

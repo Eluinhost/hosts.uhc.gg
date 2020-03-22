@@ -10,11 +10,11 @@ class DeleteUblEntry(directives: CustomDirectives, database: Database, cache: Ba
   import directives._
 
   def apply(id: Long): Route = handleRejections(EndpointRejectionHandler()) {
-    requireAuthentication { session ⇒
+    requireAuthentication { session =>
       requirePermission("ubl moderator", session.username) {
         requireSucessfulQuery(database.deleteUblEntry(id)) {
-          case false ⇒ complete(StatusCodes.NotFound)
-          case true ⇒
+          case false => complete(StatusCodes.NotFound)
+          case true =>
             cache.invalidateCurrentUbl()
             complete(StatusCodes.NoContent)
         }

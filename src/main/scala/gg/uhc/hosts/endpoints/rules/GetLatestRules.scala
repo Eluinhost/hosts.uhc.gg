@@ -12,7 +12,7 @@ class GetLatestRules(customDirectives: CustomDirectives, database: Database) {
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireSucessfulQuery(database.getLatestRules) { rules ⇒
+      requireSucessfulQuery(database.getLatestRules) { rules =>
         complete(rules)
       }
     }

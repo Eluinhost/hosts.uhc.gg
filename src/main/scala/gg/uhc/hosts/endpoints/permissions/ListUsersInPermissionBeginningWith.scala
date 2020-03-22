@@ -12,7 +12,7 @@ class ListUsersInPermissionBeginningWith(customDirectives: CustomDirectives, dat
 
   def apply(permission: String, startsWith: String): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireSucessfulQuery(database.getUsersForPermissionStartingWithLetter(permission, startsWith)) { users ⇒
+      requireSucessfulQuery(database.getUsersForPermissionStartingWithLetter(permission, startsWith)) { users =>
         complete(users)
       }
     }

@@ -32,5 +32,5 @@ object TeamStyles {
   val all: List[TeamStyle] =
     ffa :: chosen :: random :: captains :: picked :: slaveMarket :: mystery :: rvb :: custom :: Nil
 
-  val byCode: Map[String, TeamStyle] = all.map(it ⇒ it.code → it).toMap
+  val byCode: Map[String, TeamStyle] = all.map(it => it.code -> it).toMap
 }

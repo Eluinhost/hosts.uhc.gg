@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.directives.BasicDirectives.{extractRequestConte
 import akka.http.scaladsl.server.{Directive, Directive0}
 import com.codahale.metrics.MetricRegistry
 import metrics_influxdb.{HttpInfluxdbProtocol, InfluxdbReporter}
-import nl.grons.metrics.scala.{Counter, InstrumentedBuilder, Timer}
+import nl.grons.metrics4.scala.{Counter, InstrumentedBuilder, Timer}
 
 object Instrumented extends ConfigurationModule {
   val metricRegistry = new MetricRegistry()
@@ -27,17 +27,17 @@ trait Instrumented extends InstrumentedBuilder {
   val metricRegistry: MetricRegistry = Instrumented.metricRegistry
 
   def timed(timer: Timer): Directive0 =
-    extractRequestContext.flatMap { _ ⇒
+    extractRequestContext.flatMap { _ =>
       val tCtx = timer.timerContext()
 
-      mapRouteResult { result ⇒
+      mapRouteResult { result =>
         tCtx.stop()
         result
       }
     }
 
   def counting(counter: Counter): Directive0 =
-    extractRequestContext.flatMap { _ ⇒
+    extractRequestContext.flatMap { _ =>
       counter.inc()
       Directive.Empty
     }

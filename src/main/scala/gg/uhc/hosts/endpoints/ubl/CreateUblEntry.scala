@@ -28,14 +28,14 @@ class CreateUblEntry(directives: CustomDirectives, database: Database, cache: Ba
     )
 
   def apply(): Route = handleRejections(EndpointRejectionHandler()) {
-    requireAuthentication { session ⇒
+    requireAuthentication { session =>
       requirePermission("ubl moderator", session.username) {
-        entity(as[UblEntryPayload]) { entity ⇒
+        entity(as[UblEntryPayload]) { entity =>
           entity.requireValid {
-            convertPayload(entity, session.username) { row ⇒
-              requireSucessfulQuery(database.createUblEntry(row)) { id ⇒
+            convertPayload(entity, session.username) { row =>
+              requireSucessfulQuery(database.createUblEntry(row)) { id =>
                 cache.invalidateCurrentUbl()
-                complete(StatusCodes.Created → row.copy(id = id))
+                complete(StatusCodes.Created -> row.copy(id = id))
               }
             }
           }

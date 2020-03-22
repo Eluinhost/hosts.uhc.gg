@@ -3,7 +3,7 @@ import sbt._
 object Settings {
   val organisation = "gg.uhc"
   val name         = "hosts"
-  val version      = "1.0.0"
+  val version      = "1.1.0"
 
   val scalacOptions = Seq(
     "-Xlint",
@@ -13,21 +13,20 @@ object Settings {
   )
 
   object versions {
-    val scala           = "2.12.2"
-    val doobie          = "0.4.4"
-    val circe           = "0.8.0"
-    val akkaHttp        = "10.0.9"
-    val akkaSlf4j       = "2.4.19"
-    val akkaHttpCirce   = "1.17.0"
-    val postgresql      = "42.1.3"
+    val scala           = "2.13.1"
+    val doobie          = "0.8.8"
+    val circe           = "0.13.0"
+    val akkaHttp        = "10.1.10"
+    val akkaSlf4j       = "2.6.3"
+    val akkaHttpCirce   = "1.31.0"
+    val postgresql      = "42.2.11"
     val flyway          = "4.2.0"
-    val hikaricp        = "2.6.3"
+    val hikaricp        = "3.4.2"
     val logback         = "1.2.3"
-    val jwtCirce        = "0.14.0"
-    val macwire         = "2.3.0"
-    val caffeine        = "2.1.0"
-    val akkaHttpTwirl   = "1.2.0"
-    val metricsScala    = "3.5.9_a2.4"
+    val jwtCirce        = "4.3.0"
+    val macwire         = "2.3.3"
+    val caffeine        = "3.1.0"
+    val metricsScala    = "4.1.5"
     val metricsInfluxDb = "0.9.3"
   }
 
@@ -43,14 +42,12 @@ object Settings {
       "com.zaxxer"               % "HikariCP"         % versions.hikaricp,
       "ch.qos.logback"           % "logback-classic"  % versions.logback,
       "io.circe"                 %% "circe-generic"   % versions.circe,
-      "io.circe"                 %% "circe-java8"     % versions.circe,
       "org.flywaydb"             % "flyway-core"      % versions.flyway,
       "com.pauldijou"            %% "jwt-circe"       % versions.jwtCirce,
       "com.softwaremill.macwire" %% "macros"          % versions.macwire % Provided,
       "com.softwaremill.macwire" %% "util"            % versions.macwire,
       "com.github.blemale"       %% "scaffeine"       % versions.caffeine,
-      "btomala"                  %% "akka-http-twirl" % versions.akkaHttpTwirl,
-      "nl.grons"                 %% "metrics-scala"   % versions.metricsScala,
+      "nl.grons"                 %% "metrics4-scala"  % versions.metricsScala,
       "com.github.davidb"        % "metrics-influxdb" % versions.metricsInfluxDb
     )
   )
