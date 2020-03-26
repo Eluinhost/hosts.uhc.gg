@@ -1,5 +1,6 @@
 /assets
 /frontend/node_modules
+/frontend/build
 target
 /conf/application.conf
 /.idea

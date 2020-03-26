@@ -14,7 +14,7 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.EndpointsModule
 import org.flywaydb.core.Flyway
 
-class MainModule(transactor: Transactor[IO]) extends EndpointsModule {
+class MainModule(transactor: Transactor[IO], val materializer: Materializer) extends EndpointsModule {
   val database: Database = wire[Database]
 }
 
@@ -43,11 +43,12 @@ object Main extends IOApp {
       flyway.setDataSource(transactor.kernel)
       flyway.migrate()
     })
-    mainModule = new MainModule(transactor)
     binding <- Resource.make(
       IO.fromFuture(IO {
         implicit val ac: ActorSystem = system
-        implicit val mz: Materializer = Materializer(system)
+        implicit val mz: Materializer = Materializer.matFromSystem
+
+        val mainModule = new MainModule(transactor, mz)
 
         Http().bindAndHandle(
           handler = mainModule.baseRoute(),

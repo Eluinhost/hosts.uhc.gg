@@ -1,42 +1,52 @@
 package gg.uhc.hosts.endpoints.frontend
 
+import java.util.concurrent.TimeUnit
+
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.RouteResult.Complete
+import akka.http.scaladsl.server.directives.MethodDirectives.get
+import akka.http.scaladsl.server.{Directive0, Route}
+import akka.stream.Materializer
+import akka.util.ByteString
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.TwirlSupport
-import play.twirl.api.HtmlFormat
 
-import scala.util.{Failure, Success}
+import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
+import scala.util.Success
 
-class FrontendRoute(database: Database) extends TwirlSupport {
-  private[this] val basicFrontend: HtmlFormat.Appendable =
-    html.frontend.render(description = "Reddit UHC", title = "uhc.gg")
+class FrontendRoute(database: Database, materializer: Materializer) extends TwirlSupport {
+  implicit val mz: Materializer = materializer
+
+  private[this] val basicFrontend: Route = getFromFile("frontend/build/index.html")
+
+  def replaceTitleInString(input: ByteString, title: String): ByteString =
+    ByteString(input.utf8String.replaceFirst("<title></title>", s"<title>$title</title>"))
+
+  private[this] def withMatchTitle(title: String): Directive0 = extractExecutionContext.flatMap { implicit ec =>
+    mapRouteResultWith({
+      case result@Complete(response) =>
+        response.entity
+          .toStrict(FiniteDuration(30, TimeUnit.SECONDS))
+          .map(entity => entity.copy(data = replaceTitleInString(entity.data, title)))
+          .map(entity => result.copy(response = response.mapEntity(_ => entity)))
+      case other => Future.successful(other)
+    })
+  }
 
   def apply(): Route =
-    concat(
-      path("favicon.png") {
-        getFromResource("favicon.png")
-      },
-      path("logo.png") {
-        getFromResource("logo.png")
-      },
-      path("outdatedbrowser.html") {
-        getFromResource("outdatedbrowser.html")
-      },
-      path("m" / IntNumber) { id =>
-        onComplete(database.run(database.matchById(id))) {
-          // if it fails to lookup just return the regular frontend
-          case Failure(_) => complete(basicFrontend)
-          // send the frontend with the basic details about the game for previewers to view
-          case Success(m) =>
-            m.map(_.legacyTitle())
-              .map { title =>
-                complete(html.frontend.render(title = title, description = "Match Post"))
-              }
-              .getOrElse(complete(basicFrontend))
-        }
-      },
-      complete(basicFrontend)
-    )
+    (get & path("m" / IntNumber)) { id =>
+      onComplete(database.run(database.matchById(id))) {
+        // send the frontend with the basic details about the game for previewers to view
+        case Success(Some(m)) =>
+          withMatchTitle(m.legacyTitle()) {
+            basicFrontend
+          }
+        // if it fails to lookup just return the regular frontend
+        case _ => basicFrontend
+      }
+    } ~
+      getFromDirectory("frontend/build") ~
+      basicFrontend
 
 }

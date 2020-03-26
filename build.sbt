@@ -15,7 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Settings.dependencies.value
 
 // include frontend assets in build
-mappings in Universal ++= directory(baseDirectory.value / "assets")
+mappings in Universal ++= directory(baseDirectory.value / "frontend" / "build")
 
 // copy reference config to conf folder for viewing when making an application.conf
 mappings in Universal += {
