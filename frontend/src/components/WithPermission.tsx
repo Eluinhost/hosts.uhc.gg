@@ -14,9 +14,9 @@ export type WithPermissionProps = {
   readonly alternative?: React.ComponentType;
 };
 
-const WithPermissionComponent: React.SFC<StateProps & WithPermissionProps> = ({ show, alternative, children }) => {
+const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissionProps> = ({ show, alternative, children }) => {
   if (show) {
-    return <>children</> || null;
+    return <>{children}</> || null;
   }
 
   if (alternative) {
