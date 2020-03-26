@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PermissionModerationLogState } from '../../state/PermissionModerationLogState';
 import { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
-import { Button, Callout, Classes, H2, H5, Icon, Intent, NonIdealState, Spinner, Tag } from "@blueprintjs/core";
+import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from "@blueprintjs/core";
 import { MatchOpens } from '../time/MatchOpens';
 import { connect, Dispatch } from 'react-redux';
 import { createSelector } from 'reselect';
