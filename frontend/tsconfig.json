@@ -1,23 +1,27 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
     "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "pretty": true,
-    "removeComments": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
     "jsx": "react",
-    "lib": ["es6", "dom", "dom.iterable"],
-    "experimentalDecorators": true,
-    "strictNullChecks": true,
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true
+    "experimentalDecorators": true
   },
   "include": [
-    "./**/*.tsx", "./**/*.ts"
-  ],
-  "exclude": ["./node_modules"]
+    "src",
+    "typings"
+  ]
 }

@@ -1,0 +1,10 @@
+{
+  "extends": ["react-app"],
+  "plugins": ["@blueprintjs/blueprint"],
+  "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "extends": ["plugin:@blueprintjs/blueprint/recommended"]
+    }
+  ]
+}
