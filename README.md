@@ -10,7 +10,7 @@ yarn install
 
 #### Build production
 
-Builds optimised bundles to `/assets` for the backend to serve
+Builds optimised bundles to `/frontend/build` for the backend to serve
 
 ```bash
 yarn build
@@ -18,11 +18,13 @@ yarn build
 
 #### Build dev 
 
-Builds development bundles and listens for changes for recompilation. Builds to `/assets` for backend to serve
+Builds development bundles and listens for changes for recompilation. Runs on port 3000
 
 ```bash
-yarn dev
+yarn start
 ```
+
+When running dev frontend make sure there is a server running on port 10000 (or modify src/setupProxy for actual port)
 
 ### Backend
 
