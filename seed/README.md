@@ -6,8 +6,7 @@ current: `https://spreadsheets.google.com/feeds/list/1VdyBZs4B-qoA8-IijPvbRUVBLf
 
 old: `https://spreadsheets.google.com/feeds/list/1VdyBZs4B-qoA8-IijPvbRUVBLfOuU9I5fV_PhuOWJao/od5/private/values`
 
-Files should be placed in `/data` as json (https://codebeautify.org/xmlviewer, load url won't work have to c/p): 
-`currentUbl.json` and `oldUbl.json` respectively
+Files should be placed in `/data` as xml files `currentUbl.xml` and `oldUbl.xml` respectively
 
 Running `node generateUblSeed` will generate `output.sql` containing some (a lot) insert queries for the data
 
