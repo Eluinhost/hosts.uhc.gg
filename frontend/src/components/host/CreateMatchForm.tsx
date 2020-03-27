@@ -124,7 +124,7 @@ class CreateMatchFormComponent extends React.Component<
         </fieldset>
         <fieldset>
           <legend>Game Details</legend>
-          <div className="host-form-row">
+          <div className="host-form-row host-form-row--tournament">
             <SwitchField
               name="tournament"
               label="Is this a Tournament?"
