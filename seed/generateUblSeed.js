@@ -1,11 +1,17 @@
-const {join, pipe, map, concat, filter} = require('ramda');
-const moment = require('moment');
+const { concat, filter, join, map, pipe } = require("ramda");
 const fs = require('fs');
+const { xml2js } = require('xml-js');
+const moment = require("moment");
 
-const old = require('./data/oldUbl');
-const current = require('./data/currentUbl');
+const old = xml2js(fs.readFileSync('./data/oldUbl.xml', { encoding: 'utf-8' }), { compact: true });
+const current = xml2js(fs.readFileSync('./data/currentUbl.xml', { encoding: 'utf-8' }), { compact: true });
 
-const parseDate = dateString => {
+const parseDate = (dateString) => {
+  if (!dateString || dateString === 'Never') {
+    // if there wasn't a date at all lets just go with fallback
+    return null
+  }
+
   const parsed = moment.utc(
     dateString
       .replace('Apil', 'April')
@@ -14,7 +20,7 @@ const parseDate = dateString => {
       .replace('June 31', 'July 1')
       .replace('November 31', 'December 1')
       .replace(' ', ''), // fix spacing issues by removing them all
-    'MMMMD,YYYY'
+    'DMMMM,YYYY'
   );
 
   if (!parsed.isValid())
@@ -55,39 +61,41 @@ const parseUuid = uuid => {
 const parseCurrentItem = item => {
   try {
     return {
-      created: parseDate(item.datebanned.__text),
-      expires: parseDate(item.expirydate.__text),
-      ign: item.ign.__text,
-      uuid: parseUuid(item.uuid.__text),
-      reason: item.reason.__text,
-      link: item.case.__text
+      created: parseDate(item['gsx:datebanned']._text) || moment.utc('1January2000', 'DMMMM,YYYY'),
+      expires: parseDate(item['gsx:expirydate']._text),
+      ign: item['gsx:ign']._text,
+      uuid: parseUuid(item['gsx:uuid']._text),
+      reason: item['gsx:reason']._text,
+      link: item['gsx:case']._text
     };
   } catch (err) {
-    throw new Error(`Failed to parse record ${JSON.stringify(item)} : ${err}`);
+    console.log(`Failed to parse record ${JSON.stringify(item)}`) ;
+    throw err;
   }
 };
 
 const parseOldItem = item => {
   try {
     return {
-      created: parseDate(item.bandate.__text),
-      expires: parseDate(item.unbandate.__text),
-      ign: item.player.__text,
-      uuid: parseUuid(item.uuid.__text),
-      reason: item.reason.__text,
-      link: item._ckd7g ? item._ckd7g.__text : 'Unknown'
+      created: parseDate(item['gsx:bandate']._text) || moment.utc('1January2000', 'DMMMM,YYYY'),
+      expires: parseDate(item['gsx:expirydate']._text),
+      ign: item['gsx:player']._text,
+      uuid: parseUuid(item['gsx:uuid']._text),
+      reason: item['gsx:reason']._text,
+      link: item['gsx:_ckd7g'] ? item['gsx:_ckd7g']._text : 'Unknown'
     };
   } catch (err) {
-    throw new Error(`Failed to parse record ${JSON.stringify(item)} : ${err}`);
+    console.log(`Failed to parse record ${JSON.stringify(item)}`) ;
+    // throw err;
   }
-}
+};
 
 const generateStatement = item => `INSERT INTO ubl (ign, uuid, reason, created, expires, link, createdBy) VALUES (
     '${item.ign.replace(/'/g, '\'\'')}',
     '${item.uuid}',
     '${item.reason.replace(/'/g, '\'\'')}',
     '${item.created}',
-    '${item.expires}',
+    ${item.expires ? `'${item.expires}'` : 'NULL'},
     '${item.link.replace(/'/g, '\'\'')}',
     'ghowden'
 )`;
@@ -109,15 +117,18 @@ const parsedData = concat(
   map(parseOldItem)(old.feed.entry)
 );
 
-const withoutInvalidUuids = filter(
-  item => {
-    if (item.uuid === '00000000-0000-0000-0000-000000000000') {
-      console.log(`Skipping entry due to invalid UUID: ${JSON.stringify(item)}`)
-      return false;
-    }
-    return true;
-  },
-  parsedData
-);
+const withoutInvalidUuids =
+  pipe(
+    filter(x => Boolean(x)),
+    filter(
+      item => {
+        if (item.uuid === '00000000-0000-0000-0000-000000000000') {
+          console.log(`Skipping entry due to invalid UUID: ${JSON.stringify(item)}`)
+          return false;
+        }
+        return true;
+      },
+    )
+)(parsedData);
 
 createOutputFile(withoutInvalidUuids);

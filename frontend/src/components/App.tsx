@@ -25,6 +25,8 @@ import { TimeSettings } from './time/TimeSettings';
 import { HostingAlertsPage } from './hosting-alerts';
 import { Footer } from './footer';
 import Helmet from "react-helmet";
+import { CreateBanPage } from "./ubl/CreateBanPage";
+import { CurrentUblPage, UuidHistoryPage } from "./ubl";
 
 reactGa.initialize('UA-71696797-2');
 
@@ -90,9 +92,9 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...props} />*/}
-        {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
-        {/*<Route path="/ubl" component={CurrentUblPage} />*/}
+        <AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...this.props} />
+        <Route path="/ubl/:uuid" component={UuidHistoryPage} />
+        <Route path="/ubl" component={CurrentUblPage} />
         <AuthenticatedRoute
           path="/hosting-alerts"
           component={HostingAlertsPage}

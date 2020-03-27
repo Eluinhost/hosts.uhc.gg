@@ -1,6 +1,5 @@
 @import "~normalize.css/normalize.css"
 @import "~react-datepicker/dist/react-datepicker.css"
-@import "~rc-time-picker/assets/index.css"
 @import "~react-virtualized/styles.css"
 
 $icon-font-path: "~@blueprintjs/core/resources/icons"
@@ -109,7 +108,6 @@ html, body, #root
 
 .date-time-field-time-section
   text-align: center
-  margin: 10px
   width: 100%
 
 .rc-time-picker-input
@@ -127,6 +125,10 @@ html, body, #root
 
 .opening-time
   text-align: center
+  .react-datepicker__month-container
+    min-width: 0
+  .bp3-callout
+    text-align: left
 
 .host-form fieldset
   margin-bottom: 15px
@@ -142,14 +144,6 @@ html, body, #root
   > *
     flex: 1
     margin: 10px
-
-.opening-time .bp3-callout
-  margin-top: 10px
-  text-align: left
-  h5
-    font-size: $pt-font-size
-    line-height: $pt-font-size
-    margin: 4px 0 4px 0
 
 .home-page .bp3-card
   margin-bottom: 5px

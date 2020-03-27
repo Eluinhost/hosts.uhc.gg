@@ -83,22 +83,20 @@ export class UsernameSearcher extends React.Component<{}, State> {
         }),
       );
 
-  debouncedChange = (e: React.FormEvent<HTMLInputElement>) => {
+  debouncedChange = (query: string) => {
     if (this.debounceId !== null) clearTimeout(this.debounceId);
 
     this.setState({
       loading: true,
     });
 
-    const value = e.currentTarget.value;
-
     // is a UUID, give them a single option to load it directly
-    if (isUuid(value)) {
+    if (isUuid(query)) {
       this.setState({
         loading: false,
         items: [
           {
-            uuid: value,
+            uuid: query,
             username: 'Click to load UUID',
           },
         ],
@@ -107,13 +105,13 @@ export class UsernameSearcher extends React.Component<{}, State> {
       return;
     }
 
-    if (value.trim() === '') {
+    if (query.trim() === '') {
       this.setState({
         loading: false,
         items: [],
       });
     } else {
-      this.debounceId = window.setTimeout(() => this.onChange(value), 300);
+      this.debounceId = window.setTimeout(() => this.onChange(query), 300);
     }
   };
 
@@ -126,7 +124,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
         noResults={this.noResults()}
         itemRenderer={this.renderItem}
         onItemSelect={this.onItemSelect}
-        inputProps={{ onChange: this.debouncedChange }}
+        onQueryChange={this.debouncedChange}
         popoverProps={{ popoverClassName: Classes.MINIMAL }}
       >
         <Button rightIcon="caret-down" text="Show full ban history for username/UUID" />

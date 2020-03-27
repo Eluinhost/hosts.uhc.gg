@@ -7,7 +7,6 @@ import { DateTimeField } from '../fields/DateTimeField';
 import { Button, Callout, H5, Intent } from "@blueprintjs/core";
 import { isUuid } from '../../services/isUuid';
 import { ApiErrors } from '../../api';
-import { ReactDatePickerProps } from 'react-datepicker';
 import { Validator } from '../../services/Validator';
 
 export type BanDataFormProps = {
@@ -18,25 +17,20 @@ export type BanData = {
   ign: string;
   uuid: string;
   reason: string;
-  expires: moment.Moment;
+  starts: moment.Moment;
+  expires: moment.Moment | null;
   link: string;
 };
 
-const earliest = moment
-  .utc()
+const today = moment.utc()
   .set('hour', 0)
   .set('minute', 0)
   .set('second', 0)
-  .add(1, 'day');
+  .set('millisecond', 0);
 
-const dateProps: Partial<ReactDatePickerProps> = {
-  minDate: earliest,
-  fixedHeight: true,
-  isClearable: false,
-  monthsShown: 2,
-};
+const earliest = today.clone().add(1, 'day');
 
-export const BanDataFormComponent: React.SFC<FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps> = ({
+export const BanDataFormComponent: React.FunctionComponent<FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps> = ({
   handleSubmit,
   submitting,
   valid,
@@ -44,12 +38,20 @@ export const BanDataFormComponent: React.SFC<FormProps<BanData, BanDataFormProps
 }) => (
   <form onSubmit={handleSubmit}>
     <DateTimeField
-      name="expires"
-      label="Ban Expires"
+      name="starts"
+      label="Ban Starts"
       required
       disabled={submitting}
       disableTime
-      datePickerProps={dateProps}
+      datePickerProps={{ fixedHeight: true, isClearable: false }}
+    />
+    <DateTimeField
+      name="expires"
+      label="Ban Expires"
+      required={false}
+      disabled={submitting}
+      disableTime
+      datePickerProps={{ fixedHeight: true, isClearable: true }}
     />
     <TextField name="ign" label="IGN" disabled={submitting} required />
     <TextField name="uuid" label="UUID" disabled={submitting} required />
@@ -81,13 +83,26 @@ const validator = new Validator<BanData>()
   .required('ign')
   .required('reason')
   .required('link')
-  .withValidation('expires', expires => !expires || !expires.isValid(), 'A valid date must be supplied');
+  .withValidationFunction('expires', expires => {
+    // no expiry is fine
+    if (!expires) {
+      return undefined;
+    }
 
-export const BanDataForm: React.SFC<
+    if (expires.isValid()) {
+      return undefined;
+    }
+
+    return 'A valid date must be supplied';
+  })
+  .withValidation('starts', starts => !starts || !starts.isValid(), 'A valid date must be supplied');
+
+export const BanDataForm: React.FunctionComponent<
   FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps
 > = reduxForm<BanData, BanDataFormProps>({
   form: 'ban-data-form',
   initialValues: {
+    starts: today,
     expires: earliest,
   },
   validate: validator.validate,

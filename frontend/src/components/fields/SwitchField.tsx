@@ -32,4 +32,4 @@ class Switcher extends React.Component<WrappedFieldProps<any> & SwitchFieldProps
   }
 }
 
-export const SwitchField: React.SFC<SwitchFieldProps> = props => <Field {...props} component={Switcher} />;
+export const SwitchField: React.FunctionComponent<SwitchFieldProps> = props => <Field {...props} component={Switcher} />;

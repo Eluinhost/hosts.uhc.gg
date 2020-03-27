@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { UBLApi } from '../../api';
-import { any, CurriedFunction2, curry, propSatisfies } from 'ramda';
-import { Intent, Tag } from '@blueprintjs/core';
+import { any } from 'ramda';
+import { H1, H2, Intent, Tag } from "@blueprintjs/core";
 import * as moment from 'moment';
 import { UblListing } from './UblListing';
 import { BanEntry } from '../../models/BanEntry';
@@ -23,10 +23,6 @@ enum BanState {
   CurrentlyBanned,
 }
 
-const isAfter: CurriedFunction2<moment.Moment, moment.Moment, boolean> = curry((a: moment.Moment, b: moment.Moment) =>
-  b.isAfter(a),
-);
-
 export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>, State> {
   state = {
     currentlyBanned: BanState.NotLoaded,
@@ -38,8 +34,9 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
         currentlyBanned: BanState.NeverBanned,
       });
     } else {
+      const now = moment.utc();
       this.setState({
-        currentlyBanned: any(propSatisfies(isAfter(moment.utc()), 'expires'), bans)
+        currentlyBanned: any(item => !item.expires || item.expires.isAfter(now), bans)
           ? BanState.CurrentlyBanned
           : BanState.AllExpired,
       });
@@ -56,10 +53,10 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
     return (
       <div>
         <Title>Ban History - {this.props.match.params.uuid}</Title>
-        <h1>Ban History</h1>
+        <H1>Ban History</H1>
         <small>{this.props.match.params.uuid}</small>
 
-        <h2>
+        <H2>
           {this.state.currentlyBanned === BanState.NotLoaded && <Tag intent={Intent.PRIMARY}>Unknown ban state</Tag>}
 
           {this.state.currentlyBanned === BanState.NeverBanned && <Tag intent={Intent.SUCCESS}>Never Banned</Tag>}
@@ -67,7 +64,7 @@ export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>
           {this.state.currentlyBanned === BanState.AllExpired && <Tag intent={Intent.SUCCESS}>All Bans Expired</Tag>}
 
           {this.state.currentlyBanned === BanState.CurrentlyBanned && <Tag intent={Intent.DANGER}>BANNED</Tag>}
-        </h2>
+        </H2>
 
         <UblListing refetch={this.load} onListUpdate={this.updateFlag} />
       </div>

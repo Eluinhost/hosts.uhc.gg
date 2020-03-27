@@ -17,7 +17,7 @@ export interface SelectFieldProps extends BaseFieldProps {
 const renderSelect: React.FunctionComponent<WrappedFieldProps<any> & SelectFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <div className={`${Classes.HTML_SELECT} ${props.className || ''}`}>
-      <select {...props.input} disabled={props.disabled}>
+      <select {...props.input} disabled={props.disabled} className={!props.meta.valid ? Classes.INTENT_DANGER : ''}>
         {props.options.map(option => (
           <option key={option.value} value={option.value}>
             {option.display}
@@ -28,4 +28,4 @@ const renderSelect: React.FunctionComponent<WrappedFieldProps<any> & SelectField
   </FieldWrapper>
 );
 
-export const SelectField: React.SFC<SelectFieldProps> = props => <Field {...props} component={renderSelect} />;
+export const SelectField: React.FunctionComponent<SelectFieldProps> = props => <Field {...props} component={renderSelect} />;

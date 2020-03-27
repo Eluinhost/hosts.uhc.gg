@@ -1,7 +1,7 @@
 import { BanEntry } from '../../models/BanEntry';
 import * as React from 'react';
 import { WithPermission } from '../WithPermission';
-import { Button, Card, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { AnchorButton, Button, Card, Classes, Dialog, Intent } from "@blueprintjs/core";
 import { AppToaster } from '../../services/AppToaster';
 import { Link } from 'react-router-dom';
 import { UBLApi } from '../../api';
@@ -105,15 +105,16 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
   renderCaseLink = (link: string) => {
     if (/^https?/.test(link)) {
       return (
-        <a href={link} target="_blank">
-          <Button
-            minimal
-            intent={Intent.PRIMARY}
-            icon="take-action"
-            title="Open case link"
-            disabled={this.props.disabled}
-          />
-        </a>
+        <AnchorButton
+          href={link}
+          target="_blank"
+          minimal
+          intent={Intent.PRIMARY}
+          icon="take-action"
+          title="Open case link"
+          disabled={this.props.disabled}
+          rel="noopener noreferrer"
+        />
       );
     }
 
@@ -140,7 +141,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           <span style={{ float: 'right' }}>
             <span title="Created">{ban.created.format('MMM Do, YYYY')}</span>
             <span> → </span>
-            <span title="Expires">{ban.expires.format('MMM Do, YYYY')}</span>
+            <span title="Expires">{ban.expires ? ban.expires.format('MMM Do, YYYY') : 'Never'}</span>
           </span>
         </div>
         <div>
@@ -151,7 +152,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
         </div>
         <div>
           <em>
-            {ban.reason} - {ban.expires.from(ban.created, true)}
+            {ban.reason} - {ban.expires ? ban.expires.from(ban.created, true) : 'Permanent Ban'}
           </em>
           <div style={{ float: 'right' }}>
             {this.renderCaseLink(ban.link)}

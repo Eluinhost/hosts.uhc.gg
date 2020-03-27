@@ -1,69 +1,55 @@
 import * as React from 'react';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, RenderErrors } from './FieldWrapper';
+import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from "redux-form";
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
-import TimePicker, { RcTimePickerProps } from 'rc-time-picker';
 import * as moment from 'moment';
-import { Overlay } from '@blueprintjs/core';
+import { Callout, Intent, Overlay } from "@blueprintjs/core";
+
+import { FieldWrapper } from './FieldWrapper';
 
 export interface DateTimeFieldProps extends BaseFieldProps {
-  readonly label?: string | React.ReactElement<any>;
-  readonly required: boolean;
+  readonly label?: string | React.ReactElement;
+  readonly required?: boolean;
   readonly disabled?: boolean;
   readonly datePickerProps?: Partial<ReactDatePickerProps>;
-  readonly timePickerProps?: Partial<RcTimePickerProps>;
   readonly disableTime?: boolean;
 }
+
+export const Errors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
+  if (error) return <Callout intent={Intent.DANGER}>{error}</Callout>;
+
+  if (warning) return <Callout intent={Intent.WARNING}>{warning}</Callout>;
+
+  return null;
+};
 
 class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFieldProps> {
   triggerBlur = (date: moment.Moment): void => this.props.input!.onBlur(date, undefined, undefined);
 
-  onDateChange = (date: moment.Moment | null): void => {
+  onDateChange = (date: Date | null): void => {
     if (this.props.disabled) return;
 
-    this.props.input!.onChange(date, undefined, undefined);
-    setTimeout(() => this.triggerBlur(this.props.input!.value), 0);
+    let momentDate = date && moment.utc(date);
+
+    this.props.input!.onChange(momentDate, undefined, undefined);
+    this.props.input!.onBlur(momentDate, undefined, undefined);
   };
-
-  onTimeChange = (date: moment.Moment | null): void => {
-    if (this.props.disabled) return;
-
-    this.props.input!.onChange(date, undefined, undefined);
-  };
-
-  onTimeClose = (): void => this.triggerBlur(this.props.input!.value);
 
   render() {
-    const { meta, label, required, datePickerProps, input, disabled, timePickerProps, children } = this.props;
-
-    const time = this.props.disableTime ? null : (
-      <TimePicker
-        {...timePickerProps}
-        onChange={this.onTimeChange}
-        value={input ? input.value : null}
-        className={`date-time-field-time-picker ${(timePickerProps || {}).className || ''}`}
-        disabled={disabled}
-        onClose={this.onTimeClose}
-      />
-    );
+    const { meta, label, required, datePickerProps, input, disabled } = this.props;
 
     return (
       <FieldWrapper meta={meta} label={label} required={required} hideErrors className="date-time-field">
-        <DatePicker
-          {...datePickerProps}
-          dateFormat="YYYY-MM-DD"
-          inline
-          selected={input ? input.value : null}
-          onChange={this.onDateChange}
-        >
-          <div className="date-time-field-time-section">
-            {time}
-
-            <RenderErrors {...meta} />
-
-            {children}
-          </div>
-        </DatePicker>
+        <div className="date-time-field_content">
+          <DatePicker
+            {...datePickerProps}
+            dateFormat="yyyy-MM-dd"
+            inline
+            selected={input?.value?.isValid() ? input.value.toDate() : null}
+            onChange={this.onDateChange}
+            showTimeSelect={!this.props.disableTime}
+          />
+          <Errors {...meta} />
+        </div>
         <Overlay
           hasBackdrop
           isOpen={!!disabled}
@@ -79,4 +65,4 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
   }
 }
 
-export const DateTimeField: React.SFC<DateTimeFieldProps> = props => <Field {...props} component={DateTimePicker} />;
+export const DateTimeField: React.FunctionComponent<DateTimeFieldProps> = props => <Field {...props} component={DateTimePicker} />;

@@ -403,7 +403,7 @@ class Queries(logger: LogHandler) {
         createdBy
       FROM ubl
       WHERE
-        expires > NOW()
+        expires IS NULL OR expires > NOW()
       ORDER BY created DESC
       """.query[UblRow]
 

@@ -1,5 +1,4 @@
 const {join, pipe, map, cond, equals, always, T} = require('ramda');
-const moment = require('moment');
 const fs = require('fs');
 
 const data = require('./data/permissions').feed.entry;
@@ -34,4 +33,4 @@ const createOutputFile = pipe(
   data => fs.writeFileSync('output.sql', data, {encoding: 'utf-8'})
 );
 
-createOutputFile(data)
+createOutputFile(data);

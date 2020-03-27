@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
@@ -20,8 +22,7 @@ export const fetchUsersInPermissionWithLetter = (permission: string, letter: str
 export const fetchPermissionModerationLog = (): Promise<PermissionModerationLogEntry[]> =>
   fetchArray<PermissionModerationLogEntry>({
     url: `/api/permissions/log`,
-    momentProps: ['at'],
-  });
+  }).then(responses => responses.map(response => ({ ...response, at: moment.utc(response.at) })));
 
 export const callAddPermission = (permission: string, username: string, accessToken: string): Promise<void> =>
   callApi({

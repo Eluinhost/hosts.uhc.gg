@@ -1,6 +1,6 @@
 import { BanEntry } from '../../models/BanEntry';
 import { AutoSizer, List, ListRowProps, WindowScroller } from 'react-virtualized';
-import { Callout, Classes, H5, Icon, InputGroup, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Callout, Classes, H5, InputGroup, NonIdealState, Spinner } from "@blueprintjs/core";
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
 import { filter, propEq, complement, always, map, when, toLower, curry, CurriedFunction2, any, pipe } from 'ramda';
@@ -176,16 +176,15 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
   render() {
     return (
       <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
-        <InputGroup intent={this.state.filter !== '' ? Intent.PRIMARY : Intent.NONE}>
-          <Icon icon="filter" />
-          <input
-            type="text"
-            className={Classes.INPUT}
-            placeholder="Filter this list... (ign, uuid, reason, link)"
-            value={this.state.filter}
-            onChange={this.onFilterChange}
-          />
-        </InputGroup>
+        <InputGroup
+          intent={this.state.filter !== '' ? Intent.PRIMARY : Intent.NONE}
+          type="text"
+          className={Classes.INPUT}
+          placeholder="Filter this list... (ign, uuid, reason, link)"
+          value={this.state.filter}
+          onChange={this.onFilterChange}
+          leftIcon="filter"
+        />
         {this.state.loading && (
           <div style={{ flexGrow: 0 }}>
             <NonIdealState title="Loading..." icon={<Spinner />} />
@@ -200,9 +199,9 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
         <div style={{ flex: '1 0 auto' }}>
           <WindowScroller>
-            {/*tslint:disable-next-line jsx-no-multiline-js*/ ({ height, isScrolling, scrollTop }) => (
+            {({ height, scrollTop }) => (
               <AutoSizer disableHeight>
-                {/*tslint:disable-next-line jsx-no-multiline-js*/ ({ width }) => (
+                {({ width }) => (
                   <List
                     renderHelper={this.props}
                     renderHelper2={this.state}

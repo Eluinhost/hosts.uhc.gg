@@ -13,11 +13,11 @@ export interface NumberFieldProps extends BaseFieldProps {
   readonly max?: number;
 }
 
-const renderField: React.SFC<WrappedFieldProps<any> & NumberFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps<any> & NumberFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <input
       {...props.input}
-      className={`${Classes.NUMERIC_INPUT} ${props.className || ''}`}
+      className={`${Classes.NUMERIC_INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${Classes.INPUT} ${props.className || ''}`}
       placeholder={props.placeholder || props.label}
       type="number"
       disabled={props.disabled}
@@ -27,4 +27,4 @@ const renderField: React.SFC<WrappedFieldProps<any> & NumberFieldProps> = props 
   </FieldWrapper>
 );
 
-export const NumberField: React.SFC<NumberFieldProps> = props => <Field {...props} component={renderField} />;
+export const NumberField: React.FunctionComponent<NumberFieldProps> = props => <Field {...props} component={renderField} />;

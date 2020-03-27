@@ -3,19 +3,23 @@ import * as moment from 'moment';
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 import { CreateMatchData } from '../models/CreateMatchData';
 
-const matchMomentProps: Array<keyof Match> = ['opens', 'created'];
-
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({
     url: `/api/matches/upcoming`,
-    momentProps: matchMomentProps,
-  });
+  }).then(matches => matches.map(match => ({
+    ...match,
+    opens: moment.utc(match.opens),
+    created: moment.utc(match.created),
+  })));
 
 export const fetchSingle = (id: number): Promise<Match | null> =>
   maybeFetchObject<Match>({
-    url: `/api/matches/${id}`,
-    momentProps: matchMomentProps,
-  });
+    url: `/api/matches/${id}`
+  }).then(match => match && ({
+    ...match,
+    opens: moment.utc(match.opens),
+    created: moment.utc(match.created),
+  }));
 
 export const callRemove = (id: number, reason: string, accessToken: string): Promise<void> =>
   callApi({
@@ -63,11 +67,17 @@ export const fetchPotentialConflicts = (region: string, time: moment.Moment): Pr
       .clone()
       .utc()
       .format()}`,
-    momentProps: matchMomentProps,
-  });
+  }).then(matches => matches.map(match => ({
+    ...match,
+    opens: moment.utc(match.opens),
+    created: moment.utc(match.created),
+  })));
 
 export const fetchHistoryForHost = (host: string, before?: number): Promise<Match[]> =>
   fetchArray<Match>({
     url: `/api/hosts/${host}/matches?before=${before || ''}`,
-    momentProps: matchMomentProps,
-  });
+  }).then(matches => matches.map(match => ({
+    ...match,
+    opens: moment.utc(match.opens),
+    created: moment.utc(match.created),
+  })));

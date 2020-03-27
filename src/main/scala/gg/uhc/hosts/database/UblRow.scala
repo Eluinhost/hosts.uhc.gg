@@ -9,6 +9,6 @@ case class UblRow(
     uuid: UUID,
     reason: String,
     created: Instant,
-    expires: Instant,
+    expires: Option[Instant],
     link: String,
     createdBy: String)

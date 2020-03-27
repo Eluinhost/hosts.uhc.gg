@@ -8,6 +8,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { always } from 'ramda';
 import { UBLApi } from '../../api';
 import { Title } from '../Title';
+import { H1 } from "@blueprintjs/core";
 
 type Props = {
   readonly accessToken: string | null;
@@ -24,7 +25,7 @@ class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentP
     return (
       <div>
         <Title>Create new ban</Title>
-        <h1>Create new ban</h1>
+        <H1>Create new ban</H1>
         <BanDataForm onSubmit={this.handleSubmit} />
       </div>
     );

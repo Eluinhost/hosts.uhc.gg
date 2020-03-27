@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
-import { TagInput } from '@blueprintjs/core';
+import { Classes, Intent, TagInput } from "@blueprintjs/core";
 import { uniqBy, toLower, union } from 'ramda';
 
 export type TagsFieldProps = BaseFieldProps & {
@@ -34,14 +34,16 @@ const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => 
   }
 };
 
-const renderField: React.SFC<WrappedFieldProps<any> & TagsFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps<any> & TagsFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <TagInput
+      intent={!props.meta.valid ? Intent.DANGER : Intent.NONE}
       values={props.input && props.input.value ? props.input.value : []}
       onAdd={onAdd(props.input!)}
       onRemove={onRemove(props.input!)}
       inputProps={{ disabled: props.disabled }}
     />
+    {props.children}
   </FieldWrapper>
 );
 

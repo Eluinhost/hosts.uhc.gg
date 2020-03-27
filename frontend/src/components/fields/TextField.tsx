@@ -12,11 +12,11 @@ export type TextFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const renderField: React.SFC<WrappedFieldProps<any> & TextFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps<any> & TextFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <input
       {...props.input}
-      className={`${Classes.INPUT} ${props.className || ''}`}
+      className={`${Classes.INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${props.className || ''}`}
       placeholder={props.placeholder || props.label}
       type={props.isPassword ? 'password' : 'text'}
       disabled={props.disabled}
@@ -24,4 +24,4 @@ const renderField: React.SFC<WrappedFieldProps<any> & TextFieldProps> = props =>
   </FieldWrapper>
 );
 
-export const TextField: React.SFC<TextFieldProps> = props => <Field {...props} component={renderField} />;
+export const TextField: React.FunctionComponent<TextFieldProps> = props => <Field {...props} component={renderField} />;

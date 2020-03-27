@@ -6,7 +6,6 @@ import { TextField } from '../fields/TextField';
 import * as React from 'react';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import * as moment from 'moment';
-import { range } from 'ramda';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
 import { SuggestionsField } from '../fields/SuggestionsField';
@@ -20,8 +19,6 @@ import { asyncValidation, validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { SwitchField } from '../fields/SwitchField';
-import { ReactDatePickerProps } from 'react-datepicker';
-import { RcTimePickerProps } from 'rc-time-picker';
 import { Title } from '../Title';
 import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
@@ -33,16 +30,6 @@ export type CreateMatchFormProps = {
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => void;
-};
-
-const disabledMinutes = range(0, 60).filter(m => m % 15 !== 0);
-
-const openingTimeProps: Partial<RcTimePickerProps> = {
-  disabledMinutes() {
-    return disabledMinutes;
-  },
-  hideDisabledOptions: true,
-  showSecond: false,
 };
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
@@ -64,18 +51,13 @@ const TeamSizeField: React.FunctionComponent<{ readonly disabled?: boolean }> = 
   />
 );
 
-const CustomStyleField: React.SFC<{ readonly disabled?: boolean }> = ({ disabled }) => (
+const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }> = ({ disabled }) => (
   <TextField name="customStyle" required label="Custom Team Style" disabled={disabled} className={Classes.FILL} />
 );
 
 class CreateMatchFormComponent extends React.Component<
   FormProps<CreateMatchData, CreateMatchFormProps, ApplicationState> & CreateMatchFormProps
 > {
-  private timeProps = (): Partial<RcTimePickerProps> => ({
-    ...openingTimeProps,
-    use12Hours: this.props.is12h,
-  });
-
   componentDidMount() {
     this.props.asyncValidate!();
   }
@@ -97,14 +79,6 @@ class CreateMatchFormComponent extends React.Component<
     const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
 
     const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
-
-    const openingDateProps: Partial<ReactDatePickerProps> = {
-      minDate: nextAvailableSlot(),
-      fixedHeight: true,
-      maxDate: moment.utc().add(30, 'd'),
-      isClearable: false,
-      monthsShown: 2,
-    };
 
     const preview: Match = {
       ...currentValues,
@@ -128,18 +102,25 @@ class CreateMatchFormComponent extends React.Component<
             name="opens"
             required
             disabled={disabledAsync}
-            datePickerProps={openingDateProps}
-            timePickerProps={this.timeProps()}
-          >
-            <Callout intent={Intent.DANGER} icon="warning-sign">
-              <H5>
-                <span> All times must be entered as </span>
-                <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
-                  UTC
-                </a>
-              </H5>
-            </Callout>
-          </DateTimeField>
+            datePickerProps={{
+              minDate: nextAvailableSlot().toDate(),
+              fixedHeight: true,
+              maxDate: moment.utc().add(30, 'd').toDate(),
+              isClearable: false,
+              showTimeSelect: true,
+              monthsShown: 2,
+              timeIntervals: 15,
+              timeFormat: this.props.is12h ? 'hh:mm aa' : 'HH:mm',
+            }}
+          />
+          <Callout intent={Intent.WARNING} icon="warning-sign">
+            <H5>
+              <span> All times must be entered as </span>
+              <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
+                UTC
+              </a>
+            </H5>
+          </Callout>
         </fieldset>
         <fieldset>
           <legend>Game Details</legend>
@@ -203,7 +184,9 @@ class CreateMatchFormComponent extends React.Component<
         <fieldset>
           <legend>Scenarios + Teams</legend>
           <div className="host-form-row" onKeyPress={stopEnterSubmit}>
-            <TagsField name="scenarios" label="Scenarios" required disabled={submitting} />
+            <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
+              <em>* Press Enter after each scenario to add it to the list</em>
+            </TagsField>
           </div>
           <div className="host-form-row">
             <SelectField
@@ -254,7 +237,9 @@ class CreateMatchFormComponent extends React.Component<
               min={2}
             />
             <div onKeyPress={stopEnterSubmit}>
-              <TagsField name="tags" label="Tags" required={false} disabled={submitting} />
+              <TagsField name="tags" label="Tags" required={false} disabled={submitting}>
+                <em>* Press Enter after each tag to add it to the list</em>
+              </TagsField>
             </div>
           </div>
         </fieldset>

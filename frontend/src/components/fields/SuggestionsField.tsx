@@ -14,7 +14,7 @@ export type SuggestionsFieldProps = BaseFieldProps & {
   readonly suggestionText: string;
 };
 
-const renderOptions = map<string, React.ReactElement<any>>(it => (
+const renderOptions = map<string, React.ReactElement>(it => (
   <option key={it} value={it}>
     {it}
   </option>
@@ -25,7 +25,7 @@ const renderField: React.FunctionComponent<WrappedFieldProps<any> & SuggestionsF
     <ControlGroup fill>
       <input
         {...props.input}
-        className={`${Classes.INPUT} ${props.className || ''}`}
+        className={`${Classes.INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${props.className || ''}`}
         placeholder={props.placeholder || props.label}
         type="text"
         disabled={props.disabled}
