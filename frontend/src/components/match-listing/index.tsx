@@ -1,18 +1,29 @@
 import * as React from 'react';
-import { Button, Callout, H5, Intent, NonIdealState, Spinner, Switch } from "@blueprintjs/core";
+import {
+  Button,
+  Callout,
+  H5,
+  InputGroup,
+  Intent,
+  NonIdealState,
+  Spinner,
+  Switch,
+} from '@blueprintjs/core';
 import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
 import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
 import { connect, Dispatch } from 'react-redux';
-import { createSelector, ParametricSelector } from "reselect";
+import { createSelector, Selector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
 import { Settings } from '../../actions';
-import * as moment from 'moment';
+import moment from 'moment';
 import { RefreshButton } from './RefreshButton';
 import { isUndefined } from 'util';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
+
+import './match-listing.sass';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -28,7 +39,6 @@ type MatchListingProps = {
 };
 
 type StateProps = {
-  readonly filteredMatches: Match[];
   readonly hideRemoved: boolean;
   readonly showOwnRemoved: boolean;
   readonly username: string | null;
@@ -39,7 +49,15 @@ type DispatchProps = {
   readonly toggleShowOwnRemoved: () => void;
 };
 
-class MatchListingComponent extends React.PureComponent<MatchListingProps & StateProps & DispatchProps> {
+type OwnState = {
+  search: string;
+};
+
+class MatchListingComponent extends React.PureComponent<MatchListingProps & StateProps & DispatchProps, OwnState> {
+  state = {
+    search: '',
+  };
+
   private timerId: number | null = null;
 
   private visibilityDetector = new VisibilityDetector();
@@ -100,17 +118,41 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
     <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
   );
 
+  removedMatchesFilter = (m: Match): boolean => {
+    if (!m.removed || !this.props.hideRemoved) {
+      return true;
+    }
+
+    return this.props.showOwnRemoved && m.author === this.props.username;
+  };
+
+  // pretty hacky but works
+  searchQueryFilter = (query: string) => (m: Match): boolean =>
+    !query ||
+    JSON.stringify(m)
+      .toLowerCase()
+      .indexOf(query.toLowerCase()) > 0;
+
+  handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ search: event.target.value });
+  clearSearch = () => this.setState({ search: '' });
+
   render() {
-    const matches =
-      this.props.filteredMatches.length > 0 ? (
-        <div>{this.props.filteredMatches.map(this.renderMatch)}</div>
-      ) : (
-        this.noMatches
-      );
+    const afterRemovedFilter = this.props.matches.filter(this.removedMatchesFilter);
+
+    const afterSearchQuery = afterRemovedFilter.filter(this.searchQueryFilter(this.state.search));
+
+    const matches = afterSearchQuery.length > 0 ? afterSearchQuery.map(this.renderMatch) : this.noMatches;
+
+    const searchHelper = this.state.search ? (
+      <>
+        Showing {afterSearchQuery.length} of {afterRemovedFilter.length}.{' '}
+        <Button minimal icon="cross" onClick={this.clearSearch} />
+      </>
+    ) : undefined;
 
     return (
-      <div>
-        <div>
+      <div className="match-listing">
+        <div className="match-listing__filters">
           <Switch checked={this.props.hideRemoved} label="Hide Removed" onChange={this.props.toggleHideRemoved} />
           {!!this.props.username && this.props.hideRemoved && (
             <Switch
@@ -119,6 +161,17 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
               onChange={this.props.toggleShowOwnRemoved}
             />
           )}
+        </div>
+
+        <div className="match-listing__search">
+          <InputGroup
+            leftIcon="search"
+            fill
+            value={this.state.search}
+            onChange={this.handleSearchChange}
+            placeholder="Search"
+            rightElement={searchHelper}
+          />
           <RefreshButton
             lastUpdated={this.props.lastUpdated}
             onClick={this.props.refetch}
@@ -134,17 +187,19 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
 
         {this.props.loading && <NonIdealState icon={<Spinner />} title="Loading..." />}
 
-        {matches}
+        <div className="match-listing__matches">{matches}</div>
 
         {this.props.hasMore && (
-          <Button
-            loading={this.props.loading}
-            disabled={this.props.loading}
-            onClick={this.props.loadMore}
-            icon="refresh"
-            intent={Intent.SUCCESS}
-            text="Load more"
-          />
+          <div className="match-listing__footer-actions">
+            <Button
+              loading={this.props.loading}
+              disabled={this.props.loading}
+              onClick={this.props.loadMore}
+              icon="refresh"
+              intent={Intent.SUCCESS}
+              text="Load more"
+            />
+          </div>
         )}
 
         <RemovalModal />
@@ -154,31 +209,14 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
   }
 }
 
-const visibleMatches: ParametricSelector<ApplicationState, MatchListingProps | undefined, Match[]> = createSelector(
-  (state: ApplicationState, props: MatchListingProps | undefined) => props ? props.matches : [], // get matches from the props
-  getUsername, // get current username if exists
-  state => state.settings.hideRemoved,
-  state => state.settings.showOwnRemoved,
-  (matches, username, hideRemoved, showOwnRemoved) => {
-    if (!hideRemoved) return matches;
-
-    if (!showOwnRemoved) return matches.filter(m => !m.removed);
-
-    return matches.filter(m => !m.removed || m.author === username);
-  },
-);
-
-// TODO remove props
-const stateSelector: ParametricSelector<ApplicationState, MatchListingProps | undefined, StateProps> = createSelector(
+const stateSelector: Selector<ApplicationState, StateProps> = createSelector(
   getUsername,
-  visibleMatches,
   state => state.settings.hideRemoved,
   state => state.settings.showOwnRemoved,
-  (username, matches, hideRemoved, showOwnRemoved): StateProps => ({
+  (username, hideRemoved, showOwnRemoved): StateProps => ({
     username,
     hideRemoved,
     showOwnRemoved,
-    filteredMatches: matches,
   }),
 );
 
