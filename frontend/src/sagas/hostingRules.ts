@@ -5,7 +5,7 @@ import { GetHostingRules, SetHostingRules } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { Action } from 'redux-actions';
 import { HostingRules } from '../state/HostingRulesState';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 

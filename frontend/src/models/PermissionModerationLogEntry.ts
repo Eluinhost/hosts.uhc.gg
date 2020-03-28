@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 
 export type PermissionModerationLogEntry = {
   readonly id: number;

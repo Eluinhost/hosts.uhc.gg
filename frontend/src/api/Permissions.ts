@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';

@@ -5,7 +5,7 @@ import { FetchMatchDetailsParameters, FetchMatchDetails } from '../actions';
 import { Match } from '../models/Match';
 import { Action } from 'redux-actions';
 import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { find } from 'ramda';
 
 function* fetchMatchDetailsSaga(action: Action<FetchMatchDetailsParameters>): SagaIterator {

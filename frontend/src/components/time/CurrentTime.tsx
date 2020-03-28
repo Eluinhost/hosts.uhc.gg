@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -86,9 +85,9 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
       : 'Not synced with the server';
 
   private timeText = () =>
-    (this.state.time
+    this.state.time
       .add(this.props.timeSync.offset, 'milliseconds')
-      .clone() as momentTz.Moment)
+      .clone()
       .tz(this.props.timezone)
       .format(this.props.timeFormat);
 

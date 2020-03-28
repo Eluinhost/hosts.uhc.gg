@@ -3,7 +3,7 @@ import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { concat } from 'ramda';
 import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 
 export type HostHistoryState = {
   readonly fetching: boolean;

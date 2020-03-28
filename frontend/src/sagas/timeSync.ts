@@ -2,7 +2,7 @@ import { ServerTimeApi } from '../api';
 import { SagaIterator } from 'redux-saga';
 import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
 import { SyncTime } from '../actions';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 
 function* fetchServerTimeSaga(): SagaIterator {
   try {

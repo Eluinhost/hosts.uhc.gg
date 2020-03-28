@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
@@ -18,7 +17,7 @@ type StateProps = {
 
 const MatchOpensComponent: React.FunctionComponent<Props & StateProps> = ({ time, timezone, format }) => (
   <span className="match-time">
-    {(time.clone() as momentTz.Moment).tz(timezone).format(format)}
+    {time.clone().tz(timezone).format(format)}
   </span>
 );
 

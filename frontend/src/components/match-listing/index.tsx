@@ -10,7 +10,7 @@ import { createSelector, Selector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
 import { Settings } from '../../actions';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { RefreshButton } from './RefreshButton';
 import { isUndefined } from 'util';
 import { VisibilityDetector } from '../../services/VisibilityDetector';

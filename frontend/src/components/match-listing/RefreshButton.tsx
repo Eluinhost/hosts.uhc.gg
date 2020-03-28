@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { Classes, Icon, Intent, Button } from '@blueprintjs/core';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -25,8 +24,8 @@ export class RefreshButtonComponent extends React.PureComponent<OwnProps & State
     if (this.props.loading) {
       buttonContent = 'Refreshing...';
     } else if (this.props.lastUpdated) {
-      buttonContent = `Refreshed @ ${(this.props.lastUpdated
-        .clone() as momentTz.Moment)
+      buttonContent = `Refreshed @ ${this.props.lastUpdated
+        .clone()
         .tz(this.props.timezone)
         .format(this.props.format)}`;
     } else {

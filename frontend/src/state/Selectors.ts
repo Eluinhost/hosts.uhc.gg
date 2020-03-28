@@ -1,5 +1,5 @@
 import decodeJwt from 'jwt-decode';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ApplicationState } from './ApplicationState';
 import {
     always,

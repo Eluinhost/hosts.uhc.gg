@@ -1,7 +1,6 @@
 import { Intent, Tag } from '@blueprintjs/core';
 import * as React from 'react';
-import * as moment from 'moment';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
@@ -23,9 +22,9 @@ const MatchOpensTagComponent: React.FunctionComponent<Props & StateProps> = ({ o
     intent={Intent.SUCCESS}
     large
     className="match-opens"
-    title={`Created @ ${(created.clone() as momentTz.Moment).tz(timezone).format(format)}`}
+    title={`Created @ ${created.clone().tz(timezone).format(format)}`}
   >
-    {(opens.clone() as momentTz.Moment).tz(timezone).format(format)}
+    {opens.clone().tz(timezone).format(format)}
   </Tag>
 );
 

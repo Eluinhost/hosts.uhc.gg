@@ -1,5 +1,5 @@
 import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { Authentication } from '../actions';
 
 // TODO move key to saga and out of state

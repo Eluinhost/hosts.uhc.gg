@@ -2,7 +2,7 @@ import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 
 export type UpcomingState = {
   readonly matches: Match[];

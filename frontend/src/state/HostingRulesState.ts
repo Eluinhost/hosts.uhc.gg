@@ -1,6 +1,6 @@
 import { ApiErrors } from '../api';
 import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { GetHostingRules, SetHostingRules } from '../actions';
 
 export type HostingRules = {

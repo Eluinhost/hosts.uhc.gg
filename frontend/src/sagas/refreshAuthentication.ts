@@ -3,7 +3,7 @@ import { select, put, takeEvery, call } from 'redux-saga/effects';
 import { Authentication, LoginPayload } from '../actions';
 import { getAccessTokenClaims, getRefreshTokenClaims, isLoggedIn } from '../state/Selectors';
 import { ApiErrors, AuthenticationApi } from '../api';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { ApplicationState } from '../state/ApplicationState';
 
 function* attemptRefresh(): SagaIterator {

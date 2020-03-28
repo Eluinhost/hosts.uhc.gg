@@ -1,5 +1,5 @@
 import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { Settings } from '../actions';
 
 const storageKey = 'settings';
@@ -23,7 +23,7 @@ export const reducer: ApplicationReducer<SettingsState> = ReducerBuilder.withIni
   storageKey,
   isDarkMode: false,
   is12h: false,
-  timezone: momentTz.tz.guess(),
+  timezone: moment.tz.guess(),
   hideRemoved: true,
   showOwnRemoved: true,
 })

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from "redux-form";
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { Callout, Intent, Overlay } from "@blueprintjs/core";
 
 import { FieldWrapper } from './FieldWrapper';
@@ -29,7 +29,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldPr
   handleDateChange = (date: Date | null): void => {
     if (this.props.disabled) return;
 
-    let momentDate = date && moment.utc(date);
+    let momentDate = date && moment(date.getTime());
 
     this.props.input.onChange(momentDate);
     this.props.input.onBlur(momentDate);
@@ -47,7 +47,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldPr
             {...datePickerProps}
             dateFormat="yyyy-MM-dd"
             inline
-            selected={input?.value?.isValid ? input.value.toDate() : null}
+            selected={input?.value?.isValid() ? (input.value as moment.Moment).toDate() : null}
             onChange={this.handleDateChange}
             showTimeSelect={!this.props.disableTime}
           >

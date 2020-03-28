@@ -3,14 +3,14 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { connect } from 'react-redux';
 import { Settings } from '../../actions';
-import * as momentTz from 'moment-timezone';
+import moment from 'moment-timezone';
 import { Popover, Button, MenuItem, Position, Card, Classes } from "@blueprintjs/core";
 import { contains, toLower, filter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 import { CurrentTime } from './CurrentTime';
 
-const tzs = momentTz.tz.names();
+const tzs = moment.tz.names();
 
 type TimezoneItemProps = {
   readonly timezone: string;

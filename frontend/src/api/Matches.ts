@@ -1,5 +1,5 @@
 import { Match } from '../models/Match';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 import { CreateMatchData } from '../models/CreateMatchData';
 

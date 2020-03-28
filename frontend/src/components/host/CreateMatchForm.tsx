@@ -4,7 +4,7 @@ import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
 import * as React from 'react';
 import { nextAvailableSlot } from './nextAvailableSlot';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
 import { SuggestionsField } from '../fields/SuggestionsField';

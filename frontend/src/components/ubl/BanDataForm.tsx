@@ -5,7 +5,7 @@ import {
   reduxForm,
   SubmissionError
 } from "redux-form";
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { TextField } from '../fields/TextField';
 import { DateTimeField } from '../fields/DateTimeField';
 import { Button, Callout, H5, Intent } from "@blueprintjs/core";
