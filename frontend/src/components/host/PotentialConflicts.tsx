@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
+import { connect } from 'react-redux';
+
 import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../../state/ApplicationState';
-import { always } from 'ramda';
 import { HostFormConflictsState } from '../../state/HostFormConflictsState';
 
 type StateProps = HostFormConflictsState;
@@ -27,7 +26,6 @@ class PotentialConflictsComponent extends React.PureComponent<StateProps> {
   }
 }
 
-export const PotentialConflicts: React.ComponentType = connect<StateProps, {}, {}>(
-  (state: ApplicationState): StateProps => state.hostFormConflicts,
-  always({}),
+export const PotentialConflicts: React.ComponentType = connect<StateProps>(
+  state => state.hostFormConflicts,
 )(PotentialConflictsComponent);

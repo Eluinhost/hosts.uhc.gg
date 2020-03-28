@@ -1,4 +1,4 @@
-import { ConfigProps, InjectedFormProps, reduxForm } from "redux-form";
+import { ConfigProps, InjectedFormProps, reduxForm } from 'redux-form';
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
@@ -13,14 +13,17 @@ import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
-import { Button, Callout, Classes, H5, Intent } from "@blueprintjs/core";
-import { asyncValidation, validator } from './validation';
+import { Button, Callout, Classes, H5, Intent } from '@blueprintjs/core';
+import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { SwitchField } from '../fields/SwitchField';
 import { Title } from '../Title';
 import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
+import { connect } from 'react-redux';
+import { HostFormConflicts } from '../../actions';
+import { Dispatch } from 'redux';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -29,6 +32,10 @@ export type CreateMatchFormProps = {
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => void;
+};
+
+type DispatchProps = {
+  updatePotentialConflicts: (data: CreateMatchData) => void;
 };
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
@@ -55,10 +62,15 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
 );
 
 class CreateMatchFormComponent extends React.Component<
-  InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
+  InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps & DispatchProps
 > {
-  componentDidMount() {
-    this.props.asyncValidate!();
+  componentDidUpdate(prevProps: CreateMatchFormProps): void {
+    const now = this.props.currentValues;
+    const prev = prevProps.currentValues;
+
+    if (now.opens !== prev.opens || now.location !== prev.location || now.tournament !== prev.tournament) {
+      this.props.updatePotentialConflicts(now);
+    }
   }
 
   render() {
@@ -104,7 +116,10 @@ class CreateMatchFormComponent extends React.Component<
             datePickerProps={{
               minDate: nextAvailableSlot().toDate(),
               fixedHeight: true,
-              maxDate: moment.utc().add(30, 'd').toDate(),
+              maxDate: moment
+                .utc()
+                .add(30, 'd')
+                .toDate(),
               isClearable: false,
               showTimeSelect: true,
               monthsShown: 2,
@@ -139,7 +154,14 @@ class CreateMatchFormComponent extends React.Component<
               required={false}
               disabled={submitting}
             />
-            <NumberField name="count" label="Game Number" className={Classes.FILL} min={1} required disabled={submitting} />
+            <NumberField
+              name="count"
+              label="Game Number"
+              className={Classes.FILL}
+              min={1}
+              required
+              disabled={submitting}
+            />
           </div>
           <div className="host-form-row">
             <SuggestionsField
@@ -206,7 +228,13 @@ class CreateMatchFormComponent extends React.Component<
           <legend>Server Details</legend>
 
           <div className="host-form-row">
-            <TextField name="ip" className={Classes.FILL} disabled={submitting} label="Server IP Address" required={false} />
+            <TextField
+              name="ip"
+              className={Classes.FILL}
+              disabled={submitting}
+              label="Server IP Address"
+              required={false}
+            />
             <TextField
               name="address"
               className={Classes.FILL}
@@ -296,10 +324,15 @@ class CreateMatchFormComponent extends React.Component<
   }
 }
 
-export const CreateMatchForm: React.ComponentType<
-  CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>
-> = reduxForm<CreateMatchData, CreateMatchFormProps>({
+const connected: React.ComponentType<InjectedFormProps<CreateMatchData, CreateMatchFormProps> &
+  CreateMatchFormProps> = connect(
+  null,
+  (dispatch: Dispatch): DispatchProps => ({
+    updatePotentialConflicts: (data: CreateMatchData) => dispatch(HostFormConflicts.start({ data })),
+  }),
+)(CreateMatchFormComponent);
+
+export const CreateMatchForm: React.ComponentType<CreateMatchFormProps &
+  ConfigProps<CreateMatchData, CreateMatchFormProps>> = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: asyncValidation,
-  asyncBlurFields: ['opens', 'region', 'tournament'],
-})(CreateMatchFormComponent);
+})(connected);
