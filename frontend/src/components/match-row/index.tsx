@@ -48,7 +48,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
     this.props.openRemovalModal(this.props.match.id);
   };
 
-  private authorElement = (m: Match): React.ReactElement<any> => {
+  private authorElement = (m: Match): React.ReactElement => {
     if (m.hostingName) return <small>/u/{m.author}</small>;
 
     return <span>/u/{m.author}</span>;
@@ -133,7 +133,6 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
   }
 }
 
-// TODO remove props
 const stateSelector: ParametricSelector<ApplicationState, MatchRowProps | undefined, StateProps> = createSelector(
   matchesPermissions('hosting advisor'),
   getUsername,

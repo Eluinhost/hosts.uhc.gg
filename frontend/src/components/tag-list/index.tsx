@@ -16,6 +16,6 @@ export class TagList extends React.PureComponent<Props> {
   );
 
   public render() {
-    return <span>{this.props.items.map(this.renderItem)}</span>;
+    return <>{this.props.items.map(this.renderItem)}</>;
   }
 }
