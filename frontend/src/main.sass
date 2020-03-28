@@ -206,9 +206,17 @@ html, body, #root
 a.match-row-link:hover
   text-decoration: none
 
-.match-details__scenarios, .match-tags, .match-scenarios, .server-tags, .match-top-left-ribbon
+.match-details__scenarios,
+.match-tags,
+.match-scenarios,
+.server-tags,
   .bp3-tag
     margin: 5px
+
+.match-top-left-ribbon,
+.match-top-right-ribbon
+  .bp3-tag
+    margin: 0 3px 0 3px
 
 .match-row
   position: relative
@@ -220,12 +228,12 @@ a.match-row-link:hover
 
   .match-top-left-ribbon
     position: absolute
-    top: -13px
+    top: -15px
     left: -10px
 
   .match-top-right-ribbon
     position: absolute
-    top: -13px
+    top: -15px
     right: -10px
 
   .match-opens, .match-region
@@ -234,9 +242,6 @@ a.match-row-link:hover
   .match-tags
     padding-top: 7px
     padding-bottom: 7px
-
-  .match-top-right-ribbon .bp3-tag
-    margin-left: 10px
 
 .bp3-card.bp3-intent-danger
   background-color: $red1
