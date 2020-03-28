@@ -3,7 +3,7 @@ import { AutoSizer, List, ListRowProps, WindowScroller } from 'react-virtualized
 import { Callout, Classes, H5, InputGroup, NonIdealState, Spinner } from "@blueprintjs/core";
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
-import { filter, propEq, complement, always, map, when, toLower, curry, CurriedFunction2, any, pipe } from 'ramda';
+import { filter, propEq, complement, always, map, when, toLower, curry, any, pipe } from 'ramda';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -29,7 +29,7 @@ type State = {
   readonly filtered: BanEntry[];
 };
 
-const caseInsensitiveContains: CurriedFunction2<string, string, boolean> = curry(
+const caseInsensitiveContains = curry(
   (needle: string, haystack: string) => toLower(haystack).indexOf(toLower(needle)) > -1,
 );
 

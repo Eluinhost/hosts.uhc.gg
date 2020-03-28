@@ -9,7 +9,8 @@ import {
     tryCatch,
     intersection,
     isEmpty,
-    memoize,
+    memoizeWith,
+    toString,
     identity
 } from 'ramda';
 import {createSelector, Selector} from 'reselect';
@@ -143,7 +144,7 @@ const containsAny = <T>(required: T[]) => (toCheck: T[]): boolean => intersectio
  * Check if the user has any of the permissions, empty array/string
  * means every user passes as long as they are logged in
  */
-export const matchesPermissions: (required: string | string[]) => Selector<ApplicationState, boolean> = memoize((required: string | string[]) =>
+export const matchesPermissions: (required: string | string[]) => Selector<ApplicationState, boolean> = memoizeWith(toString, (required: string | string[]) =>
   createSelector<ApplicationState, boolean, string[], boolean>(isLoggedIn, getPermissions, (logged, perms): boolean => {
     if (!logged) return false;
 

@@ -66,7 +66,7 @@ export class UsernameSearcher extends React.Component<{}, State> {
     );
 
   convertToFlatList = (data: { [key: string]: string[] }): UsernameEntry[] =>
-    flatten<UsernameEntry>(values<UsernameEntry[]>(mapObjIndexed<string[], UsernameEntry[]>(this.convertEntryInMap, data)));
+    flatten(values(mapObjIndexed<string[], UsernameEntry[]>(this.convertEntryInMap, data)));
 
   onChange = (value: string): Promise<void> =>
     UBLApi.searchBannedUsernames(value)

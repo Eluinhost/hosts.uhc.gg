@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { matchesPermissions } from '../state/Selectors';
 import { createSelector } from 'reselect';
-import { memoize } from 'ramda';
+import { memoizeWith, toString } from 'ramda';
 
 type StateProps = {
   readonly show: boolean;
@@ -28,7 +28,7 @@ const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissi
   return null;
 };
 
-const memoizedStateSelector = memoize((perms: string | string[]) =>
+const memoizedStateSelector = memoizeWith(toString, (perms: string | string[]) =>
   createSelector(matchesPermissions(perms), show => ({
     show,
   })),

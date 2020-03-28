@@ -126,7 +126,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
   .handle(FetchUserCountPerPermission.success, (prev, action) => ({
     ...prev,
     isFetching: false,
-    nodes: toPairs<string, number>(action.payload!.result).map(([key, value]) =>
+    nodes: toPairs(action.payload!.result).map(([key, value]) =>
       createPermissionFolder(key, value),
     ),
   }))
@@ -164,7 +164,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
       } else {
         const letters = action.payload!.result as { [key: string]: number };
 
-        childNodes = toPairs<string, number>(letters)
+        childNodes = toPairs(letters)
           .map<LetterFolder>(pair => createLetterFolder(permission, pair[0], pair[1]))
           .sort((left, right) => left.letter.localeCompare(right.letter));
       }

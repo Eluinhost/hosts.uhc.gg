@@ -5,7 +5,7 @@ import * as Mark from 'markup-js';
 import * as moment from 'moment';
 import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from "@blueprintjs/core";
 import { Preset, presets } from './presets';
-import {memoize} from 'ramda';
+import {memoizeWith, toString} from 'ramda';
 import { Markdown } from '../Markdown';
 
 export type TemplateFieldProps = BaseFieldProps & {
@@ -126,7 +126,7 @@ class TemplateFieldComponent extends React.Component<
       currentTabId: newTabId,
     });
 
-  onPresetClick: (p: Preset) => () => void = memoize((p: Preset) => (): void => {
+  onPresetClick: (p: Preset) => () => void = memoizeWith(toString, (p: Preset) => (): void => {
     this.props.changeTemplate(p.template);
     this.setState({
       currentTabId: 'host-form-template-tab-template',

@@ -4,9 +4,8 @@ import { MembersPageDispatchProps, MembersPageStateProps, MembersPage as Compone
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import * as React from 'react';
-import { PermissionsState } from '../../state/PermissionsState';
 import { getPermissions } from '../../state/Selectors';
-import { createSelector } from 'reselect';
+import { createSelector, Selector } from "reselect";
 import { flatten, map } from 'ramda';
 import {
   AddPermission,
@@ -16,13 +15,13 @@ import {
   RemovePermission,
 } from '../../actions';
 
-const stateSelector = createSelector<ApplicationState, string[], PermissionsState, MembersPageStateProps>(
+const stateSelector: Selector<ApplicationState, MembersPageStateProps> = createSelector(
   getPermissions,
   state => state.permissions,
   (permissions, permissionState) => ({
     ...permissionState,
-    canModify: flatten<string>(
-      map<string, string[]>(perm => permissionState.allowableModifications[perm] || [], permissions),
+    canModify: flatten(
+      map(perm => permissionState.allowableModifications[perm] || [], permissions),
     ),
   }),
 );

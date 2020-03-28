@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { TimeSyncState } from '../../state/TimeSyncState';
-import { memoize} from 'ramda';
+import { memoizeWith, toString } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 import { SyncTime } from '../../actions';
@@ -52,7 +52,7 @@ class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProp
     }
   }
 
-  private formatOffset = memoize((offset: number): string => {
+  private formatOffset = memoizeWith(toString, (offset: number): string => {
     let o = offset;
     const negative = o < 0;
 
