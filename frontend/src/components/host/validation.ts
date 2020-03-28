@@ -18,8 +18,6 @@ import {
   always,
 } from 'ramda';
 import { isUndefined } from 'util';
-import { Dispatch } from 'redux';
-import { HostFormConflicts } from '../../actions';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { Validator } from '../../services/Validator';
 import { TeamStyles } from '../../models/TeamStyles';
