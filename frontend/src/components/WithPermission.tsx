@@ -12,6 +12,7 @@ type StateProps = {
 export type WithPermissionProps = {
   readonly permission: string | string[];
   readonly alternative?: React.ComponentType;
+  readonly children: React.ReactNode;
 };
 
 const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissionProps> = ({ show, alternative, children }) => {

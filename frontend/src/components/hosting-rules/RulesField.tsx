@@ -13,15 +13,15 @@ type RulesFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const RulesTab: React.FunctionComponent<WrappedFieldProps<any> & RulesFieldProps> = ({ input, disabled }) => (
+const RulesTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = ({ input, disabled }) => (
   <TextArea {...input} disabled={disabled} fill rows={15} />
 );
 
-const PreviewTab: React.FunctionComponent<WrappedFieldProps<any> & RulesFieldProps> = ({ input }) => (
+const PreviewTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = ({ input }) => (
   <Pre dangerouslySetInnerHTML={{ __html: parser.render(input!.value) }} />
 );
 
-const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps<any> & RulesFieldProps> = props => (
+const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = props => (
   <FieldWrapper meta={props.meta} required={props.required} hideErrors>
     <div className={`markdown-field-wrapper ${props.className || ''}`}>
       {!!props.label && <RenderLabel label={props.label!} required={props.required} />}

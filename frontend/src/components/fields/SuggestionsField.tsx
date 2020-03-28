@@ -20,7 +20,7 @@ const renderOptions = map<string, React.ReactElement>(it => (
   </option>
 ));
 
-const renderField: React.FunctionComponent<WrappedFieldProps<any> & SuggestionsFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps & SuggestionsFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <ControlGroup fill>
       <input
@@ -31,7 +31,7 @@ const renderField: React.FunctionComponent<WrappedFieldProps<any> & SuggestionsF
         disabled={props.disabled}
       />
       <div className={`${Classes.MINIMAL} ${Classes.HTML_SELECT}`} style={{ flex: '0' }}>
-        <select onChange={props.input!.onChange} value="default" disabled={props.disabled}>
+        <select onChange={props.input.onChange} value="default" disabled={props.disabled}>
           <option value="default">{props.suggestionText}</option>
           {renderOptions(props.suggestions)}
         </select>

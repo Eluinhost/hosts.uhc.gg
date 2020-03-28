@@ -1,4 +1,4 @@
-import { FormStateMap, reducer as formReducer } from 'redux-form';
+import { FormStateMap, reducer as formReducer } from "redux-form";
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { reducer as Authentication, AuthenticationState } from './AuthenticationState';
@@ -39,9 +39,9 @@ const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || com
 export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const sagaMiddleware = createSagaMiddleware();
 
-  const store = createStore<ApplicationState>(
+  const store = createStore(
     combineReducers<ApplicationState>({
-      form: formReducer,
+      form: (state, action) => formReducer(state!, action),
       authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,

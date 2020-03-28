@@ -3,7 +3,8 @@ import { PermissionModerationLogState } from '../../state/PermissionModerationLo
 import { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
 import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from "@blueprintjs/core";
 import { MatchOpens } from '../time/MatchOpens';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { RefreshPermissionModerationLog } from '../../actions';
@@ -56,10 +57,10 @@ const stateSelector = createSelector<ApplicationState, PermissionModerationLogSt
   it => it,
 );
 
-const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+const dispatch = (dispatch: Dispatch): DispatchProps => ({
   refresh: () => dispatch(RefreshPermissionModerationLog.start()),
 });
 
-export const ModerationLog: React.ComponentClass = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
+export const ModerationLog: React.ComponentType = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
   ModerationLogComponent,
 );

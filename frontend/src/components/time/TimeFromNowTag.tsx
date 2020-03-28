@@ -68,6 +68,6 @@ const stateSelector = createSelector<ApplicationState, number, StateProps>(
   }),
 );
 
-export const TimeFromNowTag: React.ComponentClass<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
+export const TimeFromNowTag: React.ComponentType<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
   TimeFromNowComponent,
 );

@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom';
 import { TimeFromNowTag } from '../time/TimeFromNowTag';
 import { HoverSwap } from '../HoverSwap';
 import { MatchOpensTag } from '../time/MatchOpensTag';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector, ParametricSelector } from "reselect";
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
@@ -143,12 +144,12 @@ const stateSelector: ParametricSelector<ApplicationState, MatchRowProps | undefi
   }),
 );
 
-const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+const dispatch = (dispatch: Dispatch): DispatchProps => ({
   openApprovalModal: (id: number) => dispatch(ApproveMatch.openDialog(id)),
   openRemovalModal: (id: number) => dispatch(RemoveMatch.openDialog(id)),
 });
 
-export const MatchRow: React.ComponentClass<MatchRowProps> = connect<StateProps, DispatchProps, MatchRowProps>(
+export const MatchRow: React.ComponentType<MatchRowProps> = connect<StateProps, DispatchProps, MatchRowProps>(
   stateSelector,
   dispatch,
 )(MatchRowComponent);

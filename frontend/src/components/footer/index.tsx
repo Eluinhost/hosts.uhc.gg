@@ -51,4 +51,4 @@ const selector = createSelector<ApplicationState, boolean, StateProps>(isDarkMod
   isDarkMode,
 }));
 
-export const Footer: React.ComponentClass = connect<StateProps, {}, {}>(selector, always({}))(FooterComponent);
+export const Footer: React.ComponentType = connect<StateProps, {}, {}>(selector, always({}))(FooterComponent);

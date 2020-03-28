@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Button, Classes, Dialog, H5, Intent } from "@blueprintjs/core";
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { Dispatch } from "redux";
+
 import { ApplicationState } from '../../state/ApplicationState';
 import { isDarkMode } from '../../state/Selectors';
 import { ApproveMatch } from '../../actions';
@@ -54,7 +56,7 @@ const stateSelector = createSelector<ApplicationState, number | null, boolean, S
   (id, isDarkMode) => ({ id, isDarkMode }),
 );
 
-const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+const dispatch = (dispatch: Dispatch): DispatchProps => ({
   onConfirm: (id: number) => dispatch(ApproveMatch.start({ id })),
   onClose: () => dispatch(ApproveMatch.closeDialog()),
 });

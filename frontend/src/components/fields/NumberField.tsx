@@ -13,7 +13,7 @@ export interface NumberFieldProps extends BaseFieldProps {
   readonly max?: number;
 }
 
-const renderField: React.FunctionComponent<WrappedFieldProps<any> & NumberFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps & NumberFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <input
       {...props.input}

@@ -117,7 +117,7 @@ const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, s
   }),
 );
 
-export const CurrentTime: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
+export const CurrentTime: React.ComponentType = connect<StateProps, DispatchProps, {}>(
   stateSelector,
   (dispatch): DispatchProps => ({
     resync: () => dispatch(SyncTime.start()),

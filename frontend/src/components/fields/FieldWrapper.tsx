@@ -3,14 +3,14 @@ import { WrappedFieldMetaProps } from 'redux-form';
 import { Classes, FormGroup, Intent, Label } from "@blueprintjs/core";
 
 export type FieldWrapperProps = {
-  readonly label?: string | React.ReactElement<any>;
+  readonly label?: string | React.ReactElement;
   readonly required?: boolean;
-  readonly meta: WrappedFieldMetaProps<any>;
+  readonly meta: WrappedFieldMetaProps;
   readonly hideErrors?: boolean;
   readonly className?: string;
 };
 
-const formIntent = (meta: WrappedFieldMetaProps<any>): Intent => {
+const formIntent = (meta: WrappedFieldMetaProps): Intent => {
   if (meta.error) {
     return Intent.DANGER;
   }
@@ -22,7 +22,7 @@ const formIntent = (meta: WrappedFieldMetaProps<any>): Intent => {
   return Intent.NONE;
 };
 
-export const RenderErrors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
+export const RenderErrors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <div className={Classes.FORM_HELPER_TEXT}>{error}</div>;
 
   if (warning) return <div className={Classes.FORM_HELPER_TEXT}>{warning}</div>;
@@ -30,7 +30,7 @@ export const RenderErrors: React.FunctionComponent<WrappedFieldMetaProps<any>> =
   return null;
 };
 
-export const RenderLabel: React.FunctionComponent<{ label: string | React.ReactElement<any>; required?: boolean }> = ({
+export const RenderLabel: React.FunctionComponent<{ label: string | React.ReactElement; required?: boolean }> = ({
   label,
   required = false,
 }) => (

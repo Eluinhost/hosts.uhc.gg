@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from "@blueprintjs/core";
-import { FormProps, reduxForm } from 'redux-form';
+import { InjectedFormProps, reduxForm } from "redux-form";
 import { ApplicationState } from '../../state/ApplicationState';
 import { SuggestionsField } from '../fields/SuggestionsField';
 import { RemoveMatch } from '../../actions';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
 import { isDarkMode } from '../../state/Selectors';
 import { Validator } from '../../services/Validator';
@@ -24,7 +25,7 @@ type DispatchProps = {
 };
 
 class RemovalModalComponent extends React.PureComponent<
-  StateProps & DispatchProps & FormProps<RemovalModalData, StateProps & DispatchProps, ApplicationState>
+  StateProps & DispatchProps & InjectedFormProps<RemovalModalData, StateProps & DispatchProps>
 > {
   public render() {
     const { id, isDarkMode, onClose, handleSubmit, submitting, invalid } = this.props;
@@ -79,8 +80,7 @@ const validator = new Validator<RemovalModalData>().withValidationFunction('reas
 
 const RemovalModalWithForm: React.ComponentClass<StateProps & DispatchProps> = reduxForm<
   RemovalModalData,
-  StateProps & DispatchProps,
-  ApplicationState
+  StateProps & DispatchProps
 >({
   form: RemoveMatch.formId,
   validate: validator.validate,
@@ -95,11 +95,11 @@ const stateSelector = createSelector<ApplicationState, number | null, boolean, S
   (id, isDarkMode) => ({ id, isDarkMode }),
 );
 
-const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+const dispatch = (dispatch: Dispatch): DispatchProps => ({
   onClose: () => dispatch(RemoveMatch.closeDialog()),
   onConfirm: (id: number, reason: string) => dispatch(RemoveMatch.start({ id, reason })),
 });
 
-export const RemovalModal: React.ComponentClass = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
+export const RemovalModal: React.ComponentType = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
   RemovalModalWithForm,
 );

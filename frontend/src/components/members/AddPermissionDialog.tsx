@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormProps, reduxForm, SubmissionError } from 'redux-form';
+import { InjectedFormProps, reduxForm, SubmissionError } from "redux-form";
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
 import { TextField } from '../fields/TextField';
@@ -26,7 +26,7 @@ type AddPermissionDialogStateProps = {
 const AddPermissionDialogComponent: React.FunctionComponent<
   AddPermissionDialogStateProps &
     AddPermissionDialogDispatchProps &
-    FormProps<AddPermissionDialogData, AddPermissionDialogStateProps & AddPermissionDialogDispatchProps, ApplicationState>
+    InjectedFormProps<AddPermissionDialogData, AddPermissionDialogStateProps & AddPermissionDialogDispatchProps>
 > = ({ handleSubmit, submitting, invalid, close, state, isDarkMode }) => (
   <Dialog
     icon="add"
@@ -63,10 +63,9 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
   return undefined;
 });
 
-const AddPermissionDialogForm: React.FunctionComponent<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> = reduxForm<
+const AddPermissionDialogForm: React.ComponentType<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> = reduxForm<
   AddPermissionDialogData,
-  AddPermissionDialogStateProps & AddPermissionDialogDispatchProps,
-  ApplicationState
+  AddPermissionDialogStateProps & AddPermissionDialogDispatchProps
 >({
   form: 'add-permission-form',
   validate: validator.validate,
@@ -85,12 +84,12 @@ const mapStateToProps = (state: ApplicationState): AddPermissionDialogStateProps
   isDarkMode: state.settings.isDarkMode,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): AddPermissionDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch): AddPermissionDialogDispatchProps => ({
   close: () => dispatch(AddPermission.closeDialog()),
   confirm: (username: string) => dispatch(AddPermission.start(username)),
 });
 
-export const AddPermissionDialog: React.ComponentClass = connect<
+export const AddPermissionDialog: React.ComponentType = connect<
   AddPermissionDialogStateProps,
   AddPermissionDialogDispatchProps,
   {}

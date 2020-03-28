@@ -4,7 +4,8 @@ import { MatchListing } from '../match-listing';
 import { identity } from 'ramda';
 import { Title } from '../Title';
 import { HostHistoryState } from '../../state/HostHistoryState';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { LoadHostHistory } from '../../actions';
@@ -57,13 +58,13 @@ const stateSelector = createSelector<ApplicationState, HostHistoryState, StatePr
 );
 
 // TODO get rid of ownprops in dispatch mapping
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>, ownProps?: RouteComponentProps<RouteParams>): DispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch, ownProps?: RouteComponentProps<RouteParams>): DispatchProps => ({
   reload: () => dispatch(LoadHostHistory.start({ host: ownProps!.match.params.host, refresh: true })),
   next: () => dispatch(LoadHostHistory.start({ host: ownProps!.match.params.host, refresh: false })),
   clear: () => dispatch(LoadHostHistory.clear()),
 });
 
-export const HistoryPage: React.ComponentClass<RouteComponentProps<RouteParams>> = connect<
+export const HistoryPage: React.ComponentType<RouteComponentProps<RouteParams>> = connect<
   StateProps,
   DispatchProps,
   RouteComponentProps<RouteParams>

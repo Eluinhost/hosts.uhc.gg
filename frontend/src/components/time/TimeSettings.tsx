@@ -141,7 +141,7 @@ const stateSelector = createSelector<ApplicationState, string, boolean, StatePro
   }),
 );
 
-export const TimeSettings: React.ComponentClass = connect<StateProps, DispatchProps, {}>(
+export const TimeSettings: React.ComponentType = connect<StateProps, DispatchProps, {}>(
   stateSelector,
   (dispatch): DispatchProps => ({
     toggleTimeFormat: () => dispatch(Settings.toggleIs12h()),

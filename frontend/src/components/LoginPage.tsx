@@ -60,10 +60,10 @@ const stateSelector = createSelector<ApplicationState, boolean, StateProps>(isLo
   loggedIn,
 }));
 
-export const LoginPage: React.ComponentClass<RouteComponentProps<any>> = connect<
+export const LoginPage: React.ComponentType<RouteComponentProps<any>> = connect<
   StateProps,
   DispatchProps,
   RouteComponentProps<any>
->(stateSelector, (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+>(stateSelector, (dispatch: Dispatch): DispatchProps => ({
   login: (data: LoginPayload) => dispatch(Authentication.login(data)),
 }))(LoginPageComponent);

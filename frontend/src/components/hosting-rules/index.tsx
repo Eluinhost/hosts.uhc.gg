@@ -4,7 +4,8 @@ import { Button, Callout, Collapse, H3, Intent } from "@blueprintjs/core";
 import { Markdown } from '../Markdown';
 import { SetRulesDialog } from './SetRulesDialog';
 import { WithPermission } from '../WithPermission';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { GetHostingRules, SetHostingRules } from '../../actions';
 import { ApplicationState } from '../../state/ApplicationState';
 
@@ -80,11 +81,11 @@ class Dropdown extends React.PureComponent<DropdownStateProps & DropdownDispatch
   }
 }
 
-export const HostingRules: React.ComponentClass = connect<DropdownStateProps, DropdownDispatchProps, {}>(
+export const HostingRules: React.ComponentType = connect<DropdownStateProps, DropdownDispatchProps, {}>(
   (state: ApplicationState): DropdownStateProps => ({
     rules: state.rules,
   }),
-  (dispatch: Dispatch<ApplicationState>): DropdownDispatchProps => ({
+  (dispatch: Dispatch): DropdownDispatchProps => ({
     getRules: () => dispatch(GetHostingRules.start()),
     startEdit: () => dispatch(SetHostingRules.openEditor()),
   }),

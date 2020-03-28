@@ -68,13 +68,13 @@ const stateSelector = createSelector<ApplicationState, ApiKeyState, StateProps>(
   apiKey => ({ apiKey }),
 );
 
-const dispatch = (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+const dispatch = (dispatch: Dispatch): DispatchProps => ({
   refreshApiKey: () => dispatch(FetchApiKey.start()),
   regenerateApiKey: () => dispatch(RegenerateApiKey.start()),
   resetStorage: () => dispatch(ClearStorage.start()),
 });
 
-export const ProfilePage: React.ComponentClass<RouteComponentProps<any>> = connect<
+export const ProfilePage: React.ComponentType<RouteComponentProps<any>> = connect<
   StateProps,
   DispatchProps,
   RouteComponentProps<any>

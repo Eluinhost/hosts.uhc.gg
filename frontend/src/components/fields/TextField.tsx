@@ -12,7 +12,7 @@ export type TextFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const renderField: React.FunctionComponent<WrappedFieldProps<any> & TextFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps & TextFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <input
       {...props.input}

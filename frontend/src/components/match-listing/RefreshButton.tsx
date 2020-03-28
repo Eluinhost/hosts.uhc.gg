@@ -53,7 +53,7 @@ const stateSelector = createSelector<ApplicationState, string, string, StateProp
   (format, timezone) => ({ format, timezone }),
 );
 
-export const RefreshButton: React.ComponentClass<OwnProps> = connect<StateProps, {}, OwnProps>(
+export const RefreshButton: React.ComponentType<OwnProps> = connect<StateProps, {}, OwnProps>(
   stateSelector,
   () => ({}),
 )(RefreshButtonComponent);

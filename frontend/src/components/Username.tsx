@@ -54,7 +54,7 @@ const stateSelector = createSelector<ApplicationState, boolean, string | null, S
 export const Username: React.ComponentClass = withRouter(
   connect<StateProps, DispatchProps, RouteComponentProps<any>>(
     stateSelector,
-    (dispatch: Dispatch<ApplicationState>, ownProps?: RouteComponentProps<any>): DispatchProps => ({
+    (dispatch: Dispatch, ownProps?: RouteComponentProps<any>): DispatchProps => ({
       logout: (): void => {
         dispatch(Authentication.logout());
         ownProps!.history.push('/');

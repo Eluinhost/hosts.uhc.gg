@@ -38,6 +38,6 @@ const stateSelector = createSelector<ApplicationState, string, string, StateProp
   }),
 );
 
-export const MatchOpensTag: React.ComponentClass<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
+export const MatchOpensTag: React.ComponentType<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
   MatchOpensTagComponent,
 );

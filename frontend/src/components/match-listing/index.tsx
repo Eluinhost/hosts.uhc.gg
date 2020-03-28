@@ -4,7 +4,8 @@ import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
 import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector, Selector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
@@ -217,13 +218,13 @@ const stateSelector: Selector<ApplicationState, StateProps> = createSelector(
   }),
 );
 
-export const MatchListing: React.ComponentClass<MatchListingProps> = connect<
+export const MatchListing: React.ComponentType<MatchListingProps> = connect<
   StateProps,
   DispatchProps,
   MatchListingProps
 >(
   stateSelector,
-  (dispatch: Dispatch<ApplicationState>): DispatchProps => ({
+  (dispatch: Dispatch): DispatchProps => ({
     toggleHideRemoved: () => dispatch(Settings.toggleHideRemoved()),
     toggleShowOwnRemoved: () => dispatch(Settings.toggleShowOwnRemoved()),
   }),

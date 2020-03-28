@@ -15,7 +15,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly renderClearButton?: React.ComponentType<{ value: any, onClear: () => void }>
 }
 
-export const Errors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
+export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <Callout intent={Intent.DANGER}>{error}</Callout>;
 
   if (warning) return <Callout intent={Intent.WARNING}>{warning}</Callout>;
@@ -23,16 +23,16 @@ export const Errors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ er
   return null;
 };
 
-class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFieldProps> {
-  triggerBlur = (date: moment.Moment): void => this.props.input!.onBlur(date, undefined, undefined);
+class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldProps> {
+  triggerBlur = (date: moment.Moment): void => this.props.input.onChange(date);
 
   handleDateChange = (date: Date | null): void => {
     if (this.props.disabled) return;
 
     let momentDate = date && moment.utc(date);
 
-    this.props.input!.onChange(momentDate, undefined, undefined);
-    this.props.input!.onBlur(momentDate, undefined, undefined);
+    this.props.input.onChange(momentDate);
+    this.props.input.onBlur(momentDate);
   };
 
   handleClear = () => this.handleDateChange(null);

@@ -9,7 +9,8 @@ import { MatchOpens } from '../time/MatchOpens';
 import { MatchDetailsState } from '../../state/MatchDetailsState';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 
@@ -224,14 +225,14 @@ const stateSelector = createSelector<ApplicationState, MatchDetailsState, boolea
 );
 
 // TODO get rid of ownprops
-const dispatch = (dispatch: Dispatch<ApplicationState>, props?: OwnProps): DispatchProps => ({
+const dispatch = (dispatch: Dispatch, props?: OwnProps): DispatchProps => ({
   clear: () => dispatch(FetchMatchDetails.clear()),
   load: (id: number) => dispatch(FetchMatchDetails.start({ id })),
   approve: () => dispatch(ApproveMatch.openDialog(props!.id)),
   remove: () => dispatch(RemoveMatch.openDialog(props!.id)),
 });
 
-export const MatchDetails: React.ComponentClass<OwnProps> = connect<StateProps, DispatchProps, OwnProps>(
+export const MatchDetails: React.ComponentType<OwnProps> = connect<StateProps, DispatchProps, OwnProps>(
   stateSelector,
   dispatch,
 )(MatchDetailsComponent);

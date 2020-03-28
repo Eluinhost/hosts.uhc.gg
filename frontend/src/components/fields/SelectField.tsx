@@ -14,7 +14,7 @@ export interface SelectFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
 }
 
-const renderSelect: React.FunctionComponent<WrappedFieldProps<any> & SelectFieldProps> = props => (
+const renderSelect: React.FunctionComponent<WrappedFieldProps & SelectFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <div className={`${Classes.HTML_SELECT} ${props.className || ''}`}>
       <select {...props.input} disabled={props.disabled} className={!props.meta.valid ? Classes.INTENT_DANGER : ''}>

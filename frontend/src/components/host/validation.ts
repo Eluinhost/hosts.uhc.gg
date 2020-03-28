@@ -18,7 +18,6 @@ import {
   always,
 } from 'ramda';
 import { isUndefined } from 'util';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { HostFormConflicts } from '../../actions';
 import { CreateMatchData } from '../../models/CreateMatchData';
@@ -113,6 +112,6 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
     return address.length >= 5 ? undefined : 'Address must be at least 5 characters';
   });
 
-export const asyncValidation = async (values: CreateMatchData, dispatch: Dispatch<ApplicationState>): Promise<void> => {
+export const asyncValidation = async (values: CreateMatchData, dispatch: Dispatch): Promise<void> => {
   dispatch(HostFormConflicts.start({ data: values }));
 };

@@ -26,11 +26,11 @@ const stateSelector: Selector<ApplicationState, MembersPageStateProps> = createS
   }),
 );
 
-export const MembersPage: React.ComponentClass<RouteComponentProps<any>> = connect<
+export const MembersPage: React.ComponentType<RouteComponentProps<any>> = connect<
   MembersPageStateProps,
   MembersPageDispatchProps,
   RouteComponentProps<any>
->(stateSelector, (dispatch: Dispatch<ApplicationState>): MembersPageDispatchProps => ({
+>(stateSelector, (dispatch: Dispatch): MembersPageDispatchProps => ({
   fetchPermissionList: () => dispatch(FetchUserCountPerPermission.start()),
   expandPermissionNode: (permission: string) => dispatch(PermissionNode.open(permission)),
   expandLetterNode: (permission: string, letter: string) => dispatch(PermissionLetterNode.open({ permission, letter })),

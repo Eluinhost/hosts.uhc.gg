@@ -186,7 +186,7 @@ export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
           onClose={this.closeEditDialog}
         >
           <div className={Classes.DIALOG_BODY}>
-            <BanDataForm onSubmit={this.confirmEdit} initialValues={this.props.ban} />
+            <BanDataForm submitBan={this.confirmEdit} initialValues={this.props.ban} />
           </div>
           <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>

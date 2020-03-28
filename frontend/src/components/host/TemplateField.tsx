@@ -28,11 +28,11 @@ export const renderToMarkdown = (template: string, context: any): string =>
     },
   });
 
-const TemplateTab: React.FunctionComponent<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, disabled }) => (
+const TemplateTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> = ({ input, disabled }) => (
   <TextArea {...input} disabled={disabled} fill rows={15} />
 );
 
-const PreviewTab: React.FunctionComponent<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, context }) => (
+const PreviewTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> = ({ input, context }) => (
   <Markdown markdown={renderToMarkdown(input!.value, context)} />
 );
 
@@ -70,7 +70,7 @@ const renderSamples = (context: any): React.ReactElement[] =>
     </tr>
   ));
 
-const HelpTab: React.FunctionComponent<WrappedFieldProps<any> & TemplateFieldProps> = ({ input, context }) => (
+const HelpTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> = ({ context }) => (
   <Callout intent={Intent.PRIMARY}>
     <H5>Template information</H5>
     <div>
@@ -114,7 +114,7 @@ type TemplateFieldComponentState = {
 };
 
 class TemplateFieldComponent extends React.Component<
-  WrappedFieldProps<any> & TemplateFieldProps,
+  WrappedFieldProps  & TemplateFieldProps,
   TemplateFieldComponentState
 > {
   state = {

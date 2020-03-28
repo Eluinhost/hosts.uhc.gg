@@ -19,7 +19,7 @@ const onAdd = (input?: WrappedFieldInputProps) => (newValues: string[]): void =>
   const current = (input.value as string[]) || [];
   const combined = combineTags(current, newValues);
 
-  input.onChange(combined, combined, current);
+  input.onChange(combined);
 };
 
 const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => {
@@ -30,17 +30,17 @@ const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => 
   const newValues = current.filter(it => it !== removed);
 
   if (newValues.length !== current.length) {
-    input.onChange(newValues, newValues, current);
+    input.onChange(newValues);
   }
 };
 
-const renderField: React.FunctionComponent<WrappedFieldProps<any> & TagsFieldProps> = props => (
+const renderField: React.FunctionComponent<WrappedFieldProps & TagsFieldProps> = props => (
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <TagInput
       intent={!props.meta.valid ? Intent.DANGER : Intent.NONE}
       values={props.input && props.input.value ? props.input.value : []}
-      onAdd={onAdd(props.input!)}
-      onRemove={onRemove(props.input!)}
+      onAdd={onAdd(props.input)}
+      onRemove={onRemove(props.input)}
       inputProps={{ disabled: props.disabled }}
     />
     {props.children}

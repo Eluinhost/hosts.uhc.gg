@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormProps, reduxForm, SubmissionError } from 'redux-form';
+import { InjectedFormProps, reduxForm, SubmissionError } from "redux-form";
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Callout, Classes, Dialog, H5, Intent } from "@blueprintjs/core";
 import { connect } from 'react-redux';
@@ -18,7 +18,7 @@ type RemovePermissionDialogStateProps = {
 };
 
 const RemovePermissionDialogComponent: React.FunctionComponent<
-  RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & FormProps<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps, ApplicationState>
+  RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & InjectedFormProps<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps>
 > = ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
   <Dialog icon="remove" isOpen={!!state} onClose={close} title="Remove role" className={isDarkMode ? Classes.DARK : ''}>
     <div className={`${Classes.DIALOG_BODY} remove-permission-body`}>
@@ -40,9 +40,9 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
   </Dialog>
 );
 
-const RemovePermissionDialogForm: React.FunctionComponent<
+const RemovePermissionDialogForm: React.ComponentType<
   RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps
-> = reduxForm<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps, ApplicationState>({
+> = reduxForm<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps>({
   form: 'remove-permission-form',
   onSubmit: async (values, dispatch, props): Promise<void> => {
     try {
@@ -59,12 +59,12 @@ const mapStateToProps = (state: ApplicationState): RemovePermissionDialogStatePr
   isDarkMode: state.settings.isDarkMode,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>): RemovePermissionDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch): RemovePermissionDialogDispatchProps => ({
   close: () => dispatch(RemovePermission.closeDialog()),
   confirm: () => dispatch(RemovePermission.start()),
 });
 
-export const RemovePermissionDialog: React.ComponentClass = connect<
+export const RemovePermissionDialog: React.ComponentType = connect<
   RemovePermissionDialogStateProps,
   RemovePermissionDialogDispatchProps,
   {}

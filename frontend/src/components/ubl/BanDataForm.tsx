@@ -1,6 +1,10 @@
 import * as React from 'react';
-import { FormProps, reduxForm, SubmissionError } from 'redux-form';
-import { ApplicationState } from '../../state/ApplicationState';
+import {
+  ConfigProps,
+  InjectedFormProps,
+  reduxForm,
+  SubmissionError
+} from "redux-form";
 import * as moment from 'moment';
 import { TextField } from '../fields/TextField';
 import { DateTimeField } from '../fields/DateTimeField';
@@ -10,7 +14,7 @@ import { ApiErrors } from '../../api';
 import { Validator } from '../../services/Validator';
 
 export type BanDataFormProps = {
-  readonly onSubmit: (values: BanData) => Promise<void>;
+  readonly submitBan: (values: BanData) => Promise<void>;
 };
 
 export type BanData = {
@@ -34,7 +38,7 @@ const ClearButton: React.FunctionComponent<{ value: any, onClear: () => void }> 
   <Button className="ban-expiry-input_clear-button" intent={value ? Intent.NONE : Intent.DANGER} text="Permanent" onClick={onClear} />
 );
 
-export const BanDataFormComponent: React.FunctionComponent<FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps> = ({
+export const BanDataFormComponent: React.FunctionComponent<InjectedFormProps<BanData, BanDataFormProps> & BanDataFormProps> = ({
   handleSubmit,
   submitting,
   valid,
@@ -106,17 +110,15 @@ const validator = new Validator<BanData>()
   })
   .withValidation('starts', starts => !starts || !starts.isValid(), 'A valid date must be supplied');
 
-export const BanDataForm: React.FunctionComponent<
-  FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps
-> = reduxForm<BanData, BanDataFormProps>({
+export const BanDataForm: React.ComponentType<BanDataFormProps & Partial<ConfigProps<BanData, BanDataFormProps>>> = reduxForm<BanData, BanDataFormProps>({
   form: 'ban-data-form',
   initialValues: {
     starts: today,
     expires: earliest,
   },
   validate: validator.validate,
-  onSubmit: (values, dispatch, props) =>
-    props.onSubmit(values).catch(err => {
+  onSubmit: (values: BanData, dispatch, props) =>
+    props.submitBan(values).catch(err => {
       if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
       if (err instanceof ApiErrors.NotAuthenticatedError) {

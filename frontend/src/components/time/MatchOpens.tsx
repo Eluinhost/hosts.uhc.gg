@@ -31,6 +31,6 @@ const stateSelector = createSelector<ApplicationState, string, string, StateProp
   }),
 );
 
-export const MatchOpens: React.ComponentClass<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
+export const MatchOpens: React.ComponentType<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
   MatchOpensComponent,
 );

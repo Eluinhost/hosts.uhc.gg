@@ -26,7 +26,7 @@ class CreateBanPageComponent extends React.PureComponent<Props & RouteComponentP
       <div>
         <Title>Create new ban</Title>
         <H1>Create new ban</H1>
-        <BanDataForm onSubmit={this.handleSubmit} />
+        <BanDataForm submitBan={this.handleSubmit} />
       </div>
     );
   }
@@ -36,7 +36,7 @@ const stateSelector = createSelector<ApplicationState, string | null, Props>(get
   accessToken,
 }));
 
-export const CreateBanPage: React.ComponentClass<RouteComponentProps<any>> = connect<
+export const CreateBanPage: React.ComponentType<RouteComponentProps<any>> = connect<
   Props,
   {},
   RouteComponentProps<any>

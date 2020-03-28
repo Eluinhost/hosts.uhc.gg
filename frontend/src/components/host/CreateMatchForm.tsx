@@ -1,5 +1,4 @@
-import { FormProps, reduxForm } from 'redux-form';
-import { ApplicationState } from '../../state/ApplicationState';
+import { ConfigProps, InjectedFormProps, reduxForm } from "redux-form";
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
@@ -56,7 +55,7 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
 );
 
 class CreateMatchFormComponent extends React.Component<
-  FormProps<CreateMatchData, CreateMatchFormProps, ApplicationState> & CreateMatchFormProps
+  InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
 > {
   componentDidMount() {
     this.props.asyncValidate!();
@@ -297,8 +296,8 @@ class CreateMatchFormComponent extends React.Component<
   }
 }
 
-export const CreateMatchForm: React.ComponentClass<
-  CreateMatchFormProps & FormProps<CreateMatchData, CreateMatchFormProps, ApplicationState>
+export const CreateMatchForm: React.ComponentType<
+  CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>
 > = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
   asyncValidate: asyncValidation,

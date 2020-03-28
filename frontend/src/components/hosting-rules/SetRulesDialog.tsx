@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormProps, reduxForm } from 'redux-form';
+import { InjectedFormProps, reduxForm } from "redux-form";
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
 import { connect } from 'react-redux';
@@ -37,7 +37,7 @@ class SetRulesDialogHelper extends React.Component<{
 }
 
 const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogStateProps & SetRulesDialogDispatchProps & FormProps<SetRulesDialogData, SetRulesDialogStateProps & SetRulesDialogDispatchProps, ApplicationState>
+  SetRulesDialogStateProps & SetRulesDialogDispatchProps & InjectedFormProps<SetRulesDialogData, SetRulesDialogStateProps & SetRulesDialogDispatchProps>
 > = ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change, isDarkMode }) => (
   <Dialog
     icon="take-action"
@@ -71,10 +71,9 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
   'Must be at least 3 characters long',
 );
 
-const SetRulesDialogForm: React.FunctionComponent<SetRulesDialogStateProps & SetRulesDialogDispatchProps> = reduxForm<
+const SetRulesDialogForm: React.ComponentType<SetRulesDialogStateProps & SetRulesDialogDispatchProps> = reduxForm<
   SetRulesDialogData,
-  SetRulesDialogStateProps & SetRulesDialogDispatchProps,
-  ApplicationState
+  SetRulesDialogStateProps & SetRulesDialogDispatchProps
 >({
   form: 'set-rules-form',
   validate: validator.validate,
@@ -84,13 +83,13 @@ const SetRulesDialogForm: React.FunctionComponent<SetRulesDialogStateProps & Set
   },
 })(SetRulesDialogComponent);
 
-export const SetRulesDialog: React.ComponentClass = connect<SetRulesDialogStateProps, SetRulesDialogDispatchProps, {}>(
+export const SetRulesDialog: React.ComponentType = connect<SetRulesDialogStateProps, SetRulesDialogDispatchProps, {}>(
   (state: ApplicationState): SetRulesDialogStateProps => ({
     isOpen: state.rules.editing,
     currentRules: state.rules.data ? state.rules.data.content : '',
     isDarkMode: state.settings.isDarkMode,
   }),
-  (dispatch: Dispatch<ApplicationState>): SetRulesDialogDispatchProps => ({
+  (dispatch: Dispatch): SetRulesDialogDispatchProps => ({
     close: () => dispatch(SetHostingRules.closeEditor()),
   }),
 )(SetRulesDialogForm);

@@ -229,7 +229,7 @@ const stateSelector = createSelector<ApplicationState, string | null, boolean, U
   (accessToken, isDarkMode) => ({ accessToken, isDarkMode }),
 );
 
-export const UblListing: React.ComponentClass<UblListingProps> = connect<UblListingStateProps, {}, UblListingProps>(
+export const UblListing: React.ComponentType<UblListingProps> = connect<UblListingStateProps, {}, UblListingProps>(
   stateSelector,
   always({}),
 )(UblListingComponent);

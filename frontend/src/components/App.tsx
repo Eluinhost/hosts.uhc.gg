@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentType } from "react";
 import { HostingPage } from './host';
 import { Classes, NonIdealState } from "@blueprintjs/core";
 import { BrowserRouter } from 'react-router-dom';
@@ -172,4 +172,4 @@ const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDark
   isDarkMode,
 }));
 
-export const App: React.ComponentClass = connect<AppProps, {}, {}>(stateSelector, always({}))(AppComponent);
+export const App: ComponentType = connect<AppProps, {}, {}>(stateSelector, always({}))(AppComponent);

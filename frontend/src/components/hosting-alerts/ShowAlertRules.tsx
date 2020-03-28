@@ -9,6 +9,7 @@ import { getAccessToken } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { CreateAlertRule } from './CreateAlertRule';
 import { AppToaster } from '../../services/AppToaster';
+import { ComponentType } from "react";
 
 type DispatchProps = {
   readonly accessToken: string;
@@ -125,4 +126,4 @@ const stateSelector = createSelector<ApplicationState, string | null, DispatchPr
       accessToken: accessToken || 'NO ACCESS TOKEN IN STORE',
   }));
 
-export const ShowAlertRules: React.ComponentClass = connect<DispatchProps, {}, {}>(stateSelector)(ShowAlertRulesComponent);
+export const ShowAlertRules: ComponentType = connect<DispatchProps, {}, {}>(stateSelector)(ShowAlertRulesComponent);
