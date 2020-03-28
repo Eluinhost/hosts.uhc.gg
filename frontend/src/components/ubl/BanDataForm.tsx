@@ -83,17 +83,21 @@ const validator = new Validator<BanData>()
   .required('ign')
   .required('reason')
   .required('link')
-  .withValidationFunction('expires', expires => {
+  .withValidationFunction('expires', (expires, data) => {
     // no expiry is fine
     if (!expires) {
       return undefined;
     }
 
-    if (expires.isValid()) {
-      return undefined;
+    if (!expires.isValid()) {
+      return 'A valid date must be supplied';
     }
 
-    return 'A valid date must be supplied';
+    if (!expires.isAfter(data.starts)) {
+      return 'Must be after start date';
+    }
+
+    return undefined;
   })
   .withValidation('starts', starts => !starts || !starts.isValid(), 'A valid date must be supplied');
 
