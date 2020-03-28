@@ -45,7 +45,7 @@
     "@types/redux-actions": "1.2.8",
     "@types/redux-form": "6.6.24",
     "bourbon": "4.3.4",
-    "http-proxy-middleware": "^1.0.3",
+    "http-proxy-middleware": "1.0.3",
     "husky": "0.14.3",
     "jwt-decode": "2.2.0",
     "lint-staged": "7.3.0",
