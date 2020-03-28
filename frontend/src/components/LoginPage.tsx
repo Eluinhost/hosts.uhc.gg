@@ -28,16 +28,20 @@ export class LoginPageComponent extends React.Component<RouteComponentProps<any>
     redirectPath: null,
   };
 
+  zeroth = <T extends string | string[]>(t: T | null | undefined): string | null | undefined =>
+    Array.isArray(t) ? t[0] : t;
+
   componentDidMount() {
     const { path, token, refresh } = parse(this.props.location.search);
 
-    if (path && token && refresh && path.startsWith('/')) {
-      this.props.login({
-        accessToken: token,
-        refreshToken: refresh,
-      });
+    const redirectPath = this.zeroth(path);
+    const accessToken = this.zeroth(token);
+    const refreshToken = this.zeroth(refresh);
 
-      this.setState(p => ({ redirectPath: path }));
+    if (redirectPath && accessToken && refreshToken && redirectPath?.startsWith('/')) {
+      this.props.login({ accessToken, refreshToken });
+
+      this.setState({ redirectPath });
     } else {
       console.error('Invalid token parameters', path, token, refresh);
     }
