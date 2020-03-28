@@ -16,7 +16,7 @@ type StateProps = {
   readonly timezone: string;
 };
 
-const MatchOpensComponent: React.SFC<Props & StateProps> = ({ time, timezone, format }) => (
+const MatchOpensComponent: React.FunctionComponent<Props & StateProps> = ({ time, timezone, format }) => (
   <span className="match-time">
     {(time.clone() as momentTz.Moment).tz(timezone).format(format)}
   </span>

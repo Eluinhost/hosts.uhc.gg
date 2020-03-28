@@ -17,7 +17,7 @@ type RemovePermissionDialogStateProps = {
   readonly isDarkMode: boolean;
 };
 
-const RemovePermissionDialogComponent: React.SFC<
+const RemovePermissionDialogComponent: React.FunctionComponent<
   RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & FormProps<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps, ApplicationState>
 > = ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
   <Dialog icon="remove" isOpen={!!state} onClose={close} title="Remove role" className={isDarkMode ? Classes.DARK : ''}>
@@ -40,7 +40,7 @@ const RemovePermissionDialogComponent: React.SFC<
   </Dialog>
 );
 
-const RemovePermissionDialogForm: React.SFC<
+const RemovePermissionDialogForm: React.FunctionComponent<
   RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps
 > = reduxForm<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps, ApplicationState>({
   form: 'remove-permission-form',

@@ -63,7 +63,7 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
   return undefined;
 });
 
-const AddPermissionDialogForm: React.SFC<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> = reduxForm<
+const AddPermissionDialogForm: React.FunctionComponent<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> = reduxForm<
   AddPermissionDialogData,
   AddPermissionDialogStateProps & AddPermissionDialogDispatchProps,
   ApplicationState

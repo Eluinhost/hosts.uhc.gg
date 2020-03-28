@@ -59,7 +59,7 @@ class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
 
     const Component: React.ComponentType<RouteComponentProps<any>> = this.props.component!;
 
-    const component: React.SFC<RouteComponentProps<any>> = props => (
+    const component: React.FunctionComponent<RouteComponentProps<any>> = props => (
       <WithPermission permission={permission} alternative={NoPermission}>
         <Component {...props} />
       </WithPermission>

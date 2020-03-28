@@ -34,4 +34,4 @@ const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps<any> & Rule
   </FieldWrapper>
 );
 
-export const RulesField: React.SFC<RulesFieldProps> = props => <Field {...props} component={RulesFieldComponent} />;
+export const RulesField: React.FunctionComponent<RulesFieldProps> = props => <Field {...props} component={RulesFieldComponent} />;

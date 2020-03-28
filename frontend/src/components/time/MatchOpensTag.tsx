@@ -18,7 +18,7 @@ type StateProps = {
   readonly timezone: string;
 };
 
-const MatchOpensTagComponent: React.SFC<Props & StateProps> = ({ opens, created, format, timezone }) => (
+const MatchOpensTagComponent: React.FunctionComponent<Props & StateProps> = ({ opens, created, format, timezone }) => (
   <Tag
     intent={Intent.SUCCESS}
     large

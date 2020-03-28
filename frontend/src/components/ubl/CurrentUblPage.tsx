@@ -7,7 +7,7 @@ import { Button, H1, H4, Intent } from "@blueprintjs/core";
 import { Link } from 'react-router-dom';
 import { Title } from '../Title';
 
-export const CurrentUblPage: React.SFC = () => (
+export const CurrentUblPage: React.FunctionComponent = () => (
   <div>
     <Title>Current UBL</Title>
     <H1 style={{ flexGrow: 0 }}>Universal Ban List</H1>

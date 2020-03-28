@@ -156,6 +156,6 @@ class TemplateFieldComponent extends React.Component<
   }
 }
 
-export const TemplateField: React.SFC<TemplateFieldProps> = props => (
+export const TemplateField: React.FunctionComponent<TemplateFieldProps> = props => (
   <Field {...props} component={TemplateFieldComponent} />
 );

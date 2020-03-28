@@ -19,7 +19,7 @@ type DispatchProps = {
   readonly logout: () => void;
 };
 
-const UserMenu: React.SFC<DispatchProps> = ({ logout }) => (
+const UserMenu: React.FunctionComponent<DispatchProps> = ({ logout }) => (
   <Menu>
     <Link to="/profile">
       <MenuItem icon="cog" text="Profile" />

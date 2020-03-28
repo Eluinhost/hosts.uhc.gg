@@ -18,7 +18,7 @@ type NavBarButtonProps = {
   readonly to: string;
 };
 
-const NavBarButtonComponent: React.SFC<NavBarButtonProps & RouteComponentProps<any>> = ({
+const NavBarButtonComponent: React.FunctionComponent<NavBarButtonProps & RouteComponentProps<any>> = ({
   text,
   icon,
   to,

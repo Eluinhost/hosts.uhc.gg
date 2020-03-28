@@ -47,4 +47,4 @@ const renderField: React.FunctionComponent<WrappedFieldProps<any> & TagsFieldPro
   </FieldWrapper>
 );
 
-export const TagsField: React.SFC<TagsFieldProps> = props => <Field {...props} component={renderField} />;
+export const TagsField: React.FunctionComponent<TagsFieldProps> = props => <Field {...props} component={renderField} />;

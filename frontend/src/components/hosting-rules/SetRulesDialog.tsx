@@ -71,7 +71,7 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
   'Must be at least 3 characters long',
 );
 
-const SetRulesDialogForm: React.SFC<SetRulesDialogStateProps & SetRulesDialogDispatchProps> = reduxForm<
+const SetRulesDialogForm: React.FunctionComponent<SetRulesDialogStateProps & SetRulesDialogDispatchProps> = reduxForm<
   SetRulesDialogData,
   SetRulesDialogStateProps & SetRulesDialogDispatchProps,
   ApplicationState
