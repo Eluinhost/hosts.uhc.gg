@@ -1,14 +1,5 @@
 import * as React from 'react';
-import {
-  Button,
-  Callout,
-  H5,
-  InputGroup,
-  Intent,
-  NonIdealState,
-  Spinner,
-  Switch,
-} from '@blueprintjs/core';
+import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
 import { Match } from '../../models/Match';
@@ -114,7 +105,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
     />
   );
 
-  private noMatches: React.ReactElement = (
+  private noMatches: React.ReactElement | false = !this.props.loading && (
     <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
   );
 
@@ -136,19 +127,23 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
   handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ search: event.target.value });
   clearSearch = () => this.setState({ search: '' });
 
+  renderSearchTotals = (showing: number, outOf: number) => {
+    if (!this.state.search) {
+      return undefined;
+    }
+
+    return <>
+      Showing {showing} of {outOf}.
+      <Button minimal icon="cross" onClick={this.clearSearch} />
+    </>
+  };
+
   render() {
     const afterRemovedFilter = this.props.matches.filter(this.removedMatchesFilter);
 
     const afterSearchQuery = afterRemovedFilter.filter(this.searchQueryFilter(this.state.search));
 
     const matches = afterSearchQuery.length > 0 ? afterSearchQuery.map(this.renderMatch) : this.noMatches;
-
-    const searchHelper = this.state.search ? (
-      <>
-        Showing {afterSearchQuery.length} of {afterRemovedFilter.length}.{' '}
-        <Button minimal icon="cross" onClick={this.clearSearch} />
-      </>
-    ) : undefined;
 
     return (
       <div className="match-listing">
@@ -170,7 +165,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
             value={this.state.search}
             onChange={this.handleSearchChange}
             placeholder="Search"
-            rightElement={searchHelper}
+            rightElement={this.renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
           />
           <RefreshButton
             lastUpdated={this.props.lastUpdated}
@@ -185,7 +180,9 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
           </Callout>
         )}
 
-        {this.props.loading && <NonIdealState icon={<Spinner />} title="Loading..." />}
+        {this.props.loading && this.props.matches.length === 0 && (
+          <NonIdealState icon={<Spinner />} title="Loading..." />
+        )}
 
         <div className="match-listing__matches">{matches}</div>
 
