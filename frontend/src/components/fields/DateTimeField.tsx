@@ -12,6 +12,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
   readonly datePickerProps?: Partial<ReactDatePickerProps>;
   readonly disableTime?: boolean;
+  readonly renderClearButton?: React.ComponentType<{ value: any, onClear: () => void }>
 }
 
 export const Errors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ error, warning }) => {
@@ -25,7 +26,7 @@ export const Errors: React.FunctionComponent<WrappedFieldMetaProps<any>> = ({ er
 class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFieldProps> {
   triggerBlur = (date: moment.Moment): void => this.props.input!.onBlur(date, undefined, undefined);
 
-  onDateChange = (date: Date | null): void => {
+  handleDateChange = (date: Date | null): void => {
     if (this.props.disabled) return;
 
     let momentDate = date && moment.utc(date);
@@ -34,8 +35,10 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
     this.props.input!.onBlur(momentDate, undefined, undefined);
   };
 
+  handleClear = () => this.handleDateChange(null);
+
   render() {
-    const { meta, label, required, datePickerProps, input, disabled } = this.props;
+    const { meta, label, required, datePickerProps, input, disabled, renderClearButton: ClearButton } = this.props;
 
     return (
       <FieldWrapper meta={meta} label={label} required={required} hideErrors className="date-time-field">
@@ -44,10 +47,12 @@ class DateTimePicker extends React.Component<WrappedFieldProps<any> & DateTimeFi
             {...datePickerProps}
             dateFormat="yyyy-MM-dd"
             inline
-            selected={input?.value?.isValid() ? input.value.toDate() : null}
-            onChange={this.onDateChange}
+            selected={input?.value?.isValid ? input.value.toDate() : null}
+            onChange={this.handleDateChange}
             showTimeSelect={!this.props.disableTime}
-          />
+          >
+            {ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />}
+          </DatePicker>
           <Errors {...meta} />
         </div>
         <Overlay

@@ -106,10 +106,6 @@ html, body, #root
   min-width: 50%
   flex-grow: 1
 
-.date-time-field-time-section
-  text-align: center
-  width: 100%
-
 .rc-time-picker-input
   width: 170px
   font-size: 130%
@@ -294,6 +290,14 @@ a.match-row-link:hover
 
 .date-time-field
   position: relative
+
+.ban-expiry-input
+  &.react-datepicker
+    flex-direction: column
+
+  &_clear-button
+    margin-top: .5rem
+    margin-bottom: .5rem
 
 .rendered-markdown
   padding-top: 10px

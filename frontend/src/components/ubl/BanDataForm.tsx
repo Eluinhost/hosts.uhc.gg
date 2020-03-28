@@ -30,6 +30,10 @@ const today = moment.utc()
 
 const earliest = today.clone().add(1, 'day');
 
+const ClearButton: React.FunctionComponent<{ value: any, onClear: () => void }> = ({ value, onClear }) => (
+  <Button className="ban-expiry-input_clear-button" intent={value ? Intent.NONE : Intent.DANGER} text="Permanent" onClick={onClear} />
+);
+
 export const BanDataFormComponent: React.FunctionComponent<FormProps<BanData, BanDataFormProps, ApplicationState> & BanDataFormProps> = ({
   handleSubmit,
   submitting,
@@ -43,7 +47,7 @@ export const BanDataFormComponent: React.FunctionComponent<FormProps<BanData, Ba
       required
       disabled={submitting}
       disableTime
-      datePickerProps={{ fixedHeight: true, isClearable: false }}
+      datePickerProps={{ fixedHeight: true }}
     />
     <DateTimeField
       name="expires"
@@ -51,7 +55,8 @@ export const BanDataFormComponent: React.FunctionComponent<FormProps<BanData, Ba
       required={false}
       disabled={submitting}
       disableTime
-      datePickerProps={{ fixedHeight: true, isClearable: true }}
+      datePickerProps={{ fixedHeight: true, calendarClassName: 'ban-expiry-input' }}
+      renderClearButton={ClearButton}
     />
     <TextField name="ign" label="IGN" disabled={submitting} required />
     <TextField name="uuid" label="UUID" disabled={submitting} required />
