@@ -15,6 +15,7 @@ import gg.uhc.hosts.endpoints.permissions._
 import gg.uhc.hosts.endpoints.rules.{GetLatestRules, RulesRoute, SetRules}
 import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
 import gg.uhc.hosts.endpoints.ubl._
+import gg.uhc.hosts.endpoints.users.{ShowPermissionsForUser, UsersRoute}
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
@@ -54,6 +55,7 @@ trait EndpointsModule extends RedditModule {
   lazy val createAlertRule: CreateAlertRule     = wire[CreateAlertRule]
   lazy val deleteAlertRule: DeleteAlertRule     = wire[DeleteAlertRule]
   lazy val getAllAlertRules: GetAllAlertRules   = wire[GetAllAlertRules]
+  lazy val showPermissionsForUser: ShowPermissionsForUser = wire[ShowPermissionsForUser]
 
   lazy val basicCache: BasicCache                   = wire[BasicCache]
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]
@@ -69,5 +71,7 @@ trait EndpointsModule extends RedditModule {
   lazy val ublRoute: UblRoute                       = wire[UblRoute]
   lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
   lazy val alertsRoute: AlertsRoute                 = wire[AlertsRoute]
+  lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
+
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }

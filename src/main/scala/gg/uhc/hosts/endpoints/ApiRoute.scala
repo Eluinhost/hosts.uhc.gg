@@ -14,6 +14,7 @@ import gg.uhc.hosts.endpoints.permissions.PermissionsRoute
 import gg.uhc.hosts.endpoints.rules.RulesRoute
 import gg.uhc.hosts.endpoints.sync.SyncRoute
 import gg.uhc.hosts.endpoints.ubl.UblRoute
+import gg.uhc.hosts.endpoints.users.UsersRoute
 
 class ApiRoute(
     syncRoute: SyncRoute,
@@ -24,7 +25,8 @@ class ApiRoute(
     docsRoute: DocsRoute,
     hostsRoute: HostsRoute,
     ublRoute: UblRoute,
-    alertsRoute: AlertsRoute)
+    alertsRoute: AlertsRoute,
+    usersRoute: UsersRoute)
     extends Instrumented {
 
   private[this] val apiTimer = metrics.timer("api-request-time")
@@ -42,7 +44,8 @@ class ApiRoute(
           pathPrefix("permissions")(permissionsRoute()),
           pathPrefix("key")(keyRoute()),
           pathPrefix("docs")(docsRoute()),
-          pathPrefix("alerts")(alertsRoute())
+          pathPrefix("alerts")(alertsRoute()),
+          pathPrefix("users")(usersRoute())
         ) ~ complete(StatusCodes.NotFound)
       }
     }

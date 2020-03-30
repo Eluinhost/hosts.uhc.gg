@@ -1138,3 +1138,27 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find an alert with the given ID
+  /users/{username}/permissions:
+    get:
+      tags:
+        - Users
+        - Permissions
+      summary: List all permissions for a given user
+      description: Shows all currently granted permissions for given username, will return empty array for unknown users the same as users without any permissions
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: username to lookup
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - hosting advisor
+                  - admin
