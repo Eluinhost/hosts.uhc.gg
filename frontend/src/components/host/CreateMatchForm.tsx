@@ -64,13 +64,8 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
 class CreateMatchFormComponent extends React.Component<
   InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps & DispatchProps
 > {
-  componentDidUpdate(prevProps: CreateMatchFormProps): void {
-    const now = this.props.currentValues;
-    const prev = prevProps.currentValues;
-
-    if (now.opens !== prev.opens || now.location !== prev.location || now.tournament !== prev.tournament) {
-      this.props.updatePotentialConflicts(now);
-    }
+  componentDidMount(): void {
+    this.props.asyncValidate();
   }
 
   render() {
@@ -335,4 +330,8 @@ const connected: React.ComponentType<InjectedFormProps<CreateMatchData, CreateMa
 export const CreateMatchForm: React.ComponentType<CreateMatchFormProps &
   ConfigProps<CreateMatchData, CreateMatchFormProps>> = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
+  asyncValidate: async (values: CreateMatchData, dispatch: Dispatch): Promise<void> => {
+    dispatch(HostFormConflicts.start({ data: values }));
+  },
+  asyncBlurFields: ['opens', 'region', 'tournament'],
 })(connected);
