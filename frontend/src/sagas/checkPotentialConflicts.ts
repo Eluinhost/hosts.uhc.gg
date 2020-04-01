@@ -1,6 +1,6 @@
 import { MatchesApi } from '../api';
 import { SagaIterator } from 'redux-saga';
-import { put, call, takeLatest, delay } from 'redux-saga/effects';
+import { put, call, takeLatest } from 'redux-saga/effects';
 import { HostFormConflicts, HostFormConflictsParameters } from '../actions';
 import { Match } from '../models/Match';
 import { Action } from 'redux-actions';
