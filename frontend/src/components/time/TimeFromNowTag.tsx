@@ -3,7 +3,6 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { always } from 'ramda';
 import { Icon, Intent, Tag, ITagProps } from '@blueprintjs/core';
 
 type Props = {
@@ -68,6 +67,4 @@ const stateSelector = createSelector<ApplicationState, number, StateProps>(
   }),
 );
 
-export const TimeFromNowTag: React.ComponentType<Props> = connect<StateProps, {}, Props>(stateSelector, always({}))(
-  TimeFromNowComponent,
-);
+export const TimeFromNowTag: React.ComponentType<Props> = connect(stateSelector)(TimeFromNowComponent);
