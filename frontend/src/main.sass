@@ -235,11 +235,13 @@ a.match-row-link:hover
   > div
     min-width: 50%
 
-.editable-permission-node:hover
-  &.permission-folder-node > div > svg
-    color: $pt-intent-success
+.editable-permission-node
+  &.permission-folder-node:hover, .letter-folder-node:hover
+    & > .bp3-tree-node-content
+      svg
+        color: $pt-intent-success
 
-  .username-node:hover > div > svg
+  .username-node:hover > .bp3-tree-node-content svg
     color: $pt-intent-danger
 
 .hosting-rules
