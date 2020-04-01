@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { put, call, select, all, takeLatest  } from 'redux-saga/effects';
+import { put, call, select, all, takeLatest } from 'redux-saga/effects';
 import { getAccessToken } from '../state/Selectors';
 import { FetchApiKey, RegenerateApiKey } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';

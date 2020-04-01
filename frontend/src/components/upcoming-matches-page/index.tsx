@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router';
 import { Title } from '../Title';
 import { UpdateUpcoming } from '../../actions';
 import { UpcomingState } from '../../state/UpcomingState';
-import { H1 } from "@blueprintjs/core";
+import { H1 } from '@blueprintjs/core';
 
 type StateProps = UpcomingState;
 
@@ -52,6 +52,9 @@ export const UpcomingMatchesPage: React.ComponentType<RouteComponentProps<any>> 
   StateProps,
   DispatchProps,
   RouteComponentProps<any>
->(stateSelector, (dispatch: Dispatch): DispatchProps => ({
-  refetch: () => dispatch(UpdateUpcoming.start()),
-}))(UpcomingMatchesPageComponent);
+>(
+  stateSelector,
+  (dispatch: Dispatch): DispatchProps => ({
+    refetch: () => dispatch(UpdateUpcoming.start()),
+  }),
+)(UpcomingMatchesPageComponent);

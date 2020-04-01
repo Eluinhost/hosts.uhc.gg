@@ -1,4 +1,4 @@
-import { FormStateMap, reducer as formReducer } from "redux-form";
+import { FormStateMap, reducer as formReducer } from 'redux-form';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { reducer as Authentication, AuthenticationState } from './AuthenticationState';
@@ -78,5 +78,8 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   sagaMiddleware.run(sagas);
 
   // wait for storage sync then return the store
-  return sagaMiddleware.run(syncWithStorage).toPromise().then(() => store);
+  return sagaMiddleware
+    .run(syncWithStorage)
+    .toPromise()
+    .then(() => store);
 };

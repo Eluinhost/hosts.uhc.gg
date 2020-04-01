@@ -10,7 +10,7 @@ import { MatchesApi, ApiErrors } from '../../api';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { renderToMarkdown } from './TemplateField';
 import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
-import { createSelector, Selector } from "reselect";
+import { createSelector, Selector } from 'reselect';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { SetSavedHostFormData } from '../../actions';
 
@@ -31,7 +31,7 @@ export type HostingPageDispatchProps = {
 const formKey: string = 'create-match-form';
 const valuesSelector: Selector<ApplicationState, CreateMatchData> = createSelector(
   getFormValues(formKey),
-  data => data as CreateMatchData
+  data => data as CreateMatchData,
 );
 // Main goal of this is to save form data back to local storage when the component unmounts
 class HostingPageComponent extends React.PureComponent<

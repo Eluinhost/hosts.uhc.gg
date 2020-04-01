@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button, Classes, Dialog, H5, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Dispatch } from "redux";
+import { Dispatch } from 'redux';
 
 import { ApplicationState } from '../../state/ApplicationState';
 import { isDarkMode } from '../../state/Selectors';

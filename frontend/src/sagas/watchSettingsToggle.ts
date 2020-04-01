@@ -10,8 +10,8 @@ const genericToggle = (
   setter: ActionFunction1<boolean, Action<boolean>>,
   selector: (state: ApplicationState) => boolean,
 ) =>
-  function*(): SagaIterator {
-    yield takeLatest(listen, function*(): SagaIterator {
+  function* (): SagaIterator {
+    yield takeLatest(listen, function* (): SagaIterator {
       const current: boolean = yield select(selector);
       yield put(setter(!current));
     });
@@ -22,8 +22,6 @@ export function* watchSettingsToggle(): SagaIterator {
     fork(genericToggle(Settings.toggleDarkMode, Settings.setDarkMode, Selectors.isDarkMode)),
     fork(genericToggle(Settings.toggleIs12h, Settings.setIs12h, Selectors.is12hFormat)),
     fork(genericToggle(Settings.toggleHideRemoved, Settings.setHideRemoved, Selectors.shouldHideRemoved)),
-    fork(
-      genericToggle(Settings.toggleShowOwnRemoved, Settings.setShowOwnRemoved, Selectors.shouldShowOwnRemoved),
-    ),
+    fork(genericToggle(Settings.toggleShowOwnRemoved, Settings.setShowOwnRemoved, Selectors.shouldShowOwnRemoved)),
   ]);
 }

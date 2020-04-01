@@ -26,6 +26,6 @@ class PotentialConflictsComponent extends React.PureComponent<StateProps> {
   }
 }
 
-export const PotentialConflicts: React.ComponentType = connect<StateProps>(
-  state => state.hostFormConflicts,
-)(PotentialConflictsComponent);
+export const PotentialConflicts: React.ComponentType = connect<StateProps>(state => state.hostFormConflicts)(
+  PotentialConflictsComponent,
+);

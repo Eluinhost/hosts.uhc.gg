@@ -3,9 +3,9 @@ import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import * as Mark from 'markup-js';
 import moment from 'moment-timezone';
-import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from "@blueprintjs/core";
+import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
-import {memoizeWith, toString} from 'ramda';
+import { memoizeWith, toString } from 'ramda';
 import { Markdown } from '../Markdown';
 
 export type TemplateFieldProps = BaseFieldProps & {
@@ -20,11 +20,7 @@ export type TemplateFieldProps = BaseFieldProps & {
 export const renderToMarkdown = (template: string, context: any): string =>
   Mark.up(template, context, {
     pipes: {
-      moment: (date: moment.Moment, format: string): string =>
-        date
-          .clone()
-          .utc()
-          .format(format),
+      moment: (date: moment.Moment, format: string): string => date.clone().utc().format(format),
     },
   });
 
@@ -97,15 +93,22 @@ const HelpTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> =
   </Callout>
 );
 
-const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; readonly id: string }> = ({ onClick, id }) => (
+const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; readonly id: string }> = ({
+  onClick,
+  id,
+}) => (
   <Button onClick={onClick} intent={Intent.PRIMARY} large>
     {id}
   </Button>
 );
 
-const PresetsTab: React.FunctionComponent<{ readonly onPresetClick: (p: Preset) => () => void }> = ({ onPresetClick }) => (
+const PresetsTab: React.FunctionComponent<{ readonly onPresetClick: (p: Preset) => () => void }> = ({
+  onPresetClick,
+}) => (
   <Callout intent={Intent.PRIMARY}>
-    {presets.map(p => <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />)}
+    {presets.map(p => (
+      <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
+    ))}
   </Callout>
 );
 
@@ -114,7 +117,7 @@ type TemplateFieldComponentState = {
 };
 
 class TemplateFieldComponent extends React.Component<
-  WrappedFieldProps  & TemplateFieldProps,
+  WrappedFieldProps & TemplateFieldProps,
   TemplateFieldComponentState
 > {
   state = {

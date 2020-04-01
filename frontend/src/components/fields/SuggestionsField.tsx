@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { map } from 'ramda';
-import { Classes, ControlGroup } from "@blueprintjs/core";
+import { Classes, ControlGroup } from '@blueprintjs/core';
 
 export type SuggestionsFieldProps = BaseFieldProps & {
   readonly label: string;
@@ -40,4 +40,6 @@ const renderField: React.FunctionComponent<WrappedFieldProps & SuggestionsFieldP
   </FieldWrapper>
 );
 
-export const SuggestionsField: React.FunctionComponent<SuggestionsFieldProps> = props => <Field {...props} component={renderField} />;
+export const SuggestionsField: React.FunctionComponent<SuggestionsFieldProps> = props => (
+  <Field {...props} component={renderField} />
+);

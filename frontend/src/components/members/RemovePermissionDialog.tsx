@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from "redux-form";
+import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
-import { Button, Callout, Classes, Dialog, H5, Intent } from "@blueprintjs/core";
+import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RemovePermissionDialogState } from '../../state/PermissionsState';
@@ -18,7 +18,9 @@ type RemovePermissionDialogStateProps = {
 };
 
 const RemovePermissionDialogComponent: React.FunctionComponent<
-  RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps & InjectedFormProps<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps>
+  RemovePermissionDialogStateProps &
+    RemovePermissionDialogDispatchProps &
+    InjectedFormProps<{}, RemovePermissionDialogStateProps & RemovePermissionDialogDispatchProps>
 > = ({ close, state, submitting, invalid, handleSubmit, error, isDarkMode }) => (
   <Dialog icon="remove" isOpen={!!state} onClose={close} title="Remove role" className={isDarkMode ? Classes.DARK : ''}>
     <div className={`${Classes.DIALOG_BODY} remove-permission-body`}>
@@ -68,4 +70,7 @@ export const RemovePermissionDialog: React.ComponentType = connect<
   RemovePermissionDialogStateProps,
   RemovePermissionDialogDispatchProps,
   {}
->(mapStateToProps, mapDispatchToProps)(RemovePermissionDialogForm);
+>(
+  mapStateToProps,
+  mapDispatchToProps,
+)(RemovePermissionDialogForm);

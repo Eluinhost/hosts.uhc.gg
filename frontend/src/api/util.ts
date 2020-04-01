@@ -31,9 +31,7 @@ export type ApiCallParams = {
 };
 
 export const fetchObject = <T>(options: ApiCallParams): Promise<T> =>
-  fetch(options.url, options.config)
-    .then(verifyStatus(options.status))
-    .then(toJson<T>());
+  fetch(options.url, options.config).then(verifyStatus(options.status)).then(toJson<T>());
 
 export const maybeFetchObject = <T>(options: ApiCallParams): Promise<T | null> =>
   fetchObject<T>(options).catch(err => {
@@ -43,11 +41,7 @@ export const maybeFetchObject = <T>(options: ApiCallParams): Promise<T | null> =
   });
 
 export const fetchArray = <T>(options: ApiCallParams): Promise<T[]> =>
-  fetch(options.url, options.config)
-    .then(verifyStatus(options.status))
-    .then(toJson<T[]>());
+  fetch(options.url, options.config).then(verifyStatus(options.status)).then(toJson<T[]>());
 
 export const callApi = (options: ApiCallParams): Promise<void> =>
-  fetch(options.url, options.config)
-    .then(verifyStatus(options.status))
-    .then(always(undefined));
+  fetch(options.url, options.config).then(verifyStatus(options.status)).then(always(undefined));

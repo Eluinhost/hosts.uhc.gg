@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Classes, ControlGroup, Intent } from "@blueprintjs/core";
+import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
 import { AppToaster } from '../../services/AppToaster';
 
 type Props = {
@@ -32,7 +32,13 @@ export class ClipboardControlGroup extends React.PureComponent<Props> {
   public render() {
     return (
       <ControlGroup fill>
-        <input type="text" className={`${Classes.INPUT} ${Classes.LARGE}`} value={this.props.value} readOnly ref={this.saveRef} />
+        <input
+          type="text"
+          className={`${Classes.INPUT} ${Classes.LARGE}`}
+          value={this.props.value}
+          readOnly
+          ref={this.saveRef}
+        />
         <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={this.triggerCopy} />
       </ControlGroup>
     );

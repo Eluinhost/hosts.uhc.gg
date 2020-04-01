@@ -24,21 +24,21 @@ function* saveAndListen(setAction: ActionFunction1<any, Action<any>>, storageKey
   }
 
   // start a separate task to listen for changes to save them
-  yield spawn(function*(): SagaIterator {
-    yield takeLatest(setAction, function*(action: Action<any>): SagaIterator {
+  yield spawn(function* (): SagaIterator {
+    yield takeLatest(setAction, function* (action: Action<any>): SagaIterator {
       yield call([storage, storage.setItem], key, action.payload);
     });
   });
 }
 
 function* watchLogout(): SagaIterator {
-  yield takeEvery(Authentication.logout, function*(): SagaIterator {
+  yield takeEvery(Authentication.logout, function* (): SagaIterator {
     yield call([storage, storage.removeItem], `${baseKey}.authentication`);
   });
 }
 
 function* watchClearStorage(): SagaIterator {
-  yield takeEvery(ClearStorage.start, function*(): SagaIterator {
+  yield takeEvery(ClearStorage.start, function* (): SagaIterator {
     yield put(ClearStorage.started());
 
     try {
@@ -61,8 +61,8 @@ function* syncHostFormData(): SagaIterator {
     yield put(SetSavedHostFormData.started({ parameters: stored }));
   }
 
-  yield spawn(function*(): SagaIterator {
-    yield takeLatest(SetSavedHostFormData.start, function*(action: Action<CreateMatchData>): SagaIterator {
+  yield spawn(function* (): SagaIterator {
+    yield takeLatest(SetSavedHostFormData.start, function* (action: Action<CreateMatchData>): SagaIterator {
       const parameters = action.payload!;
 
       yield put(SetSavedHostFormData.started({ parameters }));
@@ -81,7 +81,7 @@ function* syncHostFormData(): SagaIterator {
 function* authentication(): SagaIterator {
   yield call(saveAndListen, Authentication.login, 'authentication');
   // check every minute if we need to refresh our authentication tokens
-  yield spawn(function*(): SagaIterator {
+  yield spawn(function* (): SagaIterator {
     while (true) {
       yield put(Authentication.attemptRefresh());
       yield delay(60000);

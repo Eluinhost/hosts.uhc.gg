@@ -17,7 +17,14 @@ class FooterComponent extends React.PureComponent<StateProps> {
     return (
       <div className={`${Classes.CARD} application-footer`}>
         <div className={`${Classes.MINIMAL} application-footer-left`}>
-          <AnchorButton href="https://uhc.gg/discord" intent={intent} icon="comment" minimal target="_blank" rel="noopener noreferrer">
+          <AnchorButton
+            href="https://uhc.gg/discord"
+            intent={intent}
+            icon="comment"
+            minimal
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Discord
           </AnchorButton>
         </div>
@@ -47,8 +54,11 @@ class FooterComponent extends React.PureComponent<StateProps> {
   }
 }
 
-const selector = createSelector<ApplicationState, boolean, StateProps>(isDarkMode, (isDarkMode): StateProps => ({
+const selector = createSelector<ApplicationState, boolean, StateProps>(
   isDarkMode,
-}));
+  (isDarkMode): StateProps => ({
+    isDarkMode,
+  }),
+);
 
 export const Footer: React.ComponentType = connect<StateProps, {}, {}>(selector, always({}))(FooterComponent);

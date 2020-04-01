@@ -6,7 +6,7 @@ import { authHeaders, callApi, fetchObject } from './util';
 export const fetchHostingRules = (): Promise<HostingRules> =>
   fetchObject<HostingRules>({
     url: `/api/rules`,
-  }).then(response => ({ ...response, modified: moment.utc(response.modified)}));
+  }).then(response => ({ ...response, modified: moment.utc(response.modified) }));
 
 export const callSetHostingRules = (content: string, accessToken: string): Promise<void> =>
   callApi({

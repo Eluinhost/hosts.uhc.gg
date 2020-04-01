@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
-import { Classes } from "@blueprintjs/core";
+import { Classes } from '@blueprintjs/core';
 
 export interface NumberFieldProps extends BaseFieldProps {
   readonly label: string;
@@ -17,7 +17,9 @@ const renderField: React.FunctionComponent<WrappedFieldProps & NumberFieldProps>
   <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
     <input
       {...props.input}
-      className={`${Classes.NUMERIC_INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${Classes.INPUT} ${props.className || ''}`}
+      className={`${Classes.NUMERIC_INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${Classes.INPUT} ${
+        props.className || ''
+      }`}
       placeholder={props.placeholder || props.label}
       type="number"
       disabled={props.disabled}
@@ -27,4 +29,6 @@ const renderField: React.FunctionComponent<WrappedFieldProps & NumberFieldProps>
   </FieldWrapper>
 );
 
-export const NumberField: React.FunctionComponent<NumberFieldProps> = props => <Field {...props} component={renderField} />;
+export const NumberField: React.FunctionComponent<NumberFieldProps> = props => (
+  <Field {...props} component={renderField} />
+);

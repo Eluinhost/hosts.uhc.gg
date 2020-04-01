@@ -1,6 +1,6 @@
-import React, { ComponentType } from "react";
+import React, { ComponentType } from 'react';
 import { HostingPage } from './host';
-import { Classes, NonIdealState } from "@blueprintjs/core";
+import { Classes, NonIdealState } from '@blueprintjs/core';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
@@ -24,9 +24,9 @@ import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
 import { HostingAlertsPage } from './hosting-alerts';
 import { Footer } from './footer';
-import Helmet from "react-helmet";
-import { CreateBanPage } from "./ubl/CreateBanPage";
-import { CurrentUblPage, UuidHistoryPage } from "./ubl";
+import Helmet from 'react-helmet';
+import { CreateBanPage } from './ubl/CreateBanPage';
+import { CurrentUblPage, UuidHistoryPage } from './ubl';
 
 reactGa.initialize('UA-71696797-2');
 

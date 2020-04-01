@@ -9,7 +9,7 @@ import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { LoadHostHistory } from '../../actions';
-import { H1 } from "@blueprintjs/core";
+import { H1 } from '@blueprintjs/core';
 
 type RouteParams = {
   readonly host: string;
@@ -68,4 +68,7 @@ export const HistoryPage: React.ComponentType<RouteComponentProps<RouteParams>> 
   StateProps,
   DispatchProps,
   RouteComponentProps<RouteParams>
->(stateSelector, mapDispatchToProps)(HistoryPageComponent);
+>(
+  stateSelector,
+  mapDispatchToProps,
+)(HistoryPageComponent);

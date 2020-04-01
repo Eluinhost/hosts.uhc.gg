@@ -1,14 +1,9 @@
 import * as React from 'react';
-import {
-  ConfigProps,
-  InjectedFormProps,
-  reduxForm,
-  SubmissionError
-} from "redux-form";
+import { ConfigProps, InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
 import moment from 'moment-timezone';
 import { TextField } from '../fields/TextField';
 import { DateTimeField } from '../fields/DateTimeField';
-import { Button, Callout, H5, Intent } from "@blueprintjs/core";
+import { Button, Callout, H5, Intent } from '@blueprintjs/core';
 import { isUuid } from '../../services/isUuid';
 import { ApiErrors } from '../../api';
 import { Validator } from '../../services/Validator';
@@ -26,37 +21,30 @@ export type BanData = {
   link: string;
 };
 
-const today = moment.utc()
-  .set('hour', 0)
-  .set('minute', 0)
-  .set('second', 0)
-  .set('millisecond', 0);
+const today = moment.utc().set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
 
 const earliest = today.clone().add(1, 'day');
 
-const ClearButton: React.FunctionComponent<{ value: any, onClear: () => void }> = ({ value, onClear }) => (
-  <Button className="ban-expiry-input_clear-button" intent={value ? Intent.NONE : Intent.DANGER} text="Permanent" onClick={onClear} />
+const ClearButton: React.FunctionComponent<{ value: any; onClear: () => void }> = ({ value, onClear }) => (
+  <Button
+    className="ban-expiry-input_clear-button"
+    intent={value ? Intent.NONE : Intent.DANGER}
+    text="Permanent"
+    onClick={onClear}
+  />
 );
 
-export const BanDataFormComponent: React.FunctionComponent<InjectedFormProps<BanData, BanDataFormProps> & BanDataFormProps> = ({
-  handleSubmit,
-  submitting,
-  valid,
-  error,
-}) => (
+export const BanDataFormComponent: React.FunctionComponent<
+  InjectedFormProps<BanData, BanDataFormProps> & BanDataFormProps
+> = ({ handleSubmit, submitting, valid, error }) => (
   <form onSubmit={handleSubmit}>
-    <DateTimeField
-      name="starts"
-      label="Ban Starts"
-      required
-      disabled={submitting}
-    />
+    <DateTimeField name="starts" label="Ban Starts" required disabled={submitting} />
     <DateTimeField
       name="expires"
       label="Ban Expires"
       required={false}
       disabled={submitting}
-      className='ban-expiry-input'
+      className="ban-expiry-input"
       renderClearButton={ClearButton}
     />
     <TextField name="ign" label="IGN" disabled={submitting} required />
@@ -107,7 +95,9 @@ const validator = new Validator<BanData>()
   })
   .withValidation('starts', starts => !starts || !starts.isValid(), 'A valid date must be supplied');
 
-export const BanDataForm: React.ComponentType<BanDataFormProps & Partial<ConfigProps<BanData, BanDataFormProps>>> = reduxForm<BanData, BanDataFormProps>({
+export const BanDataForm: React.ComponentType<
+  BanDataFormProps & Partial<ConfigProps<BanData, BanDataFormProps>>
+> = reduxForm<BanData, BanDataFormProps>({
   form: 'ban-data-form',
   initialValues: {
     starts: today,

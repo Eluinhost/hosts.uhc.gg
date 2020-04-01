@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
-import { Classes } from "@blueprintjs/core";
+import { Classes } from '@blueprintjs/core';
 
 export type TextFieldProps = BaseFieldProps & {
   readonly label: string;

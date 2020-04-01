@@ -4,7 +4,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { connect } from 'react-redux';
 import { Settings } from '../../actions';
 import moment from 'moment-timezone';
-import { Popover, Button, MenuItem, Position, Card, Classes } from "@blueprintjs/core";
+import { Popover, Button, MenuItem, Position, Card, Classes } from '@blueprintjs/core';
 import { contains, toLower, filter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';

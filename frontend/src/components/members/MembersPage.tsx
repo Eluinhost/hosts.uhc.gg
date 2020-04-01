@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 import * as React from 'react';
-import { Button, H2, Intent, NonIdealState, Spinner, Tree, TreeEventHandler } from "@blueprintjs/core";
+import { Button, H2, Intent, NonIdealState, Spinner, Tree, TreeEventHandler } from '@blueprintjs/core';
 import { BasicNode, LetterFolder, PermissionsState, UsernameNode } from '../../state/PermissionsState';
 import { AddPermissionDialog } from './AddPermissionDialog';
 import { RemovePermissionDialog } from './RemovePermissionDialog';
@@ -30,7 +30,7 @@ export class MembersPage extends React.Component<
 
   private canModify = (permission: string): boolean => this.props.canModify.indexOf(permission) >= 0;
 
-  private onNodeClick: TreeEventHandler = (n) => {
+  private onNodeClick: TreeEventHandler = n => {
     const node = n as BasicNode;
 
     if (!this.canModify(node.permission)) return;

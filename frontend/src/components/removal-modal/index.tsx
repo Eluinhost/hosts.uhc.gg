@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button, Classes, ControlGroup, Dialog, H5, Intent } from "@blueprintjs/core";
-import { InjectedFormProps, reduxForm } from "redux-form";
+import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
+import { InjectedFormProps, reduxForm } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
 import { SuggestionsField } from '../fields/SuggestionsField';
 import { RemoveMatch } from '../../actions';
@@ -100,6 +100,7 @@ const dispatch = (dispatch: Dispatch): DispatchProps => ({
   onConfirm: (id: number, reason: string) => dispatch(RemoveMatch.start({ id, reason })),
 });
 
-export const RemovalModal: React.ComponentType = connect<StateProps, DispatchProps, {}>(stateSelector, dispatch)(
-  RemovalModalWithForm,
-);
+export const RemovalModal: React.ComponentType = connect<StateProps, DispatchProps, {}>(
+  stateSelector,
+  dispatch,
+)(RemovalModalWithForm);

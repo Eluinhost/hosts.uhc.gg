@@ -1,6 +1,6 @@
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
-import { Pre, Tab, Tabs, TextArea } from "@blueprintjs/core";
+import { Pre, Tab, Tabs, TextArea } from '@blueprintjs/core';
 import * as React from 'react';
 import * as snuownd from 'snuownd';
 
@@ -34,4 +34,6 @@ const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps & RulesFiel
   </FieldWrapper>
 );
 
-export const RulesField: React.FunctionComponent<RulesFieldProps> = props => <Field {...props} component={RulesFieldComponent} />;
+export const RulesField: React.FunctionComponent<RulesFieldProps> = props => (
+  <Field {...props} component={RulesFieldComponent} />
+);

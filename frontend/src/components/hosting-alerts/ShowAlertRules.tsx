@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AlertRule, CreateAlertRuleData } from '../../models/AlertRule';
-import { Classes, H3, H5, Intent, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Classes, H3, H5, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { ExistingAlertRule } from './ExistingAlertRule';
 import { AlertsApi } from '../../api';
 import { createSelector } from 'reselect';
@@ -9,7 +9,7 @@ import { getAccessToken } from '../../state/Selectors';
 import { connect } from 'react-redux';
 import { CreateAlertRule } from './CreateAlertRule';
 import { AppToaster } from '../../services/AppToaster';
-import { ComponentType } from "react";
+import { ComponentType } from 'react';
 
 type DispatchProps = {
   readonly accessToken: string;
@@ -104,7 +104,9 @@ class ShowAlertRulesComponent extends React.PureComponent<DispatchProps, State> 
     } else {
       top = (
         <div>
-          {this.state.rules.map(rule => <ExistingAlertRule rule={rule} key={rule.id} onClick={this.onDelete} />)}
+          {this.state.rules.map(rule => (
+            <ExistingAlertRule rule={rule} key={rule.id} onClick={this.onDelete} />
+          ))}
         </div>
       );
     }
@@ -120,10 +122,8 @@ class ShowAlertRulesComponent extends React.PureComponent<DispatchProps, State> 
   }
 }
 
-const stateSelector = createSelector<ApplicationState, string | null, DispatchProps>(
-  getAccessToken,
-  accessToken => ({
-      accessToken: accessToken || 'NO ACCESS TOKEN IN STORE',
-  }));
+const stateSelector = createSelector<ApplicationState, string | null, DispatchProps>(getAccessToken, accessToken => ({
+  accessToken: accessToken || 'NO ACCESS TOKEN IN STORE',
+}));
 
 export const ShowAlertRules: ComponentType = connect<DispatchProps, {}, {}>(stateSelector)(ShowAlertRulesComponent);

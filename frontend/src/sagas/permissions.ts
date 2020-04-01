@@ -1,6 +1,6 @@
 import { PermissionsApi, ApiErrors } from '../api';
 import { SagaIterator } from 'redux-saga';
-import { put, call, all, select, takeEvery, takeLatest  } from 'redux-saga/effects';
+import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   AddPermission,
   ExpandPermissionLetterNodeParameters,
@@ -135,7 +135,10 @@ const getRemovePermissionState = createSelector<
   ApplicationState,
   RemovePermissionDialogState | null,
   RemovePermissionDialogState | null
->(state => state.permissions.removeDialog, dialogState => dialogState);
+>(
+  state => state.permissions.removeDialog,
+  dialogState => dialogState,
+);
 
 function* removePermission(): SagaIterator {
   const accessToken: string | null = yield select(getAccessToken);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
-import { Classes } from "@blueprintjs/core";
+import { Classes } from '@blueprintjs/core';
 
 export interface SelectFieldProps extends BaseFieldProps {
   readonly options: {
@@ -28,4 +28,6 @@ const renderSelect: React.FunctionComponent<WrappedFieldProps & SelectFieldProps
   </FieldWrapper>
 );
 
-export const SelectField: React.FunctionComponent<SelectFieldProps> = props => <Field {...props} component={renderSelect} />;
+export const SelectField: React.FunctionComponent<SelectFieldProps> = props => (
+  <Field {...props} component={renderSelect} />
+);

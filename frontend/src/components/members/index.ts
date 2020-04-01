@@ -5,7 +5,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
 import * as React from 'react';
 import { getPermissions } from '../../state/Selectors';
-import { createSelector, Selector } from "reselect";
+import { createSelector, Selector } from 'reselect';
 import { flatten, map } from 'ramda';
 import {
   AddPermission,
@@ -20,9 +20,7 @@ const stateSelector: Selector<ApplicationState, MembersPageStateProps> = createS
   state => state.permissions,
   (permissions, permissionState) => ({
     ...permissionState,
-    canModify: flatten(
-      map(perm => permissionState.allowableModifications[perm] || [], permissions),
-    ),
+    canModify: flatten(map(perm => permissionState.allowableModifications[perm] || [], permissions)),
   }),
 );
 
@@ -30,14 +28,18 @@ export const MembersPage: React.ComponentType<RouteComponentProps<any>> = connec
   MembersPageStateProps,
   MembersPageDispatchProps,
   RouteComponentProps<any>
->(stateSelector, (dispatch: Dispatch): MembersPageDispatchProps => ({
-  fetchPermissionList: () => dispatch(FetchUserCountPerPermission.start()),
-  expandPermissionNode: (permission: string) => dispatch(PermissionNode.open(permission)),
-  expandLetterNode: (permission: string, letter: string) => dispatch(PermissionLetterNode.open({ permission, letter })),
-  collapsePermissionNode: (permission: string) => dispatch(PermissionNode.close(permission)),
-  collapseLetterNode: (permission: string, letter: string) =>
-    dispatch(PermissionLetterNode.close({ permission, letter })),
-  openAddPermission: (perm: string) => dispatch(AddPermission.openDialog(perm)),
-  openRemovePermission: (permission: string, username: string) =>
-    dispatch(RemovePermission.openDialog({ username, permission })),
-}))(Component);
+>(
+  stateSelector,
+  (dispatch: Dispatch): MembersPageDispatchProps => ({
+    fetchPermissionList: () => dispatch(FetchUserCountPerPermission.start()),
+    expandPermissionNode: (permission: string) => dispatch(PermissionNode.open(permission)),
+    expandLetterNode: (permission: string, letter: string) =>
+      dispatch(PermissionLetterNode.open({ permission, letter })),
+    collapsePermissionNode: (permission: string) => dispatch(PermissionNode.close(permission)),
+    collapseLetterNode: (permission: string, letter: string) =>
+      dispatch(PermissionLetterNode.close({ permission, letter })),
+    openAddPermission: (perm: string) => dispatch(AddPermission.openDialog(perm)),
+    openRemovePermission: (permission: string, username: string) =>
+      dispatch(RemovePermission.openDialog({ username, permission })),
+  }),
+)(Component);

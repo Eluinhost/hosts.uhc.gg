@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { InjectedFormProps, reduxForm } from "redux-form";
+import { InjectedFormProps, reduxForm } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
-import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RulesField } from './RulesField';
@@ -37,7 +37,9 @@ class SetRulesDialogHelper extends React.Component<{
 }
 
 const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogStateProps & SetRulesDialogDispatchProps & InjectedFormProps<SetRulesDialogData, SetRulesDialogStateProps & SetRulesDialogDispatchProps>
+  SetRulesDialogStateProps &
+    SetRulesDialogDispatchProps &
+    InjectedFormProps<SetRulesDialogData, SetRulesDialogStateProps & SetRulesDialogDispatchProps>
 > = ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change, isDarkMode }) => (
   <Dialog
     icon="take-action"

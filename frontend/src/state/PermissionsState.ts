@@ -126,9 +126,7 @@ export const reducer: ApplicationReducer<PermissionsState> = ReducerBuilder.with
   .handle(FetchUserCountPerPermission.success, (prev, action) => ({
     ...prev,
     isFetching: false,
-    nodes: toPairs(action.payload!.result).map(([key, value]) =>
-      createPermissionFolder(key, value),
-    ),
+    nodes: toPairs(action.payload!.result).map(([key, value]) => createPermissionFolder(key, value)),
   }))
   .handle(FetchUserCountPerPermission.failure, (prev, action) => ({
     ...prev,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Match } from '../../models/Match';
 import { TeamStyle } from '../team-style';
 import { TagList } from '../tag-list';
-import { Button, Classes, H4, Icon, Intent, Tag } from "@blueprintjs/core";
+import { Button, Classes, H4, Icon, Intent, Tag } from '@blueprintjs/core';
 import { RemovedReason } from './RemovedReason';
 import { UsernameLink } from '../UsernameLink';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ import { HoverSwap } from '../HoverSwap';
 import { MatchOpensTag } from '../time/MatchOpensTag';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { createSelector, ParametricSelector } from "reselect";
+import { createSelector, ParametricSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { ApproveMatch, RemoveMatch } from '../../actions';
@@ -115,9 +115,13 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
                 <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={this.onApprovePress} />
               )}
 
-              {!!match.approvedBy && <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon="tick" />}
+              {!!match.approvedBy && (
+                <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon="tick" />
+              )}
 
-              {!disableRemoval && canRemove && <Button intent={Intent.DANGER} icon="trash" onClick={this.onRemovePress} title="Remove" />}
+              {!disableRemoval && canRemove && (
+                <Button intent={Intent.DANGER} icon="trash" onClick={this.onRemovePress} title="Remove" />
+              )}
             </div>
           </div>
         )}

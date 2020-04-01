@@ -106,17 +106,21 @@ class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldPr
             // doesn't rerender properly, presumably due to daypickersingledatecontroller's
             // shouldComponentUpdate. We're passing a new function each render just to make
             // sure it can rerender properly
-            renderCalendarInfo={timePicker ? () => (
-              <TimePicker
-                {...this.props.timePicker}
-                allowEmpty={!!this.props.renderClearButton}
-                disabled={this.props.disabled}
-                value={this.props.input.value}
-                onChange={this.handleTimeChange}
-                className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
-                showSecond={false}
-              />
-            ) : undefined}
+            renderCalendarInfo={
+              timePicker
+                ? () => (
+                    <TimePicker
+                      {...this.props.timePicker}
+                      allowEmpty={!!this.props.renderClearButton}
+                      disabled={this.props.disabled}
+                      value={this.props.input.value}
+                      onChange={this.handleTimeChange}
+                      className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
+                      showSecond={false}
+                    />
+                  )
+                : undefined
+            }
             calendarInfoPosition="bottom"
             {...datePickerProps}
             date={input.value || null}

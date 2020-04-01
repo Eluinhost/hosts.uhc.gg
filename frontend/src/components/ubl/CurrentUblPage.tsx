@@ -3,7 +3,7 @@ import { UsernameSearcher } from './UsernameSearcher';
 import { UblListing } from './UblListing';
 import { UBLApi } from '../../api';
 import { WithPermission } from '../WithPermission';
-import { Button, H1, H4, Intent } from "@blueprintjs/core";
+import { Button, H1, H4, Intent } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 import { Title } from '../Title';
 

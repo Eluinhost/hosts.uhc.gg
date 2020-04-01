@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
-import { Button, Menu, MenuItem, Popover, Position } from "@blueprintjs/core";
+import { Button, Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
 import { ApplicationState } from '../state/ApplicationState';
 import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -31,8 +31,10 @@ const UserMenu: React.FunctionComponent<DispatchProps> = ({ logout }) => (
 const UsernameComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ logout, username, isLoggedIn }) => {
   if (isLoggedIn) {
     return (
-      <Popover content={<UserMenu logout={logout}/>} position={Position.BOTTOM_RIGHT}>
-        <Button minimal icon="user">{username}</Button>
+      <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
+        <Button minimal icon="user">
+          {username}
+        </Button>
       </Popover>
     );
   }
@@ -48,7 +50,6 @@ const stateSelector = createSelector<ApplicationState, boolean, string | null, S
     username: username || 'ERROR NO USERNAME IN STORE',
   }),
 );
-
 
 // TODO remove props from dispatch
 export const Username: React.ComponentClass = withRouter(

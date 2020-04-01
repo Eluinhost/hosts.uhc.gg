@@ -1,6 +1,6 @@
 import { HostingRulesState } from '../../state/HostingRulesState';
 import * as React from 'react';
-import { Button, Callout, Collapse, H3, Intent } from "@blueprintjs/core";
+import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
 import { Markdown } from '../Markdown';
 import { SetRulesDialog } from './SetRulesDialog';
 import { WithPermission } from '../WithPermission';
@@ -60,7 +60,11 @@ class Dropdown extends React.PureComponent<DropdownStateProps & DropdownDispatch
     const rules = this.rulesToShow();
 
     return (
-      <Callout icon={this.state.areRulesOpen ? 'chevron-up' : 'chevron-down'} className="hosting-rules" onClick={this.toggleDropdown}>
+      <Callout
+        icon={this.state.areRulesOpen ? 'chevron-up' : 'chevron-down'}
+        className="hosting-rules"
+        onClick={this.toggleDropdown}
+      >
         <H3>
           Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small>
         </H3>

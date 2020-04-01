@@ -1,6 +1,6 @@
 import { BanEntry } from '../../models/BanEntry';
 import { AutoSizer, List, ListRowProps, WindowScroller } from 'react-virtualized';
-import { Callout, Classes, H5, InputGroup, NonIdealState, Spinner } from "@blueprintjs/core";
+import { Callout, Classes, H5, InputGroup, NonIdealState, Spinner } from '@blueprintjs/core';
 import * as React from 'react';
 import { UblEntryRow } from './UblEntryRow';
 import { filter, propEq, complement, always, map, when, toLower, curry, any, pipe } from 'ramda';
@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getAccessToken, isDarkMode } from '../../state/Selectors';
-import { Intent } from "@blueprintjs/core/lib/esm/common/intent";
+import { Intent } from '@blueprintjs/core/lib/esm/common/intent';
 
 type UblListingStateProps = {
   readonly accessToken: string | null;
@@ -170,7 +170,10 @@ class UblListingComponent extends React.Component<UblListingProps & UblListingSt
 
     const filterPred = caseInsensitiveContains(filterString);
 
-    return filter<BanEntry>(pipe((ban: BanEntry) => [ban.ign, ban.uuid, ban.reason, ban.link], any(filterPred)), bans);
+    return filter<BanEntry>(
+      pipe((ban: BanEntry) => [ban.ign, ban.uuid, ban.reason, ban.link], any(filterPred)),
+      bans,
+    );
   };
 
   render() {

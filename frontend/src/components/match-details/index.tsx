@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Classes, Icon, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from "@blueprintjs/core";
+import { Classes, Icon, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
 import { UsernameLink } from '../UsernameLink';
 import { TeamStyle } from '../team-style';
 import { ClipboardControlGroup } from '../clipboard-control-group';

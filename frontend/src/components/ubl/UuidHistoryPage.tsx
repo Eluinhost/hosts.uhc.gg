@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { UBLApi } from '../../api';
 import { any } from 'ramda';
-import { H1, H2, Intent, Tag } from "@blueprintjs/core";
+import { H1, H2, Intent, Tag } from '@blueprintjs/core';
 import moment from 'moment-timezone';
 import { UblListing } from './UblListing';
 import { BanEntry } from '../../models/BanEntry';

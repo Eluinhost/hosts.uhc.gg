@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from "redux-form";
+import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
 import { ApplicationState } from '../../state/ApplicationState';
-import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { TextField } from '../fields/TextField';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -63,10 +63,9 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
   return undefined;
 });
 
-const AddPermissionDialogForm: React.ComponentType<AddPermissionDialogStateProps & AddPermissionDialogDispatchProps> = reduxForm<
-  AddPermissionDialogData,
+const AddPermissionDialogForm: React.ComponentType<
   AddPermissionDialogStateProps & AddPermissionDialogDispatchProps
->({
+> = reduxForm<AddPermissionDialogData, AddPermissionDialogStateProps & AddPermissionDialogDispatchProps>({
   form: 'add-permission-form',
   validate: validator.validate,
   onSubmit: async (values, dispatch, props): Promise<void> => {
@@ -93,4 +92,7 @@ export const AddPermissionDialog: React.ComponentType = connect<
   AddPermissionDialogStateProps,
   AddPermissionDialogDispatchProps,
   {}
->(mapStateToProps, mapDispatchToProps)(AddPermissionDialogForm);
+>(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AddPermissionDialogForm);

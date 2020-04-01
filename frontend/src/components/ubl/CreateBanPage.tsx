@@ -8,7 +8,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { always } from 'ramda';
 import { UBLApi } from '../../api';
 import { Title } from '../Title';
-import { H1 } from "@blueprintjs/core";
+import { H1 } from '@blueprintjs/core';
 
 type Props = {
   readonly accessToken: string | null;
@@ -40,4 +40,7 @@ export const CreateBanPage: React.ComponentType<RouteComponentProps<any>> = conn
   Props,
   {},
   RouteComponentProps<any>
->(stateSelector, always({}))(CreateBanPageComponent);
+>(
+  stateSelector,
+  always({}),
+)(CreateBanPageComponent);

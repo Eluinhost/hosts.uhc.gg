@@ -1,4 +1,4 @@
-import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from "redux-form";
+import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
@@ -13,7 +13,7 @@ import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
-import { Button, Callout, Classes, H5, Intent } from "@blueprintjs/core";
+import { Button, Callout, Classes, H5, Intent } from '@blueprintjs/core';
 import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
@@ -21,12 +21,12 @@ import { SwitchField } from '../fields/SwitchField';
 import { Title } from '../Title';
 import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
-import { Dispatch } from "redux";
-import { SagaIterator } from "redux-saga";
-import { all, put, race, take } from "redux-saga/effects";
-import { HostFormConflicts } from "../../actions";
-import { find } from "ramda";
-import { sagaMiddleware } from "../../state/ApplicationState";
+import { Dispatch } from 'redux';
+import { SagaIterator } from 'redux-saga';
+import { all, put, race, take } from 'redux-saga/effects';
+import { HostFormConflicts } from '../../actions';
+import { find } from 'ramda';
+import { sagaMiddleware } from '../../state/ApplicationState';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -60,9 +60,10 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
   <TextField name="customStyle" required label="Custom Team Style" disabled={disabled} className={Classes.FILL} />
 );
 
-
-function * checkForConflicts(values: CreateMatchData): SagaIterator<void> {
-  const { result: { success, failure }} = yield all({
+function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
+  const {
+    result: { success, failure },
+  } = yield all({
     start: put(HostFormConflicts.start({ data: values })),
     result: race({
       success: take(HostFormConflicts.success),
@@ -102,7 +103,9 @@ function * checkForConflicts(values: CreateMatchData): SagaIterator<void> {
   }
 }
 
-class CreateMatchFormComponent extends React.Component<InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps> {
+class CreateMatchFormComponent extends React.Component<
+  InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
+> {
   componentDidMount(): void {
     this.props.asyncValidate();
   }
@@ -154,7 +157,7 @@ class CreateMatchFormComponent extends React.Component<InjectedFormProps<CreateM
             }}
             timePicker={{
               minuteStep: 15,
-              use12Hours: this.props.is12h
+              use12Hours: this.props.is12h,
             }}
           />
           <Callout intent={Intent.WARNING} icon="warning-sign">
@@ -354,10 +357,15 @@ class CreateMatchFormComponent extends React.Component<InjectedFormProps<CreateM
   }
 }
 
-export const CreateMatchForm: React.ComponentType<CreateMatchFormProps &
-  ConfigProps<CreateMatchData, CreateMatchFormProps>> = reduxForm<CreateMatchData, CreateMatchFormProps>({
+export const CreateMatchForm: React.ComponentType<
+  CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>
+> = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: async (values: CreateMatchData, dispatch: Dispatch<any>, props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>): Promise<void> => {
+  asyncValidate: async (
+    values: CreateMatchData,
+    dispatch: Dispatch<any>,
+    props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>,
+  ): Promise<void> => {
     try {
       return await sagaMiddleware.run(checkForConflicts, props.currentValues).toPromise();
     } catch (err) {

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ApiKeyState } from '../../state/ApiKeyState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Dispatch } from 'redux';
-import { Button, Intent, NonIdealState, Pre, Spinner } from "@blueprintjs/core";
+import { Button, Intent, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
 import { Title } from '../Title';
 import { createSelector } from 'reselect';
 import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
@@ -78,4 +78,7 @@ export const ProfilePage: React.ComponentType<RouteComponentProps<any>> = connec
   StateProps,
   DispatchProps,
   RouteComponentProps<any>
->(stateSelector, dispatch)(Component);
+>(
+  stateSelector,
+  dispatch,
+)(Component);

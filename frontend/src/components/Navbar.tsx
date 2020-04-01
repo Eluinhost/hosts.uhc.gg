@@ -1,6 +1,6 @@
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from "@blueprintjs/core";
+import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
 import * as React from 'react';
 import { Username } from './Username';
 import { createSelector } from 'reselect';
@@ -26,11 +26,7 @@ const NavBarButtonComponent: React.FunctionComponent<NavBarButtonProps & RouteCo
   location,
 }) => (
   <Link to={to}>
-    <Button
-      minimal
-      icon={icon}
-      active={location.pathname === to || location.pathname.startsWith(`${to}/`)}
-    >
+    <Button minimal icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
       {text}
     </Button>
   </Link>

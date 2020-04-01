@@ -1,7 +1,7 @@
 import { BanEntry } from '../models/BanEntry';
 import { BanData } from '../components/ubl/BanDataForm';
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
-import moment from "moment";
+import moment from 'moment';
 
 export const searchBannedUsernames = (query: string): Promise<{ [key: string]: string[] }> =>
   fetchObject<{ [key: string]: string[] }>({
@@ -17,20 +17,24 @@ export const searchBannedUsernames = (query: string): Promise<{ [key: string]: s
 export const fetchAllBansForUuid = (uuid: string): Promise<BanEntry[]> =>
   fetchArray<BanEntry>({
     url: `/api/ubl/${uuid}`,
-  }).then(entries => entries.map(entry => (({
-    ...entry,
-    expires: entry.expires && moment.utc(entry.expires),
-    created: moment.utc(entry.created)
-  }))));
+  }).then(entries =>
+    entries.map(entry => ({
+      ...entry,
+      expires: entry.expires && moment.utc(entry.expires),
+      created: moment.utc(entry.created),
+    })),
+  );
 
 export const fetchAllCurrentBans = (): Promise<BanEntry[]> =>
   fetchArray<BanEntry>({
     url: `/api/ubl/current`,
-  }).then(entries => entries.map(entry => (({
-    ...entry,
-    expires: entry.expires && moment.utc(entry.expires),
-    created: moment.utc(entry.created)
-  }))));
+  }).then(entries =>
+    entries.map(entry => ({
+      ...entry,
+      expires: entry.expires && moment.utc(entry.expires),
+      created: moment.utc(entry.created),
+    })),
+  );
 
 export const callDeleteBan = (id: number, accessToken: string): Promise<void> =>
   callApi({

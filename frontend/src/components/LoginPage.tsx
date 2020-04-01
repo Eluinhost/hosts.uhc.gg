@@ -49,10 +49,10 @@ export class LoginPageComponent extends React.Component<RouteComponentProps<any>
 
   render() {
     if (this.props.loggedIn) {
-      return <Redirect to={this.state.redirectPath || '/'}/>;
+      return <Redirect to={this.state.redirectPath || '/'} />;
     }
 
-    return <InvalidToken/>;
+    return <InvalidToken />;
   }
 }
 
@@ -64,6 +64,9 @@ export const LoginPage: React.ComponentType<RouteComponentProps<any>> = connect<
   StateProps,
   DispatchProps,
   RouteComponentProps<any>
->(stateSelector, (dispatch: Dispatch): DispatchProps => ({
-  login: (data: LoginPayload) => dispatch(Authentication.login(data)),
-}))(LoginPageComponent);
+>(
+  stateSelector,
+  (dispatch: Dispatch): DispatchProps => ({
+    login: (data: LoginPayload) => dispatch(Authentication.login(data)),
+  }),
+)(LoginPageComponent);

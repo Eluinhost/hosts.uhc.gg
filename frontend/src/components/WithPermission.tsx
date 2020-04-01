@@ -15,7 +15,11 @@ export type WithPermissionProps = {
   readonly children: React.ReactNode;
 };
 
-const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissionProps> = ({ show, alternative, children }) => {
+const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissionProps> = ({
+  show,
+  alternative,
+  children,
+}) => {
   if (show) {
     return <>{children}</> || null;
   }

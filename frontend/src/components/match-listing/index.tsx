@@ -120,10 +120,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
 
   // pretty hacky but works
   searchQueryFilter = (query: string) => (m: Match): boolean =>
-    !query ||
-    JSON.stringify(m)
-      .toLowerCase()
-      .indexOf(query.toLowerCase()) > 0;
+    !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0;
 
   handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ search: event.target.value });
   clearSearch = () => this.setState({ search: '' });
@@ -133,10 +130,12 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
       return undefined;
     }
 
-    return <>
-      Showing {showing} of {outOf}.
-      <Button minimal icon="cross" onClick={this.clearSearch} />
-    </>
+    return (
+      <>
+        Showing {showing} of {outOf}.
+        <Button minimal icon="cross" onClick={this.clearSearch} />
+      </>
+    );
   };
 
   render() {

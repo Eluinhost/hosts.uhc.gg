@@ -6,20 +6,25 @@ import { CreateMatchData } from '../models/CreateMatchData';
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({
     url: `/api/matches/upcoming`,
-  }).then(matches => matches.map(match => ({
-    ...match,
-    opens: moment.utc(match.opens),
-    created: moment.utc(match.created),
-  })));
+  }).then(matches =>
+    matches.map(match => ({
+      ...match,
+      opens: moment.utc(match.opens),
+      created: moment.utc(match.created),
+    })),
+  );
 
 export const fetchSingle = (id: number): Promise<Match | null> =>
   maybeFetchObject<Match>({
-    url: `/api/matches/${id}`
-  }).then(match => match && ({
-    ...match,
-    opens: moment.utc(match.opens),
-    created: moment.utc(match.created),
-  }));
+    url: `/api/matches/${id}`,
+  }).then(
+    match =>
+      match && {
+        ...match,
+        opens: moment.utc(match.opens),
+        created: moment.utc(match.created),
+      },
+  );
 
 export const callRemove = (id: number, reason: string, accessToken: string): Promise<void> =>
   callApi({
@@ -63,21 +68,22 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
 
 export const fetchPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
   fetchArray<Match>({
-    url: `/api/matches/conflicts/${region}/${time
-      .clone()
-      .utc()
-      .format()}`,
-  }).then(matches => matches.map(match => ({
-    ...match,
-    opens: moment.utc(match.opens),
-    created: moment.utc(match.created),
-  })));
+    url: `/api/matches/conflicts/${region}/${time.clone().utc().format()}`,
+  }).then(matches =>
+    matches.map(match => ({
+      ...match,
+      opens: moment.utc(match.opens),
+      created: moment.utc(match.created),
+    })),
+  );
 
 export const fetchHistoryForHost = (host: string, before?: number): Promise<Match[]> =>
   fetchArray<Match>({
     url: `/api/hosts/${host}/matches?before=${before || ''}`,
-  }).then(matches => matches.map(match => ({
-    ...match,
-    opens: moment.utc(match.opens),
-    created: moment.utc(match.created),
-  })));
+  }).then(matches =>
+    matches.map(match => ({
+      ...match,
+      opens: moment.utc(match.opens),
+      created: moment.utc(match.created),
+    })),
+  );

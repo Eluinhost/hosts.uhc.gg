@@ -2,7 +2,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import * as React from 'react';
 import { Hotkey, Hotkeys } from '@blueprintjs/core';
 // workaround for dodgy transpilation
-import {HotkeysTarget} from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysTarget.js';
+import { HotkeysTarget } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysTarget.js';
 
 @HotkeysTarget
 class GlobalHotkeysComponent extends React.PureComponent<RouteComponentProps<any>> {

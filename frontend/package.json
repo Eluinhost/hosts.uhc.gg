@@ -7,7 +7,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prettier": "prettier --write \"app/**/*.{json,js,ts,tsx}\"",
+    "prettier": "prettier --write \"src/**/*.{json,js,ts,tsx}\"",
     "prettier:watch": "onchange \"**/*.{json,js,ts,tsx}\" -- prettier --write {{changed}}",
     "pre-commit": "lint-staged"
   },
