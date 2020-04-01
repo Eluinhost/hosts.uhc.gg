@@ -21,7 +21,7 @@ type State = {
   readonly selected: string | null;
 };
 
-export class UsernameSearcher extends React.Component<{}, State> {
+export class UsernameSearcher extends React.PureComponent<{}, State> {
   state = {
     loading: false,
     items: [],

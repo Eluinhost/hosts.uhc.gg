@@ -1,7 +1,6 @@
 import React, { ComponentType } from 'react';
 import { HostingPage } from './host';
 import { Classes, NonIdealState } from '@blueprintjs/core';
-import { BrowserRouter } from 'react-router-dom';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
@@ -16,7 +15,6 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
 import { isDarkMode } from '../state/Selectors';
-import { always } from 'ramda';
 import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
@@ -148,22 +146,20 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
 
   public render() {
     return (
-      <BrowserRouter>
-        <GlobalHotkeys>
-          <div className={this.wrapperClass()}>
-            <div style={{ flexGrow: 0 }}>
-              <Navbar />
-              <TimeSettings />
-            </div>
-            <div className="app-container">
-              <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
-              <Routes />
-            </div>
-
-            <Footer />
+      <GlobalHotkeys>
+        <div className={this.wrapperClass()}>
+          <div style={{ flexGrow: 0 }}>
+            <Navbar />
+            <TimeSettings />
           </div>
-        </GlobalHotkeys>
-      </BrowserRouter>
+          <div className="app-container">
+            <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+            <Routes />
+          </div>
+
+          <Footer />
+        </div>
+      </GlobalHotkeys>
     );
   }
 }
@@ -172,4 +168,4 @@ const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDark
   isDarkMode,
 }));
 
-export const App: ComponentType = connect<AppProps, {}, {}>(stateSelector, always({}))(AppComponent);
+export const App: ComponentType = connect(stateSelector)(AppComponent);

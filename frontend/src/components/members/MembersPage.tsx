@@ -21,7 +21,7 @@ export type MembersPageStateProps = PermissionsState & {
   readonly canModify: string[];
 };
 
-export class MembersPage extends React.Component<
+export class MembersPage extends React.PureComponent<
   MembersPageStateProps & MembersPageDispatchProps & RouteComponentProps<any>
 > {
   componentDidMount(): void {

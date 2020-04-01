@@ -33,7 +33,7 @@ const caseInsensitiveContains = curry(
   (needle: string, haystack: string) => toLower(haystack).indexOf(toLower(needle)) > -1,
 );
 
-class UblListingComponent extends React.Component<UblListingProps & UblListingStateProps, State> {
+class UblListingComponent extends React.PureComponent<UblListingProps & UblListingStateProps, State> {
   state = {
     bans: [],
     backup: null,

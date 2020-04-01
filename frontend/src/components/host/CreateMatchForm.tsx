@@ -103,7 +103,7 @@ function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
   }
 }
 
-class CreateMatchFormComponent extends React.Component<
+class CreateMatchFormComponent extends React.PureComponent<
   InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
 > {
   componentDidMount(): void {

@@ -23,7 +23,7 @@ type SetRulesDialogStateProps = {
 };
 
 // Simple component that exists just to pull the latest rules into the form once the dialog renders it's body
-class SetRulesDialogHelper extends React.Component<{
+class SetRulesDialogHelper extends React.PureComponent<{
   readonly current: string | null;
   readonly change: (field: string, value: string) => void;
 }> {

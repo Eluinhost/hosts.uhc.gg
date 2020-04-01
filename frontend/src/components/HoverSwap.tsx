@@ -4,7 +4,7 @@ type HoverSwapState = {
   readonly isHovered: boolean;
 };
 
-export class HoverSwap extends React.Component<{}, HoverSwapState> {
+export class HoverSwap extends React.PureComponent<{}, HoverSwapState> {
   state = {
     isHovered: false,
   };

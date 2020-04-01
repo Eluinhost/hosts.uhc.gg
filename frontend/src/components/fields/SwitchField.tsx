@@ -9,7 +9,7 @@ export interface SwitchFieldProps extends BaseFieldProps {
   readonly className?: string;
 }
 
-class Switcher extends React.Component<WrappedFieldProps & SwitchFieldProps> {
+class Switcher extends React.PureComponent<WrappedFieldProps & SwitchFieldProps> {
   onChange = (): void => {
     if (this.props.disabled) return;
 

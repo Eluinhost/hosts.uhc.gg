@@ -23,7 +23,7 @@ type State = {
 
 const InvalidToken: React.FunctionComponent = () => <NonIdealState title="Invalid login token" icon="warning-sign" />;
 
-export class LoginPageComponent extends React.Component<RouteComponentProps<any> & StateProps & DispatchProps, State> {
+export class LoginPageComponent extends React.PureComponent<RouteComponentProps<any> & StateProps & DispatchProps, State> {
   state = {
     redirectPath: null,
   };

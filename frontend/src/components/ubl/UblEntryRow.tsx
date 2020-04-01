@@ -26,7 +26,7 @@ type State = {
   readonly isDeleteOpen: boolean;
 };
 
-export class UblEntryRow extends React.Component<UblEntryRowProps, State> {
+export class UblEntryRow extends React.PureComponent<UblEntryRowProps, State> {
   state = {
     isEditOpen: false,
     isDeleteOpen: false,

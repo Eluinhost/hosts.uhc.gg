@@ -116,7 +116,7 @@ type TemplateFieldComponentState = {
   readonly currentTabId: string | number;
 };
 
-class TemplateFieldComponent extends React.Component<
+class TemplateFieldComponent extends React.PureComponent<
   WrappedFieldProps & TemplateFieldProps,
   TemplateFieldComponentState
 > {

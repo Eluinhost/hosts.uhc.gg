@@ -20,6 +20,10 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly renderClearButton?: React.ComponentType<{ value: any; onClear: () => void }>;
 }
 
+type StateProps = {
+  isFocused: boolean | null;
+}
+
 export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <Callout intent={Intent.DANGER}>{error}</Callout>;
 
@@ -28,7 +32,11 @@ export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, 
   return null;
 };
 
-class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldProps> {
+class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFieldProps, StateProps> {
+  state = {
+    isFocused: false,
+  };
+
   triggerBlur = (date: moment.Moment): void => this.props.input.onChange(date);
 
   triggerChange = (date: moment.Moment | null): void => {
@@ -63,7 +71,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldPr
 
   handleClear = () => this.handleDateChange(null);
 
-  handleFocusChange = () => null;
+  handleFocusChange = (arg: { focused: boolean | null }) => this.setState({ isFocused: arg.focused || false });
 
   isDayBlocked = (day: moment.Moment) => {
     if (this.props.minDate && this.props.minDate.isAfter(day)) {
@@ -125,7 +133,7 @@ class DateTimePicker extends React.Component<WrappedFieldProps & DateTimeFieldPr
             {...datePickerProps}
             date={input.value || null}
             onDateChange={this.handleDateChange}
-            focused={true}
+            focused={this.state.isFocused}
             onFocusChange={this.handleFocusChange}
           />
           {ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />}

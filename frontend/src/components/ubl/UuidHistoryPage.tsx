@@ -23,7 +23,7 @@ enum BanState {
   CurrentlyBanned,
 }
 
-export class UuidHistoryPage extends React.Component<RouteComponentProps<Params>, State> {
+export class UuidHistoryPage extends React.PureComponent<RouteComponentProps<Params>, State> {
   state = {
     currentlyBanned: BanState.NotLoaded,
   };
