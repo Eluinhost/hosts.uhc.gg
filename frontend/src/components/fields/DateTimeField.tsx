@@ -85,6 +85,21 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
     return false;
   };
 
+  renderInfoPanel = (clear?: JSX.Element) => (
+    <div>
+      {this.props.timePicker && <TimePicker
+        {...this.props.timePicker}
+        allowEmpty={!!this.props.renderClearButton}
+        disabled={this.props.disabled}
+        value={this.props.input.value}
+        onChange={this.handleTimeChange}
+        className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
+        showSecond={false}
+      />}
+      {clear}
+    </div>
+  );
+
   render() {
     const {
       meta,
@@ -95,7 +110,6 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
       disabled,
       renderClearButton: ClearButton,
       className,
-      timePicker,
     } = this.props;
 
     return (
@@ -114,21 +128,7 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
             // doesn't rerender properly, presumably due to daypickersingledatecontroller's
             // shouldComponentUpdate. We're passing a new function each render just to make
             // sure it can rerender properly
-            renderCalendarInfo={
-              timePicker
-                ? () => (
-                    <TimePicker
-                      {...this.props.timePicker}
-                      allowEmpty={!!this.props.renderClearButton}
-                      disabled={this.props.disabled}
-                      value={this.props.input.value}
-                      onChange={this.handleTimeChange}
-                      className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
-                      showSecond={false}
-                    />
-                  )
-                : undefined
-            }
+            renderCalendarInfo={() => this.renderInfoPanel(ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />)}
             calendarInfoPosition="bottom"
             {...datePickerProps}
             date={input.value || null}
@@ -136,7 +136,6 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
             focused={this.state.isFocused}
             onFocusChange={this.handleFocusChange}
           />
-          {ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />}
           <Errors {...meta} />
         </div>
         <Overlay
