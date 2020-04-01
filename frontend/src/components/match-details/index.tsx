@@ -37,10 +37,10 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
     this.props.load(this.props.id);
   }
 
-  public componentWillReceiveProps(next: StateProps & DispatchProps & OwnProps) {
-    if (this.props.id !== next.id) {
+  public componentDidUpdate(prev: StateProps & DispatchProps & OwnProps) {
+    if (this.props.id !== prev.id) {
       this.props.clear();
-      this.props.load(next.id);
+      this.props.load(this.props.id);
     }
   }
 
