@@ -43,7 +43,6 @@
     "@types/react-virtualized": "9.21.8",
     "@types/redux-actions": "1.2.8",
     "@types/redux-form": "8.2.3",
-    "bourbon": "4.3.4",
     "http-proxy-middleware": "1.0.3",
     "husky": "0.14.3",
     "jwt-decode": "2.2.0",
