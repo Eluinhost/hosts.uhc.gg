@@ -50,16 +50,13 @@ export const BanDataFormComponent: React.FunctionComponent<InjectedFormProps<Ban
       label="Ban Starts"
       required
       disabled={submitting}
-      disableTime
-      datePickerProps={{ fixedHeight: true }}
     />
     <DateTimeField
       name="expires"
       label="Ban Expires"
       required={false}
       disabled={submitting}
-      disableTime
-      datePickerProps={{ fixedHeight: true, calendarClassName: 'ban-expiry-input' }}
+      className='ban-expiry-input'
       renderClearButton={ClearButton}
     />
     <TextField name="ign" label="IGN" disabled={submitting} required />

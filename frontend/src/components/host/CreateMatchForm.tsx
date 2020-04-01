@@ -1,4 +1,4 @@
-import { ConfigProps, InjectedFormProps, reduxForm } from 'redux-form';
+import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from "redux-form";
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
@@ -13,7 +13,7 @@ import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
-import { Button, Callout, Classes, H5, Intent } from '@blueprintjs/core';
+import { Button, Callout, Classes, H5, Intent } from "@blueprintjs/core";
 import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
@@ -21,9 +21,12 @@ import { SwitchField } from '../fields/SwitchField';
 import { Title } from '../Title';
 import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
-import { connect } from 'react-redux';
-import { HostFormConflicts } from '../../actions';
-import { Dispatch } from 'redux';
+import { Dispatch } from "redux";
+import { SagaIterator } from "redux-saga";
+import { all, put, race, take } from "redux-saga/effects";
+import { HostFormConflicts } from "../../actions";
+import { find } from "ramda";
+import { sagaMiddleware } from "../../state/ApplicationState";
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -31,11 +34,7 @@ export type CreateMatchFormProps = {
   readonly username: string;
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
-  readonly createMatch: (data: CreateMatchData) => void;
-};
-
-type DispatchProps = {
-  updatePotentialConflicts: (data: CreateMatchData) => void;
+  readonly createMatch: (data: CreateMatchData) => Promise<void>;
 };
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
@@ -61,9 +60,49 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
   <TextField name="customStyle" required label="Custom Team Style" disabled={disabled} className={Classes.FILL} />
 );
 
-class CreateMatchFormComponent extends React.Component<
-  InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps & DispatchProps
-> {
+
+function * checkForConflicts(values: CreateMatchData): SagaIterator<void> {
+  const { result: { success, failure }} = yield all({
+    start: put(HostFormConflicts.start({ data: values })),
+    result: race({
+      success: take(HostFormConflicts.success),
+      failure: take(HostFormConflicts.failure),
+    }),
+  });
+
+  if (failure) {
+    throw new SubmissionError<CreateMatchData>({
+      opens: 'Failed to lookup conflicts',
+      region: 'Failed to lookup conflicts',
+    });
+  }
+
+  const payload: NonNullable<ReturnType<typeof HostFormConflicts.success>['payload']> = success.payload;
+
+  let confirmedConflicts = payload.result.filter(conflict => conflict.opens.isSame(payload.parameters.data.opens));
+
+  // If the game being hosted is not a tournament it is allowed to overhost tournaments
+  if (!payload.parameters.data.tournament) {
+    confirmedConflicts = confirmedConflicts.filter(conflict => !conflict.tournament);
+  }
+
+  if (confirmedConflicts.length) {
+    // conflict should be whatever isn't a tournament, if they're all tournaments just return whatever is first
+    const conflict = find<Match>(m => !m.tournament, confirmedConflicts) || confirmedConflicts[0];
+
+    // tslint:disable-next-line:max-line-length
+    const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${
+      conflict.region
+    } - ${conflict.opens.format('HH:mm z')})`;
+
+    throw new SubmissionError<CreateMatchData>({
+      opens: message,
+      region: message,
+    });
+  }
+}
+
+class CreateMatchFormComponent extends React.Component<InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps> {
   componentDidMount(): void {
     this.props.asyncValidate();
   }
@@ -98,7 +137,7 @@ class CreateMatchFormComponent extends React.Component<
     };
 
     return (
-      <form className="host-form" onSubmit={handleSubmit!(createMatch)}>
+      <form className="host-form" onSubmit={handleSubmit(createMatch)}>
         <Title>Create a match</Title>
         <HostingRules />
 
@@ -108,18 +147,14 @@ class CreateMatchFormComponent extends React.Component<
             name="opens"
             required
             disabled={disabledAsync}
+            minDate={nextAvailableSlot().set('hours', 0)} // required so react-dates minDate works (it looks at midday)
+            maxDate={moment.utc().add(30, 'd').set('hours', 23)}
             datePickerProps={{
-              minDate: nextAvailableSlot().toDate(),
-              fixedHeight: true,
-              maxDate: moment
-                .utc()
-                .add(30, 'd')
-                .toDate(),
-              isClearable: false,
-              showTimeSelect: true,
-              monthsShown: 2,
-              timeIntervals: 15,
-              timeFormat: this.props.is12h ? 'hh:mm aa' : 'HH:mm',
+              numberOfMonths: 2,
+            }}
+            timePicker={{
+              minuteStep: 15,
+              use12Hours: this.props.is12h
             }}
           />
           <Callout intent={Intent.WARNING} icon="warning-sign">
@@ -319,19 +354,19 @@ class CreateMatchFormComponent extends React.Component<
   }
 }
 
-const connected: React.ComponentType<InjectedFormProps<CreateMatchData, CreateMatchFormProps> &
-  CreateMatchFormProps> = connect(
-  null,
-  (dispatch: Dispatch): DispatchProps => ({
-    updatePotentialConflicts: (data: CreateMatchData) => dispatch(HostFormConflicts.start({ data })),
-  }),
-)(CreateMatchFormComponent);
-
 export const CreateMatchForm: React.ComponentType<CreateMatchFormProps &
   ConfigProps<CreateMatchData, CreateMatchFormProps>> = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: async (values: CreateMatchData, dispatch: Dispatch): Promise<void> => {
-    dispatch(HostFormConflicts.start({ data: values }));
+  asyncValidate: async (values: CreateMatchData, dispatch: Dispatch<any>, props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>): Promise<void> => {
+    try {
+      return await sagaMiddleware.run(checkForConflicts, props.currentValues).toPromise();
+    } catch (err) {
+      if (err instanceof SubmissionError) {
+        throw err.errors; // redux-form doesn't like the SubmissionError instance and wants the errors object
+      }
+
+      throw err;
+    }
   },
   asyncBlurFields: ['opens', 'region', 'tournament'],
-})(connected);
+})(CreateMatchFormComponent);

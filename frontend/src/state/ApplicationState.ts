@@ -36,9 +36,9 @@ export type ApplicationState = {
 
 const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
-  const sagaMiddleware = createSagaMiddleware();
+export const sagaMiddleware = createSagaMiddleware();
 
+export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const store = createStore(
     combineReducers<ApplicationState>({
       form: (state, action) => formReducer(state!, action),

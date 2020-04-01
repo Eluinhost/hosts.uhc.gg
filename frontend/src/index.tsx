@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 
 import './main.sass';
 
+import 'react-dates/initialize';
+
 createReduxStore().then(store => {
   ReactDOM.render(
     <React.StrictMode>

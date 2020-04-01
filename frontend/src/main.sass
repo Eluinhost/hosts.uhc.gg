@@ -1,6 +1,7 @@
 @import "~normalize.css/normalize.css"
-@import "~react-datepicker/dist/react-datepicker.css"
+@import "~rc-time-picker/assets/index.css"
 @import "~react-virtualized/styles.css"
+@import "~react-dates/lib/css/_datepicker.css"
 
 $icon-font-path: "~@blueprintjs/core/resources/icons"
 
@@ -79,50 +80,8 @@ html, body, #root
   color: $red4
   padding-left: 5px
 
-// this is silly but required to be higher than the date picker
-.rc-time-picker-panel
-  z-index: 10000000000
-
-.rc-time-picker-panel
-  .rc-time-picker-panel-select
-    max-height: 144px
-    overflow-y: auto
-    ul
-      max-height: initial
-
-.rc-time-picker-panel-combobox
-  display: flex
-
-.rc-time-picker-panel-select
-  flex: 1
-
-.react-datepicker
-  display: inline-flex
-  justify-content: center
-  align-items: center
-  flex-wrap: wrap
-
-.react-datepicker__month-container
-  min-width: 50%
-  flex-grow: 1
-
-.rc-time-picker-input
-  width: 170px
-  font-size: 130%
-  text-align: center
-
-.rc-time-picker-panel-input
-  width: 100%
-  font-size: 130%
-  text-align: center
-
-.rc-time-picker-panel-inner
-  width: 100%
-
 .opening-time
   text-align: center
-  .react-datepicker__month-container
-    min-width: 0
   .bp3-callout
     text-align: left
 
