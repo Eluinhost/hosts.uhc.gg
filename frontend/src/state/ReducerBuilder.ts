@@ -1,9 +1,9 @@
-import { ActionCreator, AnyAction} from 'redux';
+import { ActionCreator } from 'redux';
 import { Action, Reducer } from 'redux-actions';
 import { clone } from 'ramda';
 
 export type ApplicationReducer<TState> = {
-  (state: TState | undefined, action: AnyAction): TState;
+  (state: TState | undefined, action: Action<any>): TState;
   readonly initial: TState;
 };
 
