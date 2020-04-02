@@ -1,32 +1,29 @@
 import { MatchesApi } from '../api';
 import { SagaIterator } from 'redux-saga';
 import { select, put, call, takeLatest } from 'redux-saga/effects';
-import { LoadHostHistory, LoadHostHistoryParameters } from '../actions';
+import { LoadHostHistory } from '../actions';
 import { Match } from '../models/Match';
-import { Action } from 'redux-actions';
 import { getHostingHistoryCursor } from '../state/Selectors';
 
-function* loadHostHistorySaga(action: Action<LoadHostHistoryParameters>): SagaIterator {
-  const parameters = action.payload!;
-
+function* loadHostHistorySaga(action: ReturnType<typeof LoadHostHistory.start>): SagaIterator {
   try {
-    yield put(LoadHostHistory.started({ parameters }));
+    yield put(LoadHostHistory.started({ parameters: action.payload }));
 
     const id: number | undefined = yield select(getHostingHistoryCursor);
 
     const result: Match[] = yield call(
       MatchesApi.fetchHistoryForHost,
-      parameters.host,
-      parameters.refresh ? undefined : id,
+      action.payload.host,
+      action.payload.refresh ? undefined : id,
     );
 
-    yield put(LoadHostHistory.success({ parameters, result }));
+    yield put(LoadHostHistory.success({ parameters: action.payload, result }));
   } catch (error) {
     console.error(error, 'error loading hosting history');
-    yield put(LoadHostHistory.failure({ parameters, error }));
+    yield put(LoadHostHistory.failure({ parameters: action.payload, error }));
   }
 }
 
 export function* watchLoadHostHistory(): SagaIterator {
-  yield takeLatest<Action<LoadHostHistoryParameters>>(LoadHostHistory.start, loadHostHistorySaga);
+  yield takeLatest(LoadHostHistory.start, loadHostHistorySaga);
 }

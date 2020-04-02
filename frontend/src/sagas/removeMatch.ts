@@ -1,16 +1,15 @@
 import { ApiErrors, MatchesApi } from '../api';
 import { SagaIterator } from 'redux-saga';
 import { put, call, select, takeEvery } from 'redux-saga/effects';
-import { RemoveMatch, RemoveMatchParameters } from '../actions';
+import { RemoveMatch } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
-import { Action } from 'redux-actions';
 import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
 import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
-function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
-  const parameters = action.payload!;
+function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIterator {
+  const parameters = action.payload;
 
   try {
     const state: ApplicationState = yield select();
@@ -56,5 +55,5 @@ function* removeMatchSaga(action: Action<RemoveMatchParameters>): SagaIterator {
 }
 
 export function* watchRemoveMatch(): SagaIterator {
-  yield takeEvery<Action<RemoveMatchParameters>>(RemoveMatch.start, removeMatchSaga);
+  yield takeEvery(RemoveMatch.start, removeMatchSaga);
 }

@@ -3,7 +3,6 @@ import { SagaIterator } from 'redux-saga';
 import { call, put, select, all, takeLatest } from 'redux-saga/effects';
 import { GetHostingRules, SetHostingRules } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
-import { Action } from 'redux-actions';
 import { HostingRules } from '../state/HostingRulesState';
 import moment from 'moment-timezone';
 import { AppToaster } from '../services/AppToaster';
@@ -22,9 +21,7 @@ function* getHostingRulesSaga(): SagaIterator {
   }
 }
 
-function* setHostingRulesSaga(action: Action<string>): SagaIterator {
-  const parameters = action.payload!;
-
+function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>): SagaIterator {
   try {
     const username: string | null = yield select(getUsername);
     const accessToken: string | null = yield select(getAccessToken);
@@ -34,14 +31,14 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     }
 
     const rules: HostingRules = {
-      content: parameters,
+      content: action.payload,
       modified: moment.utc(),
       author: username,
     };
 
-    yield put(SetHostingRules.started({ parameters, result: rules }));
-    yield call(HostingRulesApi.callSetHostingRules, parameters, accessToken);
-    yield put(SetHostingRules.success({ parameters, result: rules }));
+    yield put(SetHostingRules.started({ parameters: action.payload, result: rules }));
+    yield call(HostingRulesApi.callSetHostingRules, action.payload, accessToken);
+    yield put(SetHostingRules.success({ parameters: action.payload, result: rules }));
 
     AppToaster.show({
       intent: Intent.SUCCESS,
@@ -50,7 +47,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
     });
   } catch (error) {
     console.error(error, 'error setting hosting rules');
-    yield put(SetHostingRules.failure({ parameters, error }));
+    yield put(SetHostingRules.failure({ parameters: action.payload, error }));
     AppToaster.show({
       intent: Intent.DANGER,
       icon: 'warning-sign',
@@ -64,7 +61,7 @@ function* setHostingRulesSaga(action: Action<string>): SagaIterator {
 
 export function* watchHostingRules(): SagaIterator {
   yield all([
-    takeLatest<Action<void>>(GetHostingRules.start, getHostingRulesSaga),
-    takeLatest<Action<string>>(SetHostingRules.start, setHostingRulesSaga),
+    takeLatest(GetHostingRules.start, getHostingRulesSaga),
+    takeLatest(SetHostingRules.start, setHostingRulesSaga),
   ]);
 }

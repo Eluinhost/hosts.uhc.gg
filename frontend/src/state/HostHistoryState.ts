@@ -1,9 +1,11 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+import moment from 'moment-timezone';
+import { concat } from 'ramda';
+
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
-import { concat } from 'ramda';
 import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
-import moment from 'moment-timezone';
 
 export type HostHistoryState = {
   readonly fetching: boolean;
@@ -22,7 +24,7 @@ const displayError = (err: Error) => {
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder.withInitialState<HostHistoryState>({
+export const reducer: Reducer<HostHistoryState> = createReducer<HostHistoryState>({
   fetching: false,
   error: null,
   matches: [],
@@ -30,7 +32,7 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder.with
   hasMorePages: true,
   updated: null,
 })
-  .handle(LoadHostHistory.clear, () => ({
+  .handleAction(LoadHostHistory.clear, () => ({
     fetching: false,
     error: null,
     matches: [],
@@ -38,47 +40,47 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder.with
     hasMorePages: false,
     updated: null,
   }))
-  .handle(LoadHostHistory.started, (prev, action) => ({
+  .handleAction(LoadHostHistory.started, (state, action) => ({
     fetching: true,
     error: null,
-    host: action.payload!.parameters.host,
-    matches: prev.matches,
-    hasMorePages: prev.hasMorePages,
-    updated: prev.updated,
+    host: action.payload.parameters.host,
+    matches: state.matches,
+    hasMorePages: state.hasMorePages,
+    updated: state.updated,
   }))
-  .handle(LoadHostHistory.success, (prev, action) => ({
+  .handleAction(LoadHostHistory.success, (state, action) => ({
     fetching: false,
     error: null,
-    matches: concat(prev.matches, action.payload!.result),
-    host: prev.host,
+    matches: concat(state.matches, action.payload.result),
+    host: state.host,
     hasMorePages: action.payload!.result.length > 0,
     updated: moment.utc(),
   }))
-  .handle(LoadHostHistory.failure, (prev, action) => ({
+  .handleAction(LoadHostHistory.failure, (state, action) => ({
     fetching: false,
-    error: displayError(action.payload!.error),
-    matches: prev.matches,
-    host: prev.host,
-    hasMorePages: prev.hasMorePages,
-    updated: prev.updated,
+    error: displayError(action.payload.error),
+    matches: state.matches,
+    host: state.host,
+    hasMorePages: state.hasMorePages,
+    updated: state.updated,
   }))
-  .handle(RemoveMatch.started, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(RemoveMatch.started, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
         removed: true,
-        removedBy: action.payload!.result.username,
-        remvoedReason: action.payload!.parameters.reason,
+        removedBy: action.payload.result.username,
+        remvoedReason: action.payload.parameters.reason,
       };
     }),
   }))
-  .handle(RemoveMatch.failure, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(RemoveMatch.failure, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
@@ -88,26 +90,25 @@ export const reducer: ApplicationReducer<HostHistoryState> = ReducerBuilder.with
       };
     }),
   }))
-  .handle(ApproveMatch.started, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(ApproveMatch.started, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
-        approvedBy: action.payload!.result.username,
+        approvedBy: action.payload.result.username,
       };
     }),
   }))
-  .handle(ApproveMatch.failure, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(ApproveMatch.failure, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
         approvedBy: null,
       };
     }),
-  }))
-  .build();
+  }));

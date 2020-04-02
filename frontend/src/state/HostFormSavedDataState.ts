@@ -1,4 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+
 import { SetSavedHostFormData } from '../actions';
 import { CreateMatchData } from '../models/CreateMatchData';
 import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
@@ -8,9 +10,7 @@ import { presets } from '../components/host/presets';
 
 export type HostFormSavedDataState = CreateMatchData;
 
-export const reducer: ApplicationReducer<HostFormSavedDataState> = ReducerBuilder.withInitialState<
-  HostFormSavedDataState
->({
+export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSavedDataState>({
   opens: nextAvailableSlot(),
   region: Regions[0].value,
   teams: TeamStyles[0].value,
@@ -30,10 +30,8 @@ export const reducer: ApplicationReducer<HostFormSavedDataState> = ReducerBuilde
   slots: 80,
   hostingName: null,
   tournament: false,
-})
-  .handle(SetSavedHostFormData.started, (prev, action) => ({
-    ...prev,
-    ...action.payload!.parameters,
-    opens: prev.opens, // always use whatever was there first, storage really doesn't like moment
-  }))
-  .build();
+}).handleAction(SetSavedHostFormData.started, (state, action) => ({
+  ...state,
+  ...action.payload.parameters,
+  opens: state.opens, // always use whatever was there first, storage really doesn't like moment
+}));

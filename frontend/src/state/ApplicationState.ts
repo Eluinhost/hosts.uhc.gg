@@ -56,22 +56,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
     }),
-    {
-      authentication: Authentication.initial,
-      form: {},
-      upcoming: Upcoming.initial,
-      matchModeration: MatchModeration.initial,
-      hostHistory: HostHistory.initial,
-      matchDetails: MatchDetails.initial,
-      permissions: Permissions.initial,
-      permissionModerationLog: PermissionModerationLog.initial,
-      apiKey: ApiKey.initial,
-      rules: HostingRules.initial,
-      hostFormConflicts: HostFormConflicts.initial,
-      settings: Settings.initial,
-      timeSync: TimeSync.initial,
-      hostFormSavedData: HostFormSavedData.initial,
-    },
     composeEnhancers(applyMiddleware(sagaMiddleware)),
   );
 

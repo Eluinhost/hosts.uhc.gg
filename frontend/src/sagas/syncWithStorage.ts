@@ -1,9 +1,10 @@
 import { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
-import { Action, ActionFunction1 } from 'redux-actions';
 import { Authentication, ClearStorage, SetSavedHostFormData, Settings } from '../actions';
 import * as localForage from 'localforage';
 import { CreateMatchData } from '../models/CreateMatchData';
+import { ActionCreator } from 'typesafe-redux-helpers';
+import { AnyAction } from 'redux';
 
 export const storage: LocalForage = localForage.createInstance({
   name: 'hosts-uhcgg-data',
@@ -14,7 +15,8 @@ export const storage: LocalForage = localForage.createInstance({
 
 const baseKey = `settings`;
 
-function* saveAndListen(setAction: ActionFunction1<any, Action<any>>, storageKey: string): SagaIterator {
+// TODO does this only work with strings?
+function* saveAndListen(setAction: ActionCreator<any, any, any>, storageKey: string): SagaIterator {
   const key = `${baseKey}.${storageKey}`;
 
   const stored: any = yield call({ context: storage, fn: storage.getItem }, key);
@@ -25,7 +27,7 @@ function* saveAndListen(setAction: ActionFunction1<any, Action<any>>, storageKey
 
   // start a separate task to listen for changes to save them
   yield spawn(function* (): SagaIterator {
-    yield takeLatest(setAction, function* (action: Action<any>): SagaIterator {
+    yield takeLatest(setAction, function* (action: AnyAction): SagaIterator {
       yield call([storage, storage.setItem], key, action.payload);
     });
   });
@@ -62,8 +64,10 @@ function* syncHostFormData(): SagaIterator {
   }
 
   yield spawn(function* (): SagaIterator {
-    yield takeLatest(SetSavedHostFormData.start, function* (action: Action<CreateMatchData>): SagaIterator {
-      const parameters = action.payload!;
+    yield takeLatest(SetSavedHostFormData.start, function* (
+      action: ReturnType<typeof SetSavedHostFormData.start>,
+    ): SagaIterator {
+      const parameters = action.payload;
 
       yield put(SetSavedHostFormData.started({ parameters }));
 

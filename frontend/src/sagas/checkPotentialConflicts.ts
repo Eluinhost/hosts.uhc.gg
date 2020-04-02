@@ -1,29 +1,26 @@
 import { MatchesApi } from '../api';
 import { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest } from 'redux-saga/effects';
-import { HostFormConflicts, HostFormConflictsParameters } from '../actions';
+import { HostFormConflicts } from '../actions';
 import { Match } from '../models/Match';
-import { Action } from 'redux-actions';
 
-function* checkHostFormConflictsSaga(action: Action<HostFormConflictsParameters>): SagaIterator {
-  const parameters = action.payload!;
-
+function* checkHostFormConflictsSaga(action: ReturnType<typeof HostFormConflicts.start>): SagaIterator {
   try {
-    yield put(HostFormConflicts.started({ parameters }));
+    yield put(HostFormConflicts.started({ parameters: action.payload }));
 
     const potentialConflicts: Match[] = yield call(
       MatchesApi.fetchPotentialConflicts,
-      parameters.data.region,
-      parameters.data.opens,
+      action.payload.data.region,
+      action.payload.data.opens,
     );
 
-    yield put(HostFormConflicts.success({ parameters, result: potentialConflicts }));
+    yield put(HostFormConflicts.success({ parameters: action.payload, result: potentialConflicts }));
   } catch (error) {
     console.error(error, 'error checking conflicts');
-    yield put(HostFormConflicts.failure({ parameters, error }));
+    yield put(HostFormConflicts.failure({ parameters: action.payload, error }));
   }
 }
 
 export function* watchCheckHostFormConflicts(): SagaIterator {
-  yield takeLatest<Action<HostFormConflictsParameters>>(HostFormConflicts.start, checkHostFormConflictsSaga);
+  yield takeLatest(HostFormConflicts.start, checkHostFormConflictsSaga);
 }

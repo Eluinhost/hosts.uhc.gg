@@ -1,4 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+
 import { ApproveMatch, RemoveMatch } from '../actions';
 
 export type MatchModerationState = {
@@ -6,24 +8,23 @@ export type MatchModerationState = {
   readonly approvalModalId: number | null;
 };
 
-export const reducer: ApplicationReducer<MatchModerationState> = ReducerBuilder.withInitialState<MatchModerationState>({
+export const reducer: Reducer<MatchModerationState> = createReducer<MatchModerationState>({
   removalModalId: null,
   approvalModalId: null,
 })
-  .handle(RemoveMatch.openDialog, (prev, action) => ({
+  .handleAction(RemoveMatch.openDialog, (state, action) => ({
     removalModalId: action.payload!,
     approvalModalId: null,
   }))
-  .handle(RemoveMatch.closeDialog, (prev, action) => ({
+  .handleAction(RemoveMatch.closeDialog, state => ({
     removalModalId: null,
-    approvalModalId: prev.approvalModalId,
+    approvalModalId: state.approvalModalId,
   }))
-  .handle(ApproveMatch.openDialog, (prev, action) => ({
+  .handleAction(ApproveMatch.openDialog, (state, action) => ({
     approvalModalId: action.payload!,
     removalModalId: null,
   }))
-  .handle(ApproveMatch.closeDialog, (prev, action) => ({
+  .handleAction(ApproveMatch.closeDialog, state => ({
     approvalModalId: null,
-    removalModalId: prev.removalModalId,
-  }))
-  .build();
+    removalModalId: state.removalModalId,
+  }));

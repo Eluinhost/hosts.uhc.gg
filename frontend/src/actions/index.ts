@@ -1,4 +1,4 @@
-import { createAction } from 'redux-actions';
+import { createAction } from 'typesafe-redux-helpers';
 import { Match } from '../models/Match';
 import { HostingRules } from '../state/HostingRulesState';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
@@ -25,14 +25,18 @@ export type RemoveMatchOptimisticData = {
 
 export const RemoveMatch = {
   formId: 'remove-match-form',
-  openDialog: createAction<number>('OPEN_REMOVE_MATCH_DIALOG'),
+  openDialog: createAction('OPEN_REMOVE_MATCH_DIALOG', (id: number) => id),
   closeDialog: createAction('CLOSE_REMOVE_MATCH_DIALOG'),
-  start: createAction<RemoveMatchParameters>('REMOVE_MATCH_START'),
-  started: createAction<WithParameters<RemoveMatchParameters> & WithResult<RemoveMatchOptimisticData>>(
+  start: createAction('REMOVE_MATCH_START', (payload: RemoveMatchParameters) => payload),
+  started: createAction(
     'REMOVE_MATCH_STARTED',
+    (payload: WithParameters<RemoveMatchParameters> & WithResult<RemoveMatchOptimisticData>) => payload,
   ),
-  success: createAction<WithParameters<RemoveMatchParameters>>('REMOVE_MATCH_SUCCESS'),
-  failure: createAction<WithParameters<RemoveMatchParameters> & WithError>('REMOVE_MATCH_FAILURE'),
+  success: createAction('REMOVE_MATCH_SUCCESS', (payload: WithParameters<RemoveMatchParameters>) => payload),
+  failure: createAction(
+    'REMOVE_MATCH_FAILURE',
+    (payload: WithParameters<RemoveMatchParameters> & WithError) => payload,
+  ),
 };
 
 export type ApproveMatchParameters = {
@@ -43,21 +47,25 @@ export type ApproveMatchOptimisticData = {
 };
 
 export const ApproveMatch = {
-  openDialog: createAction<number>('OPEN_APPROVE_MATCH_DIALOG'),
+  openDialog: createAction('OPEN_APPROVE_MATCH_DIALOG', (id: number) => id),
   closeDialog: createAction('CLOSE_APPROVE_MATCH_DIALOG'),
-  start: createAction<ApproveMatchParameters>('APPROVE_MATCH_START'),
-  started: createAction<WithParameters<ApproveMatchParameters> & WithResult<ApproveMatchOptimisticData>>(
+  start: createAction('APPROVE_MATCH_START', (payload: ApproveMatchParameters) => payload),
+  started: createAction(
     'APPROVE_MATCH_STARTED',
+    (payload: WithParameters<ApproveMatchParameters> & WithResult<ApproveMatchOptimisticData>) => payload,
   ),
-  success: createAction<WithParameters<ApproveMatchParameters>>('APPROVE_MATCH_SUCCESS'),
-  failure: createAction<WithParameters<ApproveMatchParameters> & WithError>('APPROVE_MATCH_FAILURE'),
+  success: createAction('APPROVE_MATCH_SUCCESS', (payload: WithParameters<ApproveMatchParameters>) => payload),
+  failure: createAction(
+    'APPROVE_MATCH_FAILURE',
+    (payload: WithParameters<ApproveMatchParameters> & WithError) => payload,
+  ),
 };
 
 export const UpdateUpcoming = {
   start: createAction('UPDATE_UPCOMING_START'),
   started: createAction('UPDATE_UPCOMING_STARTED'),
-  success: createAction<WithResult<Match[]>>('UPDATE_UPCOMING_SUCCESS'),
-  failure: createAction<WithError>('UPDATE_UPCOMING_FAILURE'),
+  success: createAction('UPDATE_UPCOMING_SUCCESS', (payload: WithResult<Match[]>) => payload),
+  failure: createAction('UPDATE_UPCOMING_FAILURE', (payload: WithError) => payload),
 };
 
 export type LoadHostHistoryParameters = {
@@ -66,10 +74,16 @@ export type LoadHostHistoryParameters = {
 };
 
 export const LoadHostHistory = {
-  start: createAction<LoadHostHistoryParameters>('LOAD_HOST_HISTORY_START'),
-  started: createAction<WithParameters<LoadHostHistoryParameters>>('LOAD_HOST_HISTORY_STARTED'),
-  success: createAction<WithParameters<LoadHostHistoryParameters> & WithResult<Match[]>>('LOAD_HOST_HISTORY_SUCCESS'),
-  failure: createAction<WithParameters<LoadHostHistoryParameters> & WithError>('LOAD_HOST_HISTORY_FAILURE'),
+  start: createAction('LOAD_HOST_HISTORY_START', (payload: LoadHostHistoryParameters) => payload),
+  started: createAction('LOAD_HOST_HISTORY_STARTED', (payload: WithParameters<LoadHostHistoryParameters>) => payload),
+  success: createAction(
+    'LOAD_HOST_HISTORY_SUCCESS',
+    (payload: WithParameters<LoadHostHistoryParameters> & WithResult<Match[]>) => payload,
+  ),
+  failure: createAction(
+    'LOAD_HOST_HISTORY_FAILURE',
+    (payload: WithParameters<LoadHostHistoryParameters> & WithError) => payload,
+  ),
   clear: createAction('CLEAR_HOST_HISTORY'),
 };
 
@@ -78,12 +92,19 @@ export type FetchMatchDetailsParameters = {
 };
 
 export const FetchMatchDetails = {
-  start: createAction<FetchMatchDetailsParameters>('FETCH_MATCH_DETAILS_START'),
-  started: createAction<WithParameters<FetchMatchDetailsParameters>>('FETCH_MATCH_DETAILS_STARTED'),
-  success: createAction<WithParameters<FetchMatchDetailsParameters> & WithResult<Match | null>>(
-    'FETCH_MATCH_DETAILS_SUCCESS',
+  start: createAction('FETCH_MATCH_DETAILS_START', (payload: FetchMatchDetailsParameters) => payload),
+  started: createAction(
+    'FETCH_MATCH_DETAILS_STARTED',
+    (payload: WithParameters<FetchMatchDetailsParameters>) => payload,
   ),
-  failure: createAction<WithParameters<FetchMatchDetailsParameters> & WithError>('FETCH_MATCH_DETAILS_FAILURE'),
+  success: createAction(
+    'FETCH_MATCH_DETAILS_SUCCESS',
+    (payload: WithParameters<FetchMatchDetailsParameters> & WithResult<Match | null>) => payload,
+  ),
+  failure: createAction(
+    'FETCH_MATCH_DETAILS_FAILURE',
+    (payload: WithParameters<FetchMatchDetailsParameters> & WithError) => payload,
+  ),
   clear: createAction('CLEAR_MATCH_DETAILS'),
 };
 
@@ -93,7 +114,7 @@ export type LoginPayload = {
 };
 
 export const Authentication = {
-  login: createAction<LoginPayload>('LOGIN'),
+  login: createAction('LOGIN', (payload: LoginPayload) => payload),
   logout: createAction('LOGOUT'),
   attemptRefresh: createAction('ATTEMPT_AUTH_TOKEN_REFRESH'),
 };
@@ -103,26 +124,39 @@ export type HostFormConflictsParameters = {
 };
 
 export const HostFormConflicts = {
-  start: createAction<HostFormConflictsParameters>('HOST_FORM_CONFLICTS_START'),
-  started: createAction<WithParameters<HostFormConflictsParameters>>('HOST_FORM_CONFLICTS_STARTED'),
-  success: createAction<WithParameters<HostFormConflictsParameters> & WithResult<Match[]>>(
-    'HOST_FORM_CONFLICTS_SUCCESS',
+  start: createAction('HOST_FORM_CONFLICTS_START', (payload: HostFormConflictsParameters) => payload),
+  started: createAction(
+    'HOST_FORM_CONFLICTS_STARTED',
+    (payload: WithParameters<HostFormConflictsParameters>) => payload,
   ),
-  failure: createAction<WithParameters<HostFormConflictsParameters> & WithError>('HOST_FORM_CONFLICTS_FAILURE'),
+  success: createAction(
+    'HOST_FORM_CONFLICTS_SUCCESS',
+    (payload: WithParameters<HostFormConflictsParameters> & WithResult<Match[]>) => payload,
+  ),
+  failure: createAction(
+    'HOST_FORM_CONFLICTS_FAILURE',
+    (payload: WithParameters<HostFormConflictsParameters> & WithError) => payload,
+  ),
 };
 
 export const GetHostingRules = {
   start: createAction('GET_HOSTING_RULES_START'),
   started: createAction('GET_HOSTING_RULES_STARTED'),
-  success: createAction<WithResult<HostingRules>>('GET_HOSTING_RULES_SUCCESS'),
-  failure: createAction<WithError>('GET_HOSTING_RULES_FAILURE'),
+  success: createAction('GET_HOSTING_RULES_SUCCESS', (payload: WithResult<HostingRules>) => payload),
+  failure: createAction('GET_HOSTING_RULES_FAILURE', (payload: WithError) => payload),
 };
 
 export const SetHostingRules = {
-  start: createAction<string>('SET_HOSTING_RULES_START'),
-  started: createAction<WithParameters<string> & WithResult<HostingRules>>('SET_HOSTING_RULES_STARTED'),
-  success: createAction<WithParameters<string> & WithResult<HostingRules>>('SET_HOSTING_RULES_SUCCESS'),
-  failure: createAction<WithParameters<string> & WithError>('SET_HOSTING_RULES_FAILURE'),
+  start: createAction('SET_HOSTING_RULES_START', (payload: string) => payload),
+  started: createAction(
+    'SET_HOSTING_RULES_STARTED',
+    (payload: WithParameters<string> & WithResult<HostingRules>) => payload,
+  ),
+  success: createAction(
+    'SET_HOSTING_RULES_SUCCESS',
+    (payload: WithParameters<string> & WithResult<HostingRules>) => payload,
+  ),
+  failure: createAction('SET_HOSTING_RULES_FAILURE', (payload: WithParameters<string> & WithError) => payload),
   openEditor: createAction('OPEN_HOSTING_RULES_EDITOR'),
   closeEditor: createAction('CLOSE_HOSTING_RULES_EDITOR'),
 };
@@ -130,39 +164,45 @@ export const SetHostingRules = {
 export const SyncTime = {
   start: createAction('TIME_SYNC_START'),
   started: createAction('TIME_SYNC_STARTED'),
-  success: createAction<WithResult<number>>('TIME_SYNC_SUCCESS'),
-  failure: createAction<WithError>('TIME_SYNC_FAILURE'),
+  success: createAction('TIME_SYNC_SUCCESS', (payload: WithResult<number>) => payload),
+  failure: createAction('TIME_SYNC_FAILURE', (payload: WithError) => payload),
 };
 
 export const Settings = {
-  setDarkMode: createAction<boolean>('SET_DARK_MODE'),
+  setDarkMode: createAction('SET_DARK_MODE', (payload: boolean) => payload),
   toggleDarkMode: createAction('TOGGLE_DARK_MODE'),
-  setIs12h: createAction<boolean>('SET_IS_12_H_FORMAT'),
+  setIs12h: createAction('SET_IS_12_H_FORMAT', (payload: boolean) => payload),
   toggleIs12h: createAction('TOGGLE_IS_12_H_FORMAT'),
-  setTimezone: createAction<string>('SET_TIMEZONE'),
-  setHideRemoved: createAction<boolean>('SET_HIDE_REMOVED'),
+  setTimezone: createAction('SET_TIMEZONE', (payload: string) => payload),
+  setHideRemoved: createAction('SET_HIDE_REMOVED', (payload: boolean) => payload),
   toggleHideRemoved: createAction('TOGGLE_HIDE_REMOVED'),
-  setShowOwnRemoved: createAction<boolean>('SET_SHOW_OWN_REMOVED'),
+  setShowOwnRemoved: createAction('SET_SHOW_OWN_REMOVED', (payload: boolean) => payload),
   toggleShowOwnRemoved: createAction('TOGGLE_SHOW_OWN_REMOVED'),
 };
 
 export const RefreshPermissionModerationLog = {
   start: createAction('REFRESH_PERMISSION_MODERATION_LOG_START'),
   started: createAction('REFRESH_PERMISSION_MODERATION_LOG_STARTED'),
-  success: createAction<WithResult<PermissionModerationLogEntry[]>>('REFRESH_PERMISSION_MODERATION_LOG_SUCCESS'),
-  failure: createAction<WithError>('REFRESH_PERMISSION_MODERATION_LOG_FAILURE'),
+  success: createAction(
+    'REFRESH_PERMISSION_MODERATION_LOG_SUCCESS',
+    (payload: WithResult<PermissionModerationLogEntry[]>) => payload,
+  ),
+  failure: createAction('REFRESH_PERMISSION_MODERATION_LOG_FAILURE', (payload: WithError) => payload),
 };
 
 export const FetchUserCountPerPermission = {
   start: createAction('FETCH_USER_COUNT_PER_PERMISSION_START'),
   started: createAction('FETCH_USER_COUNT_PER_PERMISSION_STARTED'),
-  success: createAction<WithResult<UserCountPerPermission>>('FETCH_USER_COUNT_PER_PERMISSION_SUCCESS'),
-  failure: createAction<WithError>('FETCH_USER_COUNT_PER_PERMISSION_FAILURE'),
+  success: createAction(
+    'FETCH_USER_COUNT_PER_PERMISSION_SUCCESS',
+    (payload: WithResult<UserCountPerPermission>) => payload,
+  ),
+  failure: createAction('FETCH_USER_COUNT_PER_PERMISSION_FAILURE', (payload: WithError) => payload),
 };
 
 export const PermissionNode = {
-  open: createAction<string>('OPEN_PERMISSION_NODE'),
-  close: createAction<string>('CLOSE_PERMISSION_NODE'),
+  open: createAction('OPEN_PERMISSION_NODE', (payload: string) => payload),
+  close: createAction('CLOSE_PERMISSION_NODE', (payload: string) => payload),
 };
 
 export type ExpandPermissionLetterNodeParameters = {
@@ -171,16 +211,19 @@ export type ExpandPermissionLetterNodeParameters = {
 };
 
 export const PermissionLetterNode = {
-  open: createAction<ExpandPermissionLetterNodeParameters>('OPEN_PERMISSION_LETTER_NODE'),
-  close: createAction<ExpandPermissionLetterNodeParameters>('CLOSE_PERMISSION_LETTER_NODE'),
-  toggle: createAction<ExpandPermissionLetterNodeParameters>('TOGGLE_PERMISSION_LETTER_NODE'),
+  open: createAction('OPEN_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
+  close: createAction('CLOSE_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
+  toggle: createAction('TOGGLE_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
 };
 
 export const FetchUsersInPermission = {
-  start: createAction<string>('FETCH_USERS_IN_PERMISSION_START'),
-  started: createAction<WithParameters<string>>('FETCH_USERS_IN_PERMISSION_STARTED'),
-  success: createAction<WithParameters<string> & WithResult<UsersInPermission>>('FETCH_USERS_IN_PERMISSION_SUCCESS'),
-  failure: createAction<WithParameters<string> & WithError>('FETCH_USERS_IN_PERMISSION_FAILURE'),
+  start: createAction('FETCH_USERS_IN_PERMISSION_START', (payload: string) => payload),
+  started: createAction('FETCH_USERS_IN_PERMISSION_STARTED', (payload: WithParameters<string>) => payload),
+  success: createAction(
+    'FETCH_USERS_IN_PERMISSION_SUCCESS',
+    (payload: WithParameters<string> & WithResult<UsersInPermission>) => payload,
+  ),
+  failure: createAction('FETCH_USERS_IN_PERMISSION_FAILURE', (payload: WithParameters<string> & WithError) => payload),
 };
 
 export type FetchUsersInPermissionWithLetterParameters = {
@@ -189,15 +232,21 @@ export type FetchUsersInPermissionWithLetterParameters = {
 };
 
 export const FetchUsersInPermissionWithLetter = {
-  start: createAction<FetchUsersInPermissionWithLetterParameters>('FETCH_USERS_IN_PERMISSION_WITH_LETTER_START'),
-  started: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters>>(
+  start: createAction(
+    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_START',
+    (payload: FetchUsersInPermissionWithLetterParameters) => payload,
+  ),
+  started: createAction(
     'FETCH_USERS_IN_PERMISSION_WITH_LETTER_STARTED',
+    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters>) => payload,
   ),
-  success: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters> & WithResult<string[]>>(
+  success: createAction(
     'FETCH_USERS_IN_PERMISSION_WITH_LETTER_SUCCESS',
+    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters> & WithResult<string[]>) => payload,
   ),
-  failure: createAction<WithParameters<FetchUsersInPermissionWithLetterParameters> & WithError>(
+  failure: createAction(
     'FETCH_USERS_IN_PERMISSION_WITH_LETTER_FAILURE',
+    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters> & WithError) => payload,
   ),
 };
 
@@ -207,47 +256,56 @@ export type PermissionParameters = {
 };
 
 export const AddPermission = {
-  openDialog: createAction<string>('OPEN_ADD_PERMISSION_DIALOG'),
+  openDialog: createAction('OPEN_ADD_PERMISSION_DIALOG', (payload: string) => payload),
   closeDialog: createAction('CLOSE_ADD_PERMISSION_DIALOG'),
-  start: createAction<string>('ADD_PERMISSION_START'),
-  started: createAction<WithParameters<PermissionParameters>>('ADD_PERMISSION_STARTED'),
-  success: createAction<WithParameters<PermissionParameters>>('ADD_PERMISSION_SUCCESS'),
-  failure: createAction<WithParameters<PermissionParameters> & WithError>('ADD_PERMISSION_FAILURE'),
+  start: createAction('ADD_PERMISSION_START', (payload: string) => payload),
+  started: createAction('ADD_PERMISSION_STARTED', (payload: WithParameters<PermissionParameters>) => payload),
+  success: createAction('ADD_PERMISSION_SUCCESS', (payload: WithParameters<PermissionParameters>) => payload),
+  failure: createAction(
+    'ADD_PERMISSION_FAILURE',
+    (payload: WithParameters<PermissionParameters> & WithError) => payload,
+  ),
 };
 
 export const RemovePermission = {
-  openDialog: createAction<PermissionParameters>('OPEN_REMOVE_PERMISSION_DIALOG'),
+  openDialog: createAction('OPEN_REMOVE_PERMISSION_DIALOG', (payload: PermissionParameters) => payload),
   closeDialog: createAction('CLOSE_REMOVE_PERMISSION_DIALOG'),
   start: createAction('REMOVE_PERMISSION_START'),
-  started: createAction<WithParameters<PermissionParameters>>('REMOVE_PERMISSION_STARTED'),
-  success: createAction<WithParameters<PermissionParameters>>('REMOVE_PERMISSION_SUCCESS'),
-  failure: createAction<WithParameters<PermissionParameters> & WithError>('REMOVE_PERMISSION_FAILURE'),
+  started: createAction('REMOVE_PERMISSION_STARTED', (payload: WithParameters<PermissionParameters>) => payload),
+  success: createAction('REMOVE_PERMISSION_SUCCESS', (payload: WithParameters<PermissionParameters>) => payload),
+  failure: createAction(
+    'REMOVE_PERMISSION_FAILURE',
+    (payload: WithParameters<PermissionParameters> & WithError) => payload,
+  ),
 };
 
 export const FetchApiKey = {
   start: createAction('FETCH_API_KEY_START'),
   started: createAction('FETCH_API_KEY_STARTED'),
-  success: createAction<WithResult<string | null>>('FETCH_API_KEY_SUCCESS'),
-  failure: createAction<WithError>('FETCH_API_KEY_FAILURE'),
+  success: createAction('FETCH_API_KEY_SUCCESS', (payload: WithResult<string | null>) => payload),
+  failure: createAction('FETCH_API_KEY_FAILURE', (payload: WithError) => payload),
 };
 
 export const RegenerateApiKey = {
   start: createAction('REGENERATE_API_KEY_START'),
   started: createAction('REGENERATE_API_KEY_STARTED'),
-  success: createAction<WithResult<string>>('REGENERATE_API_KEY_SUCCESS'),
-  failure: createAction<WithError>('REGENERATE_API_KEY_FAILURE'),
+  success: createAction('REGENERATE_API_KEY_SUCCESS', (payload: WithResult<string>) => payload),
+  failure: createAction('REGENERATE_API_KEY_FAILURE', (payload: WithError) => payload),
 };
 
 export const ClearStorage = {
   start: createAction('CLEAR_STORAGE_START'),
   started: createAction('CLEAR_STORAGE_STARTED'),
   success: createAction('CLEAR_STORAGE_SUCCESS'),
-  failure: createAction<WithError>('CLEAR_STORAGE_FAILURE'),
+  failure: createAction('CLEAR_STORAGE_FAILURE', (payload: WithError) => payload),
 };
 
 export const SetSavedHostFormData = {
-  start: createAction<CreateMatchData>('SET_SAVED_HOST_FORM_DATA_START'),
-  started: createAction<WithParameters<CreateMatchData>>('SET_SAVED_HOST_FORM_DATA_STARTED'),
-  success: createAction<WithParameters<CreateMatchData>>('SET_SAVED_HOST_FORM_DATA_SUCCESS'),
-  failure: createAction<WithParameters<CreateMatchData> & WithError>('SET_SAVED_HOST_FORM_DATA_FAILURE'),
+  start: createAction('SET_SAVED_HOST_FORM_DATA_START', (payload: CreateMatchData) => payload),
+  started: createAction('SET_SAVED_HOST_FORM_DATA_STARTED', (payload: WithParameters<CreateMatchData>) => payload),
+  success: createAction('SET_SAVED_HOST_FORM_DATA_SUCCESS', (payload: WithParameters<CreateMatchData>) => payload),
+  failure: createAction(
+    'SET_SAVED_HOST_FORM_DATA_FAILURE',
+    (payload: WithParameters<CreateMatchData> & WithError) => payload,
+  ),
 };

@@ -1,5 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
 import { FetchApiKey, RegenerateApiKey } from '../actions';
+import { Reducer } from 'redux';
 
 export type ApiKeyState = {
   readonly fetching: boolean;
@@ -7,41 +8,38 @@ export type ApiKeyState = {
   readonly key: string | null;
 };
 
-export const reducer: ApplicationReducer<ApiKeyState> = ReducerBuilder.withInitialState<ApiKeyState>({
+export const reducer: Reducer<ApiKeyState> = createReducer<ApiKeyState>({
   fetching: false,
   error: null,
   key: null,
 })
-  .handle<void>(FetchApiKey.started, (prev, action) => ({
-    ...prev,
+  .handleAction(FetchApiKey.started, state => ({
     fetching: true,
     error: null,
+    key: state.key,
   }))
-  .handle(FetchApiKey.success, (prev, action) => ({
-    ...prev,
+  .handleAction(FetchApiKey.success, (state, action) => ({
     fetching: false,
     error: null,
-    key: action.payload!.result,
+    key: action.payload.result,
   }))
-  .handle(FetchApiKey.failure, (prev, action) => ({
-    ...prev,
+  .handleAction(FetchApiKey.failure, state => ({
     fetching: false,
     error: 'Failed to fetch API key from server',
+    key: state.key,
   }))
-  .handle(RegenerateApiKey.started, (prev, action) => ({
-    ...prev,
+  .handleAction(RegenerateApiKey.started, state => ({
     fetching: true,
     error: null,
+    key: state.key,
   }))
-  .handle(RegenerateApiKey.success, (prev, action) => ({
-    ...prev,
+  .handleAction(RegenerateApiKey.success, (state, action) => ({
     fetching: false,
     error: null,
-    key: action.payload!.result,
+    key: action.payload.result,
   }))
-  .handle(RegenerateApiKey.failure, (prev, action) => ({
-    ...prev,
+  .handleAction(RegenerateApiKey.failure, state => ({
     fetching: false,
     error: 'Failed to fetch API key from server',
-  }))
-  .build();
+    key: state.key,
+  }));

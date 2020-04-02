@@ -1,4 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+
 import { RefreshPermissionModerationLog } from '../actions';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 
@@ -8,26 +10,23 @@ export type PermissionModerationLogState = {
   readonly log: PermissionModerationLogEntry[];
 };
 
-export const reducer: ApplicationReducer<PermissionModerationLogState> = ReducerBuilder.withInitialState<
-  PermissionModerationLogState
->({
+export const reducer: Reducer<PermissionModerationLogState> = createReducer<PermissionModerationLogState>({
   fetching: false,
   error: null,
   log: [],
 })
-  .handle(RefreshPermissionModerationLog.started, (prev, action) => ({
+  .handleAction(RefreshPermissionModerationLog.started, state => ({
     fetching: true,
     error: null,
-    log: prev.log,
+    log: state.log,
   }))
-  .handle(RefreshPermissionModerationLog.success, (prev, action) => ({
+  .handleAction(RefreshPermissionModerationLog.success, (state, action) => ({
     fetching: false,
     error: null,
-    log: action.payload!.result,
+    log: action.payload.result,
   }))
-  .handle(RefreshPermissionModerationLog.failure, (prev, action) => ({
+  .handleAction(RefreshPermissionModerationLog.failure, state => ({
     fetching: false,
     error: 'Unable to refresh from the server',
-    log: prev.log,
-  }))
-  .build();
+    log: state.log,
+  }));

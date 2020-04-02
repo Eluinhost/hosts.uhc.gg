@@ -1,6 +1,8 @@
-import { ApiErrors } from '../api';
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
 import moment from 'moment-timezone';
+
+import { ApiErrors } from '../api';
 import { GetHostingRules, SetHostingRules } from '../actions';
 
 export type HostingRules = {
@@ -33,55 +35,54 @@ const displayError = (err: Error): string => {
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<HostingRulesState> = ReducerBuilder.withInitialState<HostingRulesState>({
+export const reducer: Reducer<HostingRulesState> = createReducer<HostingRulesState>({
   fetching: false,
   error: null,
   data: null,
   backupData: null,
   editing: false,
 })
-  .handle(GetHostingRules.started, (prev, action) => ({
-    ...prev,
+  .handleAction(GetHostingRules.started, state => ({
+    ...state,
     fetching: true,
     error: null,
   }))
-  .handle(GetHostingRules.success, (prev, action) => ({
-    ...prev,
+  .handleAction(GetHostingRules.success, (state, action) => ({
+    ...state,
     fetching: false,
     error: null,
-    data: action.payload!.result,
+    data: action.payload.result,
   }))
-  .handle(GetHostingRules.failure, (prev, action) => ({
-    ...prev,
+  .handleAction(GetHostingRules.failure, (state, action) => ({
+    ...state,
     fetching: false,
-    error: displayError(action.payload!.error),
+    error: displayError(action.payload.error),
   }))
-  .handle(SetHostingRules.started, (prev, action) => ({
-    ...prev,
+  .handleAction(SetHostingRules.started, (state, action) => ({
+    ...state,
     fetching: true,
     error: null,
-    data: action.payload!.result,
-    backupData: prev.data,
+    data: action.payload.result,
+    backupData: state.data,
   }))
-  .handle(SetHostingRules.success, (prev, action) => ({
-    ...prev,
+  .handleAction(SetHostingRules.success, state => ({
+    ...state,
     fetching: false,
     error: null,
     backupData: null,
   }))
-  .handle(SetHostingRules.failure, (prev, action) => ({
-    ...prev,
+  .handleAction(SetHostingRules.failure, (state, action) => ({
+    ...state,
     fetching: false,
-    error: displayError(action.payload!.error),
-    data: prev.backupData,
+    error: displayError(action.payload.error),
+    data: state.backupData,
     backupData: null,
   }))
-  .handle(SetHostingRules.openEditor, (prev, action) => ({
-    ...prev,
+  .handleAction(SetHostingRules.openEditor, state => ({
+    ...state,
     editing: true,
   }))
-  .handle(SetHostingRules.closeEditor, (prev, action) => ({
-    ...prev,
+  .handleAction(SetHostingRules.closeEditor, state => ({
+    ...state,
     editing: false,
-  }))
-  .build();
+  }));

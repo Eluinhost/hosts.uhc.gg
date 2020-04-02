@@ -1,5 +1,7 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
 import moment from 'moment-timezone';
+import { Reducer } from 'redux';
+
 import { Authentication } from '../actions';
 
 // TODO move key to saga and out of state
@@ -22,19 +24,18 @@ export type RefreshTokenClaims = {
   readonly username: string;
 };
 
-export const reducer: ApplicationReducer<AuthenticationState> = ReducerBuilder.withInitialState<AuthenticationState>({
+export const reducer: Reducer<AuthenticationState> = createReducer<AuthenticationState>({
   storageKey,
   accessToken: null,
   refreshToken: null,
 })
-  .handle(Authentication.login, (prev, action) => ({
-    storageKey: prev.storageKey,
-    accessToken: action.payload!.accessToken,
-    refreshToken: action.payload!.refreshToken,
+  .handleAction(Authentication.login, (state, action) => ({
+    storageKey: state.storageKey,
+    accessToken: action.payload.accessToken,
+    refreshToken: action.payload.refreshToken,
   }))
-  .handle(Authentication.logout, (prev, action) => ({
-    storageKey: prev.storageKey,
+  .handleAction(Authentication.logout, state => ({
+    storageKey: state.storageKey,
     accessToken: null,
     refreshToken: null,
-  }))
-  .build();
+  }));

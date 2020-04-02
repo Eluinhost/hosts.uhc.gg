@@ -1,4 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+
 import { Match } from '../models/Match';
 import { HostFormConflicts } from '../actions';
 
@@ -8,26 +10,23 @@ export type HostFormConflictsState = {
   readonly fetching: boolean;
 };
 
-export const reducer: ApplicationReducer<HostFormConflictsState> = ReducerBuilder.withInitialState<
-  HostFormConflictsState
->({
+export const reducer: Reducer<HostFormConflictsState> = createReducer<HostFormConflictsState>({
   conflicts: [],
   fetching: false,
   error: null,
 })
-  .handle(HostFormConflicts.started, (prev, action) => ({
+  .handleAction(HostFormConflicts.started, () => ({
     conflicts: [],
     fetching: true,
     error: null,
   }))
-  .handle(HostFormConflicts.success, (prev, action) => ({
-    conflicts: action.payload!.result,
+  .handleAction(HostFormConflicts.success, (_, action) => ({
+    conflicts: action.payload.result,
     fetching: false,
     error: null,
   }))
-  .handle(HostFormConflicts.failure, (prev, action) => ({
+  .handleAction(HostFormConflicts.failure, () => ({
     conflicts: [],
     fetching: false,
     error: 'Unable to fetch conflicts',
-  }))
-  .build();
+  }));

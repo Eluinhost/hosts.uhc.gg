@@ -3,7 +3,6 @@ import { SagaIterator } from 'redux-saga';
 import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   AddPermission,
-  ExpandPermissionLetterNodeParameters,
   FetchUserCountPerPermission,
   FetchUsersInPermission,
   FetchUsersInPermissionWithLetter,
@@ -14,7 +13,6 @@ import {
   RefreshPermissionModerationLog,
   RemovePermission,
 } from '../actions';
-import { Action } from 'redux-actions';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
 import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
@@ -40,8 +38,10 @@ function* fetchPermissionsSaga(): SagaIterator {
   }
 }
 
-function* fetchUsersInPermissionSaga(action: Action<string>): SagaIterator {
-  const parameters: string = action.payload!;
+function* fetchUsersInPermissionSaga(
+  action: ReturnType<typeof FetchUsersInPermission.start> | ReturnType<typeof PermissionNode.open>,
+): SagaIterator {
+  const parameters: string = action.payload;
 
   try {
     yield put(FetchUsersInPermission.started({ parameters }));
@@ -59,8 +59,10 @@ function* fetchUsersInPermissionSaga(action: Action<string>): SagaIterator {
   }
 }
 
-function* fetchUsersInPermissionWithLetterSaga(a: Action<FetchUsersInPermissionWithLetterParameters>): SagaIterator {
-  const parameters: FetchUsersInPermissionWithLetterParameters = a.payload!;
+function* fetchUsersInPermissionWithLetterSaga(
+  a: ReturnType<typeof FetchUsersInPermissionWithLetter.start> | ReturnType<typeof PermissionLetterNode.open>,
+): SagaIterator {
+  const parameters: FetchUsersInPermissionWithLetterParameters = a.payload;
 
   try {
     yield put(FetchUsersInPermissionWithLetter.started({ parameters }));
@@ -87,8 +89,8 @@ const getAddPermission = createSelector<ApplicationState, AddPermissionDialogSta
   dialogState => (dialogState ? dialogState.permission : null),
 );
 
-function* addPermission(action: Action<string>): SagaIterator {
-  const username: string = action.payload!;
+function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIterator {
+  const username: string = action.payload;
 
   const permission: string | null = yield select(getAddPermission);
   const accessToken: string | null = yield select(getAccessToken);
@@ -179,18 +181,12 @@ function* removePermission(): SagaIterator {
 
 export function* watchPermissions(): SagaIterator {
   yield all([
-    takeEvery<Action<string>>(AddPermission.start, addPermission),
-    takeEvery<Action<void>>(RemovePermission.start, removePermission),
-    takeLatest<Action<void>>(FetchUserCountPerPermission.start, fetchPermissionsSaga),
-    takeLatest<Action<string>>(FetchUsersInPermission.start, fetchUsersInPermissionSaga),
-    takeLatest<Action<string>>(PermissionNode.open, fetchUsersInPermissionSaga), // fetch users when expanded
-    takeLatest<Action<FetchUsersInPermissionWithLetterParameters>>(
-      FetchUsersInPermissionWithLetter.start,
-      fetchUsersInPermissionWithLetterSaga,
-    ),
-    takeLatest<Action<ExpandPermissionLetterNodeParameters>>(
-      PermissionLetterNode.open,
-      fetchUsersInPermissionWithLetterSaga,
-    ),
+    takeEvery(AddPermission.start, addPermission),
+    takeEvery(RemovePermission.start, removePermission),
+    takeLatest(FetchUserCountPerPermission.start, fetchPermissionsSaga),
+    takeLatest(FetchUsersInPermission.start, fetchUsersInPermissionSaga),
+    takeLatest(PermissionNode.open, fetchUsersInPermissionSaga), // fetch users when expanded
+    takeLatest(FetchUsersInPermissionWithLetter.start, fetchUsersInPermissionWithLetterSaga),
+    takeLatest(PermissionLetterNode.open, fetchUsersInPermissionWithLetterSaga),
   ]);
 }

@@ -1,8 +1,10 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+import moment from 'moment-timezone';
+
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../actions';
-import moment from 'moment-timezone';
 
 export type MatchDetailsState = {
   readonly match: Match | null;
@@ -19,82 +21,81 @@ const displayError = (err: Error) => {
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<MatchDetailsState> = ReducerBuilder.withInitialState<MatchDetailsState>({
+export const reducer: Reducer<MatchDetailsState> = createReducer<MatchDetailsState>({
   match: null,
   fetching: false,
   error: null,
   updated: null,
 })
-  .handle(FetchMatchDetails.started, (prev, action) => ({
+  .handleAction(FetchMatchDetails.started, state => ({
     fetching: true,
     error: null,
     match: null,
-    updated: prev.updated,
+    updated: state.updated,
   }))
-  .handle(FetchMatchDetails.success, (prev, action) => ({
+  .handleAction(FetchMatchDetails.success, (state, action) => ({
     fetching: false,
     error: null,
-    match: action.payload!.result,
+    match: action.payload.result,
     updated: moment.utc(),
   }))
-  .handle(FetchMatchDetails.failure, (prev, action) => ({
+  .handleAction(FetchMatchDetails.failure, (state, action) => ({
     fetching: false,
-    error: displayError(action.payload!.error),
+    error: displayError(action.payload.error),
     match: null,
     updated: moment.utc(),
   }))
-  .handle(FetchMatchDetails.clear, (prev, action) => ({
+  .handleAction(FetchMatchDetails.clear, state => ({
     match: null,
     updated: null,
-    error: prev.error,
-    fetching: prev.fetching,
+    error: state.error,
+    fetching: state.fetching,
   }))
-  .handle(RemoveMatch.started, (prev, action) => {
-    if (!prev.match || action.payload!.parameters.id !== prev.match.id) return prev;
+  .handleAction(RemoveMatch.started, (state, action) => {
+    if (!state.match || action.payload.parameters.id !== state.match.id) return state;
 
     return {
-      ...prev,
+      ...state,
       match: {
-        ...prev.match,
+        ...state.match,
         removed: true,
-        removedBy: action.payload!.result.username,
-        removedReason: action.payload!.parameters.reason,
+        removedBy: action.payload.result.username,
+        removedReason: action.payload.parameters.reason,
       },
     };
   })
-  .handle(RemoveMatch.failure, (prev, action) => {
-    if (!prev.match || action.payload!.parameters.id !== prev.match.id) return prev;
+  .handleAction(RemoveMatch.failure, (state, action) => {
+    if (!state.match || action.payload.parameters.id !== state.match.id) return state;
 
     return {
-      ...prev,
+      ...state,
       match: {
-        ...prev.match,
+        ...state.match,
         removed: false,
         removedBy: null,
         removedReason: null,
       },
     };
   })
-  .handle(ApproveMatch.started, (prev, action) => {
-    if (!prev.match || action.payload!.parameters.id !== prev.match.id) return prev;
+  .handleAction(ApproveMatch.started, (state, action) => {
+    if (!state.match || action.payload.parameters.id !== state.match.id) return state;
 
     return {
-      ...prev,
+      ...state,
       match: {
-        ...prev.match,
-        approvedBy: action.payload!.result.username,
+        ...state.match,
+        approvedBy: action.payload.result.username,
       },
     };
   })
-  .handle(ApproveMatch.failure, (prev, action) => {
-    if (!prev.match || action.payload!.parameters.id !== prev.match.id) return prev;
+  .handleAction(ApproveMatch.failure, (state, action) => {
+    if (!state.match || action.payload.parameters.id !== state.match.id) return state;
 
     return {
-      ...prev,
+      ...state,
       match: {
-        ...prev.match,
+        ...state.match,
         approvedBy: null,
       },
     };
-  })
-  .build();
+  });

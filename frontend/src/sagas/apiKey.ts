@@ -3,7 +3,6 @@ import { put, call, select, all, takeLatest } from 'redux-saga/effects';
 import { getAccessToken } from '../state/Selectors';
 import { FetchApiKey, RegenerateApiKey } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';
-import { Action } from 'redux-actions';
 
 function* fetchApiKeySaga(): SagaIterator {
   const accessToken: string | null = yield select(getAccessToken);
@@ -40,8 +39,5 @@ function* regenerateApiKeySaga(): SagaIterator {
 }
 
 export function* watchApiKey(): SagaIterator {
-  yield all([
-    takeLatest<Action<void>>(FetchApiKey.start, fetchApiKeySaga),
-    takeLatest<Action<void>>(RegenerateApiKey.start, regenerateApiKeySaga),
-  ]);
+  yield all([takeLatest(FetchApiKey.start, fetchApiKeySaga), takeLatest(RegenerateApiKey.start, regenerateApiKeySaga)]);
 }

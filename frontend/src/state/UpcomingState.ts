@@ -1,8 +1,10 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+import moment from 'moment-timezone';
+
 import { Match } from '../models/Match';
 import { ApiErrors } from '../api';
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
-import moment from 'moment-timezone';
 
 export type UpcomingState = {
   readonly matches: Match[];
@@ -19,47 +21,47 @@ const displayError = (err: Error) => {
   return 'Unexpected response from the server';
 };
 
-export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder.withInitialState<UpcomingState>({
+export const reducer: Reducer<UpcomingState> = createReducer<UpcomingState>({
   matches: [],
   fetching: false,
   error: null,
   updated: null,
 })
-  .handle(UpdateUpcoming.started, (prev, action) => ({
+  .handleAction(UpdateUpcoming.started, state => ({
     fetching: true,
     error: null,
-    matches: prev.matches,
-    updated: prev.updated,
+    matches: state.matches,
+    updated: state.updated,
   }))
-  .handle(UpdateUpcoming.success, (prev, action) => ({
+  .handleAction(UpdateUpcoming.success, (state, action) => ({
     fetching: false,
-    matches: action.payload!.result,
+    matches: action.payload.result,
     error: null,
     updated: moment.utc(),
   }))
-  .handle(UpdateUpcoming.failure, (prev, action) => ({
+  .handleAction(UpdateUpcoming.failure, (state, action) => ({
     fetching: false,
-    error: displayError(action.payload!.error),
-    matches: prev.matches,
-    updated: prev.updated,
+    error: displayError(action.payload.error),
+    matches: state.matches,
+    updated: state.updated,
   }))
-  .handle(RemoveMatch.started, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(RemoveMatch.started, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
         removed: true,
-        removedBy: action.payload!.result.username,
-        removedReason: action.payload!.parameters.reason,
+        removedBy: action.payload.result.username,
+        removedReason: action.payload.parameters.reason,
       };
     }),
   }))
-  .handle(RemoveMatch.failure, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(RemoveMatch.failure, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
@@ -69,26 +71,25 @@ export const reducer: ApplicationReducer<UpcomingState> = ReducerBuilder.withIni
       };
     }),
   }))
-  .handle(ApproveMatch.started, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(ApproveMatch.started, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
-        approvedBy: action.payload!.result.username,
+        approvedBy: action.payload.result.username,
       };
     }),
   }))
-  .handle(ApproveMatch.failure, (prev, action) => ({
-    ...prev,
-    matches: prev.matches.map(match => {
-      if (match.id !== action.payload!.parameters.id) return match;
+  .handleAction(ApproveMatch.failure, (state, action) => ({
+    ...state,
+    matches: state.matches.map(match => {
+      if (match.id !== action.payload.parameters.id) return match;
 
       return {
         ...match,
         approvedBy: null,
       };
     }),
-  }))
-  .build();
+  }));

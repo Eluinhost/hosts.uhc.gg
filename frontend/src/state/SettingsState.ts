@@ -1,5 +1,7 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
 import moment from 'moment-timezone';
+
 import { Settings } from '../actions';
 
 const storageKey = 'settings';
@@ -19,7 +21,7 @@ export type SettingsState = {
   readonly storageKey: string;
 };
 
-export const reducer: ApplicationReducer<SettingsState> = ReducerBuilder.withInitialState<SettingsState>({
+export const reducer: Reducer<SettingsState> = createReducer<SettingsState>({
   storageKey,
   isDarkMode: false,
   is12h: false,
@@ -27,24 +29,23 @@ export const reducer: ApplicationReducer<SettingsState> = ReducerBuilder.withIni
   hideRemoved: true,
   showOwnRemoved: true,
 })
-  .handle(Settings.setDarkMode, (prev, action) => ({
-    ...prev,
-    isDarkMode: action.payload!,
+  .handleAction(Settings.setDarkMode, (state, action) => ({
+    ...state,
+    isDarkMode: action.payload,
   }))
-  .handle(Settings.setIs12h, (prev, action) => ({
-    ...prev,
-    is12h: action.payload!,
+  .handleAction(Settings.setIs12h, (state, action) => ({
+    ...state,
+    is12h: action.payload,
   }))
-  .handle(Settings.setTimezone, (prev, action) => ({
-    ...prev,
-    timezone: action.payload!,
+  .handleAction(Settings.setTimezone, (state, action) => ({
+    ...state,
+    timezone: action.payload,
   }))
-  .handle(Settings.setHideRemoved, (prev, action) => ({
-    ...prev,
-    hideRemoved: action.payload!,
+  .handleAction(Settings.setHideRemoved, (state, action) => ({
+    ...state,
+    hideRemoved: action.payload,
   }))
-  .handle(Settings.setShowOwnRemoved, (prev, action) => ({
-    ...prev,
-    showOwnRemoved: action.payload!,
-  }))
-  .build();
+  .handleAction(Settings.setShowOwnRemoved, (state, action) => ({
+    ...state,
+    showOwnRemoved: action.payload,
+  }));

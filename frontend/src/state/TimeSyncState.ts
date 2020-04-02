@@ -1,4 +1,6 @@
-import { ApplicationReducer, ReducerBuilder } from './ReducerBuilder';
+import { createReducer } from 'typesafe-redux-helpers';
+import { Reducer } from 'redux';
+
 import { SyncTime } from '../actions';
 
 export type TimeSyncState = {
@@ -6,20 +8,19 @@ export type TimeSyncState = {
   readonly offset: number;
 };
 
-export const reducer: ApplicationReducer<TimeSyncState> = ReducerBuilder.withInitialState<TimeSyncState>({
+export const reducer: Reducer<TimeSyncState> = createReducer<TimeSyncState>({
   synced: false,
   offset: 0,
 })
-  .handle(SyncTime.started, (prev, action) => ({
+  .handleAction(SyncTime.started, state => ({
     synced: false,
-    offset: prev.offset,
+    offset: state.offset,
   }))
-  .handle(SyncTime.success, (prev, action) => ({
+  .handleAction(SyncTime.success, (state, action) => ({
     synced: true,
-    offset: action.payload!.result,
+    offset: action.payload.result,
   }))
-  .handle(SyncTime.failure, (prev, action) => ({
+  .handleAction(SyncTime.failure, state => ({
     synced: false,
-    offset: prev.offset,
-  }))
-  .build();
+    offset: state.offset,
+  }));
