@@ -14,6 +14,8 @@ resolvers ++= Seq(
 )
 libraryDependencies ++= Settings.dependencies.value
 
+reForkOptions ~= (_.copy(connectInput = true))
+
 // include frontend assets in build
 mappings in Universal ++= contentOf(baseDirectory.value / "frontend" / "build").flatMap {
   case (file, _) => file pair relativeTo(baseDirectory.value)
