@@ -4,17 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.{ActorMaterializer, OverflowStrategy, QueueOfferResult, ThrottleMode}
+import akka.stream.{Materializer, OverflowStrategy, QueueOfferResult, ThrottleMode}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
 
-class ApiConsumer(actorSystemName: String, host: String, queueSize: Int) {
+class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
   import scala.concurrent.duration._
 
-  implicit val actorSystem          = ActorSystem(actorSystemName)
-  implicit val materializer         = ActorMaterializer()
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val s: ActorSystem = system
+  implicit val mz: Materializer = Materializer.matFromSystem
+  implicit val ec: ExecutionContext = system.dispatcher
 
   private[this] val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
 

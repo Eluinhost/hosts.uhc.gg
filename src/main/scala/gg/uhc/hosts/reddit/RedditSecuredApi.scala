@@ -1,5 +1,6 @@
 package gg.uhc.hosts.reddit
 
+import akka.actor.ActorSystem
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -8,8 +9,8 @@ import io.circe.generic.AutoDerivation
 
 import scala.concurrent.Future
 
-class RedditSecuredApi(queueSize: Int)
-    extends ApiConsumer("reddit-secured-api", "oauth.reddit.com", queueSize)
+class RedditSecuredApi(actorSystem: ActorSystem, queueSize: Int)
+    extends ApiConsumer(actorSystem, "oauth.reddit.com", queueSize)
     with FailFastCirceSupport
     with AutoDerivation {
 

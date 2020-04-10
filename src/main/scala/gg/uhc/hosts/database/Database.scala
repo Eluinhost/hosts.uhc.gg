@@ -7,23 +7,23 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import cats.data.NonEmptyList
 import cats.effect.IO
+import com.softwaremill.tagging.@@
 import doobie.free.connection.{delay, raw}
 import doobie._
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
-
 import doobie.util.log.{ExecFailure, ProcessingFailure, Success}
-import gg.uhc.hosts.Instrumented
+import gg.uhc.hosts.{DatabaseSystem, Instrumented}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Database(transactor: Transactor[IO]) extends Instrumented {
+class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem) extends Instrumented {
   private[this] val queryTimer   = metrics.timer("query-time")
   private[this] val successGauge = metrics.counter("successful-queries")
   private[this] val failureGauge = metrics.counter("failed-queries")
 
-  implicit val system: ActorSystem  = ActorSystem("database")
+  implicit val s: ActorSystem  = system
   implicit val ec: ExecutionContext = system.dispatcher
 
   val queries = new Queries(LogHandler {
