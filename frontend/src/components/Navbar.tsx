@@ -56,7 +56,7 @@ const NavbarComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ 
       <NavbarButton to="/host" text="Host" icon="cloud-upload" />
       <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
       <NavbarButton to="/members" text="Members" icon="user" />
-      <NavbarButton to="/ubl" text="Ban List" icon="take-action" />
+      {/*<NavbarButton to="/ubl" text="Ban List" icon="take-action" />*/}
       <WithPermission permission="hosting advisor">
         <NavbarButton to="/hosting-alerts" text="Hosting Alerts" icon="notifications" />
       </WithPermission>

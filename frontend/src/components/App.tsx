@@ -90,9 +90,9 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        <AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...this.props} />
-        <Route path="/ubl/:uuid" component={UuidHistoryPage} />
-        <Route path="/ubl" component={CurrentUblPage} />
+        {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...this.props} />*/}
+        {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
+        {/*<Route path="/ubl" component={CurrentUblPage} />*/}
         <AuthenticatedRoute
           path="/hosting-alerts"
           component={HostingAlertsPage}
