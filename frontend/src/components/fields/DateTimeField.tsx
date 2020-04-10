@@ -22,7 +22,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
 
 type StateProps = {
   isFocused: boolean | null;
-}
+};
 
 export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <Callout intent={Intent.DANGER}>{error}</Callout>;
@@ -37,8 +37,6 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
     isFocused: false,
   };
 
-  triggerBlur = (date: moment.Moment): void => this.props.input.onChange(date);
-
   triggerChange = (date: moment.Moment | null): void => {
     if (this.props.disabled) return;
 
@@ -48,7 +46,7 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
 
   handleDateChange = (date: moment.Moment | null): void => {
     // react-dates set the hours/minutes to be 12:00 so we ignore them
-    let newDate = date?.clone();
+    let newDate = date?.utc().clone();
 
     if (this.props.input.value && newDate) {
       newDate.set('hours', this.props.input.value.get('hours'));
@@ -87,15 +85,17 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
 
   renderInfoPanel = (clear?: JSX.Element) => (
     <div>
-      {this.props.timePicker && <TimePicker
-        {...this.props.timePicker}
-        allowEmpty={!!this.props.renderClearButton}
-        disabled={this.props.disabled}
-        value={this.props.input.value}
-        onChange={this.handleTimeChange}
-        className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
-        showSecond={false}
-      />}
+      {this.props.timePicker && (
+        <TimePicker
+          {...this.props.timePicker}
+          allowEmpty={!!this.props.renderClearButton}
+          disabled={this.props.disabled}
+          value={this.props.input.value}
+          onChange={this.handleTimeChange}
+          className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
+          showSecond={false}
+        />
+      )}
       {clear}
     </div>
   );
@@ -128,7 +128,9 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
             // doesn't rerender properly, presumably due to daypickersingledatecontroller's
             // shouldComponentUpdate. We're passing a new function each render just to make
             // sure it can rerender properly
-            renderCalendarInfo={() => this.renderInfoPanel(ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />)}
+            renderCalendarInfo={() =>
+              this.renderInfoPanel(ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />)
+            }
             calendarInfoPosition="bottom"
             {...datePickerProps}
             date={input.value || null}
