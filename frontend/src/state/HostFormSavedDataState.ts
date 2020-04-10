@@ -25,7 +25,7 @@ export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSa
   location: '',
   length: 90,
   version: '1.8.8',
-  mapSize: 1500,
+  mapSize: 3000,
   pvpEnabledAt: 20,
   slots: 80,
   hostingName: null,
