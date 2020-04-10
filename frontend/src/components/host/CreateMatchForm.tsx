@@ -367,7 +367,12 @@ export const CreateMatchForm: React.ComponentType<
     props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>,
   ): Promise<void> => {
     try {
-      return await sagaMiddleware.run(checkForConflicts, props.currentValues).toPromise();
+      // a quick check for when we don't have any initial values then fallback to the ones provided in
+      // props, kinda weird and janky but gets around the componentDidMount asyncvalidate race condition
+      // we should be relying on `values` as it is the most up to date over props
+      const haveValues = Object.keys(values || {}).length > 0;
+
+      return await sagaMiddleware.run(checkForConflicts, haveValues ? values : props.currentValues).toPromise();
     } catch (err) {
       if (err instanceof SubmissionError) {
         throw err.errors; // redux-form doesn't like the SubmissionError instance and wants the errors object
