@@ -62,6 +62,7 @@ components:
         - author
         - opens
         - ip
+        - modifiers
         - scenarios
         - tags
         - teams
@@ -94,6 +95,11 @@ components:
         ip:
           type: string
           description: IP + (optional) port combo for direct connect to the server
+        modifiers:
+          type: array
+          description: A list of modifiers that will be used
+          items:
+            type: string
         scenarios:
           type: array
           description: A list of scenarios that will be hosted
@@ -191,6 +197,8 @@ components:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
         ip: '255.0.0.255:5000'
+        modifiers:
+          - CutClean
         scenarios:
           - Vanilla+
         tags:
@@ -222,6 +230,7 @@ components:
       required:
         - opens
         - ip
+        - modifiers
         - scenarios
         - tags
         - teams
@@ -245,6 +254,11 @@ components:
         ip:
           type: string
           description: IP + (optional) port combo for direct connect to the server
+        modifiers:
+          type: array
+          description: A list of modifiers that will be hosted
+          items:
+            type: string
         scenarios:
           type: array
           description: A list of scenarios that will be hosted
@@ -317,6 +331,8 @@ components:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
         ip: '255.0.0.255:5000'
+        modifiers:
+          - CutClean
         scenarios:
           - Vanilla+
         tags:

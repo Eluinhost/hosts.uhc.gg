@@ -5,12 +5,17 @@ import java.time.{Instant, ZoneOffset}
 
 import gg.uhc.hosts.{CustomTeamStyle, SimpleTeamStyle, SizedTeamStyle, TeamStyles}
 
+object MatchModifiers {
+  val allowed: Set[String] = Set("CutClean", "Fast Smelting", "Beta Zombies", "Hasty Boys", "Veinminer", "Timber")
+}
+
 case class MatchRow(
     id: Long,
     author: String,
     opens: Instant,
     address: Option[String],
     ip: Option[String],
+    modifiers: List[String],
     scenarios: List[String],
     tags: List[String],
     teams: String,
@@ -39,7 +44,13 @@ case class MatchRow(
     case CustomTeamStyle    => CustomTeamStyle.render(customStyle.get)
   }
 
-  def legacyTitle() =
-    s"${opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("MMM dd HH:mm"))} UTC $region - ${hostingName.getOrElse(
-      author)}'s #$count - ${renderStyle()} - ${scenarios.mkString(", ")} ${tags.map(t => s"[$t]").mkString("")}"
+  def legacyTitle(): String = {
+    val time = opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("MMM dd HH:mm"))
+    val name = hostingName.getOrElse(author)
+    val style = renderStyle()
+    val scenarioString = modifiers.concat(scenarios).mkString(", ")
+    val tagString = tags.map(t => s"[$t]").mkString("")
+
+    s"$time UTC $region - $name's #$count - $style - $scenarioString $tagString"
+  }
 }

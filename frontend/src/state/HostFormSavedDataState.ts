@@ -14,6 +14,7 @@ export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSa
   opens: nextAvailableSlot(),
   region: Regions[0].value,
   teams: TeamStyles[0].value,
+  modifiers: [],
   scenarios: ['Vanilla+'],
   tags: [],
   size: null,

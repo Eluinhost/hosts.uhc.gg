@@ -4,6 +4,7 @@ export type CreateMatchData = {
   opens: moment.Moment;
   address: string | null;
   ip: string;
+  modifiers: string[];
   scenarios: string[];
   tags: string[];
   teams: string;

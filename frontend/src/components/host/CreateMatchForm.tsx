@@ -238,6 +238,11 @@ class CreateMatchFormComponent extends React.PureComponent<
         <fieldset>
           <legend>Scenarios + Teams</legend>
           <div className="host-form-row" onKeyPress={stopEnterSubmit}>
+            <TagsField name="modifiers" label="Modifiers" required disabled={submitting}>
+              <em>* Press Enter after each modifier to add it to the list</em>
+            </TagsField>
+          </div>
+          <div className="host-form-row" onKeyPress={stopEnterSubmit}>
             <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
               <em>* Press Enter after each scenario to add it to the list</em>
             </TagsField>
