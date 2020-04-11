@@ -14,20 +14,20 @@ object Settings {
 
   object versions {
     val scala           = "2.13.1"
-    val doobie          = "0.8.8"
+    val doobie          = "0.9.0"
     val circe           = "0.13.0"
-    val akkaHttp        = "10.1.10"
+    val akkaHttp        = "10.1.11"
     val akkaSlf4j       = "2.6.3"
     val akkaHttpCirce   = "1.31.0"
-    val postgresql      = "42.2.11"
+    val postgresql      = "42.2.12"
     val flyway          = "4.2.0"
     val hikaricp        = "3.4.2"
     val logback         = "1.2.3"
     val jwtCirce        = "4.3.0"
     val macwire         = "2.3.3"
-    val caffeine        = "3.1.0"
+    val caffeine        = "4.0.0"
     val metricsScala    = "4.1.5"
-    val metricsInfluxDb = "0.9.3"
+    val metricsInfluxDb = "1.1.0"
   }
 
   val dependencies = Def.setting(
