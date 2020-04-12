@@ -625,4 +625,7 @@ class Queries(logger: LogHandler) {
       WHERE
         matchId = $matchId
       """.update
+
+  def getAllModifiers(): Query0[ModifierRow] =
+    sql"""SELECT id, displayName FROM modifiers""".query[ModifierRow]
 }

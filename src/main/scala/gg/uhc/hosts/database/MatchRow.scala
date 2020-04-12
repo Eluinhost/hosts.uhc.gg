@@ -5,10 +5,6 @@ import java.time.{Instant, ZoneOffset}
 
 import gg.uhc.hosts.{CustomTeamStyle, SimpleTeamStyle, SizedTeamStyle, TeamStyles}
 
-object MatchModifiers {
-  val allowed: Set[String] = Set("CutClean", "Fast Smelting", "Beta Zombies", "Hasty Boys", "Veinminer", "Timber")
-}
-
 case class MatchRow(
     id: Long,
     author: String,

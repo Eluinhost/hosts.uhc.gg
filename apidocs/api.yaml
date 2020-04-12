@@ -443,6 +443,22 @@ components:
         exact: true
         createdBy: ghowden
         created: "2017-09-29T11:33:07.039Z"
+    ModifierResponse:
+      type: object
+      required:
+        - id
+        - displayName
+      properties:
+        id:
+          type: integer
+          description: Unique ID for this modifier
+        displayName:
+          type: string
+          description: The name that should be shown for this modifier
+      example:
+        id: 100
+        displayName: CutClean
+
 paths:
   /sync:
     get:
@@ -1176,7 +1192,4 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-                example:
-                  - CutClean
-                  - Veinminer
+                  $ref: '#/components/schemas/ModifierResponse'

@@ -234,4 +234,7 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
 
   def setAlertsHandledForDiscord(matchId: Long): ConnectionIO[Int] =
     queries.setAlertsHandledForDiscord(matchId).run
+
+  def getAllModifiers(): ConnectionIO[List[ModifierRow]] =
+    queries.getAllModifiers().to[List]
 }
