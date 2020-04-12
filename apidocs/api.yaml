@@ -1193,3 +1193,44 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ModifierResponse'
+    post:
+      tags:
+        - Modifiers
+      summary: Create a modifier
+      description: Creates a new modifier, display name used must not already exist, requries `hosting advisor` permission
+      responses:
+        '200':
+          description: Modifier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifierResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /modifiers/{id}:
+    delete:
+      tags:
+        - Modifiers
+      summary: Delete a modifier
+      description: Deletes an modifier, requries `hosting advisor` permission
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID to delete
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an modifier with the given ID

@@ -628,4 +628,10 @@ class Queries(logger: LogHandler) {
 
   def getAllModifiers(): Query0[ModifierRow] =
     sql"""SELECT id, displayName FROM modifiers""".query[ModifierRow]
+
+  def createModifier(modifier: String): Update0 =
+    sql"""INSERT INTO modifiers (displayName) VALUES ($modifier)""".update
+
+  def deleteModifier(id: Int): Update0 =
+    sql"""DELETE FROM modifiers WHERE id = ${id}""".update
 }
