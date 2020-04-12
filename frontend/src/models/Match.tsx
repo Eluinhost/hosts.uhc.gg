@@ -6,7 +6,6 @@ export type Match = {
   opens: moment.Moment;
   address: string | null;
   ip: string | null;
-  modifiers: string[];
   scenarios: string[];
   tags: string[];
   teams: string;

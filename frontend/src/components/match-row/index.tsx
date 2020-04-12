@@ -94,7 +94,6 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
             <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
               <Icon icon="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
             </Tag>
-            <TagList intent={Intent.PRIMARY} title="Modifier" items={match.modifiers} />
             <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
           </div>
           <div className="server-tags">

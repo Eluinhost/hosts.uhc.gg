@@ -49,8 +49,15 @@ export const callApprove = (id: number, accessToken: string): Promise<void> =>
     },
   });
 
-export const create = (data: CreateMatchData, accessToken: string): Promise<void> =>
-  callApi({
+export const create = (data: CreateMatchData, accessToken: string): Promise<void> => {
+  const body: Partial<Match> = {
+    ...data,
+    opens: data.opens.clone().utc(),
+    // convert the modifiers into scenarios
+    scenarios: [...data.modifiers, ...data.scenarios],
+  };
+
+  return callApi({
     url: `/api/matches`,
     status: 201,
     config: {
@@ -59,12 +66,10 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
         ...authHeaders(accessToken),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...data,
-        opens: data.opens.clone().utc(),
-      }),
+      body: JSON.stringify(body),
     },
   });
+};
 
 export const fetchPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
   fetchArray<Match>({

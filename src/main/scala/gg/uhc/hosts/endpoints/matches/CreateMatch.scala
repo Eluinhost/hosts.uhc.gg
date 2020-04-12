@@ -8,7 +8,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
 import gg.uhc.hosts._
-import gg.uhc.hosts.database.{Database, MatchModifiers, MatchRow}
+import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 import doobie.free.connection.delay
 import doobie._
@@ -26,7 +26,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       address: Option[String],
       ip: Option[String],
       scenarios: List[String],
-      modifiers: List[String],
       tags: List[String],
       teams: String,
       size: Option[Int],
@@ -67,7 +66,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       length = payload.length,
       mapSize = payload.mapSize,
       pvpEnabledAt = payload.pvpEnabledAt,
-      modifiers = payload.modifiers.distinct, // removes duplicates
       scenarios = payload.scenarios.distinctBy(_.toLowerCase), // removes duplicates
       tags = payload.tags.distinctBy(_.toLowerCase), // removes duplicates
       tournament = payload.tournament,
@@ -160,7 +158,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(row.length >= 30, "Matches must be at least 30 minutes") &
       validate(row.mapSize > 0, "Map size must be positive") &
       validate(row.pvpEnabledAt >= 0, "PVP enabled at must be positive") &
-      validate(row.modifiers.forall(MatchModifiers.allowed.contains), s"Invalid modifier, allowed: ${MatchModifiers.allowed.mkString(", ")}") &
       validate(row.scenarios.nonEmpty, "Must supply at least 1 scenario") &
       validate(row.scenarios.length <= 25, "Must supply at most 25 scenarios") &
       validate(row.tags.length <= 5, "Must supply at most 5 tags") &

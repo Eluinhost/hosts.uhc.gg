@@ -110,6 +110,10 @@ class CreateMatchFormComponent extends React.PureComponent<
     this.props.asyncValidate();
   }
 
+  useVanillaPlus = () => {
+    this.props.change('scenarios', ['Vanilla+']);
+  };
+
   render() {
     const {
       handleSubmit,
@@ -244,7 +248,14 @@ class CreateMatchFormComponent extends React.PureComponent<
           </div>
           <div className="host-form-row" onKeyPress={stopEnterSubmit}>
             <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
-              <em>* Press Enter after each scenario to add it to the list</em>
+              <div>
+                <em>* Press Enter after each scenario to add it to the list</em>
+              </div>
+              {currentValues.scenarios.length === 0 && (
+                <div>
+                  If no scenarios please use <Button onClick={this.useVanillaPlus}>Vanilla+</Button> instead
+                </div>
+              )}
             </TagsField>
           </div>
           <div className="host-form-row">
