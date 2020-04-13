@@ -6,3 +6,15 @@ export const FETCH_MODIFIERS = {
   STARTED: createAction('[Fetch Modifiers] Started'),
   COMPLETED: createAction('[Fetch Modifiers] Completed', (available: Modifier[]) => ({ available })),
 };
+
+export const DELETE_MODIFIER = {
+  TRIGGER: createAction('[Delete Modifier] Trigger', (id: number) => ({ id })),
+  STARTED: createAction('[Delete Modifier] Started', (id: number) => ({ id })),
+  COMPLETED: createAction('[Delete Modifier] Completed', (id: number) => ({ id })),
+};
+
+export const CREATE_MODIFIER = {
+  TRIGGER: createAction('[Create Modifier] Trigger', (name: string) => ({ name })),
+  STARTED: createAction('[Create Modifier] Started', (name: string) => ({ name })),
+  COMPLETED: createAction('[Create Modifier] Completed', (modifier: Modifier) => ({ modifier })),
+};

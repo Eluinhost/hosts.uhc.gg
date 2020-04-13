@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 
-import { ModifiersState } from '../reducer';
-import { getModifiersState } from '../selectors';
+import { ListModifiersState } from '../reducer';
+import { getListModifiersState } from '../selectors';
 import { FETCH_MODIFIERS } from '../actions';
 
 export type ModifiersSelectorProps = {
@@ -13,7 +13,7 @@ export type ModifiersSelectorProps = {
   selected: string[];
 };
 
-type StateProps = ModifiersState;
+type StateProps = ListModifiersState;
 
 type DispatchProps = {
   updateModifiers: () => void;
@@ -65,9 +65,10 @@ class ModifiersSelectorComponent extends React.PureComponent<ModifiersSelectorPr
 
     return (
       <div>
-        {this.props.available.map(modifier => (
+        {this.props.data.map(modifier => (
           <ModifierSwitch
             {...this.props}
+            key={modifier.id}
             isSelected={this.props.selected.includes(modifier.displayName)}
             displayName={modifier.displayName}
           />
@@ -82,6 +83,6 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
 });
 
 export const ModifierSelector: React.ComponentType<ModifiersSelectorProps> = connect(
-  getModifiersState,
+  getListModifiersState,
   mapDispatchToProps,
 )(ModifiersSelectorComponent);
