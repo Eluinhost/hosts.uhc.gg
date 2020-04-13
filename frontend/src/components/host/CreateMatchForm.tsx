@@ -13,7 +13,7 @@ import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
-import { Button, Callout, Classes, H5, Intent } from '@blueprintjs/core';
+import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
 import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
@@ -27,6 +27,7 @@ import { all, put, race, take } from 'redux-saga/effects';
 import { HostFormConflicts } from '../../actions';
 import { find } from 'ramda';
 import { sagaMiddleware } from '../../state/ApplicationState';
+import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -112,6 +113,17 @@ class CreateMatchFormComponent extends React.PureComponent<
 
   useVanillaPlus = () => {
     this.props.change('scenarios', ['Vanilla+']);
+  };
+
+  onModifierAdded = (modifier: string) => {
+    this.props.change('scenarios', [...this.props.currentValues.scenarios, modifier]);
+  };
+
+  onModifierRemoved = (modifier: string) => {
+    this.props.change(
+      'scenarios',
+      this.props.currentValues.scenarios.filter(x => x !== modifier),
+    );
   };
 
   render() {
@@ -242,11 +254,6 @@ class CreateMatchFormComponent extends React.PureComponent<
         <fieldset>
           <legend>Scenarios + Teams</legend>
           <div className="host-form-row" onKeyPress={stopEnterSubmit}>
-            <TagsField name="modifiers" label="Modifiers" required disabled={submitting}>
-              <em>* Press Enter after each modifier to add it to the list</em>
-            </TagsField>
-          </div>
-          <div className="host-form-row" onKeyPress={stopEnterSubmit}>
             <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
               <div>
                 <em>* Press Enter after each scenario to add it to the list</em>
@@ -257,6 +264,15 @@ class CreateMatchFormComponent extends React.PureComponent<
                 </div>
               )}
             </TagsField>
+          </div>
+          <div className="host-form-row host-form-row--modifiers">
+            <FormGroup label="Here are the scenarios that will not cause conflicts with surrounding matches:">
+              <ModifierSelector
+                onAdded={this.onModifierAdded}
+                onRemoved={this.onModifierRemoved}
+                selected={this.props.currentValues.scenarios}
+              />
+            </FormGroup>
           </div>
           <div className="host-form-row">
             <SelectField
