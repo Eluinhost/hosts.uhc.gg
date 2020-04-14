@@ -7,3 +7,4 @@ import gg.uhc.hosts.CustomJsonCodec._
 class ListPrimaryVersions() {
   def apply(): Route = complete(Version.options)
 }
+

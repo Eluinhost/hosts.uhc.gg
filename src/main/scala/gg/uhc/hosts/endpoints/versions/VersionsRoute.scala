@@ -10,3 +10,4 @@ class VersionsRoute(listPrimaryVersions: ListPrimaryVersions) {
       (get & pathEndOrSingleSlash)(listPrimaryVersions())
     }
 }
+
