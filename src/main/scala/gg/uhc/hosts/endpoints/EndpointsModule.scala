@@ -17,6 +17,7 @@ import gg.uhc.hosts.endpoints.rules.{GetLatestRules, RulesRoute, SetRules}
 import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
 import gg.uhc.hosts.endpoints.ubl._
 import gg.uhc.hosts.endpoints.users.{ShowPermissionsForUser, UsersRoute}
+import gg.uhc.hosts.endpoints.versions.{ListPrimaryVersions, VersionsRoute}
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
@@ -60,6 +61,7 @@ trait EndpointsModule extends RedditModule {
   lazy val listModifiers: ListModifiers         = wire[ListModifiers]
   lazy val createModifier: CreateModifier       = wire[CreateModifier]
   lazy val deleteModifier: DeleteModifier       = wire[DeleteModifier]
+  lazy val listPrimaryVersions: ListPrimaryVersions = wire[ListPrimaryVersions]
 
   lazy val basicCache: BasicCache                   = wire[BasicCache]
   lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]
@@ -77,6 +79,7 @@ trait EndpointsModule extends RedditModule {
   lazy val alertsRoute: AlertsRoute                 = wire[AlertsRoute]
   lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
   lazy val modifiersRoute: ModifiersRoute           = wire[ModifiersRoute]
+  lazy val versionsRoute: VersionsRoute             = wire[VersionsRoute]
 
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }
