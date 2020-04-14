@@ -10,6 +10,7 @@ import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.hosts.HostsRoute
 import gg.uhc.hosts.endpoints.key.KeyRoute
 import gg.uhc.hosts.endpoints.matches.MatchesRoute
+import gg.uhc.hosts.endpoints.modifiers.ModifiersRoute
 import gg.uhc.hosts.endpoints.permissions.PermissionsRoute
 import gg.uhc.hosts.endpoints.rules.RulesRoute
 import gg.uhc.hosts.endpoints.sync.SyncRoute
@@ -26,7 +27,8 @@ class ApiRoute(
     hostsRoute: HostsRoute,
     ublRoute: UblRoute,
     alertsRoute: AlertsRoute,
-    usersRoute: UsersRoute)
+    usersRoute: UsersRoute,
+    modifiersRoute: ModifiersRoute)
     extends Instrumented {
 
   private[this] val apiTimer = metrics.timer("api-request-time")
@@ -45,7 +47,8 @@ class ApiRoute(
           pathPrefix("key")(keyRoute()),
           pathPrefix("docs")(docsRoute()),
           pathPrefix("alerts")(alertsRoute()),
-          pathPrefix("users")(usersRoute())
+          pathPrefix("users")(usersRoute()),
+          pathPrefix("modifiers")(modifiersRoute())
         ) ~ complete(StatusCodes.NotFound)
       }
     }

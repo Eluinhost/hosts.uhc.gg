@@ -234,4 +234,13 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
 
   def setAlertsHandledForDiscord(matchId: Long): ConnectionIO[Int] =
     queries.setAlertsHandledForDiscord(matchId).run
+
+  def getAllModifiers(): ConnectionIO[List[ModifierRow]] =
+    queries.getAllModifiers().to[List]
+
+  def createModifier(modifier: String): ConnectionIO[Int] =
+    queries.createModifier(modifier).withUniqueGeneratedKeys[Int]("id")
+
+  def deleteModifier(id: Int): ConnectionIO[Boolean] =
+    queries.deleteModifier(id).run.map(_ > 0)
 }

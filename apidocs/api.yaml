@@ -443,6 +443,22 @@ components:
         exact: true
         createdBy: ghowden
         created: "2017-09-29T11:33:07.039Z"
+    ModifierResponse:
+      type: object
+      required:
+        - id
+        - displayName
+      properties:
+        id:
+          type: integer
+          description: Unique ID for this modifier
+        displayName:
+          type: string
+          description: The name that should be shown for this modifier
+      example:
+        id: 100
+        displayName: CutClean
+
 paths:
   /sync:
     get:
@@ -1162,3 +1178,59 @@ paths:
                 example:
                   - hosting advisor
                   - admin
+  /modifiers:
+    get:
+      tags:
+        - Modifiers
+      summary: Lists all allowed modifiers for a match
+      description: Lists all allowed modifiers for a match, modifiers do not conflict with other matches
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModifierResponse'
+    post:
+      tags:
+        - Modifiers
+      summary: Create a modifier
+      description: Creates a new modifier, display name used must not already exist, requries `hosting advisor` permission
+      responses:
+        '200':
+          description: Modifier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifierResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /modifiers/{id}:
+    delete:
+      tags:
+        - Modifiers
+      summary: Delete a modifier
+      description: Deletes an modifier, requries `hosting advisor` permission
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID to delete
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an modifier with the given ID

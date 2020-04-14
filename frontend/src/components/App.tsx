@@ -25,6 +25,7 @@ import { Footer } from './footer';
 import Helmet from 'react-helmet';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
+import { ModifiersPage } from '../modifiers/components/ModifiersPage';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -99,6 +100,7 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
           permission="hosting advisor"
           {...this.props}
         />
+        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
         <Route path="/" exact component={HomePage} />
         <Route component={NotFoundPage} />
       </Switch>

@@ -336,7 +336,32 @@ class Queries(logger: LogHandler) {
   def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): Query0[MatchRow] =
     sql"""
       SELECT
-        *
+        id,
+        author,
+        opens,
+        address,
+        ip,
+        scenarios,
+        tags,
+        teams,
+        size,
+        customStyle,
+        count,
+        content,
+        region,
+        removed,
+        removedBy,
+        removedReason,
+        created,
+        location,
+        version,
+        slots,
+        length,
+        mapSize,
+        pvpEnabledAt,
+        approvedBy,
+        hostingName,
+        tournament
       FROM matches
       WHERE
         region = $region
@@ -600,4 +625,13 @@ class Queries(logger: LogHandler) {
       WHERE
         matchId = $matchId
       """.update
+
+  def getAllModifiers(): Query0[ModifierRow] =
+    sql"""SELECT id, displayName FROM modifiers""".query[ModifierRow]
+
+  def createModifier(modifier: String): Update0 =
+    sql"""INSERT INTO modifiers (displayName) VALUES ($modifier)""".update
+
+  def deleteModifier(id: Int): Update0 =
+    sql"""DELETE FROM modifiers WHERE id = ${id}""".update
 }

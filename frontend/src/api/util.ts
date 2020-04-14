@@ -12,6 +12,8 @@ export const verifyStatus = (expected: number[] | number = 200) => async (respon
       throw new NotAuthenticatedError();
     case 403:
       throw new ForbiddenError();
+    case 404:
+      throw new NotFoundError();
     default:
       throw new UnexpectedResponseError(response.status);
   }

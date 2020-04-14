@@ -1,9 +1,12 @@
 package gg.uhc.hosts.endpoints
 
+import java.sql.SQLException
+
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{complete, extractActorSystem}
 import akka.http.scaladsl.server.{AuthenticationFailedRejection, MalformedRequestContentRejection, RejectionHandler, ValidationRejection}
 import cats.Show
+import doobie.postgres.sqlstate
 import io.circe.CursorOp._
 import io.circe.{CursorOp, DecodingFailure, ParsingFailure}
 
@@ -41,6 +44,8 @@ object EndpointRejectionHandler {
     .handle {
       case MissingIpErrorRejection() =>
         complete(StatusCodes.InternalServerError -> "Unable to find client IP address")
+      case DatabaseErrorRejection(e: SQLException) if e.getSQLState == sqlstate.class23.UNIQUE_VIOLATION.value =>
+        complete(StatusCodes.BadRequest -> "Unique field already exists")
       case DatabaseErrorRejection(t) => // when database explodes
         extractActorSystem { system =>
           system.log.error("DB error", t)
