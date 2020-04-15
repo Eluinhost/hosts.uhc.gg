@@ -88,6 +88,7 @@ components:
         - created
         - roles
         - location
+        - mainVersion
         - version
         - slots
         - length
@@ -177,9 +178,12 @@ components:
         location:
           type: string
           description: The free-text location of the server
+        mainVersion:
+          type: string
+          description: The servers 'main' version, options can be found via the /versions/primary endpoint
         version:
           type: string
-          description: The version of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts
         slots:
           type: number
           description: How many slots are available on the server
@@ -225,7 +229,8 @@ components:
           - hosting advisor
           - trial host
         location: test
-        version: "1.8.8"
+        mainVersion: "1.8"
+        version: "1.8 - 1.9"
         slots: 80
         length: 90
         mapSize: 1500
@@ -245,6 +250,7 @@ components:
         - content
         - region
         - location
+        - mainVersion
         - version
         - slots
         - length
@@ -308,9 +314,12 @@ components:
         location:
           type: string
           description: The free-text location of the server
+        mainVersion:
+          type: string
+          description: The servers 'main' version, options can be found via the /versions/primary endpoint
         version:
           type: string
-          description: The version of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts
         slots:
           type: number
           description: How many slots are available on the server
@@ -344,7 +353,8 @@ components:
         content: test content
         region: NA
         location: test
-        version: "1.8.8"
+        mainVersion: "1.8"
+        version: "1.8 - 1.9"
         slots: 80
         length: 90
         mapSize: 1500

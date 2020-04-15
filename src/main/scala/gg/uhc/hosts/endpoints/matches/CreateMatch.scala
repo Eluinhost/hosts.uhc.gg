@@ -12,6 +12,7 @@ import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 import doobie.free.connection.delay
 import doobie._
+import gg.uhc.hosts.endpoints.versions.Version
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
@@ -34,6 +35,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       content: String,
       region: String,
       location: String,
+      mainVersion: String,
       version: String,
       slots: Int,
       length: Int,
@@ -61,6 +63,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       teams = payload.teams,
       size = if (TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle])) payload.size else None, // remove size if not required
       location = payload.location,
+      mainVersion = payload.mainVersion,
       version = payload.version,
       slots = payload.slots,
       length = payload.length,
@@ -153,6 +156,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       ) &
       ipChecks(row) &
       validate(row.location.nonEmpty, "Must supply a location") &
+      validate(Version.options.exists(v => v.displayName == row.mainVersion), s"Invalid main version, expected one of: ${Version.options.map(v => v.displayName).mkString(", ")}") &
       validate(row.version.nonEmpty, "Must supply a version") &
       validate(row.slots >= 2, "Slots must be at least 2") &
       validate(row.length >= 30, "Matches must be at least 30 minutes") &
