@@ -19,6 +19,7 @@ export type Match = {
   removedReason: string | null;
   created: moment.Moment;
   location: string;
+  mainVersion: string;
   version: string;
   slots: number;
   length: number;

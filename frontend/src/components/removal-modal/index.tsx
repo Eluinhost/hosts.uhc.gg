@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
 import { InjectedFormProps, reduxForm } from 'redux-form';
-import { ApplicationState } from '../../state/ApplicationState';
-import { SuggestionsField } from '../fields/SuggestionsField';
-import { RemoveMatch } from '../../actions';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+
+import { ApplicationState } from '../../state/ApplicationState';
+import { RemoveMatch } from '../../actions';
 import { createSelector } from 'reselect';
 import { isDarkMode } from '../../state/Selectors';
 import { Validator } from '../../services/Validator';
+import { TextField } from '../fields/TextField';
 
 type RemovalModalData = {
   reason: string;
@@ -41,14 +42,7 @@ class RemovalModalComponent extends React.PureComponent<
         <div className={`${Classes.DIALOG_BODY} remove-modal-body`}>
           <form onSubmit={handleSubmit}>
             <ControlGroup fill>
-              <SuggestionsField
-                name="reason"
-                label="Reason"
-                required
-                disabled={submitting}
-                suggestions={['Missing scenario descriptions']}
-                suggestionText="Select a preset"
-              />
+              <TextField name="reason" label="Reason" required disabled={submitting} />
             </ControlGroup>
             <H5>This cannot be undone once confirmed</H5>
           </form>

@@ -92,7 +92,7 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
   .required('region')
   .required('content')
   .required('location')
-  .required('version')
+  .required('mainVersion')
   .required('scenarios')
   .withValidation('slots', slots => !slots || slots <= 1, 'Slots must be at least 2')
   .withValidation('length', length => !length || length < 30, 'Must be at least 30 minutes')

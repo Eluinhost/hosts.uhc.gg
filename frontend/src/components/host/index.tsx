@@ -28,7 +28,8 @@ export type HostingPageDispatchProps = {
   readonly updateOpeningTime: () => void;
 };
 
-const formKey: string = 'create-match-form';
+export const formKey: string = 'create-match-form';
+
 const valuesSelector: Selector<ApplicationState, CreateMatchData> = createSelector(
   getFormValues(formKey),
   data => data as CreateMatchData,

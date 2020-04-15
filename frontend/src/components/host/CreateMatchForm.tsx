@@ -1,33 +1,33 @@
 import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
+import * as React from 'react';
+import moment from 'moment-timezone';
+import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
+import { Dispatch } from 'redux';
+import { SagaIterator } from 'redux-saga';
+import { all, put, race, take } from 'redux-saga/effects';
+import { find } from 'ramda';
+
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
 import { TextField } from '../fields/TextField';
-import * as React from 'react';
 import { nextAvailableSlot } from './nextAvailableSlot';
-import moment from 'moment-timezone';
 import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
-import { SuggestionsField } from '../fields/SuggestionsField';
 import { TeamStyles } from '../../models/TeamStyles';
 import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
 import { MatchRow } from '../match-row';
 import { Match } from '../../models/Match';
-import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
 import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { SwitchField } from '../fields/SwitchField';
 import { Title } from '../Title';
-import { Versions } from '../../models/Versions';
 import { CreateMatchData } from '../../models/CreateMatchData';
-import { Dispatch } from 'redux';
-import { SagaIterator } from 'redux-saga';
-import { all, put, race, take } from 'redux-saga/effects';
 import { HostFormConflicts } from '../../actions';
-import { find } from 'ramda';
 import { sagaMiddleware } from '../../state/ApplicationState';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
+import { MainVersionField } from '../../versions/components/MainVersionField';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
@@ -153,6 +153,7 @@ class CreateMatchFormComponent extends React.PureComponent<
       removedReason: null,
       approvedBy: null,
       created: moment.utc(),
+      version: currentValues.version || currentValues.mainVersion,
     };
 
     return (
@@ -213,14 +214,19 @@ class CreateMatchFormComponent extends React.PureComponent<
             />
           </div>
           <div className="host-form-row">
-            <SuggestionsField
-              name="version"
-              label="Game version"
+            <MainVersionField
               className={Classes.FILL}
+              label="Main Version"
               required
+              name="mainVersion"
               disabled={submitting}
-              suggestions={Versions}
-              suggestionText="Choose"
+            />
+            <TextField
+              name="version"
+              label="Version Range"
+              className={Classes.FILL}
+              disabled={submitting}
+              required={false}
             />
             <NumberField
               name="mapSize"

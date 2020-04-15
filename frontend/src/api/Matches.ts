@@ -52,6 +52,7 @@ export const callApprove = (id: number, accessToken: string): Promise<void> =>
 export const create = (data: CreateMatchData, accessToken: string): Promise<void> => {
   const body: Partial<Match> = {
     ...data,
+    version: data.version || data.mainVersion, // use the main version if no range was provided
     opens: data.opens.clone().utc(),
     // convert the modifiers into scenarios
     scenarios: [...data.modifiers, ...data.scenarios],
