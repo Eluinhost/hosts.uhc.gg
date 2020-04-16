@@ -693,7 +693,7 @@ paths:
             type: string
           example: 1.8
         - in: query
-          name: time
+          name: opens
           required: true
           description: The time to check around
           schema:
