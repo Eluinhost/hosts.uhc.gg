@@ -93,9 +93,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   private[this] def overhostCheck(row: MatchRow): Directive0 =
     requireSucessfulQuery(
-      database
-        .getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region)
-        .map(matches => matches.filter(_.mainVersion == row.mainVersion)) // things only conflict for the same major version
+      database.getPotentialConflicts(start = row.opens, end = row.opens, version = row.version, region = row.region)
     ) flatMap {
       // Its valid if:
       //  - there are no conflicts

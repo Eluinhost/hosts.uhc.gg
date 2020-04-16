@@ -664,14 +664,14 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find a match with the given ID
-  '/matches/conflicts/{region}/{time}':
+  '/matches/conflicts':
     get:
       tags:
         - Matches
       summary: Check for potential conflicts
       description: Shows matches +-15 minutes of the given time and region
       parameters:
-        - in: path
+        - in: query
           name: region
           required: true
           description: The region to check in
@@ -685,7 +685,14 @@ paths:
               - AF
               - OC
           example: OC
-        - in: path
+        - in: query
+          name: version
+          required: true
+          description: The main version of the match
+          schema:
+            type: string
+          example: 1.8
+        - in: query
           name: time
           required: true
           description: The time to check around

@@ -12,6 +12,7 @@ function* checkHostFormConflictsSaga(action: ReturnType<typeof HostFormConflicts
       MatchesApi.fetchPotentialConflicts,
       action.payload.data.region,
       action.payload.data.opens,
+      action.payload.data.mainVersion,
     );
 
     yield put(HostFormConflicts.success({ parameters: action.payload, result: potentialConflicts }));

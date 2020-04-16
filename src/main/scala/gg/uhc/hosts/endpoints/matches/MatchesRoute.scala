@@ -37,8 +37,6 @@ class MatchesRoute(
           (delete & pathEndOrSingleSlash)(removeMatch(id))
         )
       },
-      (get & pathPrefix("conflicts") & path(Segment / Segment.asInstant)) { (region, date) =>
-        checkConflicts(region, date)
-      }
+      (get & pathPrefix("conflicts")) (checkConflicts())
     )
 }
