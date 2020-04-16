@@ -1,0 +1,2 @@
+ALTER TABLE matches ADD COLUMN mainVersion TEXT NOT NULL DEFAULT 'other';
+ALTER TABLE matches ALTER COLUMN mainVersion DROP DEFAULT;

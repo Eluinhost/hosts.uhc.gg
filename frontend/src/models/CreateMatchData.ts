@@ -14,7 +14,8 @@ export type CreateMatchData = {
   content: string;
   region: string;
   location: string;
-  version: string;
+  mainVersion: string;
+  version: string | null;
   slots: number;
   length: number;
   mapSize: number;

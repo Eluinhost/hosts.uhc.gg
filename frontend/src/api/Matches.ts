@@ -1,5 +1,7 @@
 import { Match } from '../models/Match';
 import moment from 'moment-timezone';
+import { stringify } from 'query-string';
+
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 import { CreateMatchData } from '../models/CreateMatchData';
 
@@ -52,6 +54,7 @@ export const callApprove = (id: number, accessToken: string): Promise<void> =>
 export const create = (data: CreateMatchData, accessToken: string): Promise<void> => {
   const body: Partial<Match> = {
     ...data,
+    version: data.version || data.mainVersion, // use the main version if no range was provided
     opens: data.opens.clone().utc(),
     // convert the modifiers into scenarios
     scenarios: [...data.modifiers, ...data.scenarios],
@@ -71,9 +74,10 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
   });
 };
 
-export const fetchPotentialConflicts = (region: string, time: moment.Moment): Promise<Match[]> =>
+export const fetchPotentialConflicts = (region: string, time: moment.Moment, version: string): Promise<Match[]> =>
   fetchArray<Match>({
-    url: `/api/matches/conflicts/${region}/${time.clone().utc().format()}`,
+    url: `/api/matches/conflicts?${stringify({ region, opens: time.toISOString(), version })}`,
+    status: 200,
   }).then(matches =>
     matches.map(match => ({
       ...match,

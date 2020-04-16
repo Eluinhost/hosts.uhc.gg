@@ -91,7 +91,11 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
             <span> #{match.count}</span>
           </H4>
           <div className="match-tags">
-            <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
+            <Tag intent={Intent.PRIMARY} large title={`Server version: ${match.mainVersion}`}>
+              <Icon icon="cube" />
+              &nbsp;&nbsp;<b>{match.version || match.mainVersion}</b>
+            </Tag>
+            <Tag intent={Intent.DANGER} large>
               <Icon icon="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
             </Tag>
             <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
@@ -101,7 +105,6 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
             {!!match.address && <ServerTag title="Server Address" text={match.address!} />}
             <ServerTag title="slots" text={`${match.slots} Slots`} />
             <ServerTag title="Map Size" text={`${match.mapSize}x${match.mapSize}`} />
-            <ServerTag title="Version" text={match.version} />
             <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`} />
           </div>
         </div>

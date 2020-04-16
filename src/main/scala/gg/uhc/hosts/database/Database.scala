@@ -155,8 +155,8 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def updateAuthenticationLog(username: String, ip: InetAddress): ConnectionIO[Unit] =
     queries.updateAuthenticationLog(username, ip).run.map(_ => ())
 
-  def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): ConnectionIO[List[MatchRow]] =
-    queries.getMatchesInDateRangeAndRegion(start, end, region).to[List]
+  def getPotentialConflicts(start: Instant, end: Instant, region: String, version: String): ConnectionIO[List[MatchRow]] =
+    queries.getPotentialConflicts(start, end, region, version).to[List]
 
   def getUserApiKey(username: String): ConnectionIO[Option[String]] =
     queries.getUserApiKey(username).option

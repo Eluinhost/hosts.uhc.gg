@@ -94,6 +94,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       removedBy,
       removedReason,
       approvedBy,
+      mainVersion,
     } = this.props.details.match;
 
     const { canApprove, canRemove, approve, remove } = this.props;
@@ -133,8 +134,8 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
               <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
                 <Icon icon="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
               </Tag>
-              <Tag intent={Intent.PRIMARY} title="Version" className={`${Classes.LARGE}`}>
-                <Icon icon="settings" /> {version}
+              <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} large>
+                <Icon icon="cube" /> {version}
               </Tag>
               {this.renderTags(tags)}
             </div>

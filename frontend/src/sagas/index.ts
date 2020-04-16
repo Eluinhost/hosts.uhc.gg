@@ -15,6 +15,8 @@ import { watchPermissions } from './permissions';
 import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
 import { watchApiKey } from './apiKey';
 import { listenForModifierActions } from '../modifiers/sagas';
+import { listenForVersionActions } from '../versions/sagas';
+import { fixHostFormVersionOnVersionsUpdate } from '../components/host/saga';
 
 // Don't include watchSettingsToggle here, we run that once at the beggining of the store to make sure data
 // is loaded before first render
@@ -34,4 +36,6 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchRefreshPermissionModerationLog);
   yield fork(watchApiKey);
   yield fork(listenForModifierActions);
+  yield fork(listenForVersionActions);
+  yield fork(fixHostFormVersionOnVersionsUpdate);
 }

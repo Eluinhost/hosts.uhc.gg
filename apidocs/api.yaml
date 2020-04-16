@@ -32,6 +32,22 @@ components:
     SyncResponse:
       type: string
       example: '2017-08-10T09:11:22.031Z'
+    VersionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'The unique ID of this version'
+        displayName:
+          type: string
+          description: The version to display in the UI
+        weight:
+          type: integer
+          description: Used to sort elements in the UI
+      example:
+        id: 10
+        displayName: 1.8
+        weight: 2
     SetRulesRequest:
       type: string
       example: Some *markdown* rules
@@ -72,6 +88,7 @@ components:
         - created
         - roles
         - location
+        - mainVersion
         - version
         - slots
         - length
@@ -161,9 +178,12 @@ components:
         location:
           type: string
           description: The free-text location of the server
+        mainVersion:
+          type: string
+          description: The servers 'main' version, options can be found via the /versions/primary endpoint
         version:
           type: string
-          description: The version of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts
         slots:
           type: number
           description: How many slots are available on the server
@@ -209,7 +229,8 @@ components:
           - hosting advisor
           - trial host
         location: test
-        version: "1.8.8"
+        mainVersion: "1.8"
+        version: "1.8 - 1.9"
         slots: 80
         length: 90
         mapSize: 1500
@@ -229,6 +250,7 @@ components:
         - content
         - region
         - location
+        - mainVersion
         - version
         - slots
         - length
@@ -292,9 +314,12 @@ components:
         location:
           type: string
           description: The free-text location of the server
+        mainVersion:
+          type: string
+          description: The servers 'main' version, options can be found via the /versions/primary endpoint
         version:
           type: string
-          description: The version of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts
         slots:
           type: number
           description: How many slots are available on the server
@@ -328,7 +353,8 @@ components:
         content: test content
         region: NA
         location: test
-        version: "1.8.8"
+        mainVersion: "1.8"
+        version: "1.8 - 1.9"
         slots: 80
         length: 90
         mapSize: 1500
@@ -638,14 +664,14 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find a match with the given ID
-  '/matches/conflicts/{region}/{time}':
+  '/matches/conflicts':
     get:
       tags:
         - Matches
       summary: Check for potential conflicts
       description: Shows matches +-15 minutes of the given time and region
       parameters:
-        - in: path
+        - in: query
           name: region
           required: true
           description: The region to check in
@@ -659,8 +685,15 @@ paths:
               - AF
               - OC
           example: OC
-        - in: path
-          name: time
+        - in: query
+          name: version
+          required: true
+          description: The main version of the match
+          schema:
+            type: string
+          example: 1.8
+        - in: query
+          name: opens
           required: true
           description: The time to check around
           schema:
@@ -1234,3 +1267,18 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find an modifier with the given ID
+  /versions/primary:
+    get:
+      tags:
+        - Versions
+      summary: List all primary versions
+      description: Lists all primary versions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VersionResponse'

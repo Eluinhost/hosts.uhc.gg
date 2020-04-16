@@ -11,7 +11,6 @@ import doobie.postgres._
 import doobie.postgres.implicits._
 import doobie.postgres.pgisimplicits._
 import doobie.implicits.legacy.instant._
-
 import cats.data.NonEmptyList
 
 class Queries(logger: LogHandler) {
@@ -48,6 +47,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
@@ -83,6 +83,7 @@ class Queries(logger: LogHandler) {
           removedReason,
           created,
           location,
+          mainVersion,
           version,
           slots,
           length,
@@ -121,6 +122,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
@@ -154,6 +156,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
@@ -185,6 +188,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
@@ -211,6 +215,7 @@ class Queries(logger: LogHandler) {
         ${m.removedReason},
         ${m.created},
         ${m.location},
+        ${m.mainVersion},
         ${m.version},
         ${m.slots},
         ${m.length},
@@ -333,7 +338,7 @@ class Queries(logger: LogHandler) {
           authentication_log.ip = $ip
     """.update
 
-  def getMatchesInDateRangeAndRegion(start: Instant, end: Instant, region: String): Query0[MatchRow] =
+  def getPotentialConflicts(start: Instant, end: Instant, region: String, version: String): Query0[MatchRow] =
     sql"""
       SELECT
         id,
@@ -354,6 +359,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
@@ -367,6 +373,8 @@ class Queries(logger: LogHandler) {
         region = $region
         AND
         opens BETWEEN $start AND $end
+        AND
+        mainVersion = $version
         AND
         removed = false
       """.query[MatchRow]
@@ -532,6 +540,7 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
+        mainVersion,
         version,
         slots,
         length,
