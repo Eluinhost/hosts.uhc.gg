@@ -18,9 +18,9 @@ import gg.uhc.hosts.endpoints.versions.Version
   * Creates a new Match object. Requires login + 'host' permission
   */
 class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
+  import Alerts._
   import CustomJsonCodec._
   import customDirectives._
-  import Alerts._
 
   case class CreateMatchPayload(
       opens: Instant,
@@ -92,7 +92,11 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
   }
 
   private[this] def overhostCheck(row: MatchRow): Directive0 =
-    requireSucessfulQuery(database.getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region)) flatMap {
+    requireSucessfulQuery(
+      database
+        .getMatchesInDateRangeAndRegion(row.opens, row.opens, row.region)
+        .map(matches => matches.filter(_.mainVersion == row.mainVersion)) // things only conflict for the same major version
+    ) flatMap {
       // Its valid if:
       //  - there are no conflicts
       //  - this is a non-tournament and conflicts are all tournaments
@@ -106,7 +110,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first
         val best = conflicts.find(!_.tournament).getOrElse(conflicts.head)
 
-        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours)"))
+        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.mainVersion}"))
     }
 
   private[this] def optionalValidate[T](data: Option[T], message: String)(p: T => Boolean) =
@@ -156,7 +160,10 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       ) &
       ipChecks(row) &
       validate(row.location.nonEmpty, "Must supply a location") &
-      validate(Version.options.exists(v => v.displayName == row.mainVersion), s"Invalid main version, expected one of: ${Version.options.map(v => v.displayName).mkString(", ")}") &
+      validate(
+        Version.options.exists(v => v.displayName == row.mainVersion),
+        s"Invalid main version, expected one of: ${Version.options.map(v => v.displayName).mkString(", ")}"
+      ) &
       validate(row.version.nonEmpty, "Must supply a version") &
       validate(row.slots >= 2, "Slots must be at least 2") &
       validate(row.length >= 30, "Matches must be at least 30 minutes") &

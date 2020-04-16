@@ -76,6 +76,8 @@ function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
     throw new SubmissionError<CreateMatchData>({
       opens: 'Failed to lookup conflicts',
       region: 'Failed to lookup conflicts',
+      tournament: 'Failed to lookup conflicts',
+      mainVersion: 'Failed to lookup conflicts',
     });
   }
 
@@ -419,5 +421,5 @@ export const CreateMatchForm: React.ComponentType<
       throw err;
     }
   },
-  asyncBlurFields: ['opens', 'region', 'tournament'],
+  asyncBlurFields: ['opens', 'region', 'tournament', 'mainVersion'],
 })(CreateMatchFormComponent);
