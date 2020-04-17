@@ -1,6 +1,6 @@
 {
   "name": "gg.uhc.hosts",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "",
   "scripts": {
     "start": "react-scripts start",

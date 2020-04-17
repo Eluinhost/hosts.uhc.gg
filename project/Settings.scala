@@ -3,7 +3,7 @@ import sbt._
 object Settings {
   val organisation = "gg.uhc"
   val name         = "hosts"
-  val version      = "1.4.1"
+  val version      = "1.4.2"
 
   val scalacOptions = Seq(
     "-Xlint",
