@@ -11,8 +11,6 @@ import { Dispatch } from 'redux';
 import { Settings } from '../actions';
 import { WithPermission } from './WithPermission';
 
-import logo from './logo.png';
-
 type NavBarButtonProps = {
   readonly text: string;
   readonly icon: IconName;
@@ -46,7 +44,7 @@ const NavbarComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ 
   <BpNavbar>
     <NavbarGroup>
       <Link to="/">
-        <img src={logo} alt="logo" className="brand-logo" />
+        <img src="/logo.png" alt="logo" className="brand-logo" />
       </Link>
       <Link to="/">
         <NavbarHeading>uhc.gg hosting</NavbarHeading>
