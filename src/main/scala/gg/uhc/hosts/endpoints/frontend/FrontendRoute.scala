@@ -20,18 +20,20 @@ class FrontendRoute(database: Database, materializer: Materializer) extends Twir
 
   private[this] val basicFrontend: Route = getFromFile("frontend/build/index.html")
 
-  def replaceTitleInString(input: ByteString, title: String): ByteString =
-    ByteString(input.utf8String.replaceFirst("<title></title>", s"<title>$title</title>"))
+  def addMetaTags(input: ByteString, title: String, description: String): ByteString =
+    ByteString(
+      input.utf8String.replaceFirst("__META_TAG_TITLE__", title).replaceFirst("__META_TAG_DESCRIPTION__", description))
 
-  private[this] def withMatchTitle(title: String): Directive0 = extractExecutionContext.flatMap { implicit ec =>
-    mapRouteResultWith({
-      case result@Complete(response) =>
-        response.entity
-          .toStrict(FiniteDuration(30, TimeUnit.SECONDS))
-          .map(entity => entity.copy(data = replaceTitleInString(entity.data, title)))
-          .map(entity => result.copy(response = response.mapEntity(_ => entity)))
-      case other => Future.successful(other)
-    })
+  private[this] def withMatchTitle(title: String, description: String): Directive0 = extractExecutionContext.flatMap {
+    implicit ec =>
+      mapRouteResultWith({
+        case result @ Complete(response) =>
+          response.entity
+            .toStrict(FiniteDuration(30, TimeUnit.SECONDS))
+            .map(entity => entity.copy(data = addMetaTags(entity.data, title, description)))
+            .map(entity => result.copy(response = response.mapEntity(_ => entity)))
+        case other => Future.successful(other)
+      })
   }
 
   def apply(): Route =
@@ -39,7 +41,7 @@ class FrontendRoute(database: Database, materializer: Materializer) extends Twir
       onComplete(database.run(database.matchById(id))) {
         // send the frontend with the basic details about the game for previewers to view
         case Success(Some(m)) =>
-          withMatchTitle(m.legacyTitle()) {
+          withMatchTitle(m.legacyTitle(), "Match Post") {
             basicFrontend
           }
         // if it fails to lookup just return the regular frontend
@@ -47,6 +49,8 @@ class FrontendRoute(database: Database, materializer: Materializer) extends Twir
       }
     } ~
       getFromDirectory("frontend/build") ~
-      basicFrontend
+      withMatchTitle("uhc.gg", "uhc.gg") {
+        basicFrontend
+      }
 
 }
