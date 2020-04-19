@@ -40,6 +40,7 @@
     "@types/react-router-dom": "5.1.4",
     "@types/react-virtualized": "9.21.8",
     "@types/redux-form": "8.2.3",
+    "connected-react-router": "6.8.0",
     "http-proxy-middleware": "1.0.3",
     "husky": "4.2.5",
     "jwt-decode": "2.2.0",

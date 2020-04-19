@@ -1,6 +1,9 @@
 import { FormStateMap, reducer as formReducer } from 'redux-form';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { connectRouter, routerMiddleware, RouterState } from 'connected-react-router';
+import { History } from 'history';
+
 import { reducer as Authentication, AuthenticationState } from './AuthenticationState';
 import { reducer as Upcoming, UpcomingState } from './UpcomingState';
 import { reducer as MatchModeration, MatchModerationState } from './MatchModerationState';
@@ -20,6 +23,7 @@ import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
 export type ApplicationState = {
+  readonly router: RouterState;
   readonly authentication: AuthenticationState;
   readonly form: FormStateMap;
   readonly upcoming: UpcomingState;
@@ -42,10 +46,11 @@ const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || com
 
 export const sagaMiddleware = createSagaMiddleware();
 
-export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
+export const createReduxStore = async (history: History): Promise<Store<ApplicationState>> => {
   const store = createStore(
     combineReducers<ApplicationState>({
       form: (state, action) => formReducer(state!, action),
+      router: connectRouter(history),
       authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,
@@ -62,7 +67,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       modifiers,
       versions,
     }),
-    composeEnhancers(applyMiddleware(sagaMiddleware)),
+    composeEnhancers(applyMiddleware(sagaMiddleware, routerMiddleware(history))),
   );
 
   sagaMiddleware.run(sagas);

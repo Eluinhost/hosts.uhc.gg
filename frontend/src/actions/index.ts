@@ -301,11 +301,17 @@ export const ClearStorage = {
 };
 
 export const SetSavedHostFormData = {
-  start: createAction('SET_SAVED_HOST_FORM_DATA_START', (payload: CreateMatchData) => payload),
-  started: createAction('SET_SAVED_HOST_FORM_DATA_STARTED', (payload: WithParameters<CreateMatchData>) => payload),
-  success: createAction('SET_SAVED_HOST_FORM_DATA_SUCCESS', (payload: WithParameters<CreateMatchData>) => payload),
+  start: createAction('SET_SAVED_HOST_FORM_DATA_START', (payload: Partial<CreateMatchData>) => payload),
+  started: createAction(
+    'SET_SAVED_HOST_FORM_DATA_STARTED',
+    (payload: WithParameters<Partial<CreateMatchData>>) => payload,
+  ),
+  success: createAction(
+    'SET_SAVED_HOST_FORM_DATA_SUCCESS',
+    (payload: WithParameters<Partial<CreateMatchData>>) => payload,
+  ),
   failure: createAction(
     'SET_SAVED_HOST_FORM_DATA_FAILURE',
-    (payload: WithParameters<CreateMatchData> & WithError) => payload,
+    (payload: WithParameters<Partial<CreateMatchData>> & WithError) => payload,
   ),
 };

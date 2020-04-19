@@ -3,9 +3,6 @@ import * as React from 'react';
 import moment from 'moment-timezone';
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
 import { Dispatch } from 'redux';
-import { SagaIterator } from 'redux-saga';
-import { all, put, race, take } from 'redux-saga/effects';
-import { find } from 'ramda';
 
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
@@ -16,26 +13,22 @@ import { SelectField } from '../fields/SelectField';
 import { TeamStyles } from '../../models/TeamStyles';
 import { Regions } from '../../models/Regions';
 import { TemplateField } from './TemplateField';
-import { MatchRow } from '../match-row';
-import { Match } from '../../models/Match';
 import { validator } from './validation';
 import { HostingRules } from '../hosting-rules';
 import { PotentialConflicts } from './PotentialConflicts';
 import { SwitchField } from '../fields/SwitchField';
 import { Title } from '../Title';
 import { CreateMatchData } from '../../models/CreateMatchData';
-import { HostFormConflicts } from '../../actions';
 import { sagaMiddleware } from '../../state/ApplicationState';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
 import { MainVersionField } from '../../versions/components/MainVersionField';
+import { checkForConflicts, createMatch } from './saga';
+import { MatchRowPreview } from './MatchRowPreview';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
   readonly templateContext: any;
-  readonly username: string;
   readonly is12h: boolean;
-  readonly changeTemplate: (newTemplate: string) => void;
-  readonly createMatch: (data: CreateMatchData) => Promise<void>;
 };
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
@@ -61,51 +54,6 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
   <TextField name="customStyle" required label="Custom Team Style" disabled={disabled} className={Classes.FILL} />
 );
 
-function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
-  const {
-    result: { success, failure },
-  } = yield all({
-    start: put(HostFormConflicts.start({ data: values })),
-    result: race({
-      success: take(HostFormConflicts.success),
-      failure: take(HostFormConflicts.failure),
-    }),
-  });
-
-  if (failure) {
-    throw new SubmissionError<CreateMatchData>({
-      opens: 'Failed to lookup conflicts',
-      region: 'Failed to lookup conflicts',
-      tournament: 'Failed to lookup conflicts',
-      mainVersion: 'Failed to lookup conflicts',
-    });
-  }
-
-  const payload: NonNullable<ReturnType<typeof HostFormConflicts.success>['payload']> = success.payload;
-
-  let confirmedConflicts = payload.result.filter(conflict => conflict.opens.isSame(payload.parameters.data.opens));
-
-  // If the game being hosted is not a tournament it is allowed to overhost tournaments
-  if (!payload.parameters.data.tournament) {
-    confirmedConflicts = confirmedConflicts.filter(conflict => !conflict.tournament);
-  }
-
-  if (confirmedConflicts.length) {
-    // conflict should be whatever isn't a tournament, if they're all tournaments just return whatever is first
-    const conflict = find<Match>(m => !m.tournament, confirmedConflicts) || confirmedConflicts[0];
-
-    // tslint:disable-next-line:max-line-length
-    const message = `Conflicts with /u/${conflict.author}'s #${conflict.count} (${
-      conflict.region
-    } - ${conflict.opens.format('HH:mm z')})`;
-
-    throw new SubmissionError<CreateMatchData>({
-      opens: message,
-      region: message,
-    });
-  }
-}
-
 class CreateMatchFormComponent extends React.PureComponent<
   InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
 > {
@@ -128,38 +76,17 @@ class CreateMatchFormComponent extends React.PureComponent<
     );
   };
 
+  handleTemplateChange = (value: string): void => this.props.change('content', value);
+
   render() {
-    const {
-      handleSubmit,
-      submitting,
-      currentValues,
-      templateContext,
-      username,
-      changeTemplate,
-      valid,
-      createMatch,
-      error,
-      asyncValidating,
-    } = this.props;
+    const { handleSubmit, submitting, currentValues, templateContext, valid, error, asyncValidating } = this.props;
 
     const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
 
     const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
 
-    const preview: Match = {
-      ...currentValues,
-      id: 0,
-      author: username,
-      removed: false,
-      removedBy: null,
-      removedReason: null,
-      approvedBy: null,
-      created: moment.utc(),
-      version: currentValues.version || currentValues.mainVersion,
-    };
-
     return (
-      <form className="host-form" onSubmit={handleSubmit(createMatch)}>
+      <form className="host-form" onSubmit={handleSubmit}>
         <Title>Create a match</Title>
         <HostingRules />
 
@@ -352,7 +279,7 @@ class CreateMatchFormComponent extends React.PureComponent<
             required
             disabled={submitting}
             context={templateContext}
-            changeTemplate={changeTemplate}
+            changeTemplate={this.handleTemplateChange}
           />
         </fieldset>
 
@@ -360,7 +287,7 @@ class CreateMatchFormComponent extends React.PureComponent<
           <legend>Game preview</legend>
 
           <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-            <MatchRow match={preview} disableRemoval disableApproval disableLink />
+            <MatchRowPreview />
           </div>
         </fieldset>
 
@@ -413,6 +340,17 @@ export const CreateMatchForm: React.ComponentType<
       const haveValues = Object.keys(values || {}).length > 0;
 
       return await sagaMiddleware.run(checkForConflicts, haveValues ? values : props.currentValues).toPromise();
+    } catch (err) {
+      if (err instanceof SubmissionError) {
+        throw err.errors; // redux-form doesn't like the SubmissionError instance and wants the errors object
+      }
+
+      throw err;
+    }
+  },
+  onSubmit: async (values): Promise<void> => {
+    try {
+      return await sagaMiddleware.run(createMatch, values).toPromise();
     } catch (err) {
       if (err instanceof SubmissionError) {
         throw err.errors; // redux-form doesn't like the SubmissionError instance and wants the errors object
