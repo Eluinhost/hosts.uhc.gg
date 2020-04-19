@@ -32,7 +32,10 @@ case class MatchRow(
     pvpEnabledAt: Int,
     approvedBy: Option[String],
     hostingName: Option[String],
-    tournament: Boolean) {
+    tournament: Boolean,
+    originalEditId: Option[Long],
+    previousEditId: Option[Long],
+    nextEditId: Option[Long]) {
 
   def renderStyle(): String = TeamStyles.byCode(teams) match {
     case t: SimpleTeamStyle => t.render()

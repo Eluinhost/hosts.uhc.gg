@@ -95,6 +95,9 @@ components:
         - mapSize
         - pvpEnabledAt
         - tournament
+        - originalEditId
+        - previousEditId
+        - nextEditId
       properties:
         id:
           type: integer
@@ -205,6 +208,15 @@ components:
         tournament:
           type: boolean
           description: Whether the game is a tournament or not, tournaments bypass overhosting rules
+        originalEditId:
+          type: number
+          description: The original match ID in this chain of edits, if not set then this is an original match
+        previousEditId:
+          type: number
+          description: If set, this is the ID of the match that was edited to create this match. If not set then this is an original match
+        nextEditId:
+          type: number
+          description: If set, this is the ID of a match that was created by editing this match. If not set then this is the latest edit of the match
       example:
         id: 3
         author: ghowden
