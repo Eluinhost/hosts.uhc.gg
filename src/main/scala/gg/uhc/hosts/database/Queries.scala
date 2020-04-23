@@ -48,7 +48,7 @@ class Queries(logger: LogHandler) {
       originalEditId,
       previousEditId,
       nextEditId
-    FROM matches""";
+    FROM matches """;
 
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
@@ -62,7 +62,6 @@ class Queries(logger: LogHandler) {
 
   def getUpcomingMatches: Query0[MatchRow] =
     (matchRowSelectFields ++ fr"""
-       FROM matches
        WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
        ORDER BY opens ASC
     """).query[MatchRow]
@@ -114,7 +113,7 @@ class Queries(logger: LogHandler) {
         tournament,
         originalEditId,
         previousEditId,
-        nextEditId,
+        nextEditId
       ) VALUES (
         ${m.author},
         ${m.opens},
