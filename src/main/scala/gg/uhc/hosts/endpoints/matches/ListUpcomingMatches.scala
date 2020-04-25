@@ -39,6 +39,9 @@ class ListUpcomingMatches(cache: BasicCache, materializer: Materializer, customD
       .toMat(BroadcastHub.sink[Message])(Keep.both)
       .run()
 
+  // make sure there is always a consumer so items don't build up and send to the first consumer
+  newGamesSource.runWith(Sink.ignore)
+
   def onNewMatchCreated(m: MatchRow): NotUsed = Source.single(m).runWith(newMatchesSink)
 
   def currentUpcomingGamesList(): Source[Json, NotUsed] = Source.future(cache.getUpcomingMatches)
