@@ -17,7 +17,7 @@ import gg.uhc.hosts.endpoints.versions.Version
 /**
   * Creates a new Match object. Requires login + 'host' permission
   */
-class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
+class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, listUpcomingMatches: ListUpcomingMatches) {
   import Alerts._
   import CustomJsonCodec._
   import customDirectives._
@@ -208,6 +208,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
               validateRow(row) {
                 requireSucessfulQuery(createMatchAndAlerts(row)) { inserted =>
                   cache.invalidateUpcomingMatches()
+                  listUpcomingMatches.onNewMatchCreated(inserted)
                   complete(StatusCodes.Created -> inserted)
                 }
               }

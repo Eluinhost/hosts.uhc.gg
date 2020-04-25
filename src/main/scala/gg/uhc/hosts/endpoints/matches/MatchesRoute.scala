@@ -29,7 +29,7 @@ class MatchesRoute(
   def apply(): Route =
     concat(
       (pathEndOrSingleSlash & post)(createMatch()),
-      (get & path("upcoming"))(listMatches()),
+      (get & pathPrefix("upcoming"))(listMatches()),
       pathPrefix(IntNumber) { id =>
         concat(
           (post & path("approve"))(approveMatch(id)),
