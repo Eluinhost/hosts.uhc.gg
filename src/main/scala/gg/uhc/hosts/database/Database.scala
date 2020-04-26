@@ -65,7 +65,9 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
 
   def getUpcomingMatches: ConnectionIO[List[MatchRow]] = queries.getUpcomingMatches.to[List]
 
-  def matchById(id: Long): ConnectionIO[Option[MatchRow]] = queries.matchById(id).option
+  def getMatchById(id: Long): ConnectionIO[Option[MatchRow]] = queries.getMatchById(id).option
+
+  def getMatchesByOriginalEditId(id: Long): ConnectionIO[List[MatchRow]] = queries.getMatchesByOriginalEditId(id).to[List]
 
   def getMatchesByIds(ids: List[Long]): ConnectionIO[List[MatchRow]] =
     ids match {

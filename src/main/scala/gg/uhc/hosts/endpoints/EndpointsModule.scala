@@ -31,6 +31,7 @@ trait EndpointsModule extends RedditModule {
   lazy val createMatchesEndpoint: CreateMatch                             = wire[CreateMatch]
   lazy val removeMatchesEndpoint: RemoveMatch                             = wire[RemoveMatch]
   lazy val showMatchEndpoint: ShowMatch                                   = wire[ShowMatch]
+  lazy val showMatchEditsEndpoint: ShowMatchEdits                         = wire[ShowMatchEdits]
   lazy val authEndpoint: Authenticate                                     = wire[Authenticate]
   lazy val authCallbackEndpoint: AuthenticateCallback                     = wire[AuthenticateCallback]
   lazy val authRefreshEndpoint: AuthenticateRefresh                       = wire[AuthenticateRefresh]

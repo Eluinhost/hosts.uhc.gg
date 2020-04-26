@@ -76,11 +76,14 @@ class Queries(logger: LogHandler) {
         ++ fr" ORDER BY id DESC LIMIT $count"
     ).query[MatchRow]
 
-  def matchById(id: Long): Query0[MatchRow] =
+  def getMatchById(id: Long): Query0[MatchRow] =
     (matchRowSelectFields ++ fr" WHERE id = $id").query[MatchRow]
 
   def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] =
     (matchRowSelectFields ++ fr" WHERE " ++ Fragments.in(fr"id", ids)).query[MatchRow]
+
+  def getMatchesByOriginalEditId(id: Long): Query0[MatchRow] =
+    (matchRowSelectFields ++ fr" WHERE originalEditId = $id").query[MatchRow]
 
   def insertMatch(m: MatchRow): Update0 =
     sql"""

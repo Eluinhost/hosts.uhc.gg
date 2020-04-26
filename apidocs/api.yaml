@@ -250,6 +250,9 @@ components:
         approvedBy: everyone
         hostingName: Name Override
         tournament: false
+        previousEditId: 67553
+        originalEditId: 67552
+        nextEditId: null
     CreateMatchRequest:
       type: object
       required:
@@ -613,6 +616,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MatchResponse'
+        '404':
+          description: Could not find a match with the given ID
+    delete:
+      tags:
+        - Matches
+      security:
+        - UserApiToken: []
+        - SiteApiToken: []
+      summary: Remove a match
+      description: Removes a match, requires the `hosting advisor` permission, cannot be reversed
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to remove
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: A short description on why you want to remove this match
+                  minLength: 3
+                  maxLength: 255
+              example:
+                reason: Server exploded, can't host
+      responses:
+        '204':
+          description: Match removed
+        '404':
+          description: Could not find a match with the given ID
+  '/matches/{id}/edits':
+    get:
+      tags:
+        - Matches
+      summary: Shows all edits for the given match
+      description: Fetches data for all edits of the given match, both past and future edits from this one
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchResponse'
         '404':
           description: Could not find a match with the given ID
     delete:

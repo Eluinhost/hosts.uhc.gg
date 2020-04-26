@@ -13,7 +13,9 @@ class MatchesRoute(
     createMatch: CreateMatch,
     listMatches: ListUpcomingMatches,
     removeMatch: RemoveMatch,
-    showMatch: ShowMatch) {
+    showMatch: ShowMatch,
+    showMatchEdits: ShowMatchEdits,
+    ) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
@@ -33,6 +35,7 @@ class MatchesRoute(
       pathPrefix(IntNumber) { id =>
         concat(
           (post & path("approve"))(approveMatch(id)),
+          (get & path("edits"))(showMatchEdits(id)),
           (get & pathEndOrSingleSlash)(showMatch(id)),
           (delete & pathEndOrSingleSlash)(removeMatch(id))
         )
