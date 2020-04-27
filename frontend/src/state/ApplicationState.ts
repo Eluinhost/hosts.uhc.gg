@@ -19,6 +19,8 @@ import { reducer as TimeSync, TimeSyncState } from './TimeSyncState';
 import { reducer as HostFormSavedData, HostFormSavedDataState } from './HostFormSavedDataState';
 import { reducer as modifiers, ModifiersState } from '../modifiers/reducer';
 import { reducer as versions, VersionsState } from '../versions/reducer';
+import { reducer as matchEditHistory, MatchEditHistoryState } from '../match-edit-history/reducers';
+
 import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
@@ -40,6 +42,7 @@ export type ApplicationState = {
   readonly hostFormSavedData: HostFormSavedDataState;
   readonly modifiers: ModifiersState;
   readonly versions: VersionsState;
+  readonly matchEditHistory: MatchEditHistoryState;
 };
 
 const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -66,6 +69,7 @@ export const createReduxStore = async (history: History): Promise<Store<Applicat
       hostFormSavedData: HostFormSavedData,
       modifiers,
       versions,
+      matchEditHistory,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware, routerMiddleware(history))),
   );
