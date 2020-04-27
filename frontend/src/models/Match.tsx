@@ -28,4 +28,5 @@ export type Match = {
   approvedBy: string | null;
   hostingName: string | null;
   tournament: boolean;
+  originalEditId: number | null;
 };
