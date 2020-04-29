@@ -29,4 +29,5 @@ export type Match = {
   hostingName: string | null;
   tournament: boolean;
   originalEditId: number | null;
+  latestEditId: number | null;
 };

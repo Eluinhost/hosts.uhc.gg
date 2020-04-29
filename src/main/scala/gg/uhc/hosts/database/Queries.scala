@@ -45,7 +45,8 @@ class Queries(logger: LogHandler) {
       approvedBy,
       hostingName,
       tournament,
-      originalEditId
+      originalEditId,
+      latestEditId
     FROM matches """;
 
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
@@ -113,8 +114,7 @@ class Queries(logger: LogHandler) {
         hostingName,
         tournament,
         originalEditId,
-        previousEditId,
-        nextEditId
+        latestEditId
       ) VALUES (
         ${m.author},
         ${m.opens},
@@ -142,7 +142,8 @@ class Queries(logger: LogHandler) {
         ${m.approvedBy},
         ${m.hostingName},
         ${m.tournament},
-        ${m.originalEditId}
+        ${m.originalEditId},
+        ${m.latestEditId}
       );""".update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =

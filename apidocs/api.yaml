@@ -95,7 +95,6 @@ components:
         - mapSize
         - pvpEnabledAt
         - tournament
-        - originalEditId
       properties:
         id:
           type: integer
@@ -209,6 +208,9 @@ components:
         originalEditId:
           type: number
           description: The original match ID in this chain of edits, if not set then this is an original match
+        latestEditId:
+          type: number
+          description: The ID of the latest edit of this match, if not set this is the latest edit
       example:
         id: 3
         author: ghowden
@@ -243,6 +245,7 @@ components:
         hostingName: Name Override
         tournament: false
         originalEditId: 67552
+        latestEditId: 67554
     CreateMatchRequest:
       type: object
       required:

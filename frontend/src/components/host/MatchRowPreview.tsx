@@ -38,6 +38,7 @@ const mapStateToProps: Selector<ApplicationState, StateProps> = createSelector(
       created: moment.utc(),
       version: formData.version || formData.mainVersion,
       originalEditId: null,
+      latestEditId: 0,
     };
 
     return { match: preview };

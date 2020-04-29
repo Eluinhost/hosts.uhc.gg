@@ -33,7 +33,8 @@ case class MatchRow(
     approvedBy: Option[String],
     hostingName: Option[String],
     tournament: Boolean,
-    originalEditId: Option[Long]) {
+    originalEditId: Option[Long],
+    latestEditId: Option[Long]) {
 
   def renderStyle(): String = TeamStyles.byCode(teams) match {
     case t: SimpleTeamStyle => t.render()

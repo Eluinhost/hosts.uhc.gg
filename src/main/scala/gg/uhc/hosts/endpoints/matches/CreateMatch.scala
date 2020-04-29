@@ -83,6 +83,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       approvedBy = None,
       hostingName = payload.hostingName.filter(!_.isEmpty),
       originalEditId = None,
+      latestEditId = None
     )
 
     // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it and isn't a tournament

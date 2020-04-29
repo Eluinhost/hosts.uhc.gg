@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { takeLatest, put, call, delay } from 'redux-saga/effects';
+import { takeLatest, put, call } from 'redux-saga/effects';
 
 import { FETCH_MATCH_EDIT_HISTORY } from './actions';
 import { fetchMatchEditHistory } from './api';
