@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, H1, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
+import { Button, H1, H3, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
 import * as diff from 'diff';
 import { connect } from 'react-redux';
 import { createSelector, Selector } from 'reselect';
@@ -91,15 +91,15 @@ class MatchEditHistoryComponent extends React.PureComponent<MatchEditHistoryProp
         </>
       );
     } else {
-      const paired = aperture(
-        2,
-        this.props.history.map(m => JSON.stringify(m, null, 2)),
-      );
+      const paired = aperture(2, this.props.history);
 
       content = paired.map(([a, b], index) => (
-        <Pre wrap="pre-wrap" key={index}>
-          {this.renderDiff(a, b)}
-        </Pre>
+        <div key={`${a} -> ${b}`}>
+          <H3>
+            {a.id} -> {b.id}
+          </H3>
+          <Pre wrap="pre-wrap">{this.renderDiff(JSON.stringify(a, null, 2), JSON.stringify(b, null, 2))}</Pre>
+        </div>
       ));
     }
 
