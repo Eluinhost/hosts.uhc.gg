@@ -671,42 +671,6 @@ paths:
                   $ref: '#/components/schemas/MatchResponse'
         '404':
           description: Could not find a match with the given ID
-    delete:
-      tags:
-        - Matches
-      security:
-        - UserApiToken: []
-        - SiteApiToken: []
-      summary: Remove a match
-      description: Removes a match, requires the `hosting advisor` permission, cannot be reversed
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID of the match to remove
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - reason
-              properties:
-                reason:
-                  type: string
-                  description: A short description on why you want to remove this match
-                  minLength: 3
-                  maxLength: 255
-              example:
-                reason: Server exploded, can't host
-      responses:
-        '204':
-          description: Match removed
-        '404':
-          description: Could not find a match with the given ID
   '/matches/{id}/approve':
     post:
       tags:
