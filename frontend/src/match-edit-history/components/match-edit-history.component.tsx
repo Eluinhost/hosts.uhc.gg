@@ -87,7 +87,7 @@ class MatchEditHistoryComponent extends React.PureComponent<MatchEditHistoryProp
         <>
           <NonIdealState icon="warning-sign" title="No edits found for match, showing current details below" />
           <hr />
-          <MatchDetails id={this.props.id} />
+          <MatchDetails id={this.props.id} followEditRedirects={false} />
         </>
       );
     } else {
