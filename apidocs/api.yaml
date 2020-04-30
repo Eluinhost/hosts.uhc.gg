@@ -551,7 +551,7 @@ paths:
         - Matches
       summary: Returns a list of upcoming matches
       description: Show matches that open after 30 minutes ago. Does not filter out removed
-        matches
+        matches but will filter out any matches that were removed because they were edited
       responses:
         '200':
           description: Success

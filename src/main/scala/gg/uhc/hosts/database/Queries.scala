@@ -61,7 +61,10 @@ class Queries(logger: LogHandler) {
 
   def getUpcomingMatches: Query0[MatchRow] =
     (matchRowSelectFields ++ fr"""
-       WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
+       WHERE
+        opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
+        AND
+        latestEditId IS NULL
        ORDER BY opens ASC
     """).query[MatchRow]
 
