@@ -1,57 +1,36 @@
 package gg.uhc.hosts.endpoints.matches
 
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneOffset}
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server._
+import doobie._
+import doobie.free.connection.{pure, raiseError}
+import gg.uhc.hosts.Alerts._
+import gg.uhc.hosts.CustomJsonCodec._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.{Database, MatchRow}
-import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
-import doobie.free.connection.delay
-import doobie._
+import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, DatabaseErrorRejection, EndpointRejectionHandler}
 import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
-import gg.uhc.hosts.endpoints.versions.Version
+
+import scala.util.{Failure, Success}
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
   */
-class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, websocket: MatchesWebsocket) {
-  import Alerts._
-  import CustomJsonCodec._
+class CreateMatch(
+    customDirectives: CustomDirectives,
+    database: Database,
+    cache: BasicCache,
+    websocket: MatchesWebsocket) {
   import customDirectives._
-
-  case class CreateMatchPayload(
-      opens: Instant,
-      address: Option[String],
-      ip: Option[String],
-      scenarios: List[String],
-      tags: List[String],
-      teams: String,
-      size: Option[Int],
-      customStyle: Option[String],
-      count: Int,
-      content: String,
-      region: String,
-      location: String,
-      mainVersion: String,
-      version: String,
-      slots: Int,
-      length: Int,
-      mapSize: Int,
-      pvpEnabledAt: Int,
-      hostingName: Option[String],
-      tournament: Boolean)
-
-  // allowed regions
-  private[this] val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
 
   /**
     * Converts the payload into an insertable MatchRow, does not validate any input
     */
-  private[this] def convertPayload(payload: CreateMatchPayload, author: String): Directive1[MatchRow] = {
+  private[this] def convertPayload(payload: CreateMatchPayload, author: String): MatchRow = {
     var row = MatchRow(
       address = payload.address,
       content = payload.content,
@@ -73,6 +52,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       scenarios = payload.scenarios.distinctBy(_.toLowerCase), // removes duplicates
       tags = payload.tags.distinctBy(_.toLowerCase), // removes duplicates
       tournament = payload.tournament,
+      originalEditId = payload.originalEditId,
       // non-user payload.vars below
       id = -1,
       created = Instant.now(),
@@ -82,7 +62,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       removedReason = None,
       approvedBy = None,
       hostingName = payload.hostingName.filter(!_.isEmpty),
-      originalEditId = None,
       latestEditId = None
     )
 
@@ -91,110 +70,52 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       row = row.copy(scenarios = row.scenarios :+ "Rush")
     }
 
-    provide(row)
+    row
   }
 
-  private[this] def overhostCheck(row: MatchRow): Directive0 =
-    requireSucessfulQuery(
-      database.getPotentialConflicts(start = row.opens, end = row.opens, version = row.version, region = row.region)
-    ) flatMap {
+  private[this] def getBestOverhostMatch(row: MatchRow): ConnectionIO[Option[MatchRow]] =
+    database.getPotentialConflicts(start = row.opens, end = row.opens, version = row.version, region = row.region).map {
       // Its valid if:
       //  - there are no conflicts
       //  - this is a non-tournament and conflicts are all tournaments
       case conflicts if conflicts.isEmpty =>
-        pass
+        None
       case conflicts if !row.tournament && conflicts.forall(_.tournament) =>
-        pass
+        None
       case conflicts =>
-        val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
-
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first
-        val best = conflicts.find(!_.tournament).getOrElse(conflicts.head)
-
-        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.mainVersion}"))
+        conflicts.find(!_.tournament).orElse(conflicts.headOption)
     }
 
-  private[this] def optionalValidate[T](data: Option[T], message: String)(p: T => Boolean) =
-    data
-      .map { item =>
-        validate(p(item), message)
-      }
-      .getOrElse(pass)
-
-  private[this] def ipChecks(row: MatchRow): Directive0 = {
-    // treat empty strings as non-provided
-    val valIp      = row.ip.filter(_.nonEmpty)
-    val valAddress = row.address.filter(_.nonEmpty)
-
-    if (valIp.isEmpty && valAddress.isEmpty)
-      reject(ValidationRejection("Either an IP or an address must be provided (or both)"))
-
-    val ipCheck = optionalValidate(valIp, "Invalid IP supplied, expected format 111.222.333.444[:55555]") { ip =>
-      """^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$""".r.findFirstMatchIn(ip).exists { m =>
-        val octets = (1 to 4).map(m.group(_).toInt).forall(i => i >= 0 && i <= 255)
-        val port   = Option(m.group(5)).map(_.toInt)
-
-        octets && (port.isEmpty || port.exists(p => p <= 65535 && p >= 1))
-      }
-    }
-
-    val addressCheck = optionalValidate(valAddress.map(_.trim), "Address must be at least 5 chars") { address =>
-      address.length >= 5
-    }
-
-    ipCheck & addressCheck
-  }
-
-  /**
-    * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
-    * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
-    */
-  private[this] def validateRow(row: MatchRow): Directive0 =
-    validate(
-      row.opens.isAfter(Instant.now().plus(30, ChronoUnit.MINUTES)),
-      "Must be at least 30 minutes in advance"
-    ) &
-      validate(row.opens.isBefore(Instant.now().plus(30, ChronoUnit.DAYS)), "Must be at most 30 days in advance") &
-      validate(
-        row.opens.atOffset(ZoneOffset.UTC).getMinute % 15 == 0,
-        "Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour (UTC)"
-      ) &
-      ipChecks(row) &
-      validate(row.location.nonEmpty, "Must supply a location") &
-      validate(
-        Version.options.exists(v => v.displayName == row.mainVersion),
-        s"Invalid main version, expected one of: ${Version.options.map(v => v.displayName).mkString(", ")}"
-      ) &
-      validate(row.version.nonEmpty, "Must supply a version") &
-      validate(row.slots >= 2, "Slots must be at least 2") &
-      validate(row.length >= 30, "Matches must be at least 30 minutes") &
-      validate(row.mapSize > 0, "Map size must be positive") &
-      validate(row.pvpEnabledAt >= 0, "PVP enabled at must be positive") &
-      validate(row.scenarios.nonEmpty, "Must supply at least 1 scenario") &
-      validate(row.scenarios.length <= 25, "Must supply at most 25 scenarios") &
-      validate(row.tags.length <= 5, "Must supply at most 5 tags") &
-      validate(TeamStyles.byCode.contains(row.teams), "Unknown team style") &
-      validate(row.content.nonEmpty, "Must provide some post content") &
-      validate(regions.contains(row.region), "Invalid region supplied") &
-      validate(
-        // either doesn't require size or size is within range
-        !TeamStyles.byCode(row.teams).isInstanceOf[SizedTeamStyle]
-          || row.size.exists(size => size >= 0 && size <= 32767),
-        "Invalid value for size"
-      ) &
-      validate(
-        row.teams != "custom" || row.customStyle.exists(_.nonEmpty),
-        "A custom style must be given when 'custom' is picked"
-      ) &
-      validate(row.count >= 1, "Count must be at least 1") &
-      overhostCheck(row)
-
-  private[this] def createMatchAndAlerts(row: MatchRow): ConnectionIO[MatchRow] =
+  private[this] def removePreviousEdits(id: Long, author: String): ConnectionIO[Unit] =
     for {
+      maybeExisting <- database.getMatchById(id)
+      // TODO check permission (same author as original?)
+      existing <- maybeExisting.map(pure).getOrElse(raiseError(EditIdDoesNotExistException(id)))
+      // if there is no original edit ID then this is the original and we want to just use the ID
+      originalId = existing.originalEditId.getOrElse(existing.id)
+      _ <- database.removePreviousEdits(originalId, "match edited", author)
+    } yield ()
+
+  private[this] def createMatchAndAlerts(payload: CreateMatchPayload, author: String): ConnectionIO[MatchRow] =
+    for {
+      // remove any previous edits if we need to first
+      _ <- payload.originalEditId.map(id => removePreviousEdits(id, author)).getOrElse(pure(()))
+      row = convertPayload(payload, author)
+      // if they're overhosting then fail the request
+      maybeOverhost <- getBestOverhostMatch(row)
+      _ <- maybeOverhost
+        .map(overhost => raiseError(OverhostedException(overhost)))
+        // otherwise just continue on
+        .getOrElse(pure(()))
       id       <- database.insertMatch(row)
+      // if we were editing a match then set the latestEditId for all of them
+      _ <- payload.originalEditId
+        .map(originalId => database.updatePreviousEditsToLatestId(originalEditId = originalId, newLatestEditId = id))
+        .getOrElse(pure(()))
       allRules <- database.getAllAlertRules()
       matchedRules = allRules.filter { _.matchesRow(row) }
-      addedAlertCount <- matchedRules.foldLeft(delay(0)) { (prev, rule) => // reduce to run each in series, one for each alert
+      addedAlertCount <- matchedRules.foldLeft(pure(0)) { (prev, rule) => // reduce to run each in series, one for each alert
         prev.flatMap { count =>
           database.createAlert(matchId = id, triggeredRuleId = rule.id).map(_ + count)
         }
@@ -205,15 +126,22 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session =>
         requireAtLeastOnePermission("host" :: "trial host" :: Nil, session.username) {
-          // parse the entity
           entity(as[CreateMatchPayload]) { entity =>
-            convertPayload(entity, session.username) { row =>
-              validateRow(row) {
-                requireSucessfulQuery(createMatchAndAlerts(row)) { inserted =>
+            // basic input validations
+            CreateMatchValidation.validatePayload(entity) {
+              // run our transaction
+              onComplete(database.run(createMatchAndAlerts(entity, session.username))) {
+                case Success(inserted) =>
                   cache.invalidateUpcomingMatches()
                   websocket.notifyMatchCreated(inserted)
                   complete(StatusCodes.Created -> inserted)
-                }
+                case Failure(OverhostedException(overhost)) =>
+                  val hours = overhost.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
+                  reject(ValidationRejection(
+                    s"Conflicts with /u/${overhost.author}'s #${overhost.count} (${overhost.region} - $hours) in ${overhost.mainVersion}"))
+                case Failure(EditIdDoesNotExistException(id)) =>
+                  reject(ValidationRejection(s"Unknown ID for editing '${id}'"))
+                case Failure(t) => reject(DatabaseErrorRejection(t))
               }
             }
           }

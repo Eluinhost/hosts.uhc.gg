@@ -265,6 +265,7 @@ components:
         - mapSize
         - pvpEnabledAt
         - tournament
+        - originalEditId
       properties:
         opens:
           type: string
@@ -346,6 +347,11 @@ components:
         tournament:
           type: boolean
           description: Whether the game is a tournament or not, tournaments bypass overhosting rules
+        originalEditId:
+          type: number
+          description: When this is not set this will post as an original match. When this is set then any other edits
+          from this chain of edits will be removed and the new match will be added linked to the original. When the ID
+          provided is not an original match then the original ID will be looked up and used instead
       example:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
@@ -569,7 +575,7 @@ paths:
         - UserApiToken: []
         - SiteApiToken: []
       summary: Posts a new match
-      description: Attempts to post a new match. Requires either `trial host` or `host` permission
+      description: Attempts to post a new match or edit an existing match. Requires either `trial host` or `host` permission
       requestBody:
         required: true
         content:

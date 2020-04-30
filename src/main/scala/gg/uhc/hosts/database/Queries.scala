@@ -59,6 +59,30 @@ class Queries(logger: LogHandler) {
       WHERE id = $id
      """.update
 
+  def removePreviousEdits(originalEditId: Long, reason: String, remover: String): Update0 =
+    sql"""
+      UPDATE matches
+      SET
+        removed = true,
+        removedReason = $reason,
+        removedBy = $remover
+      WHERE
+        (originalEditId = $originalEditId OR id = $originalEditId)
+        AND
+        removed = false
+    """.update
+
+  def updatePreviousEditsToLatestId(originalEditId: Long, newLatestEditId: Long): Update0 =
+    sql"""
+      UPDATE matches
+      SET
+        latestEditId = $newLatestEditId
+      WHERE
+        (originalEditId = $originalEditId OR id = $originalEditId)
+        AND
+        id != $newLatestEditId
+    """.update
+
   def getUpcomingMatches: Query0[MatchRow] =
     (matchRowSelectFields ++ fr"""
        WHERE

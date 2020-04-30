@@ -83,6 +83,12 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def removeMatch(id: Long, reason: String, remover: String): ConnectionIO[Int] =
     queries.removeMatch(id, reason, remover).run
 
+  def removePreviousEdits(originalEditId: Long, reason: String, remover: String): ConnectionIO[Int] =
+    queries.removePreviousEdits(originalEditId, reason, remover).run
+
+  def updatePreviousEditsToLatestId(originalEditId: Long, newLatestEditId: Long): ConnectionIO[Int] =
+    queries.updatePreviousEditsToLatestId(originalEditId, newLatestEditId).run
+
   def isOwnerOfMatch(id: Long, username: String): ConnectionIO[Boolean] =
     queries.isOwnerOfMatch(id, username).unique
 
