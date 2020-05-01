@@ -117,7 +117,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   addDialog: null,
   allowableModifications: {
     'hosting advisor': ['host', 'trial host', 'hosting banned'],
-    admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator'],
+    admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator', 'beta tester'],
   },
 })
   .handleAction(FetchUserCountPerPermission.started, state => ({

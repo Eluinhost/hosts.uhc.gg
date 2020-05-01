@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Directives._
 
 object Permissions {
   val base: List[String] =
-    "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: "hosting banned" :: Nil
+    "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: "hosting banned" :: "beta tester" :: Nil
 
   // Map of user permission to allowed permissions for adding/removal
   val allowedModifications: Map[String, List[String]] = Map(

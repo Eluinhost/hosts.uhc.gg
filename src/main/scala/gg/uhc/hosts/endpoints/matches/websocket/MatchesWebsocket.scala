@@ -67,7 +67,7 @@ class MatchesWebsocket(materializer: Materializer, cache: BasicCache, customDire
 
   val route: Route =
     customDirectives.requireApiTokenAuthentication { session =>
-      customDirectives.requirePermission("admin", session.username) {
+      customDirectives.requirePermission("beta tester", session.username) {
         extractUpgradeToWebSocket { upgrade =>
           extractExecutionContext { implicit ec =>
             complete(upgrade.handleMessages(websocketFlow))
