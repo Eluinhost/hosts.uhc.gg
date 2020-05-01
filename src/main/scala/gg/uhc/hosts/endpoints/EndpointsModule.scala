@@ -18,6 +18,7 @@ import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
 import gg.uhc.hosts.endpoints.ubl._
 import gg.uhc.hosts.endpoints.users.{ShowPermissionsForUser, UsersRoute}
 import gg.uhc.hosts.endpoints.versions.{ListPrimaryVersions, VersionsRoute}
+import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
@@ -80,6 +81,7 @@ trait EndpointsModule extends RedditModule {
   lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
   lazy val modifiersRoute: ModifiersRoute           = wire[ModifiersRoute]
   lazy val versionsRoute: VersionsRoute             = wire[VersionsRoute]
+  lazy val matchesWebsocket: MatchesWebsocket       = wire[MatchesWebsocket]
 
   lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
 }

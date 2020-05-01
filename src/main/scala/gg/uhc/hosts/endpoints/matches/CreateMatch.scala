@@ -12,12 +12,13 @@ import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 import doobie.free.connection.delay
 import doobie._
+import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.endpoints.versions.Version
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
   */
-class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, listUpcomingMatches: ListUpcomingMatches) {
+class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, websocket: MatchesWebsocket) {
   import Alerts._
   import CustomJsonCodec._
   import customDirectives._
@@ -208,7 +209,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
               validateRow(row) {
                 requireSucessfulQuery(createMatchAndAlerts(row)) { inserted =>
                   cache.invalidateUpcomingMatches()
-                  listUpcomingMatches.onNewMatchCreated(inserted)
+                  websocket.notifyMatchCreated(inserted)
                   complete(StatusCodes.Created -> inserted)
                 }
               }
