@@ -46,7 +46,7 @@ object CreateMatchValidation {
     validate(payload.originalEditId.isDefined || payload.opens.isAfter(Instant.now().plus(30, ChronoUnit.MINUTES)),
       "Must be at least 30 minutes in advance"
     ) &
-      validate(payload.originalEditId.isEmpty || payload.opens.isBefore(Instant.now().minus(10, ChronoUnit.MINUTES)),
+      validate(payload.originalEditId.isEmpty || payload.opens.isAfter(Instant.now().minus(10, ChronoUnit.MINUTES)),
         "Can only edit a match most 10 minutes after the match opens"
       ) &
       validate(payload.opens.isBefore(Instant.now().plus(30, ChronoUnit.DAYS)), "Must be at most 30 days in advance") &
