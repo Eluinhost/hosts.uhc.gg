@@ -9,11 +9,9 @@ import { isSuccessfulAction, PayloadAction } from 'typesafe-redux-helpers';
 import { Version } from '../../versions/Version';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { HostFormConflicts } from '../../actions';
-import { renderToMarkdown } from './TemplateField';
 import { TeamStyles } from '../../models/TeamStyles';
 import { ApiErrors, MatchesApi } from '../../api';
-import { createTemplateContext } from './createTemplateContext';
-import { getAccessToken, getUsername } from '../../state/Selectors';
+import { getAccessToken } from '../../state/Selectors';
 import { formKey } from './formKey';
 
 export function* fixHostFormVersionOnVersionsUpdate(): SagaIterator {
@@ -103,27 +101,18 @@ export function* checkForConflicts(values: CreateMatchData): SagaIterator<void> 
 }
 
 export function* createMatch(values: CreateMatchData): SagaIterator {
-  const username: string = yield select(getUsername);
-
-  // we convert the template to markdown only, we don't want to send HTML
-  const context: any = yield call(createTemplateContext, values, username);
-  const renderedContent: string = yield call(renderToMarkdown, values.content, context);
-
-  const withRenderedTemplate: CreateMatchData = {
-    ...values,
-    content: renderedContent,
-  };
+  let data: CreateMatchData = values;
 
   // Remove the team size if it isn't required to avoid potential non-ints being sent and rejected at decoding
   if (!TeamStyles.find(it => it.value === values.teams)!.requiresTeamSize) {
-    withRenderedTemplate.size = null;
+    data = { ...data, size: null };
   }
 
   try {
     const accessToken = yield select(getAccessToken) || 'NO ACCESS TOKEN IN STORE';
 
     // fire API call
-    yield call(MatchesApi.create, withRenderedTemplate, accessToken);
+    yield call(MatchesApi.create, data, accessToken);
 
     // if success send them to the matches page to view it
     yield put(push('/matches'));

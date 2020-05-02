@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { createSelector } from 'reselect';
+import { createSelector, Selector } from 'reselect';
 
 import { UsernameLink } from '../UsernameLink';
 import { TeamStyle } from '../team-style';
@@ -16,11 +16,14 @@ import { MatchDetailsState } from '../../state/MatchDetailsState';
 import { ApplicationState } from '../../state/ApplicationState';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
+import { createTemplateContext } from '../../createTemplateContext';
+import { renderToMarkdown } from '../host/TemplateField';
 
 type StateProps = {
   readonly details: MatchDetailsState;
   readonly canApprove: boolean;
   readonly canRemove: boolean;
+  readonly content: string;
 };
 
 type DispatchProps = {
@@ -92,7 +95,6 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       scenarios,
       ip,
       address,
-      content,
       length,
       version,
       removedBy,
@@ -236,7 +238,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
                 {canRemove && <Button intent={Intent.DANGER} icon="trash" onClick={remove} title="Remove" />}
               </div>
             )}
-            <Markdown markdown={content} />
+            <Markdown markdown={this.props.content} />
           </div>
         </div>
       </>
@@ -244,17 +246,30 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
   }
 }
 
-const stateSelector = createSelector<ApplicationState, MatchDetailsState, boolean, string | null, StateProps>(
+const getRenderedContent: Selector<ApplicationState, string> = createSelector(
+  state => state.matchDetails.match,
+  match => {
+    if (!match) {
+      return '';
+    }
+
+    return renderToMarkdown(match.content, createTemplateContext(match));
+  },
+);
+
+const stateSelector: Selector<ApplicationState, StateProps> = createSelector(
   state => state.matchDetails,
   matchesPermissions('hosting advisor'),
   getUsername,
-  (details, isHostingAdvisor, username): StateProps => ({
+  getRenderedContent,
+  (details, isHostingAdvisor, username, content): StateProps => ({
     details,
     canApprove: details.match !== null && !details.match.removed && !details.match.approvedBy && isHostingAdvisor,
     canRemove:
       details.match !== null &&
       !details.match.removed &&
       (isHostingAdvisor || (username != null && username === details.match.author)),
+    content,
   }),
 );
 

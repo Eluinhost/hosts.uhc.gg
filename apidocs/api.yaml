@@ -309,7 +309,7 @@ components:
           description: The match count of the host
         content:
           type: string
-          description: Markdown content of the match post
+          description: The templated content of this match, this can be rendered out via templating + markdown parsers
         region:
           type: string
           enum:

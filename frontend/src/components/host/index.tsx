@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { createSelector, Selector } from 'reselect';
+import moment from 'moment-timezone';
 
 import { ApplicationState } from '../../state/ApplicationState';
 import { CreateMatchForm } from './CreateMatchForm';
@@ -11,8 +12,8 @@ import { nextAvailableSlot } from './nextAvailableSlot';
 import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { SetSavedHostFormData } from '../../actions';
-import { createTemplateContext } from './createTemplateContext';
 import { formKey } from './formKey';
+import { createTemplateContext } from '../../createTemplateContext';
 
 type StateProps = {
   readonly formValues: CreateMatchData | undefined;
@@ -64,7 +65,19 @@ class HostingPageComponent extends React.PureComponent<StateProps & DispatchProp
     // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)
     const data: CreateMatchData = this.props.formValues || this.props.savedData;
 
-    const context = createTemplateContext(data, this.props.username);
+    const context = createTemplateContext({
+      ...data,
+      author: this.props.username,
+      version: data.version || data.mainVersion,
+      latestEditId: null,
+      originalEditId: null,
+      id: 0,
+      created: moment(),
+      approvedBy: null,
+      removed: false,
+      removedBy: null,
+      removedReason: null,
+    });
 
     return (
       <CreateMatchForm
