@@ -100,6 +100,8 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       approvedBy,
       mainVersion,
       latestEditId,
+      originalEditId,
+      id,
     } = this.props.details.match;
 
     const { canApprove, canRemove, approve, remove, followEditRedirects } = this.props;
@@ -119,6 +121,15 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
             <Link to={`/m/${latestEditId}/history`}>click here to view edit history</Link>
           </Callout>
         )}
+
+        {!latestEditId && originalEditId && (
+          <Callout intent={Intent.PRIMARY} style={{ marginBottom: '2rem' }}>
+            <Link to={`/m/${id}/history`}>
+              This match was edited from a previous game, click here to view edit history
+            </Link>
+          </Callout>
+        )}
+
         <div className={`${Classes.CARD} match-details`}>
           <div className="match-details__header">
             <div className="match-details__header__floating-tags__top">
