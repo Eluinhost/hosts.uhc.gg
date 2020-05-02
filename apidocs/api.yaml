@@ -265,7 +265,6 @@ components:
         - mapSize
         - pvpEnabledAt
         - tournament
-        - originalEditId
       properties:
         opens:
           type: string
