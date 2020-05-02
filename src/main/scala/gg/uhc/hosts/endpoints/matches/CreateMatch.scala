@@ -87,7 +87,11 @@ class CreateMatch(
         conflicts.find(!_.tournament).orElse(conflicts.headOption)
     }
 
-  private[this] def removePreviousEdits(id: Long, author: String): ConnectionIO[Unit] =
+  /**
+    * Looks up the original edit ID based on given ID and removes all matches in the edit chain.
+    * Returns the original edit ID (useful if ID passed in is not an original ID)
+    */
+  private[this] def removePreviousEdits(id: Long, author: String): ConnectionIO[Long] =
     for {
       maybeExisting <- database.getMatchById(id)
       // TODO check permission (same author as original?)
@@ -95,13 +99,14 @@ class CreateMatch(
       // if there is no original edit ID then this is the original and we want to just use the ID
       originalId = existing.originalEditId.getOrElse(existing.id)
       _ <- database.removePreviousEdits(originalId, "match edited", author)
-    } yield ()
+    } yield originalId
 
   private[this] def createMatchAndAlerts(payload: CreateMatchPayload, author: String): ConnectionIO[MatchRow] =
     for {
       // remove any previous edits if we need to first
-      _ <- payload.originalEditId.map(id => removePreviousEdits(id, author)).getOrElse(pure(()))
-      row = convertPayload(payload, author)
+      maybeOriginalEditId <- payload.originalEditId.map(id => removePreviousEdits(id, author).map(Some(_))).getOrElse(pure(None))
+      // convert payload and use the ID from removePreviousEdits (will update it to make sure it's the actual original)
+      row = convertPayload(payload, author).copy(originalEditId = maybeOriginalEditId)
       // if they're overhosting then fail the request
       maybeOverhost <- getBestOverhostMatch(row)
       _ <- maybeOverhost
