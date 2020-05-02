@@ -1,0 +1,13 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.edit-history-card {
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    > div {
+      text-align: right
+    }
+  }
+}

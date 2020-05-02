@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { Button, H1, H3, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
+import { Button, Card, Elevation, H1, H2, H4, H5, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
 import * as diff from 'diff';
 import { connect } from 'react-redux';
 import { createSelector, Selector } from 'reselect';
 import { Dispatch } from 'redux';
-import { aperture } from 'ramda';
+import { aperture, keys, union } from 'ramda';
+import { Link } from 'react-router-dom';
 
 import { Match } from '../../models/Match';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getError, getIsFetching, getMatchEditHistory } from '../selectors';
 import { FETCH_MATCH_EDIT_HISTORY } from '../actions';
 import { MatchDetails } from '../../components/match-details';
+
+import './match-edit-history.component.scss';
 
 export interface MatchEditHistoryProps {
   id: number;
@@ -41,8 +44,23 @@ class MatchEditHistoryComponent extends React.PureComponent<MatchEditHistoryProp
     this.props.fetchMatchHistory(this.props.id);
   };
 
-  renderDiff = (a: string, b: string) => {
-    const changeParts = diff.diffChars(a, b);
+  extractInteresetingFields = (match: Match) => {
+    const {
+      author,
+      removed,
+      removedBy,
+      removedReason,
+      approvedBy,
+      originalEditId,
+      latestEditId,
+      ...intereseting
+    } = match;
+
+    return intereseting;
+  };
+
+  renderDiff = (now: string = '', previous: string = '') => {
+    const changeParts = diff.diffChars(previous, now);
 
     return changeParts.map((change, index) => {
       let style = {};
@@ -69,6 +87,54 @@ class MatchEditHistoryComponent extends React.PureComponent<MatchEditHistoryProp
     });
   };
 
+  renderKeyDifferences = (now: object, previous: object): React.ReactNode => {
+    const allKeys = union(keys(now), keys(previous));
+
+    return allKeys
+      .map(key => [key, JSON.stringify(now[key], null, 2), JSON.stringify(previous[key], null, 2)])
+      .filter(([key, now, previous]) => now !== previous)
+      .map(([key, now, previous]) => (
+        <div key={key}>
+          <H4>{key}:</H4>
+          <Pre wrap="pre-wrap">{this.renderDiff(now, previous)}</Pre>
+        </div>
+      ));
+  };
+
+  renderAllChanges = (): React.ReactNode => {
+    const paired = aperture(2, this.props.history.map(this.extractInteresetingFields));
+
+    return paired.map(
+      (
+        [
+          { id: nowId, created: nowCreated, ...nowFields },
+          { id: previousId, created: previousCreated, ...previousFields },
+        ],
+        index,
+      ) => (
+        <Card
+          className="edit-history-card"
+          elevation={nowId === this.props.id ? Elevation.FOUR : Elevation.ZERO}
+          key={`${previousId} -> ${nowId}`}
+          style={{ marginBottom: '1rem' }}
+        >
+          <div className="edit-history-card__header">
+            <H2>Edit #{paired.length - index}</H2>
+            <div>
+              <H5>
+                {this.renderLinkForId(previousId)} -> {this.renderLinkForId(nowId)}
+              </H5>
+              <H5>{previousCreated.toISOString()} UTC</H5>
+            </div>
+          </div>
+          {this.renderKeyDifferences(nowFields, previousFields)}
+        </Card>
+      ),
+    );
+  };
+
+  renderLinkForId = (id: number) => <Link to={`/m/${id}?ignoreRedirect=1`}>{id}</Link>;
+
   render() {
     let content;
 
@@ -91,21 +157,18 @@ class MatchEditHistoryComponent extends React.PureComponent<MatchEditHistoryProp
         </>
       );
     } else {
-      const paired = aperture(2, this.props.history);
-
-      content = paired.map(([a, b], index) => (
-        <div key={`${a} -> ${b}`}>
-          <H3>
-            {a.id} -> {b.id}
-          </H3>
-          <Pre wrap="pre-wrap">{this.renderDiff(JSON.stringify(a, null, 2), JSON.stringify(b, null, 2))}</Pre>
-        </div>
-      ));
+      content = this.renderAllChanges();
     }
 
     return (
       <div>
-        <H1>Match edit history ({this.props.id})</H1>
+        <H1>Match edit history for match {this.renderLinkForId(this.props.id)}.</H1>
+        {this.props.history.length && (
+          <div>
+            <H2>Latest version: {this.renderLinkForId(this.props.history[0].id)}</H2>
+            <H2>Original version: {this.renderLinkForId(this.props.history[this.props.history.length - 1].id)}</H2>
+          </div>
+        )}
         {content}
       </div>
     );
@@ -118,7 +181,7 @@ const mapStateToProps: Selector<ApplicationState, StateProps> = createSelector(
   getMatchEditHistory,
   (isFetching, error, history) => ({
     isFetching,
-    history,
+    history: history.reverse(),
     hasError: !!error,
   }),
 );
