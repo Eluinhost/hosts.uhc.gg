@@ -115,6 +115,8 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
             <Link to={`/m/${latestEditId}`}>
               This is not the latest version of this match, click this to view the latest version
             </Link>
+            <span> OR </span>
+            <Link to={`/m/${latestEditId}/history`}>click here to view edit history</Link>
           </Callout>
         )}
         <div className={`${Classes.CARD} match-details`}>
