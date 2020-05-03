@@ -350,7 +350,8 @@ components:
           type: number
           description: When this is not set this will post as an original match. When this is set then any other edits
           from this chain of edits will be removed and the new match will be added linked to the original. When the ID
-          provided is not an original match then the original ID will be looked up and used instead
+          provided is not an original match then the original ID will be looked up and used instead. Only the user that
+          created the original match will be allowed to make edits, other users will receive a 403 status code.
       example:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
