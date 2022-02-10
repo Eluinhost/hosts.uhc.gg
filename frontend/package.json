@@ -48,7 +48,7 @@
     "markup-js": "1.5.21",
     "moment": "2.24.0",
     "moment-timezone": "0.5.28",
-    "node-sass": "4.13.1",
+    "node-sass": "7.0.0",
     "onchange": "6.1.0",
     "prettier": "2.0.4",
     "query-string": "6.12.0",
