@@ -17,12 +17,8 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
 
   def fetchData(id: Long): ConnectionIO[Option[JsonObject]] =
     (for {
-      row <- OptionT[ConnectionIO, MatchRow] {
-        database.matchById(id)
-      }
-      perms <- OptionT[ConnectionIO, List[String]] {
-        database.getPermissions(row.author).map(Some(_))
-      }
+      row: MatchRow <- OptionT(database.getMatchById(id))
+      perms: List[String] <- OptionT.liftF(database.getPermissions(row.author))
     } yield row.toJsonWithRoles(perms)).value
 
   def apply(id: Long): Route =

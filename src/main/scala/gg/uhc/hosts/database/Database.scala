@@ -5,10 +5,10 @@ import java.time.Instant
 import java.util.UUID
 
 import akka.actor.ActorSystem
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect.IO
 import com.softwaremill.tagging.@@
-import doobie.free.connection.{delay, raw}
+import doobie.free.connection.{pure, raw}
 import doobie._
 import doobie.implicits._
 import doobie.postgres._
@@ -65,14 +65,22 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
 
   def getUpcomingMatches: ConnectionIO[List[MatchRow]] = queries.getUpcomingMatches.to[List]
 
-  def matchById(id: Long): ConnectionIO[Option[MatchRow]] = queries.matchById(id).option
+  def getMatchById(id: Long): ConnectionIO[Option[MatchRow]] = queries.getMatchById(id).option
+
+  def getOriginalMatchForId(id: Long): ConnectionIO[Option[MatchRow]] = (for {
+    found: MatchRow <- OptionT(getMatchById(id))
+    // it's already an original match if originalEditId isn't defined, if it is defined we look up that one instead
+    original: MatchRow <- OptionT(found.originalEditId.map(originalId => getOriginalMatchForId(originalId)).getOrElse(pure(Option(found))))
+  } yield original).value
+
+  def getMatchesByOriginalEditId(id: Long): ConnectionIO[List[MatchRow]] = queries.getMatchesByOriginalEditId(id).to[List]
 
   def getMatchesByIds(ids: List[Long]): ConnectionIO[List[MatchRow]] =
     ids match {
       // if at least one item in IDs run the query
       case a +: as => queries.getMatchesByIds(NonEmptyList(a, as)).to[List]
       // otherwise don't run anything and use an empty list instead
-      case _ => delay(List.empty[MatchRow])
+      case _ => pure(List.empty[MatchRow])
     }
 
   def insertMatch(m: MatchRow): ConnectionIO[Long] =
@@ -80,6 +88,12 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
 
   def removeMatch(id: Long, reason: String, remover: String): ConnectionIO[Int] =
     queries.removeMatch(id, reason, remover).run
+
+  def removePreviousEdits(originalEditId: Long, reason: String, remover: String): ConnectionIO[Int] =
+    queries.removePreviousEdits(originalEditId, reason, remover).run
+
+  def updatePreviousEditsToLatestId(originalEditId: Long, newLatestEditId: Long): ConnectionIO[Int] =
+    queries.updatePreviousEditsToLatestId(originalEditId, newLatestEditId).run
 
   def isOwnerOfMatch(id: Long, username: String): ConnectionIO[Boolean] =
     queries.isOwnerOfMatch(id, username).unique
@@ -91,7 +105,7 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
     // if at least one item in IDs run the query
     case a +: as => queries.flagMatchesAsProcessedForDiscord(NonEmptyList(a, as)).run.map(_ => ())
     // otherwise don't run anything and use an empty list instead
-    case _ => delay(())
+    case _ => pure(())
   }
 
   def getUserCountForEachPermission(): ConnectionIO[Map[String, Int]] =

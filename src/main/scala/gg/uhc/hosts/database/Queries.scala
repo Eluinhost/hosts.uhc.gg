@@ -16,6 +16,39 @@ import cats.data.NonEmptyList
 class Queries(logger: LogHandler) {
   private[this] implicit val logHandler: LogHandler = logger
 
+  val matchRowSelectFields: Fragment = fr"""
+    SELECT
+      id,
+      author,
+      opens,
+      address,
+      ip,
+      scenarios,
+      tags,
+      teams,
+      size,
+      customStyle,
+      count,
+      content,
+      region,
+      removed,
+      removedBy,
+      removedReason,
+      created,
+      location,
+      mainVersion,
+      version,
+      slots,
+      length,
+      mapSize,
+      pvpEnabledAt,
+      approvedBy,
+      hostingName,
+      tournament,
+      originalEditId,
+      latestEditId
+    FROM matches """;
+
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
       UPDATE matches
@@ -26,74 +59,42 @@ class Queries(logger: LogHandler) {
       WHERE id = $id
      """.update
 
-  def getUpcomingMatches: Query0[MatchRow] =
+  def removePreviousEdits(originalEditId: Long, reason: String, remover: String): Update0 =
     sql"""
-       SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-       FROM matches
-       WHERE opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
+      UPDATE matches
+      SET
+        removed = true,
+        removedReason = $reason,
+        removedBy = $remover
+      WHERE
+        (originalEditId = $originalEditId OR id = $originalEditId)
+        AND
+        removed = false
+    """.update
+
+  def updatePreviousEditsToLatestId(originalEditId: Long, newLatestEditId: Long): Update0 =
+    sql"""
+      UPDATE matches
+      SET
+        latestEditId = $newLatestEditId
+      WHERE
+        (originalEditId = $originalEditId OR id = $originalEditId)
+        AND
+        id != $newLatestEditId
+    """.update
+
+  def getUpcomingMatches: Query0[MatchRow] =
+    (matchRowSelectFields ++ fr"""
+       WHERE
+        opens > ${Instant.now().minus(30, ChronoUnit.MINUTES)}
+        AND
+        latestEditId IS NULL
        ORDER BY opens ASC
-    """.query[MatchRow]
+    """).query[MatchRow]
 
   def hostingHistory(host: String, before: Option[Long], count: Int): Query0[MatchRow] =
     (
-      sql"""
-        SELECT
-          id,
-          author,
-          opens,
-          address,
-          ip,
-          scenarios,
-          tags,
-          teams,
-          size,
-          customStyle,
-          count,
-          content,
-          region,
-          removed,
-          removedBy,
-          removedReason,
-          created,
-          location,
-          mainVersion,
-          version,
-          slots,
-          length,
-          mapSize,
-          pvpEnabledAt,
-          approvedBy,
-          hostingName,
-          tournament
-        FROM matches
-      """
+      matchRowSelectFields
         ++ Fragments.whereAndOpt(
           Some(fr"author = $host"),
           before.map(b => fr"id < $b")
@@ -101,72 +102,14 @@ class Queries(logger: LogHandler) {
         ++ fr" ORDER BY id DESC LIMIT $count"
     ).query[MatchRow]
 
-  def matchById(id: Long): Query0[MatchRow] =
-    sql"""
-       SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-       FROM matches
-       WHERE id = $id
-    """.query[MatchRow]
+  def getMatchById(id: Long): Query0[MatchRow] =
+    (matchRowSelectFields ++ fr" WHERE id = $id").query[MatchRow]
 
   def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] =
-    (sql"""
-       SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-       FROM matches
-       WHERE """ ++ Fragments.in(fr"id", ids)).query[MatchRow]
+    (matchRowSelectFields ++ fr" WHERE " ++ Fragments.in(fr"id", ids)).query[MatchRow]
+
+  def getMatchesByOriginalEditId(id: Long): Query0[MatchRow] =
+    (matchRowSelectFields ++ fr" WHERE originalEditId = $id").query[MatchRow]
 
   def insertMatch(m: MatchRow): Update0 =
     sql"""
@@ -196,7 +139,9 @@ class Queries(logger: LogHandler) {
         pvpEnabledAt,
         approvedBy,
         hostingName,
-        tournament
+        tournament,
+        originalEditId,
+        latestEditId
       ) VALUES (
         ${m.author},
         ${m.opens},
@@ -223,7 +168,9 @@ class Queries(logger: LogHandler) {
         ${m.pvpEnabledAt},
         ${m.approvedBy},
         ${m.hostingName},
-        ${m.tournament}
+        ${m.tournament},
+        ${m.originalEditId},
+        ${m.latestEditId}
       );""".update
 
   def isOwnerOfMatch(id: Long, username: String): Query0[Boolean] =
@@ -295,14 +242,10 @@ class Queries(logger: LogHandler) {
     ).query[PermissionSetRow]
 
   def addPermission(username: String, permission: String): Update0 =
-    sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING"""
-      
-      .update
+    sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING""".update
 
   def removePermission(username: String, permission: String): Update0 =
-    sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission"""
-      
-      .update
+    sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission""".update
 
   def addPermissionModerationLog(username: String, permission: String, modifier: String, added: Boolean): Update0 =
     sql"""
@@ -339,36 +282,7 @@ class Queries(logger: LogHandler) {
     """.update
 
   def getPotentialConflicts(start: Instant, end: Instant, region: String, version: String): Query0[MatchRow] =
-    sql"""
-      SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-      FROM matches
+    (matchRowSelectFields ++ fr"""
       WHERE
         region = $region
         AND
@@ -377,7 +291,7 @@ class Queries(logger: LogHandler) {
         mainVersion = $version
         AND
         removed = false
-      """.query[MatchRow]
+      """).query[MatchRow]
 
   def getUserApiKey(username: String): Query0[String] =
     sql"SELECT apiKey FROM user_api_keys WHERE username = $username".query[String]
@@ -520,43 +434,14 @@ class Queries(logger: LogHandler) {
       """.update
 
   def getUnprocessedDiscordMatches: Query0[MatchRow] =
-    sql"""
-      SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-      FROM matches
+    (matchRowSelectFields ++ fr"""
       WHERE
         handledDiscord = false
         AND
         removed = false
         AND
         opens > now()
-    """.query[MatchRow]
+    """).query[MatchRow]
 
   def flagMatchesAsProcessedForDiscord(ids: NonEmptyList[Long]): Update0 =
     (sql"""

@@ -10,14 +10,18 @@ import { createReduxStore } from './state/ApplicationState';
 import './main.sass';
 
 import 'react-dates/initialize';
+import { ConnectedRouter } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
 
-createReduxStore().then(store => {
+const history = createBrowserHistory();
+
+createReduxStore(history).then(store => {
   ReactDOM.render(
     <React.StrictMode>
       <Provider store={store}>
-        <BrowserRouter>
+        <ConnectedRouter history={history}>
           <App />
-        </BrowserRouter>
+        </ConnectedRouter>
       </Provider>
     </React.StrictMode>,
     document.getElementById('root'),

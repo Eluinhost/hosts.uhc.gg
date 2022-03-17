@@ -17,6 +17,7 @@ import { watchApiKey } from './apiKey';
 import { listenForModifierActions } from '../modifiers/sagas';
 import { listenForVersionActions } from '../versions/sagas';
 import { fixHostFormVersionOnVersionsUpdate, removeVanillaPlusWhenOtherScenarioAdded } from '../components/host/saga';
+import { matchEditHistorySagas } from '../match-edit-history/sagas';
 
 // Don't include watchSettingsToggle here, we run that once at the beggining of the store to make sure data
 // is loaded before first render
@@ -39,4 +40,5 @@ export default function* rootSaga(): SagaIterator {
   yield fork(listenForVersionActions);
   yield fork(fixHostFormVersionOnVersionsUpdate);
   yield fork(removeVanillaPlusWhenOtherScenarioAdded);
+  yield fork(matchEditHistorySagas);
 }

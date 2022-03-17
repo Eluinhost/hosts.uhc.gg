@@ -1,20 +1,21 @@
 import * as React from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
+import { change, getFormValues } from 'redux-form';
 import { RouteComponentProps } from 'react-router';
-import { CreateMatchForm } from './CreateMatchForm';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { nextAvailableSlot } from './nextAvailableSlot';
-import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
-import { MatchesApi, ApiErrors } from '../../api';
-import { change, getFormValues, SubmissionError } from 'redux-form';
-import { renderToMarkdown } from './TemplateField';
-import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
 import { createSelector, Selector } from 'reselect';
+import moment from 'moment-timezone';
+
+import { ApplicationState } from '../../state/ApplicationState';
+import { CreateMatchForm } from './CreateMatchForm';
+import { nextAvailableSlot } from './nextAvailableSlot';
+import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { SetSavedHostFormData } from '../../actions';
+import { formKey } from './formKey';
+import { createTemplateContext } from '../../createTemplateContext';
 
-export type HostingPageStateProps = {
+type StateProps = {
   readonly formValues: CreateMatchData | undefined;
   readonly username: string;
   readonly accessToken: string;
@@ -22,26 +23,23 @@ export type HostingPageStateProps = {
   readonly savedData: CreateMatchData;
 };
 
-export type HostingPageDispatchProps = {
-  readonly changeTemplate: (newTemplate: string) => void;
-  readonly saveData: (data: CreateMatchData) => void;
+export type DispatchProps = {
+  readonly saveData: (data: Partial<CreateMatchData>) => void;
   readonly updateOpeningTime: () => void;
 };
-
-export const formKey: string = 'create-match-form';
 
 const valuesSelector: Selector<ApplicationState, CreateMatchData> = createSelector(
   getFormValues(formKey),
   data => data as CreateMatchData,
 );
 // Main goal of this is to save form data back to local storage when the component unmounts
-class HostingPageComponent extends React.PureComponent<
-  HostingPageStateProps & HostingPageDispatchProps & RouteComponentProps<any>
-> {
+class HostingPageComponent extends React.PureComponent<StateProps & DispatchProps & RouteComponentProps<any>> {
+  currentFormState: Partial<CreateMatchData> = this.props.savedData || {};
+
   public onUnload = (): void => {
     // only save if we have values we can replace it with
-    if (this.props.formValues) {
-      this.props.saveData(this.props.formValues);
+    if (this.currentFormState) {
+      this.props.saveData(this.currentFormState);
     }
   };
 
@@ -59,58 +57,27 @@ class HostingPageComponent extends React.PureComponent<
     this.onUnload();
   }
 
-  private createTemplateContext = (data: CreateMatchData): any => {
-    const teams = TeamStyles.find(it => it.value === data.teams) || TeamStyles[0];
-
-    return {
-      ...data,
-      // overwite teams value with rendered version
-      teams: renderTeamStyle(teams, data.size, data.customStyle),
-      teamStyle: teams.value,
-      author: this.props.username,
-    };
-  };
-
-  private handleCreateMatch = async (values: CreateMatchData): Promise<void> => {
-    const withRenderedTemplate = {
-      ...values,
-      // we convert the template to markdown only, we don't want to send HTML
-      content: renderToMarkdown(values.content, this.createTemplateContext(values)),
-    };
-
-    // Remove the team size if it isn't required to avoid potential non-ints being sent and rejected at decoding
-    if (!TeamStyles.find(it => it.value === values.teams)!.requiresTeamSize) {
-      withRenderedTemplate.size = null;
-    }
-
-    try {
-      // fire API call
-      await MatchesApi.create(withRenderedTemplate, this.props.accessToken);
-
-      // if success send them to the matches page to view it
-      this.props.history.push('/matches');
-    } catch (err) {
-      if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
-
-      if (err instanceof ApiErrors.NotAuthenticatedError) {
-        // User cookie has expired, get them to reauthenticate
-        window.location.href = '/authenticate?path=/host';
-        return;
-      }
-
-      if (err instanceof ApiErrors.ForbiddenError) {
-        throw new SubmissionError({ _error: 'You no longer have hosting permission' });
-      }
-
-      throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
-    }
+  handleChange = (values: Partial<CreateMatchData>): void => {
+    this.currentFormState = values;
   };
 
   public render() {
     // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)
     const data: CreateMatchData = this.props.formValues || this.props.savedData;
 
-    const context = this.createTemplateContext(data);
+    const context = createTemplateContext({
+      ...data,
+      author: this.props.username,
+      version: data.version || data.mainVersion,
+      latestEditId: null,
+      originalEditId: null,
+      id: 0,
+      created: moment(),
+      approvedBy: null,
+      removed: false,
+      removedBy: null,
+      removedReason: null,
+    });
 
     return (
       <CreateMatchForm
@@ -118,25 +85,14 @@ class HostingPageComponent extends React.PureComponent<
         initialValues={this.props.savedData!}
         currentValues={data}
         templateContext={context}
-        username={this.props.username}
-        changeTemplate={this.props.changeTemplate}
-        createMatch={this.handleCreateMatch}
         is12h={this.props.is12h}
+        onChange={this.handleChange}
       />
     );
   }
 }
 
-const stateSelector = createSelector<
-  ApplicationState,
-  string | null,
-  CreateMatchData,
-  string | null,
-  boolean,
-  boolean,
-  CreateMatchData,
-  HostingPageStateProps
->(
+const stateSelector: Selector<ApplicationState, StateProps> = createSelector(
   getUsername,
   valuesSelector,
   getAccessToken,
@@ -152,11 +108,10 @@ const stateSelector = createSelector<
   }),
 );
 
-export const HostingPage = connect<HostingPageStateProps, HostingPageDispatchProps, RouteComponentProps<any>>(
+export const HostingPage = connect<StateProps, DispatchProps, RouteComponentProps<any>>(
   stateSelector,
-  (dispatch: Dispatch): HostingPageDispatchProps => ({
-    changeTemplate: (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
-    saveData: (data: CreateMatchData) => dispatch(SetSavedHostFormData.start(data)),
+  (dispatch: Dispatch): DispatchProps => ({
+    saveData: (data: Partial<CreateMatchData>) => dispatch(SetSavedHostFormData.start(data)),
     updateOpeningTime: () => dispatch(change(formKey, 'opens', nextAvailableSlot())),
   }),
 )(HostingPageComponent);

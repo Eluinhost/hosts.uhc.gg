@@ -26,6 +26,7 @@ import Helmet from 'react-helmet';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { ModifiersPage } from '../modifiers/components/ModifiersPage';
+import { MatchEditHistoryPage } from '../match-edit-history/components/match-edit-history.page';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -85,6 +86,7 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
     return (
       <Switch>
         <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
+        <Route path="/m/:id/history" component={MatchEditHistoryPage} />
         <Route path="/m/:id" component={MatchDetailsPage} />
         <Route path="/matches/:host" component={HistoryPage} />
         <Route path="/matches" component={UpcomingMatchesPage} />

@@ -57,7 +57,7 @@ function* watchClearStorage(): SagaIterator {
 function* syncHostFormData(): SagaIterator {
   const key = `${baseKey}.host-form-data`;
 
-  const stored: CreateMatchData | null = yield call([storage, storage.getItem], key);
+  const stored: Partial<CreateMatchData> | null = yield call([storage, storage.getItem], key);
 
   if (stored !== null) {
     yield put(SetSavedHostFormData.started({ parameters: stored }));

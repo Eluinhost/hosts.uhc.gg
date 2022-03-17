@@ -205,6 +205,12 @@ components:
         tournament:
           type: boolean
           description: Whether the game is a tournament or not, tournaments bypass overhosting rules
+        originalEditId:
+          type: number
+          description: The original match ID in this chain of edits, if not set then this is an original match
+        latestEditId:
+          type: number
+          description: The ID of the latest edit of this match, if not set this is the latest edit
       example:
         id: 3
         author: ghowden
@@ -238,6 +244,8 @@ components:
         approvedBy: everyone
         hostingName: Name Override
         tournament: false
+        originalEditId: 67552
+        latestEditId: 67554
     CreateMatchRequest:
       type: object
       required:
@@ -301,7 +309,7 @@ components:
           description: The match count of the host
         content:
           type: string
-          description: Markdown content of the match post
+          description: The templated content of this match, this can be rendered out via templating + markdown parsers
         region:
           type: string
           enum:
@@ -338,6 +346,12 @@ components:
         tournament:
           type: boolean
           description: Whether the game is a tournament or not, tournaments bypass overhosting rules
+        originalEditId:
+          type: number
+          description: When this is not set this will post as an original match. When this is set then any other edits
+          from this chain of edits will be removed and the new match will be added linked to the original. When the ID
+          provided is not an original match then the original ID will be looked up and used instead. Only the user that
+          created the original match will be allowed to make edits, other users will receive a 403 status code.
       example:
         opens: '2017-08-28T15:15:00Z'
         address: example.com
@@ -543,7 +557,7 @@ paths:
         - Matches
       summary: Returns a list of upcoming matches
       description: Show matches that open after 30 minutes ago. Does not filter out removed
-        matches
+        matches but will filter out any matches that were removed because they were edited
       responses:
         '200':
           description: Success
@@ -561,7 +575,7 @@ paths:
         - UserApiToken: []
         - SiteApiToken: []
       summary: Posts a new match
-      description: Attempts to post a new match. Requires either `trial host` or `host` permission
+      description: Attempts to post a new match or edit an existing match. Requires either `trial host` or `host` permission
       requestBody:
         required: true
         content:
@@ -637,6 +651,30 @@ paths:
       responses:
         '204':
           description: Match removed
+        '404':
+          description: Could not find a match with the given ID
+  '/matches/{id}/edits':
+    get:
+      tags:
+        - Matches
+      summary: Shows all edits for the given match
+      description: Fetches data for all edits of the given match, both past and future edits from this one
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the match to get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchResponse'
         '404':
           description: Could not find a match with the given ID
   '/matches/{id}/approve':

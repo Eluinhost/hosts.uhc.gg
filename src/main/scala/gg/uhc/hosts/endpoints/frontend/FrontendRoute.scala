@@ -38,7 +38,7 @@ class FrontendRoute(database: Database, materializer: Materializer) extends Twir
 
   def apply(): Route =
     (get & path("m" / IntNumber)) { id =>
-      onComplete(database.run(database.matchById(id))) {
+      onComplete(database.run(database.getMatchById(id))) {
         // send the frontend with the basic details about the game for previewers to view
         case Success(Some(m)) =>
           withMatchTitle(m.legacyTitle(), "Match Post") {

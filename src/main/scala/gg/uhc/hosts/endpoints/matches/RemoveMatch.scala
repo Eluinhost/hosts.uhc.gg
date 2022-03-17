@@ -46,7 +46,7 @@ class RemoveMatch(customDirectives: CustomDirectives, database: Database, cache:
   def removeAndFetch(id: Long, reason: String, remover: String): ConnectionIO[Option[MatchRow]] =
     for {
       count <- database.removeMatch(id, reason, remover)
-      maybeFound <- if (count == 0) pure(None) else database.matchById(id)
+      maybeFound <- if (count == 0) pure(None) else database.getMatchById(id)
     } yield maybeFound
 
   def apply(id: Int): Route =
