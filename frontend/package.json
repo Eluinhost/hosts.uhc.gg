@@ -46,7 +46,7 @@
     "lint-staged": "10.1.3",
     "localforage": "1.7.3",
     "markup-js": "1.5.21",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "moment-timezone": "0.5.28",
     "node-sass": "4.13.1",
     "onchange": "6.1.0",
