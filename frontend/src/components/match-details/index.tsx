@@ -13,6 +13,8 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
+import { RemovedTag } from './RemovedTag';
+import { RemovedInfo } from './RemovedInfo';
 
 type StateProps = {
   readonly details: MatchDetailsState;
@@ -112,11 +114,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
                 <Icon icon="timeline-bar-chart" /> Tournament
               </Tag>
             )}
-            {removed && (
-              <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`}>
-                <Icon icon="warning-sign" /> REMOVED
-              </Tag>
-            )}
+            <RemovedTag match={this.props.details.match} />
           </div>
 
           <div className="match-details__header__content">
@@ -178,18 +176,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
           </label>
         </div>
         <div className="match-details__content">
-          {removed && (
-            <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-              <H5>
-                <Icon icon="warning-sign" /> REMOVED
-              </H5>
-              <p>This game is no longer on the calendar:</p>
-              <p>
-                {removedReason} - /u/{removedBy}
-              </p>
-            </div>
-          )}
-
+          <RemovedInfo match={this.props.details.match} />
           {!removed && !!approvedBy && (
             <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
               <H5>

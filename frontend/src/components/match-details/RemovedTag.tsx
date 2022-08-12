@@ -1,10 +1,11 @@
+import { Classes, Icon, Intent, Tag } from '@blueprintjs/core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { Match } from '../../models/Match';
 
-export const RemovedReason = React.memo(({ match: { removedBy, removedAt, removedReason } }: { match: Match }) => {
+export const RemovedTag = React.memo(({ match: { removed, removedAt } }: { match: Match }) => {
   const format = useSelector(getTagDateTimeFormat);
   const timezone = useSelector(getTimezone);
 
@@ -13,13 +14,13 @@ export const RemovedReason = React.memo(({ match: { removedBy, removedAt, remove
     timezone,
   ]);
 
+  if (!removed) {
+    return null;
+  }
+
   return (
-    <div className="removed-reason">
-      <div className="removed-reason-reason">Removed: {removedReason}</div>
-      <div className="removed-reason-remover">
-        /u/{removedBy}
-        {removedAtFormatted && ` @ ${removedAtFormatted}`}
-      </div>
-    </div>
+    <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`} title={removedAtFormatted || undefined}>
+      <Icon icon="warning-sign" /> REMOVED
+    </Tag>
   );
 });

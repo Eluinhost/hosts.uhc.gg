@@ -151,6 +151,7 @@ class CreateMatchFormComponent extends React.PureComponent<
       id: 0,
       author: username,
       removed: false,
+      removedAt: null,
       removedBy: null,
       removedReason: null,
       approvedBy: null,

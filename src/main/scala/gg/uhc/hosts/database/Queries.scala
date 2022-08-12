@@ -21,9 +21,13 @@ class Queries(logger: LogHandler) {
       UPDATE matches
       SET
         removed = true,
+        removedAt = now(),
         removedReason = $reason,
         removedBy = $remover
-      WHERE id = $id
+      WHERE
+        id = $id
+      AND
+        removed = false
      """.update
 
   def getUpcomingMatches: Query0[MatchRow] =
@@ -43,6 +47,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,
@@ -79,6 +84,7 @@ class Queries(logger: LogHandler) {
           content,
           region,
           removed,
+          removedAt,
           removedBy,
           removedReason,
           created,
@@ -118,6 +124,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,
@@ -152,6 +159,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,
@@ -184,6 +192,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,
@@ -211,6 +220,7 @@ class Queries(logger: LogHandler) {
         ${m.content},
         ${m.region},
         ${m.removed},
+        ${m.removedAt},
         ${m.removedBy},
         ${m.removedReason},
         ${m.created},
@@ -295,14 +305,10 @@ class Queries(logger: LogHandler) {
     ).query[PermissionSetRow]
 
   def addPermission(username: String, permission: String): Update0 =
-    sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING"""
-      
-      .update
+    sql"""INSERT INTO permissions (username, type) VALUES ($username, $permission) ON CONFLICT DO NOTHING""".update
 
   def removePermission(username: String, permission: String): Update0 =
-    sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission"""
-      
-      .update
+    sql"""DELETE FROM permissions WHERE username = $username AND "type" = $permission""".update
 
   def addPermissionModerationLog(username: String, permission: String, modifier: String, added: Boolean): Update0 =
     sql"""
@@ -355,6 +361,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,
@@ -536,6 +543,7 @@ class Queries(logger: LogHandler) {
         content,
         region,
         removed,
+        removedAt,
         removedBy,
         removedReason,
         created,

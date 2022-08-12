@@ -78,6 +78,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       created = Instant.now(),
       author = author,
       removed = false,
+      removedAt = None,
       removedBy = None,
       removedReason = None,
       approvedBy = None,

@@ -13,6 +13,7 @@ export const fetchUpcomingMatches = (): Promise<Match[]> =>
       ...match,
       opens: moment.utc(match.opens),
       created: moment.utc(match.created),
+      removedAt: match.removedAt && moment.utc(match.removedAt),
     })),
   );
 
@@ -25,6 +26,7 @@ export const fetchSingle = (id: number): Promise<Match | null> =>
         ...match,
         opens: moment.utc(match.opens),
         created: moment.utc(match.created),
+        removedAt: match.removedAt && moment.utc(match.removedAt),
       },
   );
 
@@ -83,6 +85,7 @@ export const fetchPotentialConflicts = (region: string, time: moment.Moment, ver
       ...match,
       opens: moment.utc(match.opens),
       created: moment.utc(match.created),
+      removedAt: match.removedAt && moment.utc(match.removedAt),
     })),
   );
 
@@ -94,5 +97,6 @@ export const fetchHistoryForHost = (host: string, before?: number): Promise<Matc
       ...match,
       opens: moment.utc(match.opens),
       created: moment.utc(match.created),
+      removedAt: match.removedAt && moment.utc(match.removedAt),
     })),
   );

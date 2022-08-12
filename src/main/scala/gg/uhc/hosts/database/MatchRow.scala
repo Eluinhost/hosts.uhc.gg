@@ -20,6 +20,7 @@ case class MatchRow(
     content: String,
     region: String,
     removed: Boolean,
+    removedAt: Option[Instant],
     removedBy: Option[String],
     removedReason: Option[String],
     created: Instant,

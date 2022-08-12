@@ -108,7 +108,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
             <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`} />
           </div>
         </div>
-        {match.removed && <RemovedReason reason={match.removedReason!} removedBy={match.removedBy!} />}
+        {match.removed && <RemovedReason match={match} />}
 
         {/* Only show actions if the match isn't removed. Removed matches shouldn't be modified */}
         {!match.removed && (
