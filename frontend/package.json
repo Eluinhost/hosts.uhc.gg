@@ -47,7 +47,7 @@
     "localforage": "1.7.3",
     "markup-js": "1.5.21",
     "moment": "2.24.0",
-    "moment-timezone": "0.5.28",
+    "moment-timezone": "0.5.35",
     "node-sass": "4.13.1",
     "onchange": "6.1.0",
     "prettier": "2.0.4",
