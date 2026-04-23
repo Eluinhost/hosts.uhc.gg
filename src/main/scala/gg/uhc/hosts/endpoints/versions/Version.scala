@@ -22,5 +22,9 @@ object Version {
     Version(15, "1.16", 2),
     Version(16, "1.17", 2),
     Version(17, "1.18", 2),
+    Version(18, "1.19", 2),
+    Version(19, "1.20", 2),
+    Version(20, "1.21", 2),
+    Version(21, "26.1", 2)
   )
 }
