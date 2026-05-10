@@ -3,5 +3,7 @@
 /frontend/build
 target
 /conf/application.conf
+/application.conf
 /.idea
 *.iml
+/data

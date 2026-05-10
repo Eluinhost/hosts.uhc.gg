@@ -20,7 +20,8 @@
   "license": "MIT",
   "resolutions": {
     "@types/react": "16.9.31",
-    "@types/react-dom": "16.9.6"
+    "@types/react-dom": "16.9.6",
+    "fs-extra": "9.1.0"
   },
   "dependencies": {
     "@blueprintjs/core": "3.25.0",

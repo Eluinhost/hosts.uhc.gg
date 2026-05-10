@@ -13,7 +13,7 @@ object Settings {
   )
 
   object versions {
-    val scala           = "2.13.1"
+    val scala           = "2.13.18"
     val doobie          = "0.9.0"
     val circe           = "0.13.0"
     val akkaHttp        = "10.1.11"

@@ -16,8 +16,6 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.EndpointsModule
 import org.flywaydb.core.Flyway
 
-import scala.io.StdIn
-
 class MainModule(
     transactor: Transactor[IO],
     val materializer: Materializer,
@@ -92,7 +90,7 @@ object Main extends IOApp {
     } yield Resources(httpSystem, transactor, binding)
 
     resources.use { _ =>
-      IO(StdIn.readLine) *> IO.pure(ExitCode.Success)
+      IO.never
     }
   }
 }

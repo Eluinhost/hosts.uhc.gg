@@ -55,3 +55,22 @@ With SBT:
 ```
 
 Alternatively use `re-start` and `re-stop` to manually start/stop the backend server and not listen for changes
+
+# Docker
+
+Create application.conf in main folder using reference.conf if required, minimum should be:
+
+```
+reddit {
+  clientId = "<>"
+  clientSecret = "<>"
+  redirectUri = "http://localhost:10000/authenticate/callback"
+}
+jwt {
+  secret = "CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME"
+}
+```
+
+docker-compose sets up a postgres database and builds the FE + BE and exposes it on port 10000. Database files are stored in the `data` directory
+
+`docker compose up --build`
