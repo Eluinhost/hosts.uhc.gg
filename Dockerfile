@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install apt-transport-https curl gnupg -yqq && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY src/ ./src/
+COPY apidocs/ ./apidocs/
 
 RUN sbt universal:stage
 
