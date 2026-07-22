@@ -1,30 +1,35 @@
-import { fetchObject } from '../api/util';
+import { fetchArray } from '../api/util';
 
-const compareVersion = (a: MojangAPIVersion, b: MojangAPIVersion): number => {
-  return b.releaseTime.localeCompare(a.releaseTime);
+const compareVersion = (a: PrismarineJSVersion, b: PrismarineJSVersion): number => {
+  return b.version - a.version;
 };
 
-interface MojangAPIVersion {
-  id: string;
-  type: string;
-  releaseTime: string;
-}
-
-interface MojangAPIVersions {
-  versions: Array<MojangAPIVersion>;
+interface PrismarineJSVersion {
+  minecraftVersion: string;
+  version: number;
 }
 
 export const getAllVersions = async (): Promise<Array<string>> => {
-  const versions = await fetchObject<MojangAPIVersions>({
-    url: 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json',
+  const versions = await fetchArray<PrismarineJSVersion>({
+    url:
+      'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
     status: 200,
   });
 
   return [
-    ...versions.versions
-      .filter(x => x.type === 'release')
+    ...Object.values(
+      versions
+        .filter(({ minecraftVersion }) => /^[0-9.]+$/.test(minecraftVersion))
+        .reduce(
+          (acc, item) => ({
+            ...acc,
+            [item.version]: acc[item.version] ?? item,
+          }),
+          {} as Record<number, PrismarineJSVersion>,
+        ),
+    )
       .sort(compareVersion)
-      .map(({ id }) => id),
+      .map(({ minecraftVersion }) => minecraftVersion),
     'Other (specify in range)',
   ];
 };
