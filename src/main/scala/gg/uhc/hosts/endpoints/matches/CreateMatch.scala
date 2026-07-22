@@ -13,7 +13,6 @@ import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHa
 import doobie.free.connection.delay
 import doobie._
 import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
-import gg.uhc.hosts.endpoints.versions.Version
 
 /**
   * Creates a new Match object. Requires login + 'host' permission
@@ -160,10 +159,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       ) &
       ipChecks(row) &
       validate(row.location.nonEmpty, "Must supply a location") &
-      validate(
-        Version.options.exists(v => v.displayName == row.mainVersion),
-        s"Invalid main version, expected one of: ${Version.options.map(v => v.displayName).mkString(", ")}"
-      ) &
+      validate(row.mainVersion.nonEmpty, "Must supply a main version") &
       validate(row.version.nonEmpty, "Must supply a version") &
       validate(row.slots >= 2, "Slots must be at least 2") &
       validate(row.length >= 30, "Matches must be at least 30 minutes") &

@@ -7,7 +7,6 @@ import { ListVersionsState } from '../reducer';
 import { getListVersionsState } from '../selectors';
 import { Dispatch } from 'redux';
 import { FETCH_VERSIONS } from '../actions';
-import { Version } from '../Version';
 
 export type MainVersionFieldProps = Omit<SelectFieldProps, 'options'>;
 
@@ -39,8 +38,8 @@ class MainVersionFieldComponent extends React.PureComponent<MainVersionFieldProp
     }
 
     const options = this.props.data.map(item => ({
-      display: item.displayName,
-      value: item.displayName,
+      display: item,
+      value: item,
     }));
 
     return <SelectField {...this.props} options={options} />;

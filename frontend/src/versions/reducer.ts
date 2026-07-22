@@ -1,13 +1,12 @@
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { Version } from './Version';
 import { FETCH_VERSIONS } from './actions';
 import { FetchVersionsError } from './sagas';
 
 export type ListVersionsState = {
   isFetching: boolean;
   error: FetchVersionsError | null;
-  data: Version[];
+  data: Array<string>;
 };
 
 export type VersionsState = {

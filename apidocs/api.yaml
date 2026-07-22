@@ -32,22 +32,6 @@ components:
     SyncResponse:
       type: string
       example: '2017-08-10T09:11:22.031Z'
-    VersionResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 'The unique ID of this version'
-        displayName:
-          type: string
-          description: The version to display in the UI
-        weight:
-          type: integer
-          description: Used to sort elements in the UI
-      example:
-        id: 10
-        displayName: 1.8
-        weight: 2
     SetRulesRequest:
       type: string
       example: Some *markdown* rules
@@ -180,7 +164,7 @@ components:
           description: The free-text location of the server
         mainVersion:
           type: string
-          description: The servers 'main' version, options can be found via the /versions/primary endpoint
+          description: The servers 'main' version
         version:
           type: string
           description: The version/range of versions of Minecraft the server accepts
@@ -316,7 +300,7 @@ components:
           description: The free-text location of the server
         mainVersion:
           type: string
-          description: The servers 'main' version, options can be found via the /versions/primary endpoint
+          description: The servers 'main' version
         version:
           type: string
           description: The version/range of versions of Minecraft the server accepts
@@ -1267,18 +1251,4 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find an modifier with the given ID
-  /versions/primary:
-    get:
-      tags:
-        - Versions
-      summary: List all primary versions
-      description: Lists all primary versions
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/VersionResponse'
+

@@ -14,6 +14,7 @@ export const getListVersionsState: Selector<ApplicationState, ListVersionsState>
   versions => versions.list,
 );
 
-export const getAllVersionNames: Selector<ApplicationState, string[]> = createSelector(getListVersionsState, state =>
-  state.data.map(version => version.displayName),
+export const getAllVersionNames: Selector<ApplicationState, string[]> = createSelector(
+  getListVersionsState,
+  state => state.data,
 );

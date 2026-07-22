@@ -1,19 +1,30 @@
-import { Version } from './Version';
-import { fetchArray } from '../api/util';
+import { fetchObject } from '../api/util';
 
-const compareVersion = (a: Version, b: Version): number => {
-  if (a.weight === b.weight) {
-    return -a.displayName.localeCompare(b.displayName);
-  }
-
-  return b.weight - a.weight;
+const compareVersion = (a: MojangAPIVersion, b: MojangAPIVersion): number => {
+  return b.releaseTime.localeCompare(a.releaseTime);
 };
 
-export const getAllVersions = async (): Promise<Version[]> => {
-  const versions = await fetchArray<Version>({
-    url: '/api/versions/primary',
+interface MojangAPIVersion {
+  id: string;
+  type: string;
+  releaseTime: string;
+}
+
+interface MojangAPIVersions {
+  versions: Array<MojangAPIVersion>;
+}
+
+export const getAllVersions = async (): Promise<Array<string>> => {
+  const versions = await fetchObject<MojangAPIVersions>({
+    url: 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json',
     status: 200,
   });
 
-  return versions.sort(compareVersion);
+  return [
+    ...versions.versions
+      .filter(x => x.type === 'release')
+      .sort(compareVersion)
+      .map(({ id }) => id),
+    'Other (specify in range)',
+  ];
 };
