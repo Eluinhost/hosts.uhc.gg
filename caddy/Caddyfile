@@ -1,13 +1,23 @@
-hosts.localhost, hosts.uhc.gg {
-    reverse_proxy app:10000
+*.uhc.gg {
+    tls {
+        dns porkbun {
+            api_key {env.PORKBUN_API_KEY}
+            api_secret_key {env.PORKBUN_API_SECRET_KEY}
+        }
+    }
 
+    abort
+}
+
+hosts.uhc.gg {
+    reverse_proxy app:10000
 
     header {
         Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
     }
 }
 
-c.localhost, c.uhc.gg {
+c.uhc.gg {
     file_server
 
     header {

@@ -71,6 +71,10 @@ jwt {
 }
 ```
 
-docker-compose sets up a postgres database and builds the FE + BE and exposes it on port 10000. Database files are stored in the `data` directory
+docker-compose sets up a postgres database and builds the FE + BE and exposes it on port 80+443 via caddy. 
+
+Database files are stored in the `data` directory
+
+Update Caddy env vars PORKBUN_API_KEY + PORKBUN_API_SECRET_KEY in caddy/.env to ensure letsencrypt certs valid
 
 `docker compose up --build`

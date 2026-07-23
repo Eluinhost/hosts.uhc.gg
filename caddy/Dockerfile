@@ -5,6 +5,9 @@ WORKDIR Match-Calendar
 RUN yarn install --frozen-lockfile
 RUN yarn build
 
-FROM caddy:2.11.4-alpine
-COPY --from=old-calendar /Match-Calendar/web /srv
+FROM caddy:builder AS builder
+RUN xcaddy build --with github.com/caddy-dns/porkbun
 
+FROM caddy:2.11.4-alpine
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY --from=old-calendar /Match-Calendar/web /srv
