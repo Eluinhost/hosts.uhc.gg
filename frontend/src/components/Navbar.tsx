@@ -53,6 +53,7 @@ const NavbarComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ 
     <NavbarGroup>
       <NavbarButton to="/host" text="Host" icon="cloud-upload" />
       <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
+      <NavbarButton to="/host-applications" text="Host Applications" icon="inbox" />
       <NavbarButton to="/members" text="Members" icon="user" />
       {/*<NavbarButton to="/ubl" text="Ban List" icon="take-action" />*/}
       <WithPermission permission="hosting advisor">
@@ -60,6 +61,9 @@ const NavbarComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ 
       </WithPermission>
       <WithPermission permission="hosting advisor">
         <NavbarButton text="Modifiers" icon="unresolve" to="/modifiers" />
+      </WithPermission>
+      <WithPermission permission="hosting advisor">
+        <NavbarButton to="/quiz" text="Application Quiz" icon="help" />
       </WithPermission>
     </NavbarGroup>
     <NavbarGroup>

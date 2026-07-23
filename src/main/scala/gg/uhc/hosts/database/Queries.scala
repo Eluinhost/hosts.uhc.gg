@@ -16,6 +16,89 @@ import cats.data.NonEmptyList
 class Queries(logger: LogHandler) {
   private[this] implicit val logHandler: LogHandler = logger
 
+  def createHostApplication(username: String): Update0 =
+    sql"""
+      INSERT INTO host_applications (username, created, status)
+      VALUES ($username, ${Instant.now()}, 'pending')
+    """.update
+
+  def getRecentHostApplications: Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      ORDER BY created DESC
+      LIMIT 50
+    """.query[HostApplicationRow]
+
+  def getHostApplication(id: Long): Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      WHERE id = $id
+    """.query[HostApplicationRow]
+
+  def getPendingHostApplicationForUsername(username: String): Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      WHERE username = $username AND status = 'pending'
+    """.query[HostApplicationRow]
+
+  def reviewHostApplication(id: Long, status: String, reviewer: String, reason: Option[String]): Update0 =
+    sql"""
+      UPDATE host_applications
+      SET status = $status, reviewedBy = $reviewer, reviewedAt = ${Instant.now()}, reviewReason = $reason
+      WHERE id = $id AND status = 'pending'
+    """.update
+
+  def createQuizQuestion(question: QuizQuestionRow): Update0 =
+    sql"""
+      INSERT INTO quiz_questions (prompt, type, createdBy, created)
+      VALUES (${question.prompt}, ${question.questionType}, ${question.createdBy}, ${question.created})
+    """.update
+
+  def createQuizQuestionChoice(questionId: Long, text: String, correct: Boolean): Update0 =
+    sql"""
+      INSERT INTO quiz_question_choices (questionId, text, correct)
+      VALUES ($questionId, $text, $correct)
+    """.update
+
+  val getAllQuizQuestions: Query0[QuizQuestionRow] =
+    sql"""
+      SELECT id, prompt, type, createdBy, created
+      FROM quiz_questions
+      ORDER BY id ASC
+    """.query[QuizQuestionRow]
+
+  def getQuizQuestionChoices(questionIds: NonEmptyList[Long]): Query0[QuizQuestionChoiceRow] =
+    (sql"""
+      SELECT id, questionId, text, correct
+      FROM quiz_question_choices
+      WHERE """ ++ Fragments.in(fr"questionId", questionIds) ++ sql""" ORDER BY id ASC""")
+      .query[QuizQuestionChoiceRow]
+
+  def deleteQuizQuestion(id: Long): Update0 =
+    sql"""
+      DELETE FROM quiz_questions
+      WHERE id = $id
+    """.update
+
+  def createHostApplicationAnswer(applicationId: Long, answer: HostApplicationAnswerRow): Update0 =
+    sql"""
+      INSERT INTO host_application_answers
+        (applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer)
+      VALUES
+        ($applicationId, ${answer.questionPrompt}, ${answer.questionType}, ${answer.choiceText}, ${answer.choiceCorrect}, ${answer.textAnswer})
+    """.update
+
+  def getHostApplicationAnswers(applicationId: Long): Query0[HostApplicationAnswerRow] =
+    sql"""
+      SELECT id, applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer
+      FROM host_application_answers
+      WHERE applicationId = $applicationId
+      ORDER BY id ASC
+    """.query[HostApplicationAnswerRow]
+
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
       UPDATE matches

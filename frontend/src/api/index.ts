@@ -6,6 +6,7 @@ import * as UBL from './UBL';
 import * as ServerTime from './ServerTime';
 import * as Alerts from './Alerts';
 import * as Errors from './Errors';
+import * as Quiz from './Quiz';
 
 export const MatchesApi = Matches;
 export const AuthenticationApi = Authentication;
@@ -15,3 +16,4 @@ export const UBLApi = UBL;
 export const ServerTimeApi = ServerTime;
 export const AlertsApi = Alerts;
 export const ApiErrors = Errors;
+export const QuizApi = Quiz;

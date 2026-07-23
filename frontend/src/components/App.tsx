@@ -26,6 +26,9 @@ import Helmet from 'react-helmet';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { ModifiersPage } from '../modifiers/components/ModifiersPage';
+import { HostApplicationsPage } from './host-applications';
+import { ApplyHostApplicationPage } from './host-applications/ApplyHostApplication';
+import { QuizManagementPage } from './quiz';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -88,6 +91,8 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
         <Route path="/m/:id" component={MatchDetailsPage} />
         <Route path="/matches/:host" component={HistoryPage} />
         <Route path="/matches" component={UpcomingMatchesPage} />
+        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
+        <Route path="/host-applications" component={HostApplicationsPage} />
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
@@ -101,6 +106,7 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
           {...this.props}
         />
         <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
+        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
         <Route path="/" exact component={HomePage} />
         <Route component={NotFoundPage} />
       </Switch>
