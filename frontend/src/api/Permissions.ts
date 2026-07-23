@@ -19,6 +19,11 @@ export const fetchUsersInPermissionWithLetter = (permission: string, letter: str
     url: `/api/permissions/${permission}/${letter}`,
   });
 
+export const fetchPermissionsForUser = (username: string): Promise<string[]> =>
+  fetchArray<string>({
+    url: `/api/users/${encodeURIComponent(username)}/permissions`,
+  });
+
 export const fetchPermissionModerationLog = (): Promise<PermissionModerationLogEntry[]> =>
   fetchArray<PermissionModerationLogEntry>({
     url: `/api/permissions/log`,

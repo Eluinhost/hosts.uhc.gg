@@ -16,6 +16,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { ApproveMatch, RemoveMatch } from '../../actions';
 import { ServerTag } from './ServerTag';
+import { HostStatus } from '../host-status';
 
 type MatchRowProps = {
   readonly match: Match;
@@ -76,6 +77,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           )}
         </div>
         <div className="match-top-right-ribbon">
+          <HostStatus username={match.author} />
           <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon="tag" />
           {match.tournament && (
             <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>

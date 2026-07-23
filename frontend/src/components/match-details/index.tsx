@@ -15,6 +15,7 @@ import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { RemovedTag } from './RemovedTag';
 import { RemovedInfo } from './RemovedInfo';
+import { HostStatus } from '../host-status';
 
 type StateProps = {
   readonly details: MatchDetailsState;
@@ -109,6 +110,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
             <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
               <Icon icon="globe" /> {region} - {location}
             </Tag>
+            <HostStatus username={author} />
             {tournament && (
               <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
                 <Icon icon="timeline-bar-chart" /> Tournament
