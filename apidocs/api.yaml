@@ -468,6 +468,250 @@ components:
       example:
         id: 100
         displayName: CutClean
+    HostApplicationResponse:
+      type: object
+      required:
+        - id
+        - username
+        - created
+        - status
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this application
+        username:
+          type: string
+          description: The username of the applicant
+        created:
+          type: string
+          description: The date + time the application was submitted
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - declined
+          description: The current status of the application
+        reviewedBy:
+          type: string
+          description: Username of whoever reviewed this application, only present once reviewed
+        reviewedAt:
+          type: string
+          description: The date + time the application was reviewed, only present once reviewed
+        reviewReason:
+          type: string
+          description: The reason given by the reviewer, only ever present when `status` is `declined`
+      example:
+        id: 1
+        username: test
+        created: '2017-08-10T09:11:22.031Z'
+        status: declined
+        reviewedBy: ghowden
+        reviewedAt: '2017-08-11T09:11:22.031Z'
+        reviewReason: Did not answer the rules question correctly
+    HostApplicationAnswerResponse:
+      type: object
+      required:
+        - questionPrompt
+        - questionType
+      properties:
+        questionPrompt:
+          type: string
+          description: The prompt of the question at the time it was answered
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choiceText:
+          type: string
+          description: The text of the choice picked, only present for `multiple choice` questions
+        choiceCorrect:
+          type: boolean
+          description: Whether the picked choice was correct. Only ever present when requested with a `hosting advisor` token, otherwise omitted
+        textAnswer:
+          type: string
+          description: The free-text answer given, only present for `text` questions
+      example:
+        questionPrompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choiceText: '1500'
+        choiceCorrect: true
+    HostApplicationDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/HostApplicationResponse'
+        - type: object
+          required:
+            - answers
+          properties:
+            answers:
+              type: array
+              items:
+                $ref: '#/components/schemas/HostApplicationAnswerResponse'
+    CreateHostApplicationRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            required:
+              - questionId
+            properties:
+              questionId:
+                type: integer
+                description: The ID of the quiz question being answered
+              choiceId:
+                type: integer
+                description: The ID of the choice picked, required for `multiple choice` questions
+              textAnswer:
+                type: string
+                description: The free-text answer, required for `text` questions
+      example:
+        answers:
+          - questionId: 1
+            choiceId: 3
+          - questionId: 2
+            textAnswer: My answer to the question
+    ReviewHostApplicationRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: The reason for the decision, required (and must be non-blank) when declining an application, ignored when approving
+      example:
+        reason: Did not answer the rules question correctly
+    QuizQuestionChoiceResponse:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this choice
+        text:
+          type: string
+          description: The text shown for this choice
+    QuizQuestionResponse:
+      type: object
+      required:
+        - id
+        - prompt
+        - questionType
+        - choices
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this question
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choices:
+          type: array
+          description: Only populated for `multiple choice` questions
+          items:
+            $ref: '#/components/schemas/QuizQuestionChoiceResponse'
+      example:
+        id: 1
+        prompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choices:
+          - id: 1
+            text: '1000'
+          - id: 2
+            text: '1500'
+    QuizQuestionManageChoiceResponse:
+      type: object
+      required:
+        - id
+        - text
+        - correct
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this choice
+        text:
+          type: string
+          description: The text shown for this choice
+        correct:
+          type: boolean
+          description: Whether this is the correct choice
+    QuizQuestionManageResponse:
+      type: object
+      required:
+        - id
+        - prompt
+        - questionType
+        - createdBy
+        - created
+        - choices
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this question
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        createdBy:
+          type: string
+          description: Username of whoever created this question
+        created:
+          type: string
+          description: The date + time the question was created
+        choices:
+          type: array
+          description: Only populated for `multiple choice` questions
+          items:
+            $ref: '#/components/schemas/QuizQuestionManageChoiceResponse'
+    CreateQuizQuestionRequest:
+      type: object
+      required:
+        - prompt
+        - questionType
+        - choices
+      properties:
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choices:
+          type: array
+          description: Required for `multiple choice` questions (at least 2, exactly 1 correct), must be empty for `text` questions
+          items:
+            type: object
+            required:
+              - text
+              - correct
+            properties:
+              text:
+                type: string
+              correct:
+                type: boolean
+      example:
+        prompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choices:
+          - text: '1000'
+            correct: false
+          - text: '1500'
+            correct: true
 
 paths:
   /sync:
@@ -1251,4 +1495,223 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find an modifier with the given ID
+  /host-applications:
+    get:
+      tags:
+        - Host Applications
+      summary: List recent host applications
+      description: Lists the 50 most recently created host applications, most recently created first. Public endpoint
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HostApplicationResponse'
+    post:
+      tags:
+        - Host Applications
+      summary: Submit a host application
+      description: Submits a new host application answering every configured quiz question. Requires the user to not already be a `host`/`trial host`, to not have the `hosting banned` permission, and to not already have a pending application
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHostApplicationRequest'
+      responses:
+        '201':
+          description: Created, returns the ID of the new application
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /host-applications/{id}:
+    get:
+      tags:
+        - Host Applications
+      summary: Get a specific host application
+      description: Returns full details of an application including submitted answers. Public endpoint, however `choiceCorrect` on each answer is only included when authenticated with a `hosting advisor` token
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostApplicationDetailsResponse'
+        '404':
+          description: Could not find an application with the given ID
+  /host-applications/{id}/approve:
+    post:
+      tags:
+        - Host Applications
+      summary: Approve a host application
+      description: Approves a pending application and grants the applicant the `trial host` permission, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewHostApplicationRequest'
+      responses:
+        '200':
+          description: Approved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an application with the given ID
+  /host-applications/{id}/decline:
+    post:
+      tags:
+        - Host Applications
+      summary: Decline a host application
+      description: Declines a pending application, requires `hosting advisor` permission. A non-blank `reason` must be supplied in the request body
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewHostApplicationRequest'
+      responses:
+        '200':
+          description: Declined
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an application with the given ID
+  /quiz:
+    get:
+      tags:
+        - Quiz
+      summary: List quiz questions
+      description: Lists all quiz questions that must be answered to submit a host application. Public endpoint, does not indicate which choice is correct
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizQuestionResponse'
+    post:
+      tags:
+        - Quiz
+      summary: Create a quiz question
+      description: Creates a new quiz question, requires `hosting advisor` permission. `multiple choice` questions require at least 2 choices with exactly 1 correct, `text` questions must not have any choices
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuizQuestionRequest'
+      responses:
+        '201':
+          description: Created, returns the ID of the new question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /quiz/manage:
+    get:
+      tags:
+        - Quiz
+      summary: List quiz questions for management
+      description: Lists all quiz questions including which choice is correct, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizQuestionManageResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /quiz/{id}:
+    delete:
+      tags:
+        - Quiz
+      summary: Delete a quiz question
+      description: Deletes a quiz question and its choices, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the question to delete
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
 
