@@ -119,6 +119,49 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
     case _ => raw(_ => Map.empty[String, List[String]])
   }
 
+  def getRecentHostApplications: ConnectionIO[List[HostApplicationRow]] =
+    queries.getRecentHostApplications.to[List]
+
+  def getHostApplication(id: Long): ConnectionIO[Option[HostApplicationRow]] =
+    queries.getHostApplication(id).option
+
+  def getPendingHostApplicationForUsername(username: String): ConnectionIO[Option[HostApplicationRow]] =
+    queries.getPendingHostApplicationForUsername(username).option
+
+  def reviewHostApplication(id: Long, status: String, reviewer: String, reason: Option[String]): ConnectionIO[Boolean] =
+    queries.reviewHostApplication(id, status, reviewer, reason).run.map(_ > 0)
+
+  def getHostApplicationAnswers(applicationId: Long): ConnectionIO[List[HostApplicationAnswerRow]] =
+    queries.getHostApplicationAnswers(applicationId).to[List]
+
+  def submitHostApplication(username: String, answers: List[HostApplicationAnswerRow]): ConnectionIO[Long] =
+    for {
+      id <- queries.createHostApplication(username).withUniqueGeneratedKeys[Long]("id")
+      _ <- answers.foldLeft(delay(())) { (acc, answer) =>
+        acc.flatMap(_ => queries.createHostApplicationAnswer(id, answer).run.map(_ => ()))
+      }
+    } yield id
+
+  def getAllQuizQuestions: ConnectionIO[List[QuizQuestionRow]] =
+    queries.getAllQuizQuestions.to[List]
+
+  def getQuizQuestionChoices(questionIds: List[Long]): ConnectionIO[List[QuizQuestionChoiceRow]] =
+    questionIds match {
+      case a +: as => queries.getQuizQuestionChoices(NonEmptyList(a, as)).to[List]
+      case _       => delay(List.empty[QuizQuestionChoiceRow])
+    }
+
+  def createQuizQuestionWithChoices(question: QuizQuestionRow, choices: List[(String, Boolean)]): ConnectionIO[Long] =
+    for {
+      id <- queries.createQuizQuestion(question).withUniqueGeneratedKeys[Long]("id")
+      _ <- choices.foldLeft(delay(())) { (acc, choice) =>
+        acc.flatMap(_ => queries.createQuizQuestionChoice(id, choice._1, choice._2).run.map(_ => ()))
+      }
+    } yield id
+
+  def deleteQuizQuestion(id: Long): ConnectionIO[Int] =
+    queries.deleteQuizQuestion(id).run
+
   def addPermission(username: String, permission: String, modifier: String): ConnectionIO[Boolean] =
     for {
       inserted <- queries.addPermission(username = username, permission = permission).run.map(_ > 0)

@@ -5,10 +5,22 @@ import com.softwaremill.macwire.wire
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
-import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
+import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute, FakeAuthenticate}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
+import gg.uhc.hosts.endpoints.hostapplications.{
+  CreateHostApplication,
+  CreateQuizQuestion,
+  DeleteQuizQuestion,
+  GetHostApplicationDetails,
+  GetHostApplications,
+  GetQuizQuestions,
+  GetQuizQuestionsForManagement,
+  HostApplicationsRoute,
+  QuizRoute,
+  ReviewHostApplication
+}
 import gg.uhc.hosts.endpoints.key.{GetApiKey, KeyRoute, RegenerateApiKey}
 import gg.uhc.hosts.endpoints.matches._
 import gg.uhc.hosts.endpoints.modifiers.{CreateModifier, DeleteModifier, ListModifiers, ModifiersRoute}
@@ -49,6 +61,14 @@ trait EndpointsModule extends RedditModule {
   lazy val approveMatch: ApproveMatch           = wire[ApproveMatch]
   lazy val getCurrentUbl: GetCurrentUbl         = wire[GetCurrentUbl]
   lazy val getHostingHistory: GetHostingHistory = wire[GetHostingHistory]
+  lazy val getHostApplications: GetHostApplications = wire[GetHostApplications]
+  lazy val getHostApplicationDetails: GetHostApplicationDetails = wire[GetHostApplicationDetails]
+  lazy val createHostApplication: CreateHostApplication = wire[CreateHostApplication]
+  lazy val reviewHostApplication: ReviewHostApplication = wire[ReviewHostApplication]
+  lazy val getQuizQuestions: GetQuizQuestions = wire[GetQuizQuestions]
+  lazy val getQuizQuestionsForManagement: GetQuizQuestionsForManagement = wire[GetQuizQuestionsForManagement]
+  lazy val createQuizQuestion: CreateQuizQuestion = wire[CreateQuizQuestion]
+  lazy val deleteQuizQuestion: DeleteQuizQuestion = wire[DeleteQuizQuestion]
   lazy val createUblEntry: CreateUblEntry       = wire[CreateUblEntry]
   lazy val getUblForUuid: GetUblForUuid         = wire[GetUblForUuid]
   lazy val usernameSearch: UsernameSearch       = wire[UsernameSearch]
@@ -75,6 +95,8 @@ trait EndpointsModule extends RedditModule {
   lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
   lazy val ublRoute: UblRoute                       = wire[UblRoute]
   lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
+  lazy val hostApplicationsRoute: HostApplicationsRoute = wire[HostApplicationsRoute]
+  lazy val quizRoute: QuizRoute                     = wire[QuizRoute]
   lazy val alertsRoute: AlertsRoute                 = wire[AlertsRoute]
   lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
   lazy val modifiersRoute: ModifiersRoute           = wire[ModifiersRoute]

@@ -8,6 +8,7 @@ import gg.uhc.hosts.Instrumented
 import gg.uhc.hosts.endpoints.alerts.AlertsRoute
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.hosts.HostsRoute
+import gg.uhc.hosts.endpoints.hostapplications.{HostApplicationsRoute, QuizRoute}
 import gg.uhc.hosts.endpoints.key.KeyRoute
 import gg.uhc.hosts.endpoints.matches.MatchesRoute
 import gg.uhc.hosts.endpoints.modifiers.ModifiersRoute
@@ -25,6 +26,8 @@ class ApiRoute(
     keyRoute: KeyRoute,
     docsRoute: DocsRoute,
     hostsRoute: HostsRoute,
+    hostApplicationsRoute: HostApplicationsRoute,
+    quizRoute: QuizRoute,
     ublRoute: UblRoute,
     alertsRoute: AlertsRoute,
     usersRoute: UsersRoute,
@@ -43,6 +46,8 @@ class ApiRoute(
           pathPrefix("rules")(rulesRoute()),
           pathPrefix("matches")(matchesRoute()),
           pathPrefix("hosts")(hostsRoute()),
+          pathPrefix("host-applications")(hostApplicationsRoute()),
+          pathPrefix("quiz")(quizRoute()),
           pathPrefix("permissions")(permissionsRoute()),
           pathPrefix("key")(keyRoute()),
           pathPrefix("docs")(docsRoute()),
