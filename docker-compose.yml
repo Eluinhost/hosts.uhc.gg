@@ -29,5 +29,23 @@ services:
       timeout: 5s
       retries: 5
 
+  caddy:
+    build: ./caddy
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./caddy:/etc/caddy
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - backend
+
 networks:
   backend:
+
+volumes:
+  caddy_data:
+  caddy_config:

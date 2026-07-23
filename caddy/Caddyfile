@@ -1,0 +1,17 @@
+hosts.localhost, hosts.uhc.gg {
+    reverse_proxy app:10000
+
+
+    header {
+        Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
+    }
+}
+
+c.localhost, c.uhc.gg {
+    file_server
+
+    header {
+        Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
+        Cache-Control "no-cache, no-store, must-revalidate";
+    }
+}
