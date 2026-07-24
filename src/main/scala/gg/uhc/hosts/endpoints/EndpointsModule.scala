@@ -5,7 +5,7 @@ import com.softwaremill.macwire.wire
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
-import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute, FakeAuthenticate}
+import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}

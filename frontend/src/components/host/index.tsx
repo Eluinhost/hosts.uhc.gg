@@ -9,7 +9,7 @@ import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { MatchesApi, ApiErrors } from '../../api';
 import { change, getFormValues, SubmissionError } from 'redux-form';
 import { renderToMarkdown } from './TemplateField';
-import { getAccessToken, getUsername, isDarkMode, is12hFormat } from '../../state/Selectors';
+import { getAccessToken, getUsername, isDarkMode, is12hFormat, getPermissions } from '../../state/Selectors';
 import { createSelector, Selector } from 'reselect';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { SetSavedHostFormData } from '../../actions';
@@ -17,6 +17,7 @@ import { SetSavedHostFormData } from '../../actions';
 export type HostingPageStateProps = {
   readonly formValues: CreateMatchData | undefined;
   readonly username: string;
+  readonly roles: Array<string>;
   readonly accessToken: string;
   readonly is12h: boolean;
   readonly savedData: CreateMatchData;
@@ -122,6 +123,7 @@ class HostingPageComponent extends React.PureComponent<
         changeTemplate={this.props.changeTemplate}
         createMatch={this.handleCreateMatch}
         is12h={this.props.is12h}
+        roles={this.props.roles}
       />
     );
   }
@@ -130,6 +132,7 @@ class HostingPageComponent extends React.PureComponent<
 const stateSelector = createSelector<
   ApplicationState,
   string | null,
+  Array<string>,
   CreateMatchData,
   string | null,
   boolean,
@@ -138,16 +141,18 @@ const stateSelector = createSelector<
   HostingPageStateProps
 >(
   getUsername,
+  getPermissions,
   valuesSelector,
   getAccessToken,
   isDarkMode,
   is12hFormat,
   state => state.hostFormSavedData,
-  (username, formValues, accessToken, isDarkMode, is12h, savedData) => ({
+  (username, permissions, formValues, accessToken, isDarkMode, is12h, savedData) => ({
     formValues,
     is12h,
     savedData,
     username: username || 'ERROR NO USERNAME IN STORE',
+    roles: permissions,
     accessToken: accessToken || 'ERROR NO ACCESS TOKEN IN STORE',
   }),
 );
