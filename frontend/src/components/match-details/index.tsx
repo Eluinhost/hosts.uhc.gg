@@ -98,6 +98,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       removedReason,
       approvedBy,
       mainVersion,
+      roles,
     } = this.props.details.match;
 
     const { canApprove, canRemove, approve, remove } = this.props;
@@ -110,7 +111,7 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
             <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
               <Icon icon="globe" /> {region} - {location}
             </Tag>
-            <HostStatus username={author} />
+            <HostStatus roles={roles} />
             {tournament && (
               <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
                 <Icon icon="timeline-bar-chart" /> Tournament

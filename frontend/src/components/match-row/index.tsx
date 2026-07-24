@@ -77,7 +77,7 @@ class MatchRowComponent extends React.PureComponent<MatchRowProps & StateProps &
           )}
         </div>
         <div className="match-top-right-ribbon">
-          <HostStatus username={match.author} />
+          <HostStatus roles={match.roles} />
           <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon="tag" />
           {match.tournament && (
             <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>

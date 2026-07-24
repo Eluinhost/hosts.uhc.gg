@@ -20,11 +20,6 @@ export const fetchUsersInPermissionWithLetter = (permission: string, letter: str
     url: `/api/permissions/${permission}/${letter}`,
   });
 
-export const fetchPermissionsForUser = (username: string): Promise<string[]> =>
-  fetchArray<string>({
-    url: `/api/users/${encodeURIComponent(username)}/permissions`,
-  });
-
 export const fetchHostApplications = (): Promise<HostApplication[]> =>
   fetchArray<HostApplication>({
     url: '/api/host-applications',
@@ -56,7 +51,7 @@ export const reviewHostApplication = (
   id: number,
   decision: 'approve' | 'decline',
   accessToken: string,
-  reason?: string
+  reason?: string,
 ): Promise<void> =>
   callApi({
     url: `/api/host-applications/${id}/${decision}`,
