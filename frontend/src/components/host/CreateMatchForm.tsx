@@ -36,6 +36,7 @@ export type CreateMatchFormProps = {
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
   readonly createMatch: (data: CreateMatchData) => Promise<void>;
+  readonly roles: Array<string>;
 };
 
 const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
@@ -140,6 +141,7 @@ class CreateMatchFormComponent extends React.PureComponent<
       createMatch,
       error,
       asyncValidating,
+      roles,
     } = this.props;
 
     const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
@@ -157,6 +159,7 @@ class CreateMatchFormComponent extends React.PureComponent<
       approvedBy: null,
       created: moment.utc(),
       version: currentValues.version || currentValues.mainVersion,
+      roles,
     };
 
     return (
