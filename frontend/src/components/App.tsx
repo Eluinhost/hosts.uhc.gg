@@ -26,9 +26,9 @@ import Helmet from 'react-helmet';
 import { CreateBanPage } from './ubl/CreateBanPage';
 import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { ModifiersPage } from '../modifiers/components/ModifiersPage';
-import { HostApplicationsPage } from './host-applications';
-import { ApplyHostApplicationPage } from './host-applications/ApplyHostApplication';
-import { QuizManagementPage } from './quiz';
+import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
+import { ApplyHostApplicationPage } from '../hosting-applications/components/ApplyHostApplication';
+import { QuizManagementPage } from '../hosting-applications/questions/components/QuizManagementPage';
 
 reactGa.initialize('UA-71696797-2');
 
