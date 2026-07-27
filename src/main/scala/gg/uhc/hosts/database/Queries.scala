@@ -10,7 +10,6 @@ import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
 import doobie.postgres.pgisimplicits._
-import doobie.implicits.legacy.instant._
 import cats.data.NonEmptyList
 
 class Queries(logger: LogHandler) {

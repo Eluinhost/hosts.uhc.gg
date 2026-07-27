@@ -4,7 +4,6 @@ import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.http.scaladsl.Http
 import org.apache.pekko.http.scaladsl.Http.ServerBinding
 import cats.effect._
-import cats.implicits._
 import com.softwaremill.macwire.wire
 import com.softwaremill.tagging._
 import com.typesafe.config.ConfigFactory
@@ -38,7 +37,7 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
     val resources: Resource[IO, Resources] = for {
-      config <- Resource.liftF(IO {
+      config <- Resource.eval(IO {
         ConfigFactory.load()
       })
       httpSystem        <- makeActorSystem("http-actor-system")
@@ -54,16 +53,14 @@ object Main extends IOApp {
         executionContexts,
         blocker
       )
-      _ <- Resource.liftF(IO {
+      _ <- Resource.eval(IO {
         httpSystem.log.info("Starting migrations...")
 
-        val flyway = new Flyway()
-        flyway.setDataSource(transactor.kernel)
-        flyway.migrate()
+        Flyway.configure().dataSource(transactor.kernel).table("schema_version").load().migrate()
       })
       binding <- Resource.make(
         IO.fromFuture(IO {
-          implicit val ac: ActorSystem  = httpSystem
+          implicit val ac: ActorSystem = httpSystem
 
           val mainModule = new MainModule(transactor,
                                           httpSystem.taggedWith[HttpSystem],
@@ -72,10 +69,12 @@ object Main extends IOApp {
 
           httpSystem.log.info("Starting web server...")
 
-          Http().newServerAt(
-            interface = config.getString("http.interface"),
-            port = config.getInt("http.port")
-          ).bind(mainModule.baseRoute())
+          Http()
+            .newServerAt(
+              interface = config.getString("http.interface"),
+              port = config.getInt("http.port")
+            )
+            .bind(mainModule.baseRoute())
         })
       )(binding =>
         IO.fromFuture {
