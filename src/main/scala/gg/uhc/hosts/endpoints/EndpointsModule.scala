@@ -1,7 +1,9 @@
 package gg.uhc.hosts.endpoints
 
-import akka.stream.Materializer
+import akka.actor.ActorSystem
 import com.softwaremill.macwire.wire
+import com.softwaremill.tagging.@@
+import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
@@ -22,7 +24,7 @@ import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
   def database: Database
-  def materializer: Materializer
+  def httpSystem: ActorSystem @@ HttpSystem
 
   lazy val customDirectives: CustomDirectives = wire[CustomDirectives]
 

@@ -13,10 +13,10 @@ trait TwirlSupport {
   implicit val twirlHtmlMarshaller: ToEntityMarshaller[Html] = twirlMarshaller[Html](`text/html`)
 
   /** Serialize Twirl `Txt` to `text/plain`. */
-  implicit val twirlTxtMarshaller = twirlMarshaller[Txt](`text/plain`)
+  implicit val twirlTxtMarshaller: ToEntityMarshaller[Txt] = twirlMarshaller[Txt](`text/plain`)
 
   /** Serialize Twirl `Xml` to `text/xml`. */
-  implicit val twirlXmlMarshaller = twirlMarshaller[Xml](`text/xml`)
+  implicit val twirlXmlMarshaller: ToEntityMarshaller[Xml] = twirlMarshaller[Xml](`text/xml`)
 
   /** Serialize Twirl formats to `String`. */
   protected def twirlMarshaller[A <: AnyRef: Manifest](contentType: MediaType): ToEntityMarshaller[A] =

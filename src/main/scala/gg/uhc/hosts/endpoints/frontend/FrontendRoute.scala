@@ -1,13 +1,16 @@
 package gg.uhc.hosts.endpoints.frontend
 
-import java.util.concurrent.TimeUnit
+import akka.actor.ActorSystem
 
+import java.util.concurrent.TimeUnit
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.RouteResult.Complete
 import akka.http.scaladsl.server.directives.MethodDirectives.get
 import akka.http.scaladsl.server.{Directive0, Route}
 import akka.stream.Materializer
 import akka.util.ByteString
+import com.softwaremill.tagging.@@
+import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.TwirlSupport
 
@@ -15,8 +18,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Success
 
-class FrontendRoute(database: Database, materializer: Materializer) extends TwirlSupport {
-  implicit val mz: Materializer = materializer
+class FrontendRoute(database: Database, actorSystem: ActorSystem @@ HttpSystem) extends TwirlSupport {
+  implicit val mz: Materializer = Materializer(actorSystem)
 
   private[this] val basicFrontend: Route = getFromFile("frontend/build/index.html")
 

@@ -3,7 +3,6 @@ package gg.uhc.hosts
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.Materializer
 import cats.effect._
 import cats.implicits._
 import com.softwaremill.macwire.wire
@@ -18,7 +17,7 @@ import org.flywaydb.core.Flyway
 
 class MainModule(
     transactor: Transactor[IO],
-    val materializer: Materializer,
+    val httpSystem: ActorSystem @@ HttpSystem,
     val databaseSystem: ActorSystem @@ DatabaseSystem,
     val redditApiSystem: ActorSystem @@ RedditApiSystem)
     extends EndpointsModule {
@@ -65,20 +64,18 @@ object Main extends IOApp {
       binding <- Resource.make(
         IO.fromFuture(IO {
           implicit val ac: ActorSystem  = httpSystem
-          implicit val mz: Materializer = Materializer.matFromSystem
 
           val mainModule = new MainModule(transactor,
-                                          mz,
+                                          httpSystem.taggedWith[HttpSystem],
                                           databaseSystem.taggedWith[DatabaseSystem],
                                           redditApiSystem.taggedWith[RedditApiSystem])
 
           httpSystem.log.info("Starting web server...")
 
-          Http().bindAndHandle(
-            handler = mainModule.baseRoute(),
+          Http().newServerAt(
             interface = config.getString("http.interface"),
             port = config.getInt("http.port")
-          )
+          ).bind(mainModule.baseRoute())
         })
       )(binding =>
         IO.fromFuture {

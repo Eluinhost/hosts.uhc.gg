@@ -60,7 +60,7 @@ class AuthenticateCallback(
     } ~ error("Client IP address unknown")
 
   def apply(): Route =
-    parameter("error")(error) ~                   // Check for error paramter first
-      parameters(("code", "state" ? "/"))(valid) ~ // Then check for code parameter
-      error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
+    parameter("error")(error) ~                                  // Check for error paramter first
+      parameters("code", "state" ? "/")(valid) ~       // Then check for code parameter
+      error("Invalid callback parameters")                       // Otherwise show invalid parameters message if neither matched
 }
