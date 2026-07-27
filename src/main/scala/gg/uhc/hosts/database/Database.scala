@@ -4,7 +4,7 @@ import java.net.InetAddress
 import java.time.Instant
 import java.util.UUID
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import cats.data.NonEmptyList
 import cats.effect.IO
 import com.softwaremill.tagging.@@

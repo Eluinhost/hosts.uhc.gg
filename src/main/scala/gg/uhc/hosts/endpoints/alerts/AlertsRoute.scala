@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints.alerts
 
-import akka.http.scaladsl.server.Directives.{concat, delete, path, get, pathEndOrSingleSlash, post}
-import akka.http.scaladsl.server.PathMatchers.LongNumber
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Directives.{concat, delete, path, get, pathEndOrSingleSlash, post}
+import org.apache.pekko.http.scaladsl.server.PathMatchers.LongNumber
+import org.apache.pekko.http.scaladsl.server.Route
 
 class AlertsRoute(
     getAllAlertRules: GetAllAlertRules,

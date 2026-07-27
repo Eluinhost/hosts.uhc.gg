@@ -1,9 +1,9 @@
 package gg.uhc.hosts.endpoints
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.Instrumented
 import gg.uhc.hosts.endpoints.alerts.AlertsRoute
 import gg.uhc.hosts.endpoints.docs.DocsRoute

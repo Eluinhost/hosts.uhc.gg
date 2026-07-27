@@ -3,9 +3,9 @@ package gg.uhc.hosts.endpoints.matches
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.unmarshalling.Unmarshaller
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}

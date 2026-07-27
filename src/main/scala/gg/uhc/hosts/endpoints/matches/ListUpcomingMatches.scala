@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints.matches
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.RouteDirectives.{complete, reject}
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.directives.RouteDirectives.{complete, reject}
 import gg.uhc.hosts.CustomJsonCodec._
 import gg.uhc.hosts.Instrumented
 import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket

@@ -3,7 +3,7 @@ package gg.uhc.hosts.endpoints.ubl
 import java.time.Instant
 import java.util.UUID
 
-import akka.http.scaladsl.server.{Directive0, Directives}
+import org.apache.pekko.http.scaladsl.server.{Directive0, Directives}
 
 // Used to both create and edit entries
 case class UblEntryPayload(ign: String, uuid: UUID, reason: String, expires: Option[Instant], link: String) {

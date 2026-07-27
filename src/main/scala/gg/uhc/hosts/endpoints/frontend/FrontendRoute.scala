@@ -1,14 +1,14 @@
 package gg.uhc.hosts.endpoints.frontend
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 
 import java.util.concurrent.TimeUnit
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.RouteResult.Complete
-import akka.http.scaladsl.server.directives.MethodDirectives.get
-import akka.http.scaladsl.server.{Directive0, Route}
-import akka.stream.Materializer
-import akka.util.ByteString
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.RouteResult.Complete
+import org.apache.pekko.http.scaladsl.server.directives.MethodDirectives.get
+import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.util.ByteString
 import com.softwaremill.tagging.@@
 import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database

@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints
 
-import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
-import akka.http.scaladsl.model.MediaTypes._
-import akka.http.scaladsl.model.MediaType
+import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
+import org.apache.pekko.http.scaladsl.model.MediaTypes._
+import org.apache.pekko.http.scaladsl.model.MediaType
 import play.twirl.api.{ Xml, Txt, Html }
 
 object TwirlSupport extends TwirlSupport

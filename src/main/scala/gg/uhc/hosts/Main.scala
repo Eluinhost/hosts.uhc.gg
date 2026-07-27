@@ -1,8 +1,8 @@
 package gg.uhc.hosts
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.Http.ServerBinding
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.Http.ServerBinding
 import cats.effect._
 import cats.implicits._
 import com.softwaremill.macwire.wire

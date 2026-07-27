@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import akka.http.scaladsl.model.headers.HttpChallenges
-import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
-import akka.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.model.headers.HttpChallenges
+import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
+import org.apache.pekko.http.scaladsl.server.Directives._
 
 object Permissions {
   val base: List[String] =

@@ -2,9 +2,9 @@ package gg.uhc.hosts.endpoints.authentication
 
 import java.net.{InetAddress, URLEncoder}
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 import doobie._
 import gg.uhc.hosts.authentication.Session
 import gg.uhc.hosts.database.Database
