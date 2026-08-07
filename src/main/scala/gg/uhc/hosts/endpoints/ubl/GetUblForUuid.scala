@@ -7,6 +7,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class GetUblForUuid(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -14,7 +15,7 @@ class GetUblForUuid(directives: CustomDirectives, database: Database) {
 
   def apply(uuid: UUID): Route = handleRejections(EndpointRejectionHandler()) {
     requireSucessfulQuery(database.getUblEntriesForUuid(uuid)) { ubl =>
-      complete(ubl)
+      complete(ubl.asJson)
     }
   }
 }

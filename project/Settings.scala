@@ -13,7 +13,7 @@ object Settings {
   )
 
   object versions {
-    val scala           = "2.13.18"
+    val scala           = "3.8.4"
     val doobie          = "0.13.4"
     val circe           = "0.14.16"
     val pekko           = "1.6.0"

@@ -1,10 +1,11 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import org.apache.pekko.http.scaladsl.server.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax.EncoderOps
 
 class ListUserCountForEachPermission(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -19,7 +20,7 @@ class ListUserCountForEachPermission(customDirectives: CustomDirectives, databas
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getUserCountForEachPermission()) { perms =>
-        complete(addBasePerms(perms))
+        complete(addBasePerms(perms).asJson)
       }
     }
 }

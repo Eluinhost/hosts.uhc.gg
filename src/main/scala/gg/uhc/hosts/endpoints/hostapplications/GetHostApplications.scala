@@ -5,6 +5,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class GetHostApplications(database: Database, customDirectives: CustomDirectives) {
   import CustomJsonCodec._
@@ -13,7 +14,7 @@ class GetHostApplications(database: Database, customDirectives: CustomDirectives
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getRecentHostApplications) { applications =>
-        complete(applications)
+        complete(applications.asJson)
       }
     }
 }

@@ -37,7 +37,7 @@ class CreateAlertRule(customDirectives: CustomDirectives, database: Database) {
           entity(as[CreateAlertRulePayload]) { entity =>
             convertPayload(entity, session.username) { row =>
               (validateRow(row) & requireSucessfulQuery(database.createAlertRule(row))) { id =>
-                complete(StatusCodes.Created -> row.copy(id = id))
+                complete(StatusCodes.Created, row.copy(id = id))
               }
             }
           }

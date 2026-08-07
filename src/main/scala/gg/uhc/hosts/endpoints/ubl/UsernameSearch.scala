@@ -5,6 +5,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax.EncoderOps
 
 class UsernameSearch(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -12,7 +13,7 @@ class UsernameSearch(directives: CustomDirectives, database: Database) {
 
   def apply(username: String): Route = handleRejections(EndpointRejectionHandler()) {
     requireSucessfulQuery(database.searchUblUsername(username)) { map =>
-      complete(map)
+      complete(map.asJson)
     }
   }
 }

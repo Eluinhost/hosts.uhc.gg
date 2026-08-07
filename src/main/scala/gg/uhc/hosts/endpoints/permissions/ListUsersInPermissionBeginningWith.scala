@@ -5,6 +5,7 @@ import org.apache.pekko.http.scaladsl.server._
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class ListUsersInPermissionBeginningWith(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -13,7 +14,7 @@ class ListUsersInPermissionBeginningWith(customDirectives: CustomDirectives, dat
   def apply(permission: String, startsWith: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getUsersForPermissionStartingWithLetter(permission, startsWith)) { users =>
-        complete(users)
+        complete(users.asJson)
       }
     }
 }

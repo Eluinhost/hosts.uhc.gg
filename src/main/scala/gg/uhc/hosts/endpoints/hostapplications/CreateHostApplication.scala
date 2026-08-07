@@ -1,11 +1,12 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, HostApplicationAnswerRow, HostApplicationRow, QuizQuestionChoiceRow, QuizQuestionRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax.EncoderOps
 
 class CreateHostApplication(database: Database, customDirectives: CustomDirectives) {
   import CustomJsonCodec._
@@ -15,7 +16,7 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
   case class CreateHostApplicationPayload(answers: List[AnswerPayload])
 
   private[this] def validateApplicant(username: String): Directive0 =
-    requireSucessfulQuery(database.getPermissions(username)).flatMap { permissions: List[String] =>
+    requireSucessfulQuery(database.getPermissions(username)).flatMap { (permissions: List[String]) =>
       validate(
         !permissions.contains("host") && !permissions.contains("trial host"),
         "Hosts cannot submit applications"
@@ -88,7 +89,7 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
                   case Left(error) => complete(StatusCodes.BadRequest -> error)
                   case Right(answers) =>
                     requireSucessfulQuery(database.submitHostApplication(session.username, answers)) { id =>
-                      complete(StatusCodes.Created -> Map("id" -> id))
+                      complete(StatusCodes.Created, Map("id" -> id).asJson)
                     }
                 }
               }

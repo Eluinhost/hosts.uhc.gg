@@ -6,6 +6,7 @@ import org.apache.pekko.http.scaladsl.server.{Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class GetAllAlertRules(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -16,7 +17,7 @@ class GetAllAlertRules(customDirectives: CustomDirectives, database: Database) {
       requireAuthentication { session =>
         requirePermission("hosting advisor", session.username) {
           requireSucessfulQuery(database.getAllAlertRules()) { rules =>
-            complete(StatusCodes.OK -> rules)
+            complete(StatusCodes.OK -> rules.asJson)
           }
         }
       }
