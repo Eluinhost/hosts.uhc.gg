@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.PathMatchers.LongNumber
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.PathMatchers.LongNumber
+import org.apache.pekko.http.scaladsl.server.Route
 
 class HostApplicationsRoute(
     getHostApplications: GetHostApplications,
