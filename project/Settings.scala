@@ -6,7 +6,7 @@ object Settings {
   val version      = "1.4.6"
 
   val scalacOptions = Seq(
-    "-Xlint",
+    "-Wshadow:all",
     "-unchecked",
     "-deprecation",
     "-feature"
