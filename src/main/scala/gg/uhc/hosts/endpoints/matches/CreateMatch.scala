@@ -4,9 +4,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneOffset}
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives.{entity, _}
-import akka.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.Directives.{entity, _}
+import org.apache.pekko.http.scaladsl.server._
 import gg.uhc.hosts._
 import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}

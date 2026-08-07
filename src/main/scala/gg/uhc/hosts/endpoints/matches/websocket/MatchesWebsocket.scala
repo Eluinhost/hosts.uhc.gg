@@ -1,21 +1,24 @@
 package gg.uhc.hosts.endpoints.matches.websocket
 
-import akka.NotUsed
-import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.http.scaladsl.server.Directives.{extractExecutionContext, extractUpgradeToWebSocket}
-import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import akka.stream.{Materializer, OverflowStrategy}
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source, SourceQueueWithComplete}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.ws.{Message, TextMessage}
+import org.apache.pekko.http.scaladsl.server.Directives.{extractExecutionContext, extractWebSocketUpgrade}
+import org.apache.pekko.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.directives.RouteDirectives.complete
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
+import org.apache.pekko.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source, SourceQueueWithComplete}
+import com.softwaremill.tagging.@@
 import gg.uhc.hosts.database.MatchRow
 import gg.uhc.hosts.CustomJsonCodec._
+import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives}
 import io.circe.{Json, Printer}
 
 import scala.concurrent.ExecutionContext
 
-class MatchesWebsocket(materializer: Materializer, cache: BasicCache, customDirectives: CustomDirectives) {
-  implicit val mz: Materializer = materializer
+class MatchesWebsocket(actorSystem: ActorSystem @@ HttpSystem, cache: BasicCache, customDirectives: CustomDirectives) {
+  implicit val mz: Materializer = Materializer(actorSystem)
 
   private[this] val connectedClientsQueue: SourceQueueWithComplete[Int] = Source
     .queue[Int](0, OverflowStrategy.backpressure)
@@ -68,7 +71,7 @@ class MatchesWebsocket(materializer: Materializer, cache: BasicCache, customDire
   val route: Route =
     customDirectives.requireApiTokenAuthentication { session =>
       customDirectives.requirePermission("beta tester", session.username) {
-        extractUpgradeToWebSocket { upgrade =>
+        extractWebSocketUpgrade { upgrade =>
           extractExecutionContext { implicit ec =>
             complete(upgrade.handleMessages(websocketFlow))
           }

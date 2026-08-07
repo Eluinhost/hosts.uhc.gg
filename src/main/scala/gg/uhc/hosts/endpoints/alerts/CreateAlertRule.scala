@@ -2,9 +2,9 @@ package gg.uhc.hosts.endpoints.alerts
 
 import java.time.Instant
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives.{as, complete, entity, handleRejections, provide, validate}
-import akka.http.scaladsl.server.{Directive0, Directive1, Route}
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.Directives.{as, complete, entity, handleRejections, provide, validate}
+import org.apache.pekko.http.scaladsl.server.{Directive0, Directive1, Route}
 import gg.uhc.hosts.{Alerts, CustomJsonCodec}
 import gg.uhc.hosts.database.{AlertRuleRow, Database}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}

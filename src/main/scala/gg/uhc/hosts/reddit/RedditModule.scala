@@ -1,6 +1,6 @@
 package gg.uhc.hosts.reddit
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import com.softwaremill.tagging.@@
 import gg.uhc.hosts.{ConfigurationModule, RedditApiSystem}
 

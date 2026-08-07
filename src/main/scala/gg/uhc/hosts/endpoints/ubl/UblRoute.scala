@@ -2,8 +2,8 @@ package gg.uhc.hosts.endpoints.ubl
 
 import java.util.UUID
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{PathMatcher1, Route}
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.{PathMatcher1, Route}
 
 import scala.util.Try
 
