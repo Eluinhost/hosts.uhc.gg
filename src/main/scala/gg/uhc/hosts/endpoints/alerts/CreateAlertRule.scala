@@ -15,7 +15,7 @@ class CreateAlertRule(customDirectives: CustomDirectives, database: Database) {
 
   case class CreateAlertRulePayload(field: String, alertOn: String, exact: Boolean)
 
-  private[this] def convertPayload(payload: CreateAlertRulePayload, author: String): Directive1[AlertRuleRow] =
+  private def convertPayload(payload: CreateAlertRulePayload, author: String): Directive1[AlertRuleRow] =
     provide(
       AlertRuleRow(
         field = payload.field.trim,
@@ -26,7 +26,7 @@ class CreateAlertRule(customDirectives: CustomDirectives, database: Database) {
         created = Instant.now()
       ))
 
-  private[this] def validateRow(row: AlertRuleRow): Directive0 =
+  private def validateRow(row: AlertRuleRow): Directive0 =
     validate(Alerts.allAlertFields.contains(row.field), "Invalid Field") &
       validate(row.alertOn.nonEmpty, "Value cannot be empty")
 

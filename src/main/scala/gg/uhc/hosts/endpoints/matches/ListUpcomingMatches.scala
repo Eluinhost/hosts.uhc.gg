@@ -11,8 +11,8 @@ import gg.uhc.hosts.endpoints.{BasicCache, DatabaseErrorRejection, EndpointRejec
 import scala.util.{Failure, Success}
 
 class ListUpcomingMatches(cache: BasicCache, websocket: MatchesWebsocket) extends Instrumented {
-  private[this] val upcomingMatchesTimer   = metrics.timer("upcoming-matches-request-time")
-  private[this] val upcomingMatchesCounter = metrics.counter("upcoming-matches-request-count")
+  private val upcomingMatchesTimer   = metrics.timer("upcoming-matches-request-time")
+  private val upcomingMatchesCounter = metrics.counter("upcoming-matches-request-count")
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {

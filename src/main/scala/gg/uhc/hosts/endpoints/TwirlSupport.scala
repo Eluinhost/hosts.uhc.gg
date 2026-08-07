@@ -5,6 +5,8 @@ import org.apache.pekko.http.scaladsl.model.MediaTypes._
 import org.apache.pekko.http.scaladsl.model.MediaType
 import play.twirl.api.{ Xml, Txt, Html }
 
+import scala.reflect.ClassTag
+
 object TwirlSupport extends TwirlSupport
 
 trait TwirlSupport {
@@ -19,7 +21,7 @@ trait TwirlSupport {
   implicit val twirlXmlMarshaller: ToEntityMarshaller[Xml] = twirlMarshaller[Xml](`text/xml`)
 
   /** Serialize Twirl formats to `String`. */
-  protected def twirlMarshaller[A <: AnyRef: Manifest](contentType: MediaType): ToEntityMarshaller[A] =
+  protected def twirlMarshaller[A <: AnyRef: ClassTag](contentType: MediaType): ToEntityMarshaller[A] =
     Marshaller.StringMarshaller.wrap(contentType)(_.toString)
 
 }

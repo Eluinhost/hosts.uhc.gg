@@ -15,7 +15,7 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
   case class AnswerPayload(questionId: Long, choiceId: Option[Long], textAnswer: Option[String])
   case class CreateHostApplicationPayload(answers: List[AnswerPayload])
 
-  private[this] def validateApplicant(username: String): Directive0 =
+  private def validateApplicant(username: String): Directive0 =
     requireSucessfulQuery(database.getPermissions(username)).flatMap { (permissions: List[String]) =>
       validate(
         !permissions.contains("host") && !permissions.contains("trial host"),
@@ -26,7 +26,7 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
         validate(existing.isEmpty, "You already have a pending application")
     }
 
-  private[this] def buildAnswers(
+  private def buildAnswers(
       payload: List[AnswerPayload],
       questions: List[QuizQuestionRow],
       choices: List[QuizQuestionChoiceRow]

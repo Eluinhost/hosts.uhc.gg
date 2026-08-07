@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext
 class MatchesWebsocket(actorSystem: ActorSystem @@ HttpSystem, cache: BasicCache, customDirectives: CustomDirectives) {
   implicit val mz: Materializer = Materializer(actorSystem)
 
-  private[this] val connectedClientsQueue: SourceQueueWithComplete[Int] = Source
+  private val connectedClientsQueue: SourceQueueWithComplete[Int] = Source
     .queue[Int](0, OverflowStrategy.backpressure)
     .conflate(_ + _)
     .scan(0)(_ + _)
@@ -28,7 +28,7 @@ class MatchesWebsocket(actorSystem: ActorSystem @@ HttpSystem, cache: BasicCache
     .toMat(Sink.ignore)(Keep.left)
     .run()
 
-  private[this] val (messageSink: Sink[Json, NotUsed], messageSource: Source[Message, NotUsed]) =
+  private val (messageSink: Sink[Json, NotUsed], messageSource: Source[Message, NotUsed]) =
     MergeHub
       .source[Json]
       .log("message", m => m.printWith(Printer.spaces4SortKeys))
@@ -39,10 +39,10 @@ class MatchesWebsocket(actorSystem: ActorSystem @@ HttpSystem, cache: BasicCache
   // make sure there is always a consumer so items don't build up and send to the first consumer
   messageSource.runWith(Sink.ignore)
 
-  private[this] def currentUpcomingGamesListMessage(): Source[Message, NotUsed] =
+  private def currentUpcomingGamesListMessage(): Source[Message, NotUsed] =
     Source.future(cache.getUpcomingMatches).map(x => TextMessage(new UpcomingMatchesEvent(x).toJsonEvent.noSpaces))
 
-  private[this] def websocketFlow(implicit ec: ExecutionContext): Flow[Any, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(
+  private def websocketFlow(implicit ec: ExecutionContext): Flow[Any, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(
     // we don't care about any messages the client sends
     Sink.ignore,
     // first increment the client count

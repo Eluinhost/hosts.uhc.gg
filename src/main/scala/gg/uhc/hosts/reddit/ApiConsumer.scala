@@ -16,9 +16,9 @@ class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
   implicit val mz: Materializer = Materializer.matFromSystem
   implicit val ec: ExecutionContext = system.dispatcher
 
-  private[this] val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
+  private val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
 
-  private[this] val queue = Source
+  private val queue = Source
     .queue[(HttpRequest, Promise[HttpResponse])](queueSize)
     .throttle(30, 1.minute, 1, ThrottleMode.Shaping)
     .via(pool)

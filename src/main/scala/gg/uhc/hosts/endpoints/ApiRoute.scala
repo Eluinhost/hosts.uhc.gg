@@ -34,8 +34,8 @@ class ApiRoute(
     modifiersRoute: ModifiersRoute)
     extends Instrumented {
 
-  private[this] val apiTimer = metrics.timer("api-request-time")
-  private[this] val apiRequests = metrics.counter("api-request-count")
+  private val apiTimer = metrics.timer("api-request-time")
+  private val apiRequests = metrics.counter("api-request-count")
 
   def apply(): Route =
     (timed(apiTimer) & counting(apiRequests)) {

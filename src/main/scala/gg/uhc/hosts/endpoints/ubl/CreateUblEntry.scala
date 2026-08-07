@@ -13,7 +13,7 @@ class CreateUblEntry(directives: CustomDirectives, database: Database, cache: Ba
   import CustomJsonCodec._
   import directives._
 
-  private[this] def convertPayload(payload: UblEntryPayload, username: String): Directive1[UblRow] =
+  private def convertPayload(payload: UblEntryPayload, username: String): Directive1[UblRow] =
     provide(
       UblRow(
         id = -1,

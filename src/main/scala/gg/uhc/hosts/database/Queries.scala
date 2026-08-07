@@ -13,7 +13,7 @@ import doobie.postgres.pgisimplicits._
 import cats.data.NonEmptyList
 
 class Queries(logger: LogHandler) {
-  private[this] implicit val logHandler: LogHandler = logger
+  private implicit val logHandler: LogHandler = logger
 
   def createHostApplication(username: String): Update0 =
     sql"""

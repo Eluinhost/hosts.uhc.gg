@@ -19,9 +19,9 @@ import gg.uhc.hosts.{DatabaseSystem, Instrumented}
 import scala.concurrent.{ExecutionContext, Future}
 
 class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem) extends Instrumented {
-  private[this] val queryTimer   = metrics.timer("query-time")
-  private[this] val successGauge = metrics.counter("successful-queries")
-  private[this] val failureGauge = metrics.counter("failed-queries")
+  private val queryTimer   = metrics.timer("query-time")
+  private val successGauge = metrics.counter("successful-queries")
+  private val failureGauge = metrics.counter("failed-queries")
 
   implicit val s: ActorSystem  = system
   implicit val ec: ExecutionContext = system.dispatcher

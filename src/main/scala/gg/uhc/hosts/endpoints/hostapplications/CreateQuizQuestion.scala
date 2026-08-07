@@ -17,9 +17,9 @@ class CreateQuizQuestion(database: Database, customDirectives: CustomDirectives)
   case class ChoicePayload(text: String, correct: Boolean)
   case class CreateQuizQuestionPayload(prompt: String, questionType: String, choices: List[ChoicePayload])
 
-  private[this] val validTypes = Set("multiple choice", "text")
+  private val validTypes = Set("multiple choice", "text")
 
-  private[this] def validatePayload(payload: CreateQuizQuestionPayload): Directive0 =
+  private def validatePayload(payload: CreateQuizQuestionPayload): Directive0 =
     validate(payload.prompt.trim.nonEmpty, "Prompt cannot be empty") &
       validate(validTypes.contains(payload.questionType), "Invalid question type") &
       validate(payload.choices.forall(_.text.trim.nonEmpty), "Choices cannot be empty") &

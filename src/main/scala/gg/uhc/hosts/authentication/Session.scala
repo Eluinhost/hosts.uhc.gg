@@ -15,16 +15,16 @@ sealed trait Session {
 }
 
 object Session {
-  private[this] val config = ConfigFactory.load()
-  private[this] val jwtSecret: String    = config.getString("jwt.secret")
-  private[this] val jwtAlgorithm: JwtHmacAlgorithm = JwtAlgorithm.fromString(config.getString("jwt.algorithm")) match {
+  private val config = ConfigFactory.load()
+  private val jwtSecret: String    = config.getString("jwt.secret")
+  private val jwtAlgorithm: JwtHmacAlgorithm = JwtAlgorithm.fromString(config.getString("jwt.algorithm")) match {
     case e: JwtHmacAlgorithm => e
     case _                   => throw new IllegalArgumentException("Expected a HMAC algorithm")
   }
-  private[this] val authSessionTimeout: Duration    = config.getDuration("jwt.timeout")
-  private[this] val refreshSessionTimeout: Duration = config.getDuration("jwt.refreshTimeout")
+  private val authSessionTimeout: Duration    = config.getDuration("jwt.timeout")
+  private val refreshSessionTimeout: Duration = config.getDuration("jwt.refreshTimeout")
 
-  private[this] def generateJwtToken(content: String, timeout: Duration) = {
+  private def generateJwtToken(content: String, timeout: Duration) = {
     val now = Instant.now()
 
     val claim = JwtClaim (
@@ -36,7 +36,7 @@ object Session {
     JwtCirce.encode(claim, jwtSecret, jwtAlgorithm)
   }
 
-  private[this] def parseTokenContents(jwt: String): Option[Json] =
+  private def parseTokenContents(jwt: String): Option[Json] =
     for {
       claim <- JwtCirce.decode(jwt, jwtSecret, Seq(jwtAlgorithm)).toOption
       json  <- parse(claim.content).toOption

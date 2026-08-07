@@ -21,13 +21,13 @@ import scala.util.Success
 class FrontendRoute(database: Database, actorSystem: ActorSystem @@ HttpSystem) extends TwirlSupport {
   implicit val mz: Materializer = Materializer(actorSystem)
 
-  private[this] val basicFrontend: Route = getFromFile("frontend/build/index.html")
+  private val basicFrontend: Route = getFromFile("frontend/build/index.html")
 
   def addMetaTags(input: ByteString, title: String, description: String): ByteString =
     ByteString(
       input.utf8String.replaceFirst("__META_TAG_TITLE__", title).replaceFirst("__META_TAG_DESCRIPTION__", description))
 
-  private[this] def withMatchTitle(title: String, description: String): Directive0 = extractExecutionContext.flatMap {
+  private def withMatchTitle(title: String, description: String): Directive0 = extractExecutionContext.flatMap {
     implicit ec =>
       mapRouteResultWith({
         case result @ Complete(response) =>
