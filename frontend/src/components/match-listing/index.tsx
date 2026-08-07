@@ -12,7 +12,6 @@ import { getUsername } from '../../state/Selectors';
 import { Settings } from '../../actions';
 import moment from 'moment-timezone';
 import { RefreshButton } from './RefreshButton';
-import { isUndefined } from 'util';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
 
 import './match-listing.sass';
@@ -62,7 +61,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
     if (!this.visibilityDetector.isHidden()) {
       const { autoRefreshSeconds, lastUpdated } = this.props;
 
-      if (!isUndefined(autoRefreshSeconds) && autoRefreshSeconds < 1) throw new Error("autorefresh shouldn't be < 1");
+      if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) throw new Error("autorefresh shouldn't be < 1");
 
       // if we are to auto refresh start a timer
       if (autoRefreshSeconds) {
@@ -72,7 +71,7 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
       // data is stale if it has never been updated or the last update was before the refresh timer allows
       const isDataStale: boolean =
         lastUpdated === null ||
-        (!isUndefined(autoRefreshSeconds) && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
+        (autoRefreshSeconds !== undefined && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
 
       if (isDataStale) {
         this.props.refetch();
