@@ -18,7 +18,6 @@ import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
   * Creates a new Match object. Requires login + 'host' permission
   */
 class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, websocket: MatchesWebsocket) {
-  import Alerts._
   import CustomJsonCodec._
   import customDirectives._
 
@@ -184,16 +183,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       validate(row.count >= 1, "Count must be at least 1") &
       overhostCheck(row)
 
-  private def createMatchAndAlerts(row: MatchRow): ConnectionIO[MatchRow] =
+  private def createMatch(row: MatchRow): ConnectionIO[MatchRow] =
     for {
       id       <- database.insertMatch(row)
-      allRules <- database.getAllAlertRules()
-      matchedRules = allRules.filter { _.matchesRow(row) }
-      addedAlertCount <- matchedRules.foldLeft(delay(0)) { (prev, rule) => // reduce to run each in series, one for each alert
-        prev.flatMap { count =>
-          database.createAlert(matchId = id, triggeredRuleId = rule.id).map(_ + count)
-        }
-      }
     } yield row.copy(id = id)
 
   def apply(): Route =
@@ -204,7 +196,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
           entity(as[CreateMatchPayload]) { entity =>
             convertPayload(entity, session.username) { row =>
               validateRow(row) {
-                requireSucessfulQuery(createMatchAndAlerts(row)) { inserted =>
+                requireSucessfulQuery(createMatch(row)) { inserted =>
                   cache.invalidateUpcomingMatches()
                   websocket.notifyMatchCreated(inserted)
                   complete(StatusCodes.Created -> inserted)

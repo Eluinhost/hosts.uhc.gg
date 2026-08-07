@@ -16,7 +16,6 @@ class BasicCache(database: Database) {
 
   private sealed trait ListingKey
   private object UpcomingMatches extends ListingKey
-  private object CurrentUbl      extends ListingKey
 
   implicit val ec: ExecutionContext = database.ec
 
@@ -25,7 +24,6 @@ class BasicCache(database: Database) {
     .expireAfterWrite(5 minutes)
     .buildAsyncFuture[ListingKey, Json](loader = {
       case UpcomingMatches => database.run(listUpcomingMatchesQuery).map(_.asJson)
-      case CurrentUbl      => database.run(database.getCurrentUbl).map(_.asJson)
     })
 
   private def listUpcomingMatchesQuery: ConnectionIO[List[JsonObject]] =
@@ -35,8 +33,6 @@ class BasicCache(database: Database) {
     } yield matches.map(row => row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
 
   def getUpcomingMatches: Future[Json] = cache.get(UpcomingMatches)
-  def getCurrentUbl: Future[Json]      = cache.get(CurrentUbl)
 
   def invalidateUpcomingMatches(): Unit = cache.synchronous().invalidate(UpcomingMatches)
-  def invalidateCurrentUbl(): Unit      = cache.synchronous().invalidate(CurrentUbl)
 }

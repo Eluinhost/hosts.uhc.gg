@@ -28,14 +28,5 @@ export const HomePage: React.FunctionComponent<RouteComponentProps<any>> = () =>
         <p>View member roles and member moderation log</p>
       </Card>
     </Link>
-
-    {/*<Link to="/ubl">*/}
-    {/*<Card interactive>*/}
-    {/*<h4>Universal Ban List</h4>*/}
-    {/*<p>*/}
-    {/*View the universal ban list*/}
-    {/*</p>*/}
-    {/*</Card>*/}
-    {/*</Link>*/}
   </div>
 );

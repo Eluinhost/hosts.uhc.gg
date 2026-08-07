@@ -84,16 +84,6 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def isOwnerOfMatch(id: Long, username: String): ConnectionIO[Boolean] =
     queries.isOwnerOfMatch(id, username).unique
 
-  def getUnprocessedDiscordMatches(): ConnectionIO[List[MatchRow]] =
-    queries.getUnprocessedDiscordMatches.to[List]
-
-  def flagMatchesAsProcessedForDiscord(ids: List[Long]): ConnectionIO[Unit] = ids match {
-    // if at least one item in IDs run the query
-    case a +: as => queries.flagMatchesAsProcessedForDiscord(NonEmptyList(a, as)).run.map(_ => ())
-    // otherwise don't run anything and use an empty list instead
-    case _ => delay(())
-  }
-
   def getUserCountForEachPermission(): ConnectionIO[Map[String, Int]] =
     queries.getUserCountForEachPermission.to[List].map(_.toMap)
 
@@ -220,29 +210,8 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def approveMatch(id: Long, approver: String): ConnectionIO[Boolean] =
     queries.approveMatch(id, approver).run.map(_ > 0)
 
-  def getCurrentUbl: ConnectionIO[List[UblRow]] =
-    queries.getCurrentUbl.to[List]
-
   def getHostingHistory(host: String, before: Option[Long], count: Int): ConnectionIO[List[MatchRow]] =
     queries.hostingHistory(host, before, count).to[List]
-
-  def createUblEntry(entry: UblRow): ConnectionIO[Long] =
-    queries.createUblEntry(entry).withUniqueGeneratedKeys[Long]("id")
-
-  def getUblEntriesForUuid(uuid: UUID): ConnectionIO[List[UblRow]] =
-    queries.getUblEntriesForUuid(uuid).to[List]
-
-  def searchUblUsername(username: String): ConnectionIO[Map[String, List[UUID]]] =
-    queries.searchUblUsername(username).to[List].map(_.toMap)
-
-  def editUblEntry(row: UblRow): ConnectionIO[Boolean] =
-    queries.editUblEntry(row).run.map(_ > 0)
-
-  def deleteUblEntry(id: Long): ConnectionIO[Boolean] =
-    queries.deleteUblEntry(id).run.map(_ > 0)
-
-  def getUblEntry(id: Long): ConnectionIO[Option[UblRow]] =
-    queries.getUblEntry(id).option
 
   def run[T](query: ConnectionIO[T]): Future[T] =
     Future {
@@ -259,24 +228,6 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
     }
 
   def getUnapprovedUpcomingMatchesCount: ConnectionIO[Int] = queries.unapprovedUpcomingMatchesCount.unique
-
-  def createAlertRule(rule: AlertRuleRow): ConnectionIO[Long] =
-    queries.createAlertRule(rule).withUniqueGeneratedKeys[Long]("id")
-
-  def getAllAlertRules(): ConnectionIO[List[AlertRuleRow]] =
-    queries.getAllAlertRules.to[List]
-
-  def deleteAlertRule(id: Long): ConnectionIO[Int] =
-    queries.deleteAlertRule(id).run
-
-  def createAlert(matchId: Long, triggeredRuleId: Long): ConnectionIO[Int] =
-    queries.createAlert(matchId, triggeredRuleId).run
-
-  def getAlertsForDiscord(): ConnectionIO[List[AlertRow]] =
-    queries.getAlertsForDiscord.to[List]
-
-  def setAlertsHandledForDiscord(matchId: Long): ConnectionIO[Int] =
-    queries.setAlertsHandledForDiscord(matchId).run
 
   def getAllModifiers(): ConnectionIO[List[ModifierRow]] =
     queries.getAllModifiers().to[List]
