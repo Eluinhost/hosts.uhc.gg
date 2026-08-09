@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { Intent, TagInput } from '@blueprintjs/core';
@@ -34,17 +34,23 @@ const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => 
   }
 };
 
-const renderField: React.FunctionComponent<WrappedFieldProps & TagsFieldProps> = props => (
-  <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
-    <TagInput
-      intent={!props.meta.valid ? Intent.DANGER : Intent.NONE}
-      values={props.input && props.input.value ? props.input.value : []}
-      onAdd={onAdd(props.input)}
-      onRemove={onRemove(props.input)}
-      inputProps={{ disabled: props.disabled }}
-    />
-    {props.children}
-  </FieldWrapper>
-);
+const renderField: React.FC<WrappedFieldProps & TagsFieldProps> = props => {
+  const { meta, label, required, input, disabled, children } = props;
 
-export const TagsField: React.FunctionComponent<TagsFieldProps> = props => <Field {...props} component={renderField} />;
+  return (
+    <FieldWrapper meta={meta} label={label} required={required}>
+      <TagInput
+        intent={!meta.valid ? Intent.DANGER : Intent.NONE}
+        values={input && input.value ? input.value : []}
+        onAdd={onAdd(input)}
+        onRemove={onRemove(input)}
+        inputProps={{ disabled }}
+      />
+      {children}
+    </FieldWrapper>
+  );
+};
+
+export const TagsField: React.FC<TagsFieldProps> = props => (
+  <Field {...props} component={renderField} />
+);

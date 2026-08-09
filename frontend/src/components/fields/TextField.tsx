@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { Classes } from '@blueprintjs/core';
@@ -12,16 +12,31 @@ export type TextFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const renderField: React.FunctionComponent<WrappedFieldProps & TextFieldProps> = props => (
-  <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
-    <input
-      {...props.input}
-      className={`${Classes.INPUT} ${!props.meta.valid ? Classes.INTENT_DANGER : ''} ${props.className || ''}`}
-      placeholder={props.placeholder || props.label}
-      type={props.isPassword ? 'password' : 'text'}
-      disabled={props.disabled}
-    />
-  </FieldWrapper>
-);
+const renderField: React.FC<WrappedFieldProps & TextFieldProps> = props => {
+  const {
+    meta,
+    label,
+    required,
+    input,
+    placeholder,
+    isPassword,
+    disabled,
+    className,
+  } = props;
 
-export const TextField: React.FunctionComponent<TextFieldProps> = props => <Field {...props} component={renderField} />;
+  return (
+    <FieldWrapper meta={meta} label={label} required={required}>
+      <input
+        {...input}
+        className={`${Classes.INPUT} ${!meta.valid ? Classes.INTENT_DANGER : ''} ${className || ''}`}
+        placeholder={placeholder || label}
+        type={isPassword ? 'password' : 'text'}
+        disabled={disabled}
+      />
+    </FieldWrapper>
+  );
+};
+
+export const TextField: React.FC<TextFieldProps> = props => (
+  <Field {...props} component={renderField} />
+);
