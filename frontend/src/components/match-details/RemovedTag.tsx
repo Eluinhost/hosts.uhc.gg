@@ -9,10 +9,7 @@ export const RemovedTag = React.memo(({ match: { removed, removedAt } }: { match
   const format = useSelector(getTagDateTimeFormat);
   const timezone = useSelector(getTimezone);
 
-  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
-    format,
-    timezone,
-  ]);
+  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [format, removedAt, timezone]);
 
   if (!removed) {
     return null;

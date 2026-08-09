@@ -94,8 +94,6 @@ class MatchDetailsComponent extends React.PureComponent<StateProps & DispatchPro
       content,
       length,
       version,
-      removedBy,
-      removedReason,
       approvedBy,
       mainVersion,
       roles,
