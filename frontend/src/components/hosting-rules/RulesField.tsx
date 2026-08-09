@@ -1,7 +1,7 @@
+import React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import { Pre, Tab, Tabs, TextArea } from '@blueprintjs/core';
-import * as React from 'react';
 import * as snuownd from 'snuownd';
 
 const parser = snuownd.getParser();
@@ -13,27 +13,31 @@ type RulesFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const RulesTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = ({ input, disabled }) => (
-  <TextArea {...input} disabled={disabled} fill rows={15} />
+const RulesTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(
+  ({ input, disabled }) => <TextArea {...input} disabled={disabled} fill rows={15} />,
 );
 
-const PreviewTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = ({ input }) => (
+const PreviewTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(({ input }) => (
   <Pre dangerouslySetInnerHTML={{ __html: parser.render(input!.value) }} />
-);
+));
 
-const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = props => (
-  <FieldWrapper meta={props.meta} required={props.required} hideErrors>
-    <div className={`markdown-field-wrapper ${props.className || ''}`}>
-      {!!props.label && <RenderLabel label={props.label!} required={props.required} />}
-      <Tabs id="rules-form-tabs">
-        <Tab id="rules-form-rules" title="Template" panel={<RulesTab {...props} />} />
-        <Tab id="rules-form-preview" title="Preview" panel={<PreviewTab {...props} />} />
-      </Tabs>
-    </div>
-    <RenderErrors {...props.meta} />
-  </FieldWrapper>
-);
+const RulesFieldComponent: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(props => {
+  const { meta, required, className, label } = props;
 
-export const RulesField: React.FunctionComponent<RulesFieldProps> = props => (
+  return (
+    <FieldWrapper meta={meta} required={required} hideErrors>
+      <div className={`markdown-field-wrapper ${className || ''}`}>
+        {!!label && <RenderLabel label={label!} required={required} />}
+        <Tabs id="rules-form-tabs">
+          <Tab id="rules-form-rules" title="Template" panel={<RulesTab {...props} />} />
+          <Tab id="rules-form-preview" title="Preview" panel={<PreviewTab {...props} />} />
+        </Tabs>
+      </div>
+      <RenderErrors {...meta} />
+    </FieldWrapper>
+  );
+});
+
+export const RulesField: React.FunctionComponent<RulesFieldProps> = React.memo(props => (
   <Field {...props} component={RulesFieldComponent} />
-);
+));

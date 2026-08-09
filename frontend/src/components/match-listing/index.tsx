@@ -4,8 +4,7 @@ import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
 import { Match } from '../../models/Match';
 import { MatchRow } from '../match-row';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { createSelector, Selector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
@@ -15,6 +14,7 @@ import { RefreshButton } from './RefreshButton';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
 
 import './match-listing.sass';
+import { ChangeEvent, FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -29,43 +29,63 @@ type MatchListingProps = {
   readonly disableApprove?: boolean;
 };
 
-type StateProps = {
+type StateSlice = {
   readonly hideRemoved: boolean;
   readonly showOwnRemoved: boolean;
   readonly username: string | null;
 };
 
-type DispatchProps = {
-  readonly toggleHideRemoved: () => void;
-  readonly toggleShowOwnRemoved: () => void;
-};
+const stateSliceSelector: Selector<ApplicationState, StateSlice> = createSelector(
+  getUsername,
+  state => state.settings.hideRemoved,
+  state => state.settings.showOwnRemoved,
+  (username, hideRemoved, showOwnRemoved): StateSlice => ({
+    username,
+    hideRemoved,
+    showOwnRemoved,
+  }),
+);
 
-type OwnState = {
-  search: string;
-};
+export const MatchListing: FC<MatchListingProps> = React.memo(({
+  matches,
+  loading,
+  error,
+  refetch,
+  loadMore,
+  lastUpdated,
+  autoRefreshSeconds,
+  hasMore,
+  disableRemove,
+  disableApprove,
+}) => {
+  const { hideRemoved, showOwnRemoved, username } = useSelector(stateSliceSelector);
+  const dispatch = useDispatch();
 
-class MatchListingComponent extends React.PureComponent<MatchListingProps & StateProps & DispatchProps, OwnState> {
-  state = {
-    search: '',
-  };
+  const [search, setSearch] = useState('');
 
-  private timerId: number | null = null;
+  const timerIdRef = useRef<number | null>(null);
+  const visibilityDetectorRef = useRef(new VisibilityDetector());
 
-  private visibilityDetector = new VisibilityDetector();
+  const stopTimer = useCallback(() => {
+    if (timerIdRef.current) {
+      window.clearInterval(timerIdRef.current);
+      timerIdRef.current = null;
+    }
+  }, []);
 
-  private onVisibilityChange = () => {
+  const handleVisibilityChange = useCallback(() => {
     // always clear any existing timer first
-    this.stopTimer();
+    stopTimer();
 
     // if it's visible (or not supported) start the timer if required
-    if (!this.visibilityDetector.isHidden()) {
-      const { autoRefreshSeconds, lastUpdated } = this.props;
-
-      if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) throw new Error("autorefresh shouldn't be < 1");
+    if (!visibilityDetectorRef.current.isHidden()) {
+      if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) {
+        throw new Error("autorefresh shouldn't be < 1");
+      }
 
       // if we are to auto refresh start a timer
       if (autoRefreshSeconds) {
-        this.timerId = window.setInterval(this.props.refetch, autoRefreshSeconds! * 1000);
+        timerIdRef.current = window.setInterval(refetch, autoRefreshSeconds! * 1000);
       }
 
       // data is stale if it has never been updated or the last update was before the refresh timer allows
@@ -74,156 +94,137 @@ class MatchListingComponent extends React.PureComponent<MatchListingProps & Stat
         (autoRefreshSeconds !== undefined && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
 
       if (isDataStale) {
-        this.props.refetch();
+        refetch();
       }
     }
-  };
+  }, [autoRefreshSeconds, lastUpdated, refetch, stopTimer]);
 
-  private stopTimer = () => {
-    if (this.timerId) {
-      window.clearInterval(this.timerId);
-      this.timerId = null;
-    }
-  };
+  useEffect(() => {
+    const detector = visibilityDetectorRef.current;
+    detector.addEventListener(handleVisibilityChange);
+    handleVisibilityChange();
 
-  public componentDidMount(): void {
-    this.visibilityDetector.addEventListener(this.onVisibilityChange);
-    this.onVisibilityChange();
-  }
+    return () => {
+      stopTimer();
+      detector.removeEventListener(handleVisibilityChange);
+    };
+  }, [handleVisibilityChange, stopTimer]);
 
-  public componentWillUnmount(): void {
-    this.stopTimer();
-    this.visibilityDetector.removeEventListener(this.onVisibilityChange);
-  }
-
-  private renderMatch = (match: Match): React.ReactElement => (
-    <MatchRow
-      key={match.id}
-      match={match}
-      disableApproval={this.props.disableApprove}
-      disableRemoval={this.props.disableRemove}
-    />
+  const renderMatch = useCallback(
+    (match: Match): ReactElement => (
+      <MatchRow
+        key={match.id}
+        match={match}
+        disableApproval={disableApprove}
+        disableRemoval={disableRemove}
+      />
+    ),
+    [disableApprove, disableRemove],
   );
 
-  private noMatches: React.ReactElement | false = !this.props.loading && (
+  const noMatches = !loading && (
     <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
   );
 
-  removedMatchesFilter = (m: Match): boolean => {
-    if (!m.removed || !this.props.hideRemoved) {
-      return true;
-    }
+  const removedMatchesFilter = useCallback(
+    (m: Match): boolean => {
+      if (!m.removed || !hideRemoved) {
+        return true;
+      }
+      return showOwnRemoved && m.author === username;
+    },
+    [hideRemoved, showOwnRemoved, username],
+  );
 
-    return this.props.showOwnRemoved && m.author === this.props.username;
-  };
+  const searchQueryFilter = useCallback(
+    (query: string) => (m: Match): boolean => !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0,
+    [],
+  );
 
-  // pretty hacky but works
-  searchQueryFilter = (query: string) => (m: Match): boolean =>
-    !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0;
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
+    [],
+  );
 
-  handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ search: event.target.value });
-  clearSearch = () => this.setState({ search: '' });
+  const clearSearch = useCallback(() => setSearch(''), []);
 
-  renderSearchTotals = (showing: number, outOf: number) => {
-    if (!this.state.search) {
-      return undefined;
-    }
+  const renderSearchTotals = useCallback(
+    (showing: number, outOf: number) => {
+      if (!search) {
+        return undefined;
+      }
 
-    return (
-      <>
-        Showing {showing} of {outOf}.
-        <Button minimal icon="cross" onClick={this.clearSearch} />
-      </>
-    );
-  };
+      return (
+        <>
+          Showing {showing} of {outOf}.
+          <Button minimal icon="cross" onClick={clearSearch} />
+        </>
+      );
+    },
+    [search, clearSearch],
+  );
 
-  render() {
-    const afterRemovedFilter = this.props.matches.filter(this.removedMatchesFilter);
+  const afterRemovedFilter = useMemo(() => matches.filter(removedMatchesFilter), [matches, removedMatchesFilter]);
 
-    const afterSearchQuery = afterRemovedFilter.filter(this.searchQueryFilter(this.state.search));
+  const afterSearchQuery = useMemo(
+    () => afterRemovedFilter.filter(searchQueryFilter(search)),
+    [afterRemovedFilter, searchQueryFilter, search],
+  );
 
-    const matches = afterSearchQuery.length > 0 ? afterSearchQuery.map(this.renderMatch) : this.noMatches;
+  const renderedMatches = useMemo(
+    () => (afterSearchQuery.length > 0 ? afterSearchQuery.map(renderMatch) : noMatches),
+    [afterSearchQuery, renderMatch, noMatches],
+  );
 
-    return (
-      <div className="match-listing">
-        <div className="match-listing__filters">
-          <Switch checked={this.props.hideRemoved} label="Hide Removed" onChange={this.props.toggleHideRemoved} />
-          {!!this.props.username && this.props.hideRemoved && (
-            <Switch
-              checked={this.props.showOwnRemoved}
-              label="Show Own Removed"
-              onChange={this.props.toggleShowOwnRemoved}
-            />
-          )}
-        </div>
+  const toggleHideRemoved = useCallback(() => dispatch(Settings.toggleHideRemoved()), [dispatch]);
+  const toggleShowOwnRemoved = useCallback(() => dispatch(Settings.toggleShowOwnRemoved()), [dispatch]);
 
-        <div className="match-listing__search">
-          <InputGroup
-            leftIcon="search"
-            fill
-            value={this.state.search}
-            onChange={this.handleSearchChange}
-            placeholder="Search"
-            rightElement={this.renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
-          />
-          <RefreshButton
-            lastUpdated={this.props.lastUpdated}
-            onClick={this.props.refetch}
-            loading={this.props.loading}
-          />
-        </div>
-
-        {!this.props.loading && !!this.props.error && (
-          <Callout intent={Intent.DANGER}>
-            <H5>{this.props.error}</H5>
-          </Callout>
+  return (
+    <div className="match-listing">
+      <div className="match-listing__filters">
+        <Switch checked={hideRemoved} label="Hide Removed" onChange={toggleHideRemoved} />
+        {!!username && hideRemoved && (
+          <Switch checked={showOwnRemoved} label="Show Own Removed" onChange={toggleShowOwnRemoved} />
         )}
-
-        {this.props.loading && this.props.matches.length === 0 && (
-          <NonIdealState icon={<Spinner />} title="Loading..." />
-        )}
-
-        <div className="match-listing__matches">{matches}</div>
-
-        {this.props.hasMore && (
-          <div className="match-listing__footer-actions">
-            <Button
-              loading={this.props.loading}
-              disabled={this.props.loading}
-              onClick={this.props.loadMore}
-              icon="refresh"
-              intent={Intent.SUCCESS}
-              text="Load more"
-            />
-          </div>
-        )}
-
-        <RemovalModal />
-        <ApprovalModal />
       </div>
-    );
-  }
-}
 
-const stateSelector: Selector<ApplicationState, StateProps> = createSelector(
-  getUsername,
-  state => state.settings.hideRemoved,
-  state => state.settings.showOwnRemoved,
-  (username, hideRemoved, showOwnRemoved): StateProps => ({
-    username,
-    hideRemoved,
-    showOwnRemoved,
-  }),
-);
+      <div className="match-listing__search">
+        <InputGroup
+          leftIcon="search"
+          fill
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Search"
+          rightElement={renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
+        />
+        <RefreshButton lastUpdated={lastUpdated} onClick={refetch} loading={loading} />
+      </div>
 
-export const MatchListing: React.ComponentType<MatchListingProps> = connect<
-  StateProps,
-  DispatchProps,
-  MatchListingProps
->(
-  stateSelector,
-  (dispatch: Dispatch): DispatchProps => ({
-    toggleHideRemoved: () => dispatch(Settings.toggleHideRemoved()),
-    toggleShowOwnRemoved: () => dispatch(Settings.toggleShowOwnRemoved()),
-  }),
-)(MatchListingComponent);
+      {!loading && !!error && (
+        <Callout intent={Intent.DANGER}>
+          <H5>{error}</H5>
+        </Callout>
+      )}
+
+      {loading && matches.length === 0 && <NonIdealState icon={<Spinner />} title="Loading..." />}
+
+      <div className="match-listing__matches">{renderedMatches}</div>
+
+      {hasMore && (
+        <div className="match-listing__footer-actions">
+          <Button
+            loading={loading}
+            disabled={loading}
+            onClick={loadMore}
+            icon="refresh"
+            intent={Intent.SUCCESS}
+            text="Load more"
+          />
+        </div>
+      )}
+
+      <RemovalModal />
+      <ApprovalModal />
+    </div>
+  );
+});

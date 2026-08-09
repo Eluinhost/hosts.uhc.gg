@@ -1,96 +1,74 @@
-import { HostingRulesState } from '../../state/HostingRulesState';
-import * as React from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
 import { Markdown } from '../Markdown';
 import { SetRulesDialog } from './SetRulesDialog';
 import { WithPermission } from '../WithPermission';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
 import { GetHostingRules, SetHostingRules } from '../../actions';
 import { ApplicationState } from '../../state/ApplicationState';
 
-export type DropdownStateProps = {
-  readonly rules: HostingRulesState;
-};
+const rulesSelector = createSelector(
+  (state: ApplicationState) => state.rules,
+  rules => rules,
+);
 
-export type DropdownDispatchProps = {
-  readonly getRules: () => void;
-  readonly startEdit: () => void;
-};
+export const HostingRules = React.memo(() => {
+  const rules = useSelector(rulesSelector);
+  const dispatch = useDispatch();
 
-export type DropdownState = {
-  readonly areRulesOpen: boolean;
-};
+  const [areRulesOpen, setAreRulesOpen] = useState(false);
 
-class Dropdown extends React.PureComponent<DropdownStateProps & DropdownDispatchProps, DropdownState> {
-  state = {
-    areRulesOpen: false,
-  };
-
-  toggleDropdown = (): void => {
-    if (!this.state.areRulesOpen) {
-      this.props.getRules();
+  const toggleDropdown = useCallback(() => {
+    if (!areRulesOpen) {
+      dispatch(GetHostingRules.start());
     }
-    this.setState(prev => ({ areRulesOpen: !prev.areRulesOpen }));
-  };
+    setAreRulesOpen(prev => !prev);
+  }, [areRulesOpen, dispatch]);
 
-  stopPropagation = (e: React.MouseEvent<any>): void => e.stopPropagation();
+  const stopPropagation = useCallback((e: React.MouseEvent<any>) => e.stopPropagation(), []);
 
-  rulesToShow = (): string | null => {
-    if (this.props.rules.data) return this.props.rules.data.content;
+  const rulesToShow = useMemo(() => {
+    if (rules.data) return rules.data.content;
+    if (rules.fetching) return 'Loading...';
+    return rules.error;
+  }, [rules.data, rules.fetching, rules.error]);
 
-    if (this.props.rules.fetching) return 'Loading...';
-
-    return this.props.rules.error;
-  };
-
-  headerInfo = (): string | null => {
-    if (this.props.rules.fetching) return 'Loading...';
-
-    if (this.props.rules.data) {
-      const time = this.props.rules.data.modified.format('MMM Do HH:mm z');
-
-      return `Last modified: ${time} by /u/${this.props.rules.data.author}`;
+  const headerInfo = useMemo(() => {
+    if (rules.fetching) return 'Loading...';
+    if (rules.data) {
+      const time = rules.data.modified.format('MMM Do HH:mm z');
+      return `Last modified: ${time} by /u/${rules.data.author}`;
     }
+    return rules.error;
+  }, [rules.data, rules.fetching, rules.error]);
 
-    return this.props.rules.error;
-  };
+  const startEdit = useCallback(
+    () => dispatch(SetHostingRules.openEditor()),
+    [dispatch],
+  );
 
-  render() {
-    const rules = this.rulesToShow();
-
-    return (
-      <Callout
-        icon={this.state.areRulesOpen ? 'chevron-up' : 'chevron-down'}
-        className="hosting-rules"
-        onClick={this.toggleDropdown}
-      >
-        <H3>
-          Hosting Rules<small style={{ float: 'right' }}>{this.headerInfo()}</small>
-        </H3>
-        <Collapse isOpen={this.state.areRulesOpen}>
-          <div onClick={this.stopPropagation}>
-            <WithPermission permission="hosting advisor">
-              <div>
-                <Button intent={Intent.PRIMARY} text="Edit Rules" onClick={this.props.startEdit} />
-                <SetRulesDialog />
-              </div>
-            </WithPermission>
-            {!!this.props.rules.error && <Callout intent={Intent.DANGER}>{this.props.rules.error}</Callout>}
-            {!!rules && <Markdown markdown={rules!} />}
-          </div>
-        </Collapse>
-      </Callout>
-    );
-  }
-}
-
-export const HostingRules: React.ComponentType = connect<DropdownStateProps, DropdownDispatchProps, {}>(
-  (state: ApplicationState): DropdownStateProps => ({
-    rules: state.rules,
-  }),
-  (dispatch: Dispatch): DropdownDispatchProps => ({
-    getRules: () => dispatch(GetHostingRules.start()),
-    startEdit: () => dispatch(SetHostingRules.openEditor()),
-  }),
-)(Dropdown);
+  return (
+    <Callout
+      icon={areRulesOpen ? 'chevron-up' : 'chevron-down'}
+      className="hosting-rules"
+      onClick={toggleDropdown}
+    >
+      <H3>
+        Hosting Rules<small style={{ float: 'right' }}>{headerInfo}</small>
+      </H3>
+      <Collapse isOpen={areRulesOpen}>
+        <div onClick={stopPropagation}>
+          <WithPermission permission="hosting advisor">
+            <div>
+              <Button intent={Intent.PRIMARY} text="Edit Rules" onClick={startEdit} />
+              <SetRulesDialog />
+            </div>
+          </WithPermission>
+          {!!rules.error && <Callout intent={Intent.DANGER}>{rules.error}</Callout>}
+          {!!rulesToShow && <Markdown markdown={rulesToShow!} />}
+        </div>
+      </Collapse>
+    </Callout>
+  );
+});

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { Switch } from '@blueprintjs/core';
@@ -9,29 +9,35 @@ export interface SwitchFieldProps extends BaseFieldProps {
   readonly className?: string;
 }
 
-class Switcher extends React.PureComponent<WrappedFieldProps & SwitchFieldProps> {
-  onChange = (): void => {
-    if (this.props.disabled) return;
+const Switcher: React.FC<WrappedFieldProps & SwitchFieldProps> = props => {
+  const {
+    input: { value, onChange, onBlur },
+    disabled,
+    className,
+    label,
+    meta,
+  } = props;
 
-    this.props.input.onChange(!this.props.input.value);
-    this.props.input.onBlur(!this.props.input.value);
-  };
+  const handleChange = useCallback((): void => {
+    if (disabled) return;
 
-  render() {
-    return (
-      <FieldWrapper meta={this.props.meta} required>
-        <Switch
-          checked={!!this.props.input.value}
-          className={this.props.className || ''}
-          disabled={this.props.disabled}
-          label={this.props.label}
-          onChange={this.onChange}
-        />
-      </FieldWrapper>
-    );
-  }
-}
+    onChange(!value);
+    onBlur(!value);
+  }, [disabled, onChange, onBlur, value]);
 
-export const SwitchField: React.FunctionComponent<SwitchFieldProps> = props => (
+  return (
+    <FieldWrapper meta={meta} label={label} required>
+      <Switch
+        checked={!!value}
+        className={className || ''}
+        disabled={disabled}
+        label={label}
+        onChange={handleChange}
+      />
+    </FieldWrapper>
+  );
+};
+
+export const SwitchField: React.FC<SwitchFieldProps> = props => (
   <Field {...props} component={Switcher} />
 );
