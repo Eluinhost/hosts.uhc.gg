@@ -20,7 +20,6 @@ import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
 import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
-import { HostingAlertsPage } from './hosting-alerts';
 import { Footer } from './footer';
 import Helmet from 'react-helmet';
 import { ModifiersPage } from '../modifiers/components/ModifiersPage';
@@ -94,12 +93,6 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        <AuthenticatedRoute
-          path="/hosting-alerts"
-          component={HostingAlertsPage}
-          permission="hosting advisor"
-          {...this.props}
-        />
         <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
         <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
         <Route path="/" exact component={HomePage} />
