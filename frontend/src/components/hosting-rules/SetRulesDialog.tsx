@@ -1,9 +1,9 @@
-import * as React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { InjectedFormProps, reduxForm } from 'redux-form';
-import { ApplicationState } from '../../state/ApplicationState';
+import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { ApplicationState } from '../../state/ApplicationState';
 import { RulesField } from './RulesField';
 import { SetHostingRules } from '../../actions';
 import { Validator } from '../../services/Validator';
@@ -12,59 +12,21 @@ type SetRulesDialogData = {
   rules: string;
 };
 
-type SetRulesDialogDispatchProps = {
-  readonly close: () => void;
-};
-
-type SetRulesDialogStateProps = {
+type SetRulesDialogState = {
   readonly isOpen: boolean;
   readonly isDarkMode: boolean;
   readonly currentRules: string;
 };
 
-// Simple component that exists just to pull the latest rules into the form once the dialog renders it's body
-class SetRulesDialogHelper extends React.PureComponent<{
-  readonly current: string | null;
-  readonly change: (field: string, value: string) => void;
-}> {
-  componentDidMount() {
-    this.props.change('rules', this.props.current || '');
-  }
-
-  render() {
-    return null;
-  }
-}
-
-const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogStateProps &
-    SetRulesDialogDispatchProps &
-    InjectedFormProps<SetRulesDialogData, SetRulesDialogStateProps & SetRulesDialogDispatchProps>
-> = ({ handleSubmit, submitting, invalid, close, isOpen, currentRules, change, isDarkMode }) => (
-  <Dialog
-    icon="take-action"
-    isOpen={isOpen}
-    onClose={close}
-    title="Modify Rules"
-    className={isDarkMode ? Classes.DARK : ''}
-  >
-    <SetRulesDialogHelper current={currentRules} change={change!} />
-    <div className={Classes.DIALOG_BODY}>
-      <form onSubmit={handleSubmit}>
-        <RulesField name="rules" label="Rules" required disabled={submitting} className={Classes.FILL} />
-      </form>
-    </div>
-    <div className={Classes.DIALOG_FOOTER}>
-      <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-        <Button onClick={close} icon="arrow-left">
-          Cancel
-        </Button>
-        <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
-          Update Rules
-        </Button>
-      </div>
-    </div>
-  </Dialog>
+const setRulesSelector = createSelector(
+  (state: ApplicationState) => state.rules.editing,
+  (state: ApplicationState) => state.rules.data,
+  (state: ApplicationState) => state.settings.isDarkMode,
+  (isOpen, data, isDarkMode): SetRulesDialogState => ({
+    isOpen,
+    currentRules: data ? data.content : '',
+    isDarkMode,
+  }),
 );
 
 const validator = new Validator<SetRulesDialogData>().withValidation(
@@ -73,25 +35,74 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
   'Must be at least 3 characters long',
 );
 
-const SetRulesDialogForm: React.ComponentType<SetRulesDialogStateProps & SetRulesDialogDispatchProps> = reduxForm<
+const SetRulesDialogComponent: React.FunctionComponent<
+  SetRulesDialogState &
+    InjectedFormProps<SetRulesDialogData, SetRulesDialogState>
+> = ({ handleSubmit, submitting, invalid, isOpen, currentRules, change, isDarkMode }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isOpen) {
+      change('rules', currentRules || '');
+    }
+  }, [isOpen, currentRules, change]);
+
+  const onClose = useCallback(
+    () => dispatch(SetHostingRules.closeEditor()),
+    [dispatch],
+  );
+
+  return (
+    <Dialog
+      icon="take-action"
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Modify Rules"
+      className={isDarkMode ? Classes.DARK : ''}
+    >
+      <div className={Classes.DIALOG_BODY}>
+        <form onSubmit={handleSubmit}>
+          <RulesField
+            name="rules"
+            label="Rules"
+            required
+            disabled={submitting}
+            className={Classes.FILL}
+          />
+        </form>
+      </div>
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          <Button onClick={onClose} icon="arrow-left">
+            Cancel
+          </Button>
+          <Button
+            intent={Intent.SUCCESS}
+            onClick={handleSubmit}
+            disabled={invalid || submitting}
+            icon="add"
+          >
+            Update Rules
+          </Button>
+        </div>
+      </div>
+    </Dialog>
+  );
+};
+
+const SetRulesDialogForm: React.ComponentType<SetRulesDialogState> = reduxForm<
   SetRulesDialogData,
-  SetRulesDialogStateProps & SetRulesDialogDispatchProps
+  SetRulesDialogState
 >({
   form: 'set-rules-form',
   validate: validator.validate,
-  onSubmit: (values, dispatch, props) => {
+  onSubmit: (values, dispatch) => {
     dispatch(SetHostingRules.start(values.rules));
-    props.close();
+    dispatch(SetHostingRules.closeEditor());
   },
 })(SetRulesDialogComponent);
 
-export const SetRulesDialog: React.ComponentType = connect<SetRulesDialogStateProps, SetRulesDialogDispatchProps, {}>(
-  (state: ApplicationState): SetRulesDialogStateProps => ({
-    isOpen: state.rules.editing,
-    currentRules: state.rules.data ? state.rules.data.content : '',
-    isDarkMode: state.settings.isDarkMode,
-  }),
-  (dispatch: Dispatch): SetRulesDialogDispatchProps => ({
-    close: () => dispatch(SetHostingRules.closeEditor()),
-  }),
-)(SetRulesDialogForm);
+export const SetRulesDialog: React.ComponentType = () => {
+  const state = useSelector(setRulesSelector);
+  return <SetRulesDialogForm {...state} />;
+};

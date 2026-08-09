@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
 import TimePicker, { TimePickerProps } from 'rc-time-picker';
 import moment from 'moment-timezone';
@@ -20,11 +20,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly renderClearButton?: React.ComponentType<{ value: any; onClear: () => void }>;
 }
 
-type StateProps = {
-  isFocused: boolean | null;
-};
-
-export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
+export const Errors: React.FC<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <Callout intent={Intent.DANGER}>{error}</Callout>;
 
   if (warning) return <Callout intent={Intent.WARNING}>{warning}</Callout>;
@@ -32,85 +28,101 @@ export const Errors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, 
   return null;
 };
 
-class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFieldProps, StateProps> {
-  state = {
-    isFocused: false,
-  };
-
-  triggerChange = (date: moment.Moment | null): void => {
-    if (this.props.disabled) return;
-
-    this.props.input.onChange(date);
-    this.props.input.onBlur(date);
-  };
-
-  handleDateChange = (date: moment.Moment | null): void => {
-    // react-dates set the hours/minutes to be 12:00 so we ignore them
-    let newDate = date?.utc().clone();
-
-    if (this.props.input.value && newDate) {
-      newDate.set('hours', this.props.input.value.get('hours'));
-      newDate.set('minutes', this.props.input.value.get('minutes'));
-      newDate.set('seconds', this.props.input.value.get('seconds'));
-      newDate.set('milliseconds', this.props.input.value.get('milliseconds'));
-    }
-
-    this.triggerChange(newDate || null);
-  };
-
-  handleTimeChange = (date: moment.Moment): void => {
-    // if we don't have a date, don't do anything, shouldn't be triggered
-    if (!this.props.input.value) {
-      return;
-    }
-
-    this.triggerChange(date);
-  };
-
-  handleClear = () => this.handleDateChange(null);
-
-  handleFocusChange = (arg: { focused: boolean | null }) => this.setState({ isFocused: arg.focused || false });
-
-  isDayBlocked = (day: moment.Moment) => {
-    if (this.props.minDate && this.props.minDate.isAfter(day)) {
-      return true;
-    }
-
-    if (this.props.maxDate && this.props.maxDate.isBefore(day)) {
-      return true;
-    }
-
-    return false;
-  };
-
-  renderInfoPanel = (clear?: JSX.Element) => (
-    <div>
-      {this.props.timePicker && (
-        <TimePicker
-          {...this.props.timePicker}
-          allowEmpty={!!this.props.renderClearButton}
-          disabled={this.props.disabled}
-          value={this.props.input.value}
-          onChange={this.handleTimeChange}
-          className={`date-time-field-time-picker ${this.props.timePicker?.className || ''}`}
-          showSecond={false}
-        />
-      )}
-      {clear}
-    </div>
-  );
-
-  render() {
+const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(
+  props => {
     const {
       meta,
       label,
       required,
       datePickerProps,
-      input,
+      input: { value, onChange, onBlur },
       disabled,
       renderClearButton: ClearButton,
       className,
-    } = this.props;
+      minDate,
+      maxDate,
+      timePicker,
+    } = props;
+
+    const [isFocused, setIsFocused] = useState(false);
+
+    const triggerChange = useCallback(
+      (date: moment.Moment | null): void => {
+        if (disabled) return;
+
+        onChange(date);
+        onBlur(date);
+      },
+      [disabled, onChange, onBlur],
+    );
+
+    const handleDateChange = useCallback(
+      (date: moment.Moment | null): void => {
+        // react-dates set the hours/minutes to be 12:00 so we ignore them
+        let newDate = date?.utc().clone();
+
+        if (value && newDate) {
+          newDate.set('hours', value.get('hours'));
+          newDate.set('minutes', value.get('minutes'));
+          newDate.set('seconds', value.get('seconds'));
+          newDate.set('milliseconds', value.get('milliseconds'));
+        }
+
+        triggerChange(newDate || null);
+      },
+      [value, triggerChange],
+    );
+
+    const handleTimeChange = useCallback(
+      (date: moment.Moment): void => {
+        // if we don't have a date, don't do anything, shouldn't be triggered
+        if (!value) {
+          return;
+        }
+
+        triggerChange(date);
+      },
+      [value, triggerChange],
+    );
+
+    const handleClear = useCallback(() => handleDateChange(null), [handleDateChange]);
+
+    const handleFocusChange = useCallback(
+      (arg: { focused: boolean | null }) => setIsFocused(arg.focused || false),
+      [],
+    );
+
+    const isDayBlocked = useCallback(
+      (day: moment.Moment) => {
+        if (minDate && minDate.isAfter(day)) {
+          return true;
+        }
+
+        if (maxDate && maxDate.isBefore(day)) {
+          return true;
+        }
+
+        return false;
+      },
+      [minDate, maxDate],
+    );
+
+    const renderInfoPanel = (clear?: JSX.Element) => (
+      <div>
+        {timePicker && (
+          <TimePicker
+            {...timePicker}
+            allowEmpty={!!ClearButton}
+            disabled={disabled}
+            value={value}
+            onChange={handleTimeChange}
+            className={`date-time-field-time-picker ${timePicker?.className || ''}`}
+            showSecond={false}
+          />
+        )}
+        {clear}
+      </div>
+    );
 
     return (
       <FieldWrapper
@@ -123,20 +135,20 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
         <div className="date-time-field_content">
           <DayPickerSingleDateController
             hideKeyboardShortcutsPanel
-            isDayBlocked={this.isDayBlocked}
+            isDayBlocked={isDayBlocked}
             // if we make the function below part of the class body the timepicker sometimes
             // doesn't rerender properly, presumably due to daypickersingledatecontroller's
             // shouldComponentUpdate. We're passing a new function each render just to make
             // sure it can rerender properly
             renderCalendarInfo={() =>
-              this.renderInfoPanel(ClearButton && <ClearButton value={input?.value} onClear={this.handleClear} />)
+              renderInfoPanel(ClearButton && <ClearButton value={value} onClear={handleClear} />)
             }
             calendarInfoPosition="bottom"
             {...datePickerProps}
-            date={input.value || null}
-            onDateChange={this.handleDateChange}
-            focused={this.state.isFocused}
-            onFocusChange={this.handleFocusChange}
+            date={value || null}
+            onDateChange={handleDateChange}
+            focused={isFocused}
+            onFocusChange={handleFocusChange}
           />
           <Errors {...meta} />
         </div>
@@ -152,9 +164,9 @@ class DateTimePicker extends React.PureComponent<WrappedFieldProps & DateTimeFie
         </Overlay>
       </FieldWrapper>
     );
-  }
-}
-
-export const DateTimeField: React.FunctionComponent<DateTimeFieldProps> = props => (
-  <Field {...props} component={DateTimePicker} />
+  },
 );
+
+export const DateTimeField: React.FC<DateTimeFieldProps> = React.memo(props => (
+  <Field {...props} component={DateTimePicker} />
+));
