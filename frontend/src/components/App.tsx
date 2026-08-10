@@ -1,7 +1,8 @@
 import React, { ComponentType } from 'react';
 import { HostingPage } from './host';
-import { Classes, NonIdealState } from '@blueprintjs/core';
+import { Button, Classes, NonIdealState } from '@blueprintjs/core';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
@@ -14,7 +15,7 @@ import { HistoryPage } from './host-history-page';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
-import { isDarkMode } from '../state/Selectors';
+import { getPermissions, isDarkMode, isLoggedIn } from '../state/Selectors';
 import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
@@ -35,28 +36,55 @@ class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
   }
 }
 
-class NoPermission extends React.PureComponent {
-  public render() {
+type NoPermissionProps = {
+  readonly isLoggedIn: boolean;
+  readonly permissions: string[];
+};
+
+const NoPermissionComponent: React.FunctionComponent<NoPermissionProps> = ({ isLoggedIn, permissions }) => {
+  if (isLoggedIn && permissions.length === 0) {
     return (
       <NonIdealState
-        title="Forbidden"
-        description="You do not have permission to use this. You may attempt to login with an authorised account below"
-        icon="warning-sign"
-        action={<LoginButton />}
+        title="No Host Rank"
+        description="You are logged in but do not have a hosting rank yet. Apply for trial host below."
+        icon="new-person"
+        action={
+          <Link to="/host-applications/apply">
+            <Button intent="primary" icon="add">
+              Apply for Trial Host
+            </Button>
+          </Link>
+        }
       />
     );
   }
-}
 
-type AuthenticatedRouteProps = {
-  readonly permission: string | string[];
-} & RouteProps;
+  return (
+    <NonIdealState
+      title="Forbidden"
+      description="You do not have permission to use this. You may attempt to login with an authorised account below"
+      icon="warning-sign"
+      action={<LoginButton />}
+    />
+  );
+};
+
+const noPermissionStateSelector = createSelector<ApplicationState, boolean, string[], NoPermissionProps>(
+  isLoggedIn,
+  getPermissions,
+  (isLoggedIn, permissions) => ({
+    isLoggedIn,
+    permissions,
+  }),
+);
+
+const NoPermission = connect(noPermissionStateSelector)(NoPermissionComponent);
 
 class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
   public render() {
     const { permission, ...routeProps } = this.props;
 
-    const Component: React.ComponentType<RouteComponentProps<any>> = this.props.component!;
+    const Component: React.ComponentType<any> = this.props.component!;
 
     const component: React.FunctionComponent<RouteComponentProps<any>> = props => (
       <WithPermission permission={permission} alternative={NoPermission}>
@@ -67,42 +95,6 @@ class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
     return <Route {...routeProps} component={component} />;
   }
 }
-
-class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
-  public componentDidMount() {
-    const send = (location: Location) => {
-      const path = location.pathname + location.search;
-
-      reactGa.set({ page: path });
-      reactGa.pageview(path);
-    };
-
-    this.props.history.listen(send);
-    send(this.props.location);
-  }
-
-  public render() {
-    return (
-      <Switch>
-        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
-        <Route path="/m/:id" component={MatchDetailsPage} />
-        <Route path="/matches/:host" component={HistoryPage} />
-        <Route path="/matches" component={UpcomingMatchesPage} />
-        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
-        <Route path="/host-applications" component={HostApplicationsPage} />
-        <Route path="/members" component={MembersPage} />
-        <Route path="/login" component={LoginPage} />
-        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
-        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
-        <Route path="/" exact component={HomePage} />
-        <Route component={NotFoundPage} />
-      </Switch>
-    );
-  }
-}
-
-const Routes: React.ComponentClass<{}> = withRouter(RoutesComponent);
 
 type AppProps = {
   readonly isDarkMode: boolean;
@@ -159,6 +151,46 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
     );
   }
 }
+
+type AuthenticatedRouteProps = {
+  readonly permission: string | string[];
+} & RouteProps;
+
+class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
+  public componentDidMount() {
+    const send = (location: Location) => {
+      const path = location.pathname + location.search;
+
+      reactGa.set({ page: path });
+      reactGa.pageview(path);
+    };
+
+    this.props.history.listen(send);
+    send(this.props.location);
+  }
+
+  public render() {
+    return (
+      <Switch>
+        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
+        <Route path="/m/:id" component={MatchDetailsPage} />
+        <Route path="/matches/:host" component={HistoryPage} />
+        <Route path="/matches" component={UpcomingMatchesPage} />
+        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
+        <Route path="/host-applications" component={HostApplicationsPage} />
+        <Route path="/members" component={MembersPage} />
+        <Route path="/login" component={LoginPage} />
+        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
+        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
+        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
+        <Route path="/" exact component={HomePage} />
+        <Route component={NotFoundPage} />
+      </Switch>
+    );
+  }
+}
+
+const Routes: React.ComponentClass<{}> = withRouter(RoutesComponent);
 
 const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDarkMode, isDarkMode => ({
   isDarkMode,
