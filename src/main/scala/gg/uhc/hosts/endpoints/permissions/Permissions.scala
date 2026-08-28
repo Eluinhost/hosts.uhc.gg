@@ -1,12 +1,12 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import akka.http.scaladsl.model.headers.HttpChallenges
-import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
-import akka.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.model.headers.HttpChallenges
+import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
+import org.apache.pekko.http.scaladsl.server.Directives._
 
 object Permissions {
   val base: List[String] =
-    "trial host" :: "host" :: "hosting advisor" :: "ubl moderator" :: "admin" :: "hosting banned" :: "beta tester" :: Nil
+    "trial host" :: "host" :: "hosting advisor" :: "admin" :: "hosting banned" :: "beta tester" :: Nil
 
   // Map of user permission to allowed permissions for adding/removal
   val allowedModifications: Map[String, List[String]] = Map(

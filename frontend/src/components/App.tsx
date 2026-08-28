@@ -20,12 +20,12 @@ import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
 import { Location } from 'history';
 import { TimeSettings } from './time/TimeSettings';
-import { HostingAlertsPage } from './hosting-alerts';
 import { Footer } from './footer';
 import Helmet from 'react-helmet';
-import { CreateBanPage } from './ubl/CreateBanPage';
-import { CurrentUblPage, UuidHistoryPage } from './ubl';
 import { ModifiersPage } from '../modifiers/components/ModifiersPage';
+import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
+import { ApplyHostApplicationPage } from '../hosting-applications/components/ApplyHostApplication';
+import { QuizManagementPage } from '../hosting-applications/questions/components/QuizManagementPage';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -88,19 +88,13 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
         <Route path="/m/:id" component={MatchDetailsPage} />
         <Route path="/matches/:host" component={HistoryPage} />
         <Route path="/matches" component={UpcomingMatchesPage} />
+        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
+        <Route path="/host-applications" component={HostApplicationsPage} />
         <Route path="/members" component={MembersPage} />
         <Route path="/login" component={LoginPage} />
         <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        {/*<AuthenticatedRoute path="/ubl/create" component={CreateBanPage} permission="ubl moderator" {...this.props} />*/}
-        {/*<Route path="/ubl/:uuid" component={UuidHistoryPage} />*/}
-        {/*<Route path="/ubl" component={CurrentUblPage} />*/}
-        <AuthenticatedRoute
-          path="/hosting-alerts"
-          component={HostingAlertsPage}
-          permission="hosting advisor"
-          {...this.props}
-        />
         <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
+        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
         <Route path="/" exact component={HomePage} />
         <Route component={NotFoundPage} />
       </Switch>

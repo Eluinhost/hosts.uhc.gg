@@ -1,10 +1,11 @@
 package gg.uhc.hosts.endpoints.rules
 
-import akka.http.scaladsl.server.Directives.{complete, handleRejections}
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Directives.{complete, handleRejections}
+import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class GetLatestRules(customDirectives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -13,7 +14,7 @@ class GetLatestRules(customDirectives: CustomDirectives, database: Database) {
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getLatestRules) { rules =>
-        complete(rules)
+        complete(rules.asJson)
       }
     }
 }

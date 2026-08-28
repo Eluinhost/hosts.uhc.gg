@@ -8,10 +8,7 @@ export const RemovedReason = React.memo(({ match: { removedBy, removedAt, remove
   const format = useSelector(getTagDateTimeFormat);
   const timezone = useSelector(getTimezone);
 
-  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
-    format,
-    timezone,
-  ]);
+  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [format, removedAt, timezone]);
 
   return (
     <div className="removed-reason">

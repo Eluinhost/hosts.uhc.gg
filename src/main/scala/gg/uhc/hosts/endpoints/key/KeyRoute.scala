@@ -1,7 +1,7 @@
 package gg.uhc.hosts.endpoints.key
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 
 class KeyRoute(getApiKey: GetApiKey, regenerateApiKey: RegenerateApiKey) {
   def apply(): Route =

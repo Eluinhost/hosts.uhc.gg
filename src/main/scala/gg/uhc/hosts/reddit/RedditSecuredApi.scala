@@ -1,17 +1,17 @@
 package gg.uhc.hosts.reddit
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, StatusCodes}
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
+import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, StatusCodes}
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import io.circe.generic.AutoDerivation
+import org.mdedetrich.pekko.http.support.CirceHttpSupport
 
 import scala.concurrent.Future
 
 class RedditSecuredApi(actorSystem: ActorSystem, queueSize: Int)
     extends ApiConsumer(actorSystem, "oauth.reddit.com", queueSize)
-    with FailFastCirceSupport
+    with CirceHttpSupport
     with AutoDerivation {
 
   def getUsername(accessToken: String): Future[String] = {

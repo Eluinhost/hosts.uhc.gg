@@ -1,5 +1,4 @@
 import { FormErrors } from 'redux-form';
-import { isString, isArray } from 'util';
 
 type DataShape = { [key: string]: any };
 
@@ -12,9 +11,9 @@ export class Validator<T extends DataShape> {
       value => {
         if (!value) return true;
 
-        if (isArray(value) && value.length === 0) return true;
+        if (Array.isArray(value) && value.length === 0) return true;
 
-        if (isString(value) && value.trim().length === 0) return true;
+        if (typeof value === 'string' && value.trim().length === 0) return true;
 
         return false;
       },

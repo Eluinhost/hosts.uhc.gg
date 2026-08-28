@@ -17,7 +17,6 @@ import {
   complement,
   always,
 } from 'ramda';
-import { isUndefined } from 'util';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { Validator } from '../../services/Validator';
 import { TeamStyles } from '../../models/TeamStyles';
@@ -53,7 +52,7 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
       pipe(
         view(lensIndex(5)), // if it exists it will be at index 5
         // it is valid if it doesn't exist or if the port is a number and within the range
-        ifElse(isUndefined, T, pipe(asInt, between(1, 65535))),
+        ifElse((x: string) => x === undefined, T, pipe(asInt, between(1, 65535))),
       )(matches);
 
     const validOctets = (matches: string[]): boolean =>

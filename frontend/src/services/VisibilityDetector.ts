@@ -1,17 +1,15 @@
-import { isUndefined } from 'util';
-
 export class VisibilityDetector {
   private readonly eventName: string | null;
   public readonly isHidden: () => boolean;
 
   constructor() {
-    if (!isUndefined(document.hidden)) {
+    if (document.hidden !== undefined) {
       this.isHidden = () => document.hidden!;
       this.eventName = 'visibilitychange';
-    } else if (!isUndefined(document.msHidden)) {
+    } else if (document.msHidden !== undefined) {
       this.isHidden = () => document.msHidden!;
       this.eventName = 'msvisibilitychange';
-    } else if (!isUndefined(document.webkitHidden)) {
+    } else if (document.webkitHidden !== undefined) {
       this.isHidden = () => document.webkitHidden!;
       this.eventName = 'webkitvisibilitychange';
     } else {

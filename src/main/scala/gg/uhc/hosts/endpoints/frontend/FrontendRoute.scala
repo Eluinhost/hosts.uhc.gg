@@ -1,13 +1,16 @@
 package gg.uhc.hosts.endpoints.frontend
 
-import java.util.concurrent.TimeUnit
+import org.apache.pekko.actor.ActorSystem
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.RouteResult.Complete
-import akka.http.scaladsl.server.directives.MethodDirectives.get
-import akka.http.scaladsl.server.{Directive0, Route}
-import akka.stream.Materializer
-import akka.util.ByteString
+import java.util.concurrent.TimeUnit
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.RouteResult.Complete
+import org.apache.pekko.http.scaladsl.server.directives.MethodDirectives.get
+import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.util.ByteString
+import com.softwaremill.tagging.@@
+import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.TwirlSupport
 
@@ -15,16 +18,16 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Success
 
-class FrontendRoute(database: Database, materializer: Materializer) extends TwirlSupport {
-  implicit val mz: Materializer = materializer
+class FrontendRoute(database: Database, actorSystem: ActorSystem @@ HttpSystem) extends TwirlSupport {
+  implicit val mz: Materializer = Materializer(actorSystem)
 
-  private[this] val basicFrontend: Route = getFromFile("frontend/build/index.html")
+  private val basicFrontend: Route = getFromFile("frontend/build/index.html")
 
   def addMetaTags(input: ByteString, title: String, description: String): ByteString =
     ByteString(
       input.utf8String.replaceFirst("__META_TAG_TITLE__", title).replaceFirst("__META_TAG_DESCRIPTION__", description))
 
-  private[this] def withMatchTitle(title: String, description: String): Directive0 = extractExecutionContext.flatMap {
+  private def withMatchTitle(title: String, description: String): Directive0 = extractExecutionContext.flatMap {
     implicit ec =>
       mapRouteResultWith({
         case result @ Complete(response) =>

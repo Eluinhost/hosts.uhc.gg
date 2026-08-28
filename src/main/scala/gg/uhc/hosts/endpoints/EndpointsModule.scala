@@ -1,28 +1,40 @@
 package gg.uhc.hosts.endpoints
 
-import akka.stream.Materializer
+import org.apache.pekko.actor.ActorSystem
 import com.softwaremill.macwire.wire
+import com.softwaremill.tagging.@@
+import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.alerts.{AlertsRoute, CreateAlertRule, DeleteAlertRule, GetAllAlertRules}
 import gg.uhc.hosts.endpoints.assets.AssetsRoute
 import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
 import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
+import gg.uhc.hosts.endpoints.hostapplications.{
+  CreateHostApplication,
+  CreateQuizQuestion,
+  DeleteQuizQuestion,
+  GetHostApplicationDetails,
+  GetHostApplications,
+  GetQuizQuestions,
+  GetQuizQuestionsForManagement,
+  HostApplicationsRoute,
+  QuizRoute,
+  ReviewHostApplication
+}
 import gg.uhc.hosts.endpoints.key.{GetApiKey, KeyRoute, RegenerateApiKey}
 import gg.uhc.hosts.endpoints.matches._
 import gg.uhc.hosts.endpoints.modifiers.{CreateModifier, DeleteModifier, ListModifiers, ModifiersRoute}
 import gg.uhc.hosts.endpoints.permissions._
 import gg.uhc.hosts.endpoints.rules.{GetLatestRules, RulesRoute, SetRules}
 import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
-import gg.uhc.hosts.endpoints.ubl._
 import gg.uhc.hosts.endpoints.users.{ShowPermissionsForUser, UsersRoute}
 import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
   def database: Database
-  def materializer: Materializer
+  def httpSystem: ActorSystem @@ HttpSystem
 
   lazy val customDirectives: CustomDirectives = wire[CustomDirectives]
 
@@ -47,16 +59,15 @@ trait EndpointsModule extends RedditModule {
   lazy val getLatestRules: GetLatestRules       = wire[GetLatestRules]
   lazy val setRules: SetRules                   = wire[SetRules]
   lazy val approveMatch: ApproveMatch           = wire[ApproveMatch]
-  lazy val getCurrentUbl: GetCurrentUbl         = wire[GetCurrentUbl]
   lazy val getHostingHistory: GetHostingHistory = wire[GetHostingHistory]
-  lazy val createUblEntry: CreateUblEntry       = wire[CreateUblEntry]
-  lazy val getUblForUuid: GetUblForUuid         = wire[GetUblForUuid]
-  lazy val usernameSearch: UsernameSearch       = wire[UsernameSearch]
-  lazy val extendUblEntry: EditUblEntry         = wire[EditUblEntry]
-  lazy val deleteUblEntry: DeleteUblEntry       = wire[DeleteUblEntry]
-  lazy val createAlertRule: CreateAlertRule     = wire[CreateAlertRule]
-  lazy val deleteAlertRule: DeleteAlertRule     = wire[DeleteAlertRule]
-  lazy val getAllAlertRules: GetAllAlertRules   = wire[GetAllAlertRules]
+  lazy val getHostApplications: GetHostApplications = wire[GetHostApplications]
+  lazy val getHostApplicationDetails: GetHostApplicationDetails = wire[GetHostApplicationDetails]
+  lazy val createHostApplication: CreateHostApplication = wire[CreateHostApplication]
+  lazy val reviewHostApplication: ReviewHostApplication = wire[ReviewHostApplication]
+  lazy val getQuizQuestions: GetQuizQuestions = wire[GetQuizQuestions]
+  lazy val getQuizQuestionsForManagement: GetQuizQuestionsForManagement = wire[GetQuizQuestionsForManagement]
+  lazy val createQuizQuestion: CreateQuizQuestion = wire[CreateQuizQuestion]
+  lazy val deleteQuizQuestion: DeleteQuizQuestion = wire[DeleteQuizQuestion]
   lazy val showPermissionsForUser: ShowPermissionsForUser = wire[ShowPermissionsForUser]
   lazy val listModifiers: ListModifiers         = wire[ListModifiers]
   lazy val createModifier: CreateModifier       = wire[CreateModifier]
@@ -73,9 +84,9 @@ trait EndpointsModule extends RedditModule {
   lazy val rulesRoute: RulesRoute                   = wire[RulesRoute]
   lazy val syncRoute: SyncRoute                     = wire[SyncRoute]
   lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
-  lazy val ublRoute: UblRoute                       = wire[UblRoute]
   lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
-  lazy val alertsRoute: AlertsRoute                 = wire[AlertsRoute]
+  lazy val hostApplicationsRoute: HostApplicationsRoute = wire[HostApplicationsRoute]
+  lazy val quizRoute: QuizRoute                     = wire[QuizRoute]
   lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
   lazy val modifiersRoute: ModifiersRoute           = wire[ModifiersRoute]
   lazy val matchesWebsocket: MatchesWebsocket       = wire[MatchesWebsocket]

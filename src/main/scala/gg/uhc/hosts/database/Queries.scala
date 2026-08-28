@@ -3,18 +3,99 @@ package gg.uhc.hosts.database
 import java.net.InetAddress
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 import doobie._
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
 import doobie.postgres.pgisimplicits._
-import doobie.implicits.legacy.instant._
 import cats.data.NonEmptyList
 
 class Queries(logger: LogHandler) {
-  private[this] implicit val logHandler: LogHandler = logger
+  private implicit val logHandler: LogHandler = logger
+
+  def createHostApplication(username: String): Update0 =
+    sql"""
+      INSERT INTO host_applications (username, created, status)
+      VALUES ($username, ${Instant.now()}, 'pending')
+    """.update
+
+  def getRecentHostApplications: Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      ORDER BY created DESC
+      LIMIT 50
+    """.query[HostApplicationRow]
+
+  def getHostApplication(id: Long): Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      WHERE id = $id
+    """.query[HostApplicationRow]
+
+  def getPendingHostApplicationForUsername(username: String): Query0[HostApplicationRow] =
+    sql"""
+      SELECT id, username, created, status, reviewedBy, reviewedAt, reviewReason
+      FROM host_applications
+      WHERE username = $username AND status = 'pending'
+    """.query[HostApplicationRow]
+
+  def reviewHostApplication(id: Long, status: String, reviewer: String, reason: Option[String]): Update0 =
+    sql"""
+      UPDATE host_applications
+      SET status = $status, reviewedBy = $reviewer, reviewedAt = ${Instant.now()}, reviewReason = $reason
+      WHERE id = $id AND status = 'pending'
+    """.update
+
+  def createQuizQuestion(question: QuizQuestionRow): Update0 =
+    sql"""
+      INSERT INTO quiz_questions (prompt, type, createdBy, created)
+      VALUES (${question.prompt}, ${question.questionType}, ${question.createdBy}, ${question.created})
+    """.update
+
+  def createQuizQuestionChoice(questionId: Long, text: String, correct: Boolean): Update0 =
+    sql"""
+      INSERT INTO quiz_question_choices (questionId, text, correct)
+      VALUES ($questionId, $text, $correct)
+    """.update
+
+  val getAllQuizQuestions: Query0[QuizQuestionRow] =
+    sql"""
+      SELECT id, prompt, type, createdBy, created
+      FROM quiz_questions
+      ORDER BY id ASC
+    """.query[QuizQuestionRow]
+
+  def getQuizQuestionChoices(questionIds: NonEmptyList[Long]): Query0[QuizQuestionChoiceRow] =
+    (sql"""
+      SELECT id, questionId, text, correct
+      FROM quiz_question_choices
+      WHERE """ ++ Fragments.in(fr"questionId", questionIds) ++ sql""" ORDER BY id ASC""")
+      .query[QuizQuestionChoiceRow]
+
+  def deleteQuizQuestion(id: Long): Update0 =
+    sql"""
+      DELETE FROM quiz_questions
+      WHERE id = $id
+    """.update
+
+  def createHostApplicationAnswer(applicationId: Long, answer: HostApplicationAnswerRow): Update0 =
+    sql"""
+      INSERT INTO host_application_answers
+        (applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer)
+      VALUES
+        ($applicationId, ${answer.questionPrompt}, ${answer.questionType}, ${answer.choiceText}, ${answer.choiceCorrect}, ${answer.textAnswer})
+    """.update
+
+  def getHostApplicationAnswers(applicationId: Long): Query0[HostApplicationAnswerRow] =
+    sql"""
+      SELECT id, applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer
+      FROM host_application_answers
+      WHERE applicationId = $applicationId
+      ORDER BY id ASC
+    """.query[HostApplicationAnswerRow]
 
   def removeMatch(id: Long, reason: String, remover: String): Update0 =
     sql"""
@@ -430,151 +511,6 @@ class Queries(logger: LogHandler) {
         id = $id
       """.update
 
-  def getCurrentUbl: Query0[UblRow] =
-    sql"""
-      SELECT
-        id,
-        ign,
-        uuid,
-        reason,
-        created,
-        expires,
-        link,
-        createdBy
-      FROM ubl
-      WHERE
-        expires IS NULL OR expires > NOW()
-      ORDER BY created DESC
-      """.query[UblRow]
-
-  def createUblEntry(entry: UblRow): Update0 =
-    sql"""
-      INSERT INTO ubl (ign, uuid, reason, created, expires, link, createdBy)
-      VALUES (
-        ${entry.ign},
-        ${entry.uuid},
-        ${entry.reason},
-        ${entry.created},
-        ${entry.expires},
-        ${entry.link},
-        ${entry.createdBy}
-      )
-      """.update
-
-  def getUblEntriesForUuid(uuid: UUID): Query0[UblRow] =
-    sql"""
-      SELECT
-        id,
-        ign,
-        uuid,
-        reason,
-        created,
-        expires,
-        link,
-        createdBy
-      FROM ubl
-      WHERE
-        uuid = $uuid
-      ORDER BY created DESC
-      """.query[UblRow]
-
-  def getUblEntry(id: Long): Query0[UblRow] =
-    sql"""
-      SELECT
-        id,
-        ign,
-        uuid,
-        reason,
-        created,
-        expires,
-        link,
-        createdBy
-      FROM ubl
-      WHERE
-        id = $id
-      """.query[UblRow]
-
-  def searchUblUsername(username: String): Query0[(String, List[UUID])] =
-    sql"""
-      SELECT
-        ign,
-        array_agg(distinct uuid)
-      FROM ubl
-      WHERE
-        ign ILIKE ${s"%$username%"}
-      GROUP BY ign
-      LIMIT 21
-      """.query[(String, List[UUID])]
-
-  def editUblEntry(row: UblRow): Update0 =
-    sql"""
-      UPDATE ubl
-      SET
-        ign = ${row.ign},
-        uuid = ${row.uuid},
-        reason = ${row.reason},
-        created = ${row.created},
-        expires = ${row.expires},
-        link = ${row.link},
-        createdBy = ${row.createdBy}
-      WHERE id = ${row.id}
-      """.update
-
-  def deleteUblEntry(id: Long): Update0 =
-    sql"""
-      DELETE FROM ubl
-      WHERE id = $id
-      """.update
-
-  def getUnprocessedDiscordMatches: Query0[MatchRow] =
-    sql"""
-      SELECT
-        id,
-        author,
-        opens,
-        address,
-        ip,
-        scenarios,
-        tags,
-        teams,
-        size,
-        customStyle,
-        count,
-        content,
-        region,
-        removed,
-        removedAt,
-        removedBy,
-        removedReason,
-        created,
-        location,
-        mainVersion,
-        version,
-        slots,
-        length,
-        mapSize,
-        pvpEnabledAt,
-        approvedBy,
-        hostingName,
-        tournament
-      FROM matches
-      WHERE
-        handledDiscord = false
-        AND
-        removed = false
-        AND
-        opens > now()
-    """.query[MatchRow]
-
-  def flagMatchesAsProcessedForDiscord(ids: NonEmptyList[Long]): Update0 =
-    (sql"""
-      UPDATE
-        matches
-      SET
-        handledDiscord = true
-      WHERE """ ++
-      Fragments.in(fr"id", ids)).update
-
   val unapprovedUpcomingMatchesCount: Query0[Int] =
     sql"""
       SELECT
@@ -587,61 +523,6 @@ class Queries(logger: LogHandler) {
         AND
         opens > NOW()
       """.query[Int]
-
-  def createAlertRule(rule: AlertRuleRow): Update0 =
-    sql"""
-      INSERT INTO alert_rules
-        (field, alertOn, exact, createdBy, created)
-      VALUES
-        (${rule.field}, ${rule.alertOn}, ${rule.exact}, ${rule.createdBy}, ${rule.created})
-      """.update
-
-  val getAllAlertRules: Query0[AlertRuleRow] =
-    sql"""
-      SELECT
-        id,
-        field,
-        alertOn,
-        exact,
-        createdBy,
-        created
-      FROM
-        alert_rules
-      """.query[AlertRuleRow]
-
-  def deleteAlertRule(id: Long): Update0 =
-    sql"""
-      DELETE FROM alert_rules
-      WHERE id = $id
-      """.update
-
-  def createAlert(matchId: Long, triggeredRuleId: Long): Update0 =
-    sql"""
-      INSERT INTO alerts
-        (matchId, triggeredRuleId)
-      VALUES
-        ($matchId, $triggeredRuleId)
-      """.update
-
-  val getAlertsForDiscord: Query0[AlertRow] =
-    sql"""
-      SELECT
-        matchId, triggeredRuleId
-      FROM
-        alerts
-      WHERE
-        discord = false
-      """.query[AlertRow]
-
-  def setAlertsHandledForDiscord(matchId: Long): Update0 =
-    sql"""
-      UPDATE
-        alerts
-      SET
-        discord = true
-      WHERE
-        matchId = $matchId
-      """.update
 
   def getAllModifiers(): Query0[ModifierRow] =
     sql"""SELECT id, displayName FROM modifiers""".query[ModifierRow]

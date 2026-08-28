@@ -1,11 +1,12 @@
 package gg.uhc.hosts.endpoints.users
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server._
 
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax._
 
 class ShowPermissionsForUser(database: Database, customDirectives: CustomDirectives) {
   import CustomJsonCodec._
@@ -14,7 +15,7 @@ class ShowPermissionsForUser(database: Database, customDirectives: CustomDirecti
   def apply(username: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(database.getPermissions(username)) { result =>
-        complete(result)
+        complete(result.asJson)
       }
     }
 }

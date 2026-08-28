@@ -2,13 +2,13 @@ package gg.uhc.hosts.endpoints.matches
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.unmarshalling.Unmarshaller
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
+import io.circe.syntax.EncoderOps
 
 case class ConflictCheck(opens: Instant, region: String, version: String)
 
@@ -29,7 +29,7 @@ class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
             requireSucessfulQuery(
               database.getPotentialConflicts(start = start, end = end, region = region, version = version)) {
               conflicts =>
-                complete(conflicts)
+                complete(conflicts.asJson)
             }
           }
         }
