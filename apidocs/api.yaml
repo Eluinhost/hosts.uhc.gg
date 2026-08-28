@@ -894,7 +894,8 @@ paths:
       tags:
         - Permissions
       summary: Lists log of permissions changes
-      description: Lists a recent history of permissions changes
+      description: Lists a recent history of permissions changes. Authentication is optional; unless the
+        authenticated user has the `admin` or `hosting advisor` permission, `modifier` will be `moderation team`
       parameters:
         - in: query
           name: before
@@ -933,7 +934,8 @@ paths:
                     modifier:
                       type: string
                       required: true
-                      description: The username of the user that did this action
+                      description: The username of the user that did this action. Will be `moderation team`
+                        unless the caller has the `admin` or `hosting advisor` permission
                     username:
                       type: string
                       required: true
