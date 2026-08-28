@@ -19,9 +19,10 @@ export const fetchUsersInPermissionWithLetter = (permission: string, letter: str
     url: `/api/permissions/${permission}/${letter}`,
   });
 
-export const fetchPermissionModerationLog = (): Promise<PermissionModerationLogEntry[]> =>
+export const fetchPermissionModerationLog = (accessToken: string | null): Promise<PermissionModerationLogEntry[]> =>
   fetchArray<PermissionModerationLogEntry>({
     url: `/api/permissions/log`,
+    config: accessToken ? { headers: authHeaders(accessToken) } : undefined,
   }).then(responses => responses.map(response => ({ ...response, at: moment.utc(response.at) })));
 
 export const callAddPermission = (permission: string, username: string, accessToken: string): Promise<void> =>
