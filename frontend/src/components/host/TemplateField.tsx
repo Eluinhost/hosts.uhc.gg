@@ -8,6 +8,36 @@ import { Preset, presets } from './presets';
 import { memoizeWith, toString } from 'ramda';
 import { Markdown } from '../Markdown';
 
+const LOCAL_PRESETS_STORAGE_KEY = 'host-form-template-presets-v1';
+
+const isValidPreset = (value: any): value is Preset =>
+  !!value && typeof value.name === 'string' && value.name.trim().length > 0 && typeof value.template === 'string';
+
+const readLocalPresets = (): Preset[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_PRESETS_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(isValidPreset).map(p => ({
+      name: p.name.trim(),
+      template: p.template,
+    }));
+  } catch {
+    return [];
+  }
+};
+
+const writeLocalPresets = (localPresets: Preset[]): void => {
+  if (typeof window === 'undefined') return;
+
+  window.localStorage.setItem(LOCAL_PRESETS_STORAGE_KEY, JSON.stringify(localPresets));
+};
+
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement | string;
   readonly required: boolean;
@@ -102,18 +132,47 @@ const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; read
   </Button>
 );
 
-const PresetsTab: React.FunctionComponent<{ readonly onPresetClick: (p: Preset) => () => void }> = ({
-  onPresetClick,
-}) => (
+const PresetsTab: React.FunctionComponent<{
+  readonly onPresetClick: (p: Preset) => () => void;
+  readonly onSaveCurrentAsPreset: () => void;
+  readonly onDeleteLocalPreset: (presetName: string) => () => void;
+  readonly localPresets: Preset[];
+}> = ({ onPresetClick, onSaveCurrentAsPreset, onDeleteLocalPreset, localPresets }) => (
   <Callout intent={Intent.PRIMARY}>
-    {presets.map(p => (
-      <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
-    ))}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <H5 style={{ margin: 0 }}>Built-in presets</H5>
+      <Button minimal icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
+        Save current template as preset
+      </Button>
+    </div>
+
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+      {presets.map(p => (
+        <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
+      ))}
+    </div>
+
+    <H5 style={{ marginBottom: 8 }}>Your saved presets</H5>
+    {localPresets.length === 0 ? (
+      <div>No saved presets yet.</div>
+    ) : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {localPresets.map(preset => (
+          <div key={preset.name} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <PresetButton onClick={onPresetClick(preset)} id={preset.name} />
+            <Button minimal icon="trash" intent={Intent.DANGER} onClick={onDeleteLocalPreset(preset.name)}>
+              Remove
+            </Button>
+          </div>
+        ))}
+      </div>
+    )}
   </Callout>
 );
 
 type TemplateFieldComponentState = {
   readonly currentTabId: string | number;
+  readonly localPresets: Preset[];
 };
 
 class TemplateFieldComponent extends React.PureComponent<
@@ -122,7 +181,14 @@ class TemplateFieldComponent extends React.PureComponent<
 > {
   state = {
     currentTabId: 'host-form-template-tab-template',
+    localPresets: [] as Preset[],
   };
+
+  componentDidMount() {
+    this.setState({
+      localPresets: readLocalPresets(),
+    });
+  }
 
   onTabChange = (newTabId: string | number): void =>
     this.setState({
@@ -136,11 +202,60 @@ class TemplateFieldComponent extends React.PureComponent<
     });
   });
 
+  onSaveCurrentAsPreset = (): void => {
+    if (typeof window === 'undefined') return;
+
+    const name = window.prompt('Preset name');
+    const trimmedName = (name || '').trim();
+
+    if (!trimmedName) return;
+
+    const alreadyExists = this.state.localPresets.some(
+      existing => existing.name.toLowerCase() === trimmedName.toLowerCase(),
+    );
+
+    if (alreadyExists && !window.confirm(`Preset "${trimmedName}" already exists. Overwrite it?`)) return;
+
+    const preset = {
+      name: trimmedName,
+      template: this.props.input.value || '',
+    };
+
+    const nextLocalPresets = [...this.state.localPresets.filter(p => p.name.toLowerCase() !== trimmedName.toLowerCase()), preset]
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    writeLocalPresets(nextLocalPresets);
+    this.setState({ localPresets: nextLocalPresets });
+  };
+
+  onDeleteLocalPreset: (presetName: string) => () => void = memoizeWith(
+    toString,
+    (presetName: string) => (): void => {
+      if (typeof window === 'undefined') return;
+
+      if (!window.confirm(`Remove preset "${presetName}"?`)) return;
+
+      const nextLocalPresets = this.state.localPresets.filter(
+        preset => preset.name.toLowerCase() !== presetName.toLowerCase(),
+      );
+
+      writeLocalPresets(nextLocalPresets);
+      this.setState({ localPresets: nextLocalPresets });
+    },
+  );
+
   render() {
     const Template = <TemplateTab {...this.props} />;
     const Preview = <PreviewTab {...this.props} />;
     const Help = <HelpTab {...this.props} />;
-    const Presets = <PresetsTab onPresetClick={this.onPresetClick} />;
+    const Presets = (
+      <PresetsTab
+        onPresetClick={this.onPresetClick}
+        onSaveCurrentAsPreset={this.onSaveCurrentAsPreset}
+        onDeleteLocalPreset={this.onDeleteLocalPreset}
+        localPresets={this.state.localPresets}
+      />
+    );
 
     return (
       <FieldWrapper meta={this.props.meta} required={this.props.required} hideErrors>
