@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { Classes } from '@blueprintjs/core';
@@ -14,20 +14,24 @@ export interface SelectFieldProps extends BaseFieldProps {
   readonly disabled?: boolean;
 }
 
-const renderSelect: React.FunctionComponent<WrappedFieldProps & SelectFieldProps> = props => (
-  <FieldWrapper meta={props.meta} label={props.label} required={props.required}>
-    <div className={`${Classes.HTML_SELECT} ${props.className || ''}`}>
-      <select {...props.input} disabled={props.disabled} className={!props.meta.valid ? Classes.INTENT_DANGER : ''}>
-        {props.options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.display}
-          </option>
-        ))}
-      </select>
-    </div>
-  </FieldWrapper>
-);
+const renderSelect: React.FC<WrappedFieldProps & SelectFieldProps> = props => {
+  const { meta, label, required, input, options, disabled, className } = props;
 
-export const SelectField: React.FunctionComponent<SelectFieldProps> = props => (
+  return (
+    <FieldWrapper meta={meta} label={label} required={required}>
+      <div className={`${Classes.HTML_SELECT} ${className || ''}`}>
+        <select {...input} disabled={disabled} className={!meta.valid ? Classes.INTENT_DANGER : ''}>
+          {options.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.display}
+            </option>
+          ))}
+        </select>
+      </div>
+    </FieldWrapper>
+  );
+};
+
+export const SelectField: React.FC<SelectFieldProps> = props => (
   <Field {...props} component={renderSelect} />
 );

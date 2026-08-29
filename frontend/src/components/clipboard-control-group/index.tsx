@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
 import { AppToaster } from '../../services/AppToaster';
 
@@ -6,16 +6,16 @@ type Props = {
   readonly value: string;
 };
 
-export class ClipboardControlGroup extends React.PureComponent<Props> {
-  private inputRef: HTMLInputElement | null = null;
+export const ClipboardControlGroup = React.memo(({ value }: Props) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  private triggerCopy = () => {
+  const triggerCopy = useCallback(() => {
     try {
-      this.inputRef!.select();
+      inputRef.current!.select();
       document.execCommand('copy');
       AppToaster.show({
         intent: Intent.SUCCESS,
-        message: `Added \`${this.inputRef!.value}\` to clipboard`,
+        message: `Added \`${inputRef.current!.value}\` to clipboard`,
       });
     } catch (e) {
       console.error(e);
@@ -25,22 +25,18 @@ export class ClipboardControlGroup extends React.PureComponent<Props> {
         message: 'Your browser does not support copy, you must copy manually',
       });
     }
-  };
+  }, []);
 
-  private saveRef = (ref: HTMLInputElement | null) => (this.inputRef = ref);
-
-  public render() {
-    return (
-      <ControlGroup fill>
-        <input
-          type="text"
-          className={`${Classes.INPUT} ${Classes.LARGE}`}
-          value={this.props.value}
-          readOnly
-          ref={this.saveRef}
-        />
-        <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={this.triggerCopy} />
-      </ControlGroup>
-    );
-  }
-}
+  return (
+    <ControlGroup fill>
+      <input
+        type="text"
+        className={`${Classes.INPUT} ${Classes.LARGE}`}
+        value={value}
+        readOnly
+        ref={inputRef}
+      />
+      <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
+    </ControlGroup>
+  );
+});
