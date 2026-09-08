@@ -7,36 +7,11 @@ import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } 
 import { Preset, presets } from './presets';
 import { memoizeWith, toString } from 'ramda';
 import { Markdown } from '../Markdown';
-
-const LOCAL_PRESETS_STORAGE_KEY = 'host-form-template-presets-v1';
-
-const isValidPreset = (value: any): value is Preset =>
-  !!value && typeof value.name === 'string' && value.name.trim().length > 0 && typeof value.template === 'string';
-
-const readLocalPresets = (): Preset[] => {
-  if (typeof window === 'undefined') return [];
-
-  try {
-    const raw = window.localStorage.getItem(LOCAL_PRESETS_STORAGE_KEY);
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed.filter(isValidPreset).map(p => ({
-      name: p.name.trim(),
-      template: p.template,
-    }));
-  } catch {
-    return [];
-  }
-};
-
-const writeLocalPresets = (localPresets: Preset[]): void => {
-  if (typeof window === 'undefined') return;
-
-  window.localStorage.setItem(LOCAL_PRESETS_STORAGE_KEY, JSON.stringify(localPresets));
-};
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import { ApplicationState } from '../../state/ApplicationState';
+import { getLocalPresets } from '../../state/Selectors';
+import { Presets } from '../../actions';
 
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement | string;
@@ -170,25 +145,25 @@ const PresetsTab: React.FunctionComponent<{
   </Callout>
 );
 
-type TemplateFieldComponentState = {
-  readonly currentTabId: string | number;
+type TemplateFieldStateProps = {
   readonly localPresets: Preset[];
 };
 
+type TemplateFieldDispatchProps = {
+  readonly savePresets: (presets: Preset[]) => void;
+};
+
+type TemplateFieldComponentState = {
+  readonly currentTabId: string | number;
+};
+
 class TemplateFieldComponent extends React.PureComponent<
-  WrappedFieldProps & TemplateFieldProps,
+  WrappedFieldProps & TemplateFieldProps & TemplateFieldStateProps & TemplateFieldDispatchProps,
   TemplateFieldComponentState
 > {
   state = {
     currentTabId: 'host-form-template-tab-template',
-    localPresets: [] as Preset[],
   };
-
-  componentDidMount() {
-    this.setState({
-      localPresets: readLocalPresets(),
-    });
-  }
 
   onTabChange = (newTabId: string | number): void =>
     this.setState({
@@ -210,7 +185,7 @@ class TemplateFieldComponent extends React.PureComponent<
 
     if (!trimmedName) return;
 
-    const alreadyExists = this.state.localPresets.some(
+    const alreadyExists = this.props.localPresets.some(
       existing => existing.name.toLowerCase() === trimmedName.toLowerCase(),
     );
 
@@ -221,28 +196,25 @@ class TemplateFieldComponent extends React.PureComponent<
       template: this.props.input.value || '',
     };
 
-    const nextLocalPresets = [...this.state.localPresets.filter(p => p.name.toLowerCase() !== trimmedName.toLowerCase()), preset]
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const nextLocalPresets = [
+      ...this.props.localPresets.filter(p => p.name.toLowerCase() !== trimmedName.toLowerCase()),
+      preset,
+    ].sort((a, b) => a.name.localeCompare(b.name));
 
-    writeLocalPresets(nextLocalPresets);
-    this.setState({ localPresets: nextLocalPresets });
+    this.props.savePresets(nextLocalPresets);
   };
 
-  onDeleteLocalPreset: (presetName: string) => () => void = memoizeWith(
-    toString,
-    (presetName: string) => (): void => {
-      if (typeof window === 'undefined') return;
+  onDeleteLocalPreset: (presetName: string) => () => void = memoizeWith(toString, (presetName: string) => (): void => {
+    if (typeof window === 'undefined') return;
 
-      if (!window.confirm(`Remove preset "${presetName}"?`)) return;
+    if (!window.confirm(`Remove preset "${presetName}"?`)) return;
 
-      const nextLocalPresets = this.state.localPresets.filter(
-        preset => preset.name.toLowerCase() !== presetName.toLowerCase(),
-      );
+    const nextLocalPresets = this.props.localPresets.filter(
+      preset => preset.name.toLowerCase() !== presetName.toLowerCase(),
+    );
 
-      writeLocalPresets(nextLocalPresets);
-      this.setState({ localPresets: nextLocalPresets });
-    },
-  );
+    this.props.savePresets(nextLocalPresets);
+  });
 
   render() {
     const Template = <TemplateTab {...this.props} />;
@@ -253,7 +225,7 @@ class TemplateFieldComponent extends React.PureComponent<
         onPresetClick={this.onPresetClick}
         onSaveCurrentAsPreset={this.onSaveCurrentAsPreset}
         onDeleteLocalPreset={this.onDeleteLocalPreset}
-        localPresets={this.state.localPresets}
+        localPresets={this.props.localPresets}
       />
     );
 
@@ -274,6 +246,17 @@ class TemplateFieldComponent extends React.PureComponent<
   }
 }
 
+const templateFieldStateSelector = createSelector<ApplicationState, Preset[], TemplateFieldStateProps>(
+  getLocalPresets,
+  localPresets => ({
+    localPresets,
+  }),
+);
+
+const ConnectedTemplateFieldComponent = connect(templateFieldStateSelector, {
+  savePresets: Presets.save,
+})(TemplateFieldComponent);
+
 export const TemplateField: React.FunctionComponent<TemplateFieldProps> = props => (
-  <Field {...props} component={TemplateFieldComponent} />
+  <Field {...props} component={ConnectedTemplateFieldComponent} />
 );

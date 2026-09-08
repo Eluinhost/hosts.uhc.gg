@@ -4,6 +4,7 @@ import { HostingRules } from '../state/HostingRulesState';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { CreateMatchData } from '../models/CreateMatchData';
 import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { Preset } from '../components/host/presets';
 
 export type WithResult<Result> = {
   readonly result: Result;
@@ -178,6 +179,10 @@ export const Settings = {
   toggleHideRemoved: createAction('TOGGLE_HIDE_REMOVED'),
   setShowOwnRemoved: createAction('SET_SHOW_OWN_REMOVED', (payload: boolean) => payload),
   toggleShowOwnRemoved: createAction('TOGGLE_SHOW_OWN_REMOVED'),
+};
+
+export const Presets = {
+  save: createAction('SAVE_PRESETS', (payload: Preset[]) => payload),
 };
 
 export const RefreshPermissionModerationLog = {

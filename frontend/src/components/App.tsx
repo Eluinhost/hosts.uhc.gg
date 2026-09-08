@@ -1,12 +1,10 @@
 import React, { ComponentType } from 'react';
 import { HostingPage } from './host';
-import { Button, Classes, NonIdealState } from '@blueprintjs/core';
+import { Classes, NonIdealState } from '@blueprintjs/core';
 import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
-import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { MembersPage } from './members';
 import { ProfilePage } from './profile';
@@ -15,7 +13,8 @@ import { HistoryPage } from './host-history-page';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
-import { getPermissions, isDarkMode, isLoggedIn } from '../state/Selectors';
+import { isDarkMode, isLoggedIn } from '../state/Selectors';
+import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
 import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
@@ -36,58 +35,33 @@ class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
   }
 }
 
-type NoPermissionProps = {
+type AuthenticatedRouteOwnProps = {
+  readonly permission: string | string[];
+} & RouteProps;
+
+type AuthenticatedRouteStateProps = {
   readonly isLoggedIn: boolean;
-  readonly permissions: string[];
 };
 
-const NoPermissionComponent: React.FunctionComponent<NoPermissionProps> = ({ isLoggedIn, permissions }) => {
-  if (isLoggedIn && permissions.length === 0) {
-    return (
-      <NonIdealState
-        title="No Host Rank"
-        description="You are logged in but do not have a hosting rank yet. Apply for trial host below."
-        icon="new-person"
-        action={
-          <Link to="/host-applications/apply">
-            <Button intent="primary" icon="add">
-              Apply for Trial Host
-            </Button>
-          </Link>
-        }
-      />
-    );
-  }
+type AuthenticatedRouteProps = AuthenticatedRouteOwnProps & AuthenticatedRouteStateProps;
 
-  return (
-    <NonIdealState
-      title="Forbidden"
-      description="You do not have permission to use this. You may attempt to login with an authorised account below"
-      icon="warning-sign"
-      action={<LoginButton />}
-    />
-  );
-};
+const requiresHostPermission = (permission: string | string[]): boolean =>
+  (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));
 
-const noPermissionStateSelector = createSelector<ApplicationState, boolean, string[], NoPermissionProps>(
-  isLoggedIn,
-  getPermissions,
-  (isLoggedIn, permissions) => ({
-    isLoggedIn,
-    permissions,
-  }),
-);
-
-const NoPermission = connect(noPermissionStateSelector)(NoPermissionComponent);
-
-class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
+class AuthenticatedRouteComponent extends React.PureComponent<AuthenticatedRouteProps> {
   public render() {
-    const { permission, ...routeProps } = this.props;
+    const { permission, isLoggedIn, ...routeProps } = this.props;
 
     const Component: React.ComponentType<any> = this.props.component!;
 
+    const alternative = !isLoggedIn
+      ? PromptToLogin
+      : requiresHostPermission(permission)
+      ? PromptToApplyForHost
+      : NotAllowed;
+
     const component: React.FunctionComponent<RouteComponentProps<any>> = props => (
-      <WithPermission permission={permission} alternative={NoPermission}>
+      <WithPermission permission={permission} alternative={alternative}>
         <Component {...props} />
       </WithPermission>
     );
@@ -95,6 +69,15 @@ class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
     return <Route {...routeProps} component={component} />;
   }
 }
+
+const authenticatedRouteStateSelector = createSelector<ApplicationState, boolean, AuthenticatedRouteStateProps>(
+  isLoggedIn,
+  isLoggedIn => ({
+    isLoggedIn,
+  }),
+);
+
+const AuthenticatedRoute = connect(authenticatedRouteStateSelector)(AuthenticatedRouteComponent);
 
 type AppProps = {
   readonly isDarkMode: boolean;
@@ -151,10 +134,6 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
     );
   }
 }
-
-type AuthenticatedRouteProps = {
-  readonly permission: string | string[];
-} & RouteProps;
 
 class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
   public componentDidMount() {
