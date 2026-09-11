@@ -1,6 +1,6 @@
 import { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
-import { Authentication, ClearStorage, SetSavedHostFormData, Settings } from '../actions';
+import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
 import * as localForage from 'localforage';
 import { CreateMatchData } from '../models/CreateMatchData';
 import { ActionCreator } from 'typesafe-redux-helpers';
@@ -101,6 +101,7 @@ export function* syncWithStorage(): SagaIterator {
     call(saveAndListen, Settings.setHideRemoved, 'hideRemoved'),
     call(saveAndListen, Settings.setShowOwnRemoved, 'showOwnRemoved'),
     call(saveAndListen, Settings.setTimezone, 'timezone'),
+    call(saveAndListen, Presets.save, 'presets'),
     call(authentication),
     call(syncHostFormData),
     spawn(watchLogout), // start separately

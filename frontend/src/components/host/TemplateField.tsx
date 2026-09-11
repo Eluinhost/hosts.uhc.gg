@@ -7,6 +7,11 @@ import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } 
 import { Preset, presets } from './presets';
 import { memoizeWith, toString } from 'ramda';
 import { Markdown } from '../Markdown';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import { ApplicationState } from '../../state/ApplicationState';
+import { getLocalPresets } from '../../state/Selectors';
+import { Presets } from '../../actions';
 
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement | string;
@@ -102,22 +107,58 @@ const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; read
   </Button>
 );
 
-const PresetsTab: React.FunctionComponent<{ readonly onPresetClick: (p: Preset) => () => void }> = ({
-  onPresetClick,
-}) => (
+const PresetsTab: React.FunctionComponent<{
+  readonly onPresetClick: (p: Preset) => () => void;
+  readonly onSaveCurrentAsPreset: () => void;
+  readonly onDeleteLocalPreset: (presetName: string) => () => void;
+  readonly localPresets: Preset[];
+}> = ({ onPresetClick, onSaveCurrentAsPreset, onDeleteLocalPreset, localPresets }) => (
   <Callout intent={Intent.PRIMARY}>
-    {presets.map(p => (
-      <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
-    ))}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <H5 style={{ margin: 0 }}>Built-in presets</H5>
+      <Button minimal icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
+        Save current template as preset
+      </Button>
+    </div>
+
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+      {presets.map(p => (
+        <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
+      ))}
+    </div>
+
+    <H5 style={{ marginBottom: 8 }}>Your saved presets</H5>
+    {localPresets.length === 0 ? (
+      <div>No saved presets yet.</div>
+    ) : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {localPresets.map(preset => (
+          <div key={preset.name} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <PresetButton onClick={onPresetClick(preset)} id={preset.name} />
+            <Button minimal icon="trash" intent={Intent.DANGER} onClick={onDeleteLocalPreset(preset.name)}>
+              Remove
+            </Button>
+          </div>
+        ))}
+      </div>
+    )}
   </Callout>
 );
+
+type TemplateFieldStateProps = {
+  readonly localPresets: Preset[];
+};
+
+type TemplateFieldDispatchProps = {
+  readonly savePresets: (presets: Preset[]) => void;
+};
 
 type TemplateFieldComponentState = {
   readonly currentTabId: string | number;
 };
 
 class TemplateFieldComponent extends React.PureComponent<
-  WrappedFieldProps & TemplateFieldProps,
+  WrappedFieldProps & TemplateFieldProps & TemplateFieldStateProps & TemplateFieldDispatchProps,
   TemplateFieldComponentState
 > {
   state = {
@@ -136,11 +177,57 @@ class TemplateFieldComponent extends React.PureComponent<
     });
   });
 
+  onSaveCurrentAsPreset = (): void => {
+    if (typeof window === 'undefined') return;
+
+    const name = window.prompt('Preset name');
+    const trimmedName = (name || '').trim();
+
+    if (!trimmedName) return;
+
+    const alreadyExists = this.props.localPresets.some(
+      existing => existing.name.toLowerCase() === trimmedName.toLowerCase(),
+    );
+
+    if (alreadyExists && !window.confirm(`Preset "${trimmedName}" already exists. Overwrite it?`)) return;
+
+    const preset = {
+      name: trimmedName,
+      template: this.props.input.value || '',
+    };
+
+    const nextLocalPresets = [
+      ...this.props.localPresets.filter(p => p.name.toLowerCase() !== trimmedName.toLowerCase()),
+      preset,
+    ].sort((a, b) => a.name.localeCompare(b.name));
+
+    this.props.savePresets(nextLocalPresets);
+  };
+
+  onDeleteLocalPreset: (presetName: string) => () => void = memoizeWith(toString, (presetName: string) => (): void => {
+    if (typeof window === 'undefined') return;
+
+    if (!window.confirm(`Remove preset "${presetName}"?`)) return;
+
+    const nextLocalPresets = this.props.localPresets.filter(
+      preset => preset.name.toLowerCase() !== presetName.toLowerCase(),
+    );
+
+    this.props.savePresets(nextLocalPresets);
+  });
+
   render() {
     const Template = <TemplateTab {...this.props} />;
     const Preview = <PreviewTab {...this.props} />;
     const Help = <HelpTab {...this.props} />;
-    const Presets = <PresetsTab onPresetClick={this.onPresetClick} />;
+    const Presets = (
+      <PresetsTab
+        onPresetClick={this.onPresetClick}
+        onSaveCurrentAsPreset={this.onSaveCurrentAsPreset}
+        onDeleteLocalPreset={this.onDeleteLocalPreset}
+        localPresets={this.props.localPresets}
+      />
+    );
 
     return (
       <FieldWrapper meta={this.props.meta} required={this.props.required} hideErrors>
@@ -159,6 +246,17 @@ class TemplateFieldComponent extends React.PureComponent<
   }
 }
 
+const templateFieldStateSelector = createSelector<ApplicationState, Preset[], TemplateFieldStateProps>(
+  getLocalPresets,
+  localPresets => ({
+    localPresets,
+  }),
+);
+
+const ConnectedTemplateFieldComponent = connect(templateFieldStateSelector, {
+  savePresets: Presets.save,
+})(TemplateFieldComponent);
+
 export const TemplateField: React.FunctionComponent<TemplateFieldProps> = props => (
-  <Field {...props} component={TemplateFieldComponent} />
+  <Field {...props} component={ConnectedTemplateFieldComponent} />
 );

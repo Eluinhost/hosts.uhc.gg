@@ -16,6 +16,7 @@ import {
 import { createSelector, Selector } from 'reselect';
 import { AccessTokenClaims, RefreshTokenClaims } from './AuthenticationState';
 import { Match } from '../models/Match';
+import { Preset } from '../components/host/presets';
 
 export const isDarkMode: Selector<ApplicationState, boolean> = createSelector(
   state => state.settings.isDarkMode,
@@ -148,6 +149,8 @@ export const matchesPermissions: (required: string | string[]) => Selector<Appli
       },
     ),
 );
+
+export const getLocalPresets: Selector<ApplicationState, Preset[]> = createSelector(state => state.presets, identity);
 
 export const getUpcomingMatches: Selector<ApplicationState, Match[]> = createSelector(
   state => state.upcoming.matches,

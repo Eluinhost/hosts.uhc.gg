@@ -5,7 +5,6 @@ import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'reac
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
-import { LoginButton } from './LoginButton';
 import { Navbar } from './Navbar';
 import { MembersPage } from './members';
 import { ProfilePage } from './profile';
@@ -14,7 +13,8 @@ import { HistoryPage } from './host-history-page';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../state/ApplicationState';
 import { createSelector } from 'reselect';
-import { isDarkMode } from '../state/Selectors';
+import { isDarkMode, isLoggedIn } from '../state/Selectors';
+import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
 import { GlobalHotkeys } from './GlobalHotkeys';
 import { MatchDetailsPage } from './match-details-page';
 import * as reactGa from 'react-ga';
@@ -35,31 +35,33 @@ class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
   }
 }
 
-class NoPermission extends React.PureComponent {
-  public render() {
-    return (
-      <NonIdealState
-        title="Forbidden"
-        description="You do not have permission to use this. You may attempt to login with an authorised account below"
-        icon="warning-sign"
-        action={<LoginButton />}
-      />
-    );
-  }
-}
-
-type AuthenticatedRouteProps = {
+type AuthenticatedRouteOwnProps = {
   readonly permission: string | string[];
 } & RouteProps;
 
-class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
-  public render() {
-    const { permission, ...routeProps } = this.props;
+type AuthenticatedRouteStateProps = {
+  readonly isLoggedIn: boolean;
+};
 
-    const Component: React.ComponentType<RouteComponentProps<any>> = this.props.component!;
+type AuthenticatedRouteProps = AuthenticatedRouteOwnProps & AuthenticatedRouteStateProps;
+
+const requiresHostPermission = (permission: string | string[]): boolean =>
+  (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));
+
+class AuthenticatedRouteComponent extends React.PureComponent<AuthenticatedRouteProps> {
+  public render() {
+    const { permission, isLoggedIn, ...routeProps } = this.props;
+
+    const Component: React.ComponentType<any> = this.props.component!;
+
+    const alternative = !isLoggedIn
+      ? PromptToLogin
+      : requiresHostPermission(permission)
+      ? PromptToApplyForHost
+      : NotAllowed;
 
     const component: React.FunctionComponent<RouteComponentProps<any>> = props => (
-      <WithPermission permission={permission} alternative={NoPermission}>
+      <WithPermission permission={permission} alternative={alternative}>
         <Component {...props} />
       </WithPermission>
     );
@@ -68,41 +70,14 @@ class AuthenticatedRoute extends React.PureComponent<AuthenticatedRouteProps> {
   }
 }
 
-class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
-  public componentDidMount() {
-    const send = (location: Location) => {
-      const path = location.pathname + location.search;
+const authenticatedRouteStateSelector = createSelector<ApplicationState, boolean, AuthenticatedRouteStateProps>(
+  isLoggedIn,
+  isLoggedIn => ({
+    isLoggedIn,
+  }),
+);
 
-      reactGa.set({ page: path });
-      reactGa.pageview(path);
-    };
-
-    this.props.history.listen(send);
-    send(this.props.location);
-  }
-
-  public render() {
-    return (
-      <Switch>
-        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
-        <Route path="/m/:id" component={MatchDetailsPage} />
-        <Route path="/matches/:host" component={HistoryPage} />
-        <Route path="/matches" component={UpcomingMatchesPage} />
-        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
-        <Route path="/host-applications" component={HostApplicationsPage} />
-        <Route path="/members" component={MembersPage} />
-        <Route path="/login" component={LoginPage} />
-        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
-        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
-        <Route path="/" exact component={HomePage} />
-        <Route component={NotFoundPage} />
-      </Switch>
-    );
-  }
-}
-
-const Routes: React.ComponentClass<{}> = withRouter(RoutesComponent);
+const AuthenticatedRoute = connect(authenticatedRouteStateSelector)(AuthenticatedRouteComponent);
 
 type AppProps = {
   readonly isDarkMode: boolean;
@@ -159,6 +134,42 @@ class AppComponent extends React.PureComponent<AppProps, AppState> {
     );
   }
 }
+
+class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
+  public componentDidMount() {
+    const send = (location: Location) => {
+      const path = location.pathname + location.search;
+
+      reactGa.set({ page: path });
+      reactGa.pageview(path);
+    };
+
+    this.props.history.listen(send);
+    send(this.props.location);
+  }
+
+  public render() {
+    return (
+      <Switch>
+        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
+        <Route path="/m/:id" component={MatchDetailsPage} />
+        <Route path="/matches/:host" component={HistoryPage} />
+        <Route path="/matches" component={UpcomingMatchesPage} />
+        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
+        <Route path="/host-applications" component={HostApplicationsPage} />
+        <Route path="/members" component={MembersPage} />
+        <Route path="/login" component={LoginPage} />
+        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
+        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
+        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
+        <Route path="/" exact component={HomePage} />
+        <Route component={NotFoundPage} />
+      </Switch>
+    );
+  }
+}
+
+const Routes: React.ComponentClass<{}> = withRouter(RoutesComponent);
 
 const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDarkMode, isDarkMode => ({
   isDarkMode,

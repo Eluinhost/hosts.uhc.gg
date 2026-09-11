@@ -14,6 +14,7 @@ import { reducer as HostFormConflicts, HostFormConflictsState } from './HostForm
 import { reducer as Settings, SettingsState } from './SettingsState';
 import { reducer as TimeSync, TimeSyncState } from './TimeSyncState';
 import { reducer as HostFormSavedData, HostFormSavedDataState } from './HostFormSavedDataState';
+import { reducer as Presets, PresetsState } from './PresetsState';
 import { reducer as modifiers, ModifiersState } from '../modifiers/reducer';
 import { reducer as versions, VersionsState } from '../versions/reducer';
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
@@ -35,6 +36,7 @@ export type ApplicationState = {
   readonly settings: SettingsState;
   readonly timeSync: TimeSyncState;
   readonly hostFormSavedData: HostFormSavedDataState;
+  readonly presets: PresetsState;
   readonly modifiers: ModifiersState;
   readonly versions: VersionsState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
@@ -61,6 +63,7 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       settings: Settings,
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
+      presets: Presets,
       modifiers,
       versions,
       hostingApplications,
