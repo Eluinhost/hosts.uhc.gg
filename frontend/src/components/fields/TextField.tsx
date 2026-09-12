@@ -13,16 +13,7 @@ export type TextFieldProps = BaseFieldProps & {
 };
 
 const renderField: React.FC<WrappedFieldProps & TextFieldProps> = props => {
-  const {
-    meta,
-    label,
-    required,
-    input,
-    placeholder,
-    isPassword,
-    disabled,
-    className,
-  } = props;
+  const { meta, label, required, input, placeholder, isPassword, disabled, className } = props;
 
   return (
     <FieldWrapper meta={meta} label={label} required={required}>
@@ -37,6 +28,4 @@ const renderField: React.FC<WrappedFieldProps & TextFieldProps> = props => {
   );
 };
 
-export const TextField: React.FC<TextFieldProps> = props => (
-  <Field {...props} component={renderField} />
-);
+export const TextField: React.FC<TextFieldProps> = props => <Field {...props} component={renderField} />;

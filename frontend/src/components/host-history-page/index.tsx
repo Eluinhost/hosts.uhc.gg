@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { RouteComponentProps } from 'react-router';
+import React, { useCallback, useEffect } from 'react';
+import { useParams } from 'react-router';
 import { MatchListing } from '../match-listing';
 import { Title } from '../Title';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,28 +12,20 @@ type RouteParams = {
   readonly host: string;
 };
 
-type HistoryPageProps = RouteComponentProps<RouteParams>;
-
 const hostHistorySelector = createSelector(
   (state: ApplicationState) => state.hostHistory,
   hostHistory => hostHistory,
 );
 
-export const HistoryPage = React.memo(({ match }: HistoryPageProps) => {
+export const HistoryPage = React.memo(() => {
   const { matches, error, fetching, hasMorePages, updated } = useSelector(hostHistorySelector);
   const dispatch = useDispatch();
 
-  const host = match.params.host;
+  const { host } = useParams<RouteParams>();
 
-  const reload = useCallback(
-    () => dispatch(LoadHostHistory.start({ host, refresh: true })),
-    [dispatch, host],
-  );
+  const reload = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: true })), [dispatch, host]);
 
-  const next = useCallback(
-    () => dispatch(LoadHostHistory.start({ host, refresh: false })),
-    [dispatch, host],
-  );
+  const next = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: false })), [dispatch, host]);
 
   useEffect(() => {
     return () => {

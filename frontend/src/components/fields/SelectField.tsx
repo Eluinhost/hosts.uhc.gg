@@ -32,6 +32,4 @@ const renderSelect: React.FC<WrappedFieldProps & SelectFieldProps> = props => {
   );
 };
 
-export const SelectField: React.FC<SelectFieldProps> = props => (
-  <Field {...props} component={renderSelect} />
-);
+export const SelectField: React.FC<SelectFieldProps> = props => <Field {...props} component={renderSelect} />;

@@ -1,25 +1,20 @@
-import * as React from 'react';
+import React from 'react';
 import moment from 'moment-timezone';
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
-import { connect } from 'react-redux';
-import { always } from 'ramda';
 
 type Props = {
   readonly time: moment.Moment;
 };
 
-type StateProps = {
+type StateSlice = {
   readonly format: string;
   readonly timezone: string;
 };
 
-const MatchOpensComponent: React.FunctionComponent<Props & StateProps> = ({ time, timezone, format }) => (
-  <span className="match-time">{time.clone().tz(timezone).format(format)}</span>
-);
-
-const stateSelector = createSelector<ApplicationState, string, string, StateProps>(
+const stateSelector = createSelector<ApplicationState, string, string, StateSlice>(
   getDetailsDateTimeFormat,
   getTimezone,
   (format, timezone) => ({
@@ -28,7 +23,7 @@ const stateSelector = createSelector<ApplicationState, string, string, StateProp
   }),
 );
 
-export const MatchOpens: React.ComponentType<Props> = connect<StateProps, {}, Props>(
-  stateSelector,
-  always({}),
-)(MatchOpensComponent);
+export const MatchOpens: React.ComponentType<Props> = React.memo(({ time }: Props) => {
+  const { format, timezone } = useSelector(stateSelector);
+  return <span className="match-time">{time.clone().tz(timezone).format(format)}</span>;
+});

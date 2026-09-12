@@ -6,10 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { HostApplications } from '../actions';
 import { createSelector } from 'reselect';
-import {
-  getHostApplicationsDetailsState,
-  getHostApplicationsReviewingState,
-} from '../selectors';
+import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
 import { HostApplicationDetailsState } from '../reducer';
 import { ApplicationState } from '../../state/ApplicationState';
 
@@ -32,9 +29,7 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
 }: ExistingHostApplicationProps) {
   const dispatch = useDispatch();
   const detailsState = useSelector(state => selector(state, application.id));
-  const { isFetching: isReviewing } = useSelector(
-    getHostApplicationsReviewingState,
-  );
+  const { isFetching: isReviewing } = useSelector(getHostApplicationsReviewingState);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
@@ -58,12 +53,20 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
   }, []);
 
   const handleApprove = useCallback(
-    () => dispatch(HostApplications.respond.start({ id: application.id, status: 'approve', onSuccess: handleReviewed })),
+    () =>
+      dispatch(HostApplications.respond.start({ id: application.id, status: 'approve', onSuccess: handleReviewed })),
     [application.id, handleReviewed, dispatch],
   );
   const handleReject = useCallback(
     () =>
-      dispatch(HostApplications.respond.start({ id: application.id, status: 'decline', rejectReason: declineReason, onSuccess: handleReviewed })),
+      dispatch(
+        HostApplications.respond.start({
+          id: application.id,
+          status: 'decline',
+          rejectReason: declineReason,
+          onSuccess: handleReviewed,
+        }),
+      ),
     [application.id, declineReason, handleReviewed, dispatch],
   );
 

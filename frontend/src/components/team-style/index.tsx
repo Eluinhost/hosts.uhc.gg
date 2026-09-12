@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 
 type Props = {
@@ -7,10 +7,8 @@ type Props = {
   readonly custom: string | null;
 };
 
-export class TeamStyle extends React.PureComponent<Props> {
-  render() {
-    const lookup = TeamStyles.find(it => it.value === this.props.style);
+export const TeamStyle: React.FC<Props> = ({ style, size, custom }) => {
+  const lookup = TeamStyles.find(it => it.value === style);
 
-    return <span>{renderTeamStyle(lookup!, this.props.size, this.props.custom)}</span>;
-  }
-}
+  return <span>{renderTeamStyle(lookup!, size, custom)}</span>;
+};

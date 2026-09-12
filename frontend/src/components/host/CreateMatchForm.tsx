@@ -1,5 +1,5 @@
 import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
-import * as React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
 import { Dispatch } from 'redux';
@@ -107,299 +107,307 @@ function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
   }
 }
 
-class CreateMatchFormComponent extends React.PureComponent<
+const CreateMatchFormComponent: React.FunctionComponent<
   InjectedFormProps<CreateMatchData, CreateMatchFormProps> & CreateMatchFormProps
-> {
-  componentDidMount(): void {
-    this.props.asyncValidate();
-  }
+> = props => {
+  const {
+    handleSubmit,
+    submitting,
+    currentValues,
+    templateContext,
+    username,
+    changeTemplate,
+    valid,
+    createMatch,
+    error,
+    asyncValidating,
+    roles,
+    change,
+    asyncValidate,
+    is12h,
+  } = props;
 
-  useVanillaPlus = () => {
-    this.props.change('scenarios', ['Vanilla+']);
+  useEffect(() => {
+    asyncValidate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onVanillaPlusChange = useCallback(() => {
+    change('scenarios', ['Vanilla+']);
+  }, [change]);
+
+  const onModifierAdded = useCallback(
+    (modifier: string) => {
+      change('scenarios', [...currentValues.scenarios, modifier]);
+    },
+    [change, currentValues],
+  );
+
+  const onModifierRemoved = useCallback(
+    (modifier: string) => {
+      change(
+        'scenarios',
+        currentValues.scenarios.filter(x => x !== modifier),
+      );
+    },
+    [change, currentValues],
+  );
+
+  const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
+
+  const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
+
+  const preview: Match = {
+    ...currentValues,
+    id: 0,
+    author: username,
+    removed: false,
+    removedAt: null,
+    removedBy: null,
+    removedReason: null,
+    approvedBy: null,
+    created: moment.utc(),
+    version: currentValues.version || currentValues.mainVersion,
+    roles,
   };
 
-  onModifierAdded = (modifier: string) => {
-    this.props.change('scenarios', [...this.props.currentValues.scenarios, modifier]);
-  };
+  return (
+    <form className="host-form" onSubmit={handleSubmit(createMatch)}>
+      <Title>Create a match</Title>
+      <HostingRules />
 
-  onModifierRemoved = (modifier: string) => {
-    this.props.change(
-      'scenarios',
-      this.props.currentValues.scenarios.filter(x => x !== modifier),
-    );
-  };
-
-  render() {
-    const {
-      handleSubmit,
-      submitting,
-      currentValues,
-      templateContext,
-      username,
-      changeTemplate,
-      valid,
-      createMatch,
-      error,
-      asyncValidating,
-      roles,
-    } = this.props;
-
-    const disabledAsync = submitting || asyncValidating !== false; // asyncvalidating is string | boolean
-
-    const teamStyle = TeamStyles.find(it => it.value === currentValues.teams) || TeamStyles[0];
-
-    const preview: Match = {
-      ...currentValues,
-      id: 0,
-      author: username,
-      removed: false,
-      removedAt: null,
-      removedBy: null,
-      removedReason: null,
-      approvedBy: null,
-      created: moment.utc(),
-      version: currentValues.version || currentValues.mainVersion,
-      roles,
-    };
-
-    return (
-      <form className="host-form" onSubmit={handleSubmit(createMatch)}>
-        <Title>Create a match</Title>
-        <HostingRules />
-
-        <fieldset className="opening-time">
-          <legend>Opening Time</legend>
-          <DateTimeField
-            name="opens"
-            required
+      <fieldset className="opening-time">
+        <legend>Opening Time</legend>
+        <DateTimeField
+          name="opens"
+          required
+          disabled={disabledAsync}
+          minDate={nextAvailableSlot().set('hours', 0)} // required so react-dates minDate works (it looks at midday)
+          maxDate={moment.utc().add(30, 'd').set('hours', 23)}
+          datePickerProps={{
+            numberOfMonths: 2,
+          }}
+          timePicker={{
+            minuteStep: 15,
+            use12Hours: is12h,
+          }}
+        />
+        <Callout intent={Intent.WARNING} icon="warning-sign">
+          <H5>
+            <span> All times must be entered as </span>
+            <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
+              UTC
+            </a>
+          </H5>
+        </Callout>
+      </fieldset>
+      <fieldset>
+        <legend>Game Details</legend>
+        <div className="host-form-row host-form-row--tournament">
+          <SwitchField
+            name="tournament"
+            label="Is this a Tournament?"
             disabled={disabledAsync}
-            minDate={nextAvailableSlot().set('hours', 0)} // required so react-dates minDate works (it looks at midday)
-            maxDate={moment.utc().add(30, 'd').set('hours', 23)}
-            datePickerProps={{
-              numberOfMonths: 2,
-            }}
-            timePicker={{
-              minuteStep: 15,
-              use12Hours: this.props.is12h,
-            }}
+            className={Classes.LARGE}
           />
-          <Callout intent={Intent.WARNING} icon="warning-sign">
-            <H5>
-              <span> All times must be entered as </span>
-              <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
-                UTC
-              </a>
-            </H5>
-          </Callout>
-        </fieldset>
-        <fieldset>
-          <legend>Game Details</legend>
-          <div className="host-form-row host-form-row--tournament">
-            <SwitchField
-              name="tournament"
-              label="Is this a Tournament?"
-              disabled={disabledAsync}
-              className={Classes.LARGE}
-            />
-          </div>
-          <div className="host-form-row">
-            <TextField
-              name="hostingName"
-              label="Hosting Name (optional)"
-              className={Classes.FILL}
-              required={false}
-              disabled={submitting}
-            />
-            <NumberField
-              name="count"
-              label="Game Number"
-              className={Classes.FILL}
-              min={1}
-              required
-              disabled={submitting}
-            />
-          </div>
-          <div className="host-form-row">
-            <MainVersionField
-              className={Classes.FILL}
-              label="Main Version"
-              required
-              name="mainVersion"
-              disabled={submitting}
-            />
-            <TextField
-              name="version"
-              label="Version Range"
-              className={Classes.FILL}
-              disabled={submitting}
-              required={false}
-            />
-            <NumberField
-              name="mapSize"
-              label="Map size (diameter)"
-              className={Classes.FILL}
-              min={1}
-              required
-              disabled={submitting}
-            />
-          </div>
-          <div className="host-form-row">
-            <NumberField
-              name="length"
-              label="Meetup @ (minutes)"
-              className={Classes.FILL}
-              min={30}
-              required
-              disabled={submitting}
-            />
-            <NumberField
-              name="pvpEnabledAt"
-              label="PVP Enabled (minutes)"
-              className={Classes.FILL}
-              min={0}
-              required
-              disabled={submitting}
-            />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Scenarios + Teams</legend>
-          <div className="host-form-row" onKeyPress={stopEnterSubmit}>
-            <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
-              <div>
-                <em>* Press Enter after each scenario to add it to the list</em>
-              </div>
-              {currentValues.scenarios.length === 0 && (
-                <div>
-                  If no scenarios please use <Button onClick={this.useVanillaPlus}>Vanilla+</Button> instead
-                </div>
-              )}
-            </TagsField>
-          </div>
-          <div className="host-form-row host-form-row--modifiers">
-            <FormGroup label="Here are the scenarios that will not cause conflicts with surrounding matches:">
-              <ModifierSelector
-                onAdded={this.onModifierAdded}
-                onRemoved={this.onModifierRemoved}
-                selected={this.props.currentValues.scenarios}
-              />
-            </FormGroup>
-          </div>
-          <div className="host-form-row">
-            <SelectField
-              name="teams"
-              className={Classes.FILL}
-              disabled={submitting}
-              label="Team Style"
-              required
-              options={TeamStyles}
-            />
-
-            {teamStyle.requiresTeamSize && <TeamSizeField disabled={submitting} />}
-            {teamStyle.value === 'custom' && <CustomStyleField disabled={submitting} />}
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Server Details</legend>
-
-          <div className="host-form-row">
-            <TextField
-              name="ip"
-              className={Classes.FILL}
-              disabled={submitting}
-              label="Server IP Address"
-              required={false}
-            />
-            <TextField
-              name="address"
-              className={Classes.FILL}
-              disabled={submitting}
-              label="Server Address"
-              required={false}
-            />
-          </div>
-          <div className="host-form-row">
-            <SelectField
-              name="region"
-              className={Classes.FILL}
-              disabled={disabledAsync}
-              label="Region"
-              required
-              options={Regions}
-            />
-            <TextField name="location" className={Classes.FILL} disabled={submitting} label="Location" required />
-          </div>
-          <div className="host-form-row">
-            <NumberField
-              name="slots"
-              className={Classes.FILL}
-              disabled={submitting}
-              label="Available Slots"
-              required
-              min={2}
-            />
-            <div onKeyPress={stopEnterSubmit}>
-              <TagsField name="tags" label="Tags" required={false} disabled={submitting}>
-                <em>* Press Enter after each tag to add it to the list</em>
-              </TagsField>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Extra Information</legend>
-
-          <TemplateField
-            name="content"
+        </div>
+        <div className="host-form-row">
+          <TextField
+            name="hostingName"
+            label="Hosting Name (optional)"
+            className={Classes.FILL}
+            required={false}
+            disabled={submitting}
+          />
+          <NumberField
+            name="count"
+            label="Game Number"
+            className={Classes.FILL}
+            min={1}
             required
             disabled={submitting}
-            context={templateContext}
-            changeTemplate={changeTemplate}
           />
-        </fieldset>
-
-        <fieldset>
-          <legend>Game preview</legend>
-
-          <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-            <MatchRow match={preview} disableRemoval disableApproval disableLink />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Potential Conflicts</legend>
-          <p>
-            Here you can see all games in the region +- 15 minutes of the chosen time. Please review any conflicts to
-            avoid your game being removed
-          </p>
-          <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-            <PotentialConflicts />
-          </div>
-        </fieldset>
-
-        {!!error && (
-          <Callout intent={Intent.DANGER}>
-            <H5>{error}</H5>
-          </Callout>
-        )}
-
-        <div className="host-form-actions">
-          <Button
-            type="submit"
-            disabled={disabledAsync || !valid}
-            icon="cloud-upload"
-            loading={submitting}
-            intent={valid ? Intent.SUCCESS : Intent.WARNING}
-          >
-            {submitting ? 'Creating...' : 'Create Match'}
-          </Button>
         </div>
-      </form>
-    );
-  }
-}
+        <div className="host-form-row">
+          <MainVersionField
+            className={Classes.FILL}
+            label="Main Version"
+            required
+            name="mainVersion"
+            disabled={submitting}
+          />
+          <TextField
+            name="version"
+            label="Version Range"
+            className={Classes.FILL}
+            disabled={submitting}
+            required={false}
+          />
+          <NumberField
+            name="mapSize"
+            label="Map size (diameter)"
+            className={Classes.FILL}
+            min={1}
+            required
+            disabled={submitting}
+          />
+        </div>
+        <div className="host-form-row">
+          <NumberField
+            name="length"
+            label="Meetup @ (minutes)"
+            className={Classes.FILL}
+            min={30}
+            required
+            disabled={submitting}
+          />
+          <NumberField
+            name="pvpEnabledAt"
+            label="PVP Enabled (minutes)"
+            className={Classes.FILL}
+            min={0}
+            required
+            disabled={submitting}
+          />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Scenarios + Teams</legend>
+        <div className="host-form-row" onKeyPress={stopEnterSubmit}>
+          <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
+            <div>
+              <em>* Press Enter after each scenario to add it to the list</em>
+            </div>
+            {currentValues.scenarios.length === 0 && (
+              <div>
+                If no scenarios please use <Button onClick={onVanillaPlusChange}>Vanilla+</Button> instead
+              </div>
+            )}
+          </TagsField>
+        </div>
+        <div className="host-form-row host-form-row--modifiers">
+          <FormGroup label="Here are the scenarios that will not cause conflicts with surrounding matches:">
+            <ModifierSelector
+              onAdded={onModifierAdded}
+              onRemoved={onModifierRemoved}
+              selected={currentValues.scenarios}
+            />
+          </FormGroup>
+        </div>
+        <div className="host-form-row">
+          <SelectField
+            name="teams"
+            className={Classes.FILL}
+            disabled={submitting}
+            label="Team Style"
+            required
+            options={TeamStyles}
+          />
+
+          {teamStyle.requiresTeamSize && <TeamSizeField disabled={submitting} />}
+          {teamStyle.value === 'custom' && <CustomStyleField disabled={submitting} />}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Server Details</legend>
+
+        <div className="host-form-row">
+          <TextField
+            name="ip"
+            className={Classes.FILL}
+            disabled={submitting}
+            label="Server IP Address"
+            required={false}
+          />
+          <TextField
+            name="address"
+            className={Classes.FILL}
+            disabled={submitting}
+            label="Server Address"
+            required={false}
+          />
+        </div>
+        <div className="host-form-row">
+          <SelectField
+            name="region"
+            className={Classes.FILL}
+            disabled={disabledAsync}
+            label="Region"
+            required
+            options={Regions}
+          />
+          <TextField name="location" className={Classes.FILL} disabled={submitting} label="Location" required />
+        </div>
+        <div className="host-form-row">
+          <NumberField
+            name="slots"
+            className={Classes.FILL}
+            disabled={submitting}
+            label="Available Slots"
+            required
+            min={2}
+          />
+          <div onKeyPress={stopEnterSubmit}>
+            <TagsField name="tags" label="Tags" required={false} disabled={submitting}>
+              <em>* Press Enter after each tag to add it to the list</em>
+            </TagsField>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Extra Information</legend>
+
+        <TemplateField
+          name="content"
+          required
+          disabled={submitting}
+          context={templateContext}
+          changeTemplate={changeTemplate}
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>Game preview</legend>
+
+        <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+          <MatchRow match={preview} disableRemoval disableApproval disableLink />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Potential Conflicts</legend>
+        <p>
+          Here you can see all games in the region +- 15 minutes of the chosen time. Please review any conflicts to
+          avoid your game being removed
+        </p>
+        <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+          <PotentialConflicts />
+        </div>
+      </fieldset>
+
+      {!!error && (
+        <Callout intent={Intent.DANGER}>
+          <H5>{error}</H5>
+        </Callout>
+      )}
+
+      <div className="host-form-actions">
+        <Button
+          type="submit"
+          disabled={disabledAsync || !valid}
+          icon="cloud-upload"
+          loading={submitting}
+          intent={valid ? Intent.SUCCESS : Intent.WARNING}
+        >
+          {submitting ? 'Creating...' : 'Create Match'}
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 export const CreateMatchForm: React.ComponentType<
   CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>

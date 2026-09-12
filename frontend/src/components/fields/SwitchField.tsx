@@ -27,17 +27,9 @@ const Switcher: React.FC<WrappedFieldProps & SwitchFieldProps> = props => {
 
   return (
     <FieldWrapper meta={meta} label={label} required>
-      <Switch
-        checked={!!value}
-        className={className || ''}
-        disabled={disabled}
-        label={label}
-        onChange={handleChange}
-      />
+      <Switch checked={!!value} className={className || ''} disabled={disabled} label={label} onChange={handleChange} />
     </FieldWrapper>
   );
 };
 
-export const SwitchField: React.FC<SwitchFieldProps> = props => (
-  <Field {...props} component={Switcher} />
-);
+export const SwitchField: React.FC<SwitchFieldProps> = props => <Field {...props} component={Switcher} />;

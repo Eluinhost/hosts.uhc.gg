@@ -43,17 +43,10 @@ export const HostingRules = React.memo(() => {
     return rules.error;
   }, [rules.data, rules.fetching, rules.error]);
 
-  const startEdit = useCallback(
-    () => dispatch(SetHostingRules.openEditor()),
-    [dispatch],
-  );
+  const startEdit = useCallback(() => dispatch(SetHostingRules.openEditor()), [dispatch]);
 
   return (
-    <Callout
-      icon={areRulesOpen ? 'chevron-up' : 'chevron-down'}
-      className="hosting-rules"
-      onClick={toggleDropdown}
-    >
+    <Callout icon={areRulesOpen ? 'chevron-up' : 'chevron-down'} className="hosting-rules" onClick={toggleDropdown}>
       <H3>
         Hosting Rules<small style={{ float: 'right' }}>{headerInfo}</small>
       </H3>

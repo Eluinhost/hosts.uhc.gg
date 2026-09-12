@@ -28,144 +28,137 @@ export const Errors: React.FC<WrappedFieldMetaProps> = ({ error, warning }) => {
   return null;
 };
 
-const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(
-  props => {
-    const {
-      meta,
-      label,
-      required,
-      datePickerProps,
-      input: { value, onChange, onBlur },
-      disabled,
-      renderClearButton: ClearButton,
-      className,
-      minDate,
-      maxDate,
-      timePicker,
-    } = props;
+const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props => {
+  const {
+    meta,
+    label,
+    required,
+    datePickerProps,
+    input: { value, onChange, onBlur },
+    disabled,
+    renderClearButton: ClearButton,
+    className,
+    minDate,
+    maxDate,
+    timePicker,
+  } = props;
 
-    const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
-    const triggerChange = useCallback(
-      (date: moment.Moment | null): void => {
-        if (disabled) return;
+  const triggerChange = useCallback(
+    (date: moment.Moment | null): void => {
+      if (disabled) return;
 
-        onChange(date);
-        onBlur(date);
-      },
-      [disabled, onChange, onBlur],
-    );
+      onChange(date);
+      onBlur(date);
+    },
+    [disabled, onChange, onBlur],
+  );
 
-    const handleDateChange = useCallback(
-      (date: moment.Moment | null): void => {
-        // react-dates set the hours/minutes to be 12:00 so we ignore them
-        let newDate = date?.utc().clone();
+  const handleDateChange = useCallback(
+    (date: moment.Moment | null): void => {
+      // react-dates set the hours/minutes to be 12:00 so we ignore them
+      let newDate = date?.utc().clone();
 
-        if (value && newDate) {
-          newDate.set('hours', value.get('hours'));
-          newDate.set('minutes', value.get('minutes'));
-          newDate.set('seconds', value.get('seconds'));
-          newDate.set('milliseconds', value.get('milliseconds'));
-        }
+      if (value && newDate) {
+        newDate.set('hours', value.get('hours'));
+        newDate.set('minutes', value.get('minutes'));
+        newDate.set('seconds', value.get('seconds'));
+        newDate.set('milliseconds', value.get('milliseconds'));
+      }
 
-        triggerChange(newDate || null);
-      },
-      [value, triggerChange],
-    );
+      triggerChange(newDate || null);
+    },
+    [value, triggerChange],
+  );
 
-    const handleTimeChange = useCallback(
-      (date: moment.Moment): void => {
-        // if we don't have a date, don't do anything, shouldn't be triggered
-        if (!value) {
-          return;
-        }
+  const handleTimeChange = useCallback(
+    (date: moment.Moment): void => {
+      // if we don't have a date, don't do anything, shouldn't be triggered
+      if (!value) {
+        return;
+      }
 
-        triggerChange(date);
-      },
-      [value, triggerChange],
-    );
+      triggerChange(date);
+    },
+    [value, triggerChange],
+  );
 
-    const handleClear = useCallback(() => handleDateChange(null), [handleDateChange]);
+  const handleClear = useCallback(() => handleDateChange(null), [handleDateChange]);
 
-    const handleFocusChange = useCallback(
-      (arg: { focused: boolean | null }) => setIsFocused(arg.focused || false),
-      [],
-    );
+  const handleFocusChange = useCallback((arg: { focused: boolean | null }) => setIsFocused(arg.focused || false), []);
 
-    const isDayBlocked = useCallback(
-      (day: moment.Moment) => {
-        if (minDate && minDate.isAfter(day)) {
-          return true;
-        }
+  const isDayBlocked = useCallback(
+    (day: moment.Moment) => {
+      if (minDate && minDate.isAfter(day)) {
+        return true;
+      }
 
-        if (maxDate && maxDate.isBefore(day)) {
-          return true;
-        }
+      if (maxDate && maxDate.isBefore(day)) {
+        return true;
+      }
 
-        return false;
-      },
-      [minDate, maxDate],
-    );
+      return false;
+    },
+    [minDate, maxDate],
+  );
 
-    const renderInfoPanel = (clear?: JSX.Element) => (
-      <div>
-        {timePicker && (
-          <TimePicker
-            {...timePicker}
-            allowEmpty={!!ClearButton}
-            disabled={disabled}
-            value={value}
-            onChange={handleTimeChange}
-            className={`date-time-field-time-picker ${timePicker?.className || ''}`}
-            showSecond={false}
-          />
-        )}
-        {clear}
+  const renderInfoPanel = (clear?: JSX.Element) => (
+    <div>
+      {timePicker && (
+        <TimePicker
+          {...timePicker}
+          allowEmpty={!!ClearButton}
+          disabled={disabled}
+          value={value}
+          onChange={handleTimeChange}
+          className={`date-time-field-time-picker ${timePicker?.className || ''}`}
+          showSecond={false}
+        />
+      )}
+      {clear}
+    </div>
+  );
+
+  return (
+    <FieldWrapper
+      meta={meta}
+      label={label}
+      required={required}
+      hideErrors
+      className={`date-time-field ${className || ''}`}
+    >
+      <div className="date-time-field_content">
+        <DayPickerSingleDateController
+          hideKeyboardShortcutsPanel
+          isDayBlocked={isDayBlocked}
+          // if we make the function below part of the class body the timepicker sometimes
+          // doesn't rerender properly, presumably due to daypickersingledatecontroller's
+          // shouldComponentUpdate. We're passing a new function each render just to make
+          // sure it can rerender properly
+          renderCalendarInfo={() => renderInfoPanel(ClearButton && <ClearButton value={value} onClear={handleClear} />)}
+          calendarInfoPosition="bottom"
+          {...datePickerProps}
+          date={value || null}
+          onDateChange={handleDateChange}
+          focused={isFocused}
+          onFocusChange={handleFocusChange}
+        />
+        <Errors {...meta} />
       </div>
-    );
-
-    return (
-      <FieldWrapper
-        meta={meta}
-        label={label}
-        required={required}
-        hideErrors
-        className={`date-time-field ${className || ''}`}
+      <Overlay
+        hasBackdrop
+        isOpen={!!disabled}
+        usePortal={false}
+        autoFocus={false}
+        canEscapeKeyClose={false}
+        canOutsideClickClose={false}
       >
-        <div className="date-time-field_content">
-          <DayPickerSingleDateController
-            hideKeyboardShortcutsPanel
-            isDayBlocked={isDayBlocked}
-            // if we make the function below part of the class body the timepicker sometimes
-            // doesn't rerender properly, presumably due to daypickersingledatecontroller's
-            // shouldComponentUpdate. We're passing a new function each render just to make
-            // sure it can rerender properly
-            renderCalendarInfo={() =>
-              renderInfoPanel(ClearButton && <ClearButton value={value} onClear={handleClear} />)
-            }
-            calendarInfoPosition="bottom"
-            {...datePickerProps}
-            date={value || null}
-            onDateChange={handleDateChange}
-            focused={isFocused}
-            onFocusChange={handleFocusChange}
-          />
-          <Errors {...meta} />
-        </div>
-        <Overlay
-          hasBackdrop
-          isOpen={!!disabled}
-          usePortal={false}
-          autoFocus={false}
-          canEscapeKeyClose={false}
-          canOutsideClickClose={false}
-        >
-          <div />
-        </Overlay>
-      </FieldWrapper>
-    );
-  },
-);
+        <div />
+      </Overlay>
+    </FieldWrapper>
+  );
+});
 
 export const DateTimeField: React.FC<DateTimeFieldProps> = React.memo(props => (
   <Field {...props} component={DateTimePicker} />

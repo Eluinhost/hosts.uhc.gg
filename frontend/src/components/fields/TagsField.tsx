@@ -51,6 +51,4 @@ const renderField: React.FC<WrappedFieldProps & TagsFieldProps> = props => {
   );
 };
 
-export const TagsField: React.FC<TagsFieldProps> = props => (
-  <Field {...props} component={renderField} />
-);
+export const TagsField: React.FC<TagsFieldProps> = props => <Field {...props} component={renderField} />;

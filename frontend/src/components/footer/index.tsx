@@ -23,12 +23,7 @@ export const Footer = React.memo(() => {
         </AnchorButton>
       </div>
       <div className={`${Classes.MINIMAL} ${Classes.BUTTON_GROUP} application-footer-right`}>
-        <AnchorButton
-          href="https://github.com/Eluinhost/hosts.uhc.gg"
-          intent={intent}
-          icon="git-repo"
-          target="_blank"
-        >
+        <AnchorButton href="https://github.com/Eluinhost/hosts.uhc.gg" intent={intent} icon="git-repo" target="_blank">
           Source
         </AnchorButton>
         <AnchorButton
