@@ -36,8 +36,7 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
 );
 
 const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogState &
-    InjectedFormProps<SetRulesDialogData, SetRulesDialogState>
+  SetRulesDialogState & InjectedFormProps<SetRulesDialogData, SetRulesDialogState>
 > = ({ handleSubmit, submitting, invalid, isOpen, currentRules, change, isDarkMode }) => {
   const dispatch = useDispatch();
 
@@ -47,10 +46,7 @@ const SetRulesDialogComponent: React.FunctionComponent<
     }
   }, [isOpen, currentRules, change]);
 
-  const onClose = useCallback(
-    () => dispatch(SetHostingRules.closeEditor()),
-    [dispatch],
-  );
+  const onClose = useCallback(() => dispatch(SetHostingRules.closeEditor()), [dispatch]);
 
   return (
     <Dialog
@@ -62,13 +58,7 @@ const SetRulesDialogComponent: React.FunctionComponent<
     >
       <div className={Classes.DIALOG_BODY}>
         <form onSubmit={handleSubmit}>
-          <RulesField
-            name="rules"
-            label="Rules"
-            required
-            disabled={submitting}
-            className={Classes.FILL}
-          />
+          <RulesField name="rules" label="Rules" required disabled={submitting} className={Classes.FILL} />
         </form>
       </div>
       <div className={Classes.DIALOG_FOOTER}>
@@ -76,12 +66,7 @@ const SetRulesDialogComponent: React.FunctionComponent<
           <Button onClick={onClose} icon="arrow-left">
             Cancel
           </Button>
-          <Button
-            intent={Intent.SUCCESS}
-            onClick={handleSubmit}
-            disabled={invalid || submitting}
-            icon="add"
-          >
+          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
             Update Rules
           </Button>
         </div>
@@ -90,17 +75,16 @@ const SetRulesDialogComponent: React.FunctionComponent<
   );
 };
 
-const SetRulesDialogForm: React.ComponentType<SetRulesDialogState> = reduxForm<
-  SetRulesDialogData,
-  SetRulesDialogState
->({
-  form: 'set-rules-form',
-  validate: validator.validate,
-  onSubmit: (values, dispatch) => {
-    dispatch(SetHostingRules.start(values.rules));
-    dispatch(SetHostingRules.closeEditor());
+const SetRulesDialogForm: React.ComponentType<SetRulesDialogState> = reduxForm<SetRulesDialogData, SetRulesDialogState>(
+  {
+    form: 'set-rules-form',
+    validate: validator.validate,
+    onSubmit: (values, dispatch) => {
+      dispatch(SetHostingRules.start(values.rules));
+      dispatch(SetHostingRules.closeEditor());
+    },
   },
-})(SetRulesDialogComponent);
+)(SetRulesDialogComponent);
 
 export const SetRulesDialog: React.ComponentType = () => {
   const state = useSelector(setRulesSelector);

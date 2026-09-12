@@ -17,7 +17,7 @@ import { watchApiKey } from './apiKey';
 import { listenForModifierActions } from '../modifiers/sagas';
 import { listenForVersionActions } from '../versions/sagas';
 import { fixHostFormVersionOnVersionsUpdate, removeVanillaPlusWhenOtherScenarioAdded } from '../components/host/saga';
-import { listenForHostingApplicationSagas } from '../hosting-applications/sagas'
+import { listenForHostingApplicationSagas } from '../hosting-applications/sagas';
 
 // Don't include watchSettingsToggle here, we run that once at the beggining of the store to make sure data
 // is loaded before first render

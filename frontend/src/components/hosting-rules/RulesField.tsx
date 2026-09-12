@@ -13,9 +13,9 @@ type RulesFieldProps = BaseFieldProps & {
   readonly className?: string;
 };
 
-const RulesTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(
-  ({ input, disabled }) => <TextArea {...input} disabled={disabled} fill rows={15} />,
-);
+const RulesTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(({ input, disabled }) => (
+  <TextArea {...input} disabled={disabled} fill rows={15} />
+));
 
 const PreviewTab: React.FunctionComponent<WrappedFieldProps & RulesFieldProps> = React.memo(({ input }) => (
   <Pre dangerouslySetInnerHTML={{ __html: parser.render(input!.value) }} />

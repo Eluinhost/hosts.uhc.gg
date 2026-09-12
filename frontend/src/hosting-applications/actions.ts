@@ -27,7 +27,7 @@ export const HostApplications = {
   respond: {
     start: createAction(
       'RESPOND_TO_HOSTING_APPLICATION.START',
-      (payload: { id: number; status: 'approve' | 'decline'; rejectReason?: string, onSuccess: () => void }) => payload,
+      (payload: { id: number; status: 'approve' | 'decline'; rejectReason?: string; onSuccess: () => void }) => payload,
     ),
     started: createAction(
       'RESPOND_TO_HOSTING_APPLICATION.STARTED',

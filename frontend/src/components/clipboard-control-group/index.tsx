@@ -29,13 +29,7 @@ export const ClipboardControlGroup = React.memo(({ value }: Props) => {
 
   return (
     <ControlGroup fill>
-      <input
-        type="text"
-        className={`${Classes.INPUT} ${Classes.LARGE}`}
-        value={value}
-        readOnly
-        ref={inputRef}
-      />
+      <input type="text" className={`${Classes.INPUT} ${Classes.LARGE}`} value={value} readOnly ref={inputRef} />
       <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
     </ControlGroup>
   );

@@ -20,7 +20,9 @@ const renderField: React.FC<WrappedFieldProps & NumberFieldProps> = props => {
     <FieldWrapper meta={meta} label={label} required={required}>
       <input
         {...input}
-        className={`${Classes.NUMERIC_INPUT} ${!meta.valid ? Classes.INTENT_DANGER : ''} ${Classes.INPUT} ${className || ''}`}
+        className={`${Classes.NUMERIC_INPUT} ${!meta.valid ? Classes.INTENT_DANGER : ''} ${Classes.INPUT} ${
+          className || ''
+        }`}
         placeholder={placeholder || label}
         type="number"
         disabled={disabled}
@@ -31,6 +33,4 @@ const renderField: React.FC<WrappedFieldProps & NumberFieldProps> = props => {
   );
 };
 
-export const NumberField: React.FC<NumberFieldProps> = props => (
-  <Field {...props} component={renderField} />
-);
+export const NumberField: React.FC<NumberFieldProps> = props => <Field {...props} component={renderField} />;

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ChangeEvent, FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { RemovalModal } from '../removal-modal';
 import { ApprovalModal } from '../approval-modal';
@@ -14,7 +14,6 @@ import { RefreshButton } from './RefreshButton';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
 
 import './match-listing.sass';
-import { ChangeEvent, FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type MatchListingProps = {
   readonly matches: Match[];
@@ -46,185 +45,181 @@ const stateSliceSelector: Selector<ApplicationState, StateSlice> = createSelecto
   }),
 );
 
-export const MatchListing: FC<MatchListingProps> = React.memo(({
-  matches,
-  loading,
-  error,
-  refetch,
-  loadMore,
-  lastUpdated,
-  autoRefreshSeconds,
-  hasMore,
-  disableRemove,
-  disableApprove,
-}) => {
-  const { hideRemoved, showOwnRemoved, username } = useSelector(stateSliceSelector);
-  const dispatch = useDispatch();
+export const MatchListing: FC<MatchListingProps> = React.memo(
+  ({
+    matches,
+    loading,
+    error,
+    refetch,
+    loadMore,
+    lastUpdated,
+    autoRefreshSeconds,
+    hasMore,
+    disableRemove,
+    disableApprove,
+  }) => {
+    const { hideRemoved, showOwnRemoved, username } = useSelector(stateSliceSelector);
+    const dispatch = useDispatch();
 
-  const [search, setSearch] = useState('');
+    const [search, setSearch] = useState('');
 
-  const timerIdRef = useRef<number | null>(null);
-  const visibilityDetectorRef = useRef(new VisibilityDetector());
+    const timerIdRef = useRef<number | null>(null);
+    const visibilityDetectorRef = useRef(new VisibilityDetector());
 
-  const stopTimer = useCallback(() => {
-    if (timerIdRef.current) {
-      window.clearInterval(timerIdRef.current);
-      timerIdRef.current = null;
-    }
-  }, []);
-
-  const handleVisibilityChange = useCallback(() => {
-    // always clear any existing timer first
-    stopTimer();
-
-    // if it's visible (or not supported) start the timer if required
-    if (!visibilityDetectorRef.current.isHidden()) {
-      if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) {
-        throw new Error("autorefresh shouldn't be < 1");
+    const stopTimer = useCallback(() => {
+      if (timerIdRef.current) {
+        window.clearInterval(timerIdRef.current);
+        timerIdRef.current = null;
       }
+    }, []);
 
-      // if we are to auto refresh start a timer
-      if (autoRefreshSeconds) {
-        timerIdRef.current = window.setInterval(refetch, autoRefreshSeconds! * 1000);
-      }
-
-      // data is stale if it has never been updated or the last update was before the refresh timer allows
-      const isDataStale: boolean =
-        lastUpdated === null ||
-        (autoRefreshSeconds !== undefined && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
-
-      if (isDataStale) {
-        refetch();
-      }
-    }
-  }, [autoRefreshSeconds, lastUpdated, refetch, stopTimer]);
-
-  useEffect(() => {
-    const detector = visibilityDetectorRef.current;
-    detector.addEventListener(handleVisibilityChange);
-    handleVisibilityChange();
-
-    return () => {
+    const handleVisibilityChange = useCallback(() => {
+      // always clear any existing timer first
       stopTimer();
-      detector.removeEventListener(handleVisibilityChange);
-    };
-  }, [handleVisibilityChange, stopTimer]);
 
-  const renderMatch = useCallback(
-    (match: Match): ReactElement => (
-      <MatchRow
-        key={match.id}
-        match={match}
-        disableApproval={disableApprove}
-        disableRemoval={disableRemove}
-      />
-    ),
-    [disableApprove, disableRemove],
-  );
+      // if it's visible (or not supported) start the timer if required
+      if (!visibilityDetectorRef.current.isHidden()) {
+        if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) {
+          throw new Error("autorefresh shouldn't be < 1");
+        }
 
-  const noMatches = !loading && (
-    <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
-  );
+        // if we are to auto refresh start a timer
+        if (autoRefreshSeconds) {
+          timerIdRef.current = window.setInterval(refetch, autoRefreshSeconds! * 1000);
+        }
 
-  const removedMatchesFilter = useCallback(
-    (m: Match): boolean => {
-      if (!m.removed || !hideRemoved) {
-        return true;
+        // data is stale if it has never been updated or the last update was before the refresh timer allows
+        const isDataStale: boolean =
+          lastUpdated === null ||
+          (autoRefreshSeconds !== undefined && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
+
+        if (isDataStale) {
+          refetch();
+        }
       }
-      return showOwnRemoved && m.author === username;
-    },
-    [hideRemoved, showOwnRemoved, username],
-  );
+    }, [autoRefreshSeconds, lastUpdated, refetch, stopTimer]);
 
-  const searchQueryFilter = useCallback(
-    (query: string) => (m: Match): boolean => !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0,
-    [],
-  );
+    useEffect(() => {
+      const detector = visibilityDetectorRef.current;
+      detector.addEventListener(handleVisibilityChange);
+      handleVisibilityChange();
 
-  const handleSearchChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
-    [],
-  );
+      return () => {
+        stopTimer();
+        detector.removeEventListener(handleVisibilityChange);
+      };
+    }, [handleVisibilityChange, stopTimer]);
 
-  const clearSearch = useCallback(() => setSearch(''), []);
+    const renderMatch = useCallback(
+      (match: Match): ReactElement => (
+        <MatchRow key={match.id} match={match} disableApproval={disableApprove} disableRemoval={disableRemove} />
+      ),
+      [disableApprove, disableRemove],
+    );
 
-  const renderSearchTotals = useCallback(
-    (showing: number, outOf: number) => {
-      if (!search) {
-        return undefined;
-      }
+    const noMatches = !loading && (
+      <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
+    );
 
-      return (
-        <>
-          Showing {showing} of {outOf}.
-          <Button minimal icon="cross" onClick={clearSearch} />
-        </>
-      );
-    },
-    [search, clearSearch],
-  );
+    const removedMatchesFilter = useCallback(
+      (m: Match): boolean => {
+        if (!m.removed || !hideRemoved) {
+          return true;
+        }
+        return showOwnRemoved && m.author === username;
+      },
+      [hideRemoved, showOwnRemoved, username],
+    );
 
-  const afterRemovedFilter = useMemo(() => matches.filter(removedMatchesFilter), [matches, removedMatchesFilter]);
+    const searchQueryFilter = useCallback(
+      (query: string) => (m: Match): boolean =>
+        !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0,
+      [],
+    );
 
-  const afterSearchQuery = useMemo(
-    () => afterRemovedFilter.filter(searchQueryFilter(search)),
-    [afterRemovedFilter, searchQueryFilter, search],
-  );
+    const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setSearch(event.target.value), []);
 
-  const renderedMatches = useMemo(
-    () => (afterSearchQuery.length > 0 ? afterSearchQuery.map(renderMatch) : noMatches),
-    [afterSearchQuery, renderMatch, noMatches],
-  );
+    const clearSearch = useCallback(() => setSearch(''), []);
 
-  const toggleHideRemoved = useCallback(() => dispatch(Settings.toggleHideRemoved()), [dispatch]);
-  const toggleShowOwnRemoved = useCallback(() => dispatch(Settings.toggleShowOwnRemoved()), [dispatch]);
+    const renderSearchTotals = useCallback(
+      (showing: number, outOf: number) => {
+        if (!search) {
+          return undefined;
+        }
 
-  return (
-    <div className="match-listing">
-      <div className="match-listing__filters">
-        <Switch checked={hideRemoved} label="Hide Removed" onChange={toggleHideRemoved} />
-        {!!username && hideRemoved && (
-          <Switch checked={showOwnRemoved} label="Show Own Removed" onChange={toggleShowOwnRemoved} />
-        )}
-      </div>
+        return (
+          <>
+            Showing {showing} of {outOf}.
+            <Button minimal icon="cross" onClick={clearSearch} />
+          </>
+        );
+      },
+      [search, clearSearch],
+    );
 
-      <div className="match-listing__search">
-        <InputGroup
-          leftIcon="search"
-          fill
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search"
-          rightElement={renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
-        />
-        <RefreshButton lastUpdated={lastUpdated} onClick={refetch} loading={loading} />
-      </div>
+    const afterRemovedFilter = useMemo(() => matches.filter(removedMatchesFilter), [matches, removedMatchesFilter]);
 
-      {!loading && !!error && (
-        <Callout intent={Intent.DANGER}>
-          <H5>{error}</H5>
-        </Callout>
-      )}
+    const afterSearchQuery = useMemo(() => afterRemovedFilter.filter(searchQueryFilter(search)), [
+      afterRemovedFilter,
+      searchQueryFilter,
+      search,
+    ]);
 
-      {loading && matches.length === 0 && <NonIdealState icon={<Spinner />} title="Loading..." />}
+    const renderedMatches = useMemo(
+      () => (afterSearchQuery.length > 0 ? afterSearchQuery.map(renderMatch) : noMatches),
+      [afterSearchQuery, renderMatch, noMatches],
+    );
 
-      <div className="match-listing__matches">{renderedMatches}</div>
+    const toggleHideRemoved = useCallback(() => dispatch(Settings.toggleHideRemoved()), [dispatch]);
+    const toggleShowOwnRemoved = useCallback(() => dispatch(Settings.toggleShowOwnRemoved()), [dispatch]);
 
-      {hasMore && (
-        <div className="match-listing__footer-actions">
-          <Button
-            loading={loading}
-            disabled={loading}
-            onClick={loadMore}
-            icon="refresh"
-            intent={Intent.SUCCESS}
-            text="Load more"
-          />
+    return (
+      <div className="match-listing">
+        <div className="match-listing__filters">
+          <Switch checked={hideRemoved} label="Hide Removed" onChange={toggleHideRemoved} />
+          {!!username && hideRemoved && (
+            <Switch checked={showOwnRemoved} label="Show Own Removed" onChange={toggleShowOwnRemoved} />
+          )}
         </div>
-      )}
 
-      <RemovalModal />
-      <ApprovalModal />
-    </div>
-  );
-});
+        <div className="match-listing__search">
+          <InputGroup
+            leftIcon="search"
+            fill
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Search"
+            rightElement={renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
+          />
+          <RefreshButton lastUpdated={lastUpdated} onClick={refetch} loading={loading} />
+        </div>
+
+        {!loading && !!error && (
+          <Callout intent={Intent.DANGER}>
+            <H5>{error}</H5>
+          </Callout>
+        )}
+
+        {loading && matches.length === 0 && <NonIdealState icon={<Spinner />} title="Loading..." />}
+
+        <div className="match-listing__matches">{renderedMatches}</div>
+
+        {hasMore && (
+          <div className="match-listing__footer-actions">
+            <Button
+              loading={loading}
+              disabled={loading}
+              onClick={loadMore}
+              icon="refresh"
+              intent={Intent.SUCCESS}
+              text="Load more"
+            />
+          </div>
+        )}
+
+        <RemovalModal />
+        <ApprovalModal />
+      </div>
+    );
+  },
+);
