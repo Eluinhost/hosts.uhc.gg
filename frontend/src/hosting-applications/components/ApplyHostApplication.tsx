@@ -1,10 +1,9 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { HostApplicationForm } from './HostApplicationForm';
 import { getFetchQuizQuestionsApiState } from '../questions/selectors';
-import { useEffect } from 'react';
 import { QuizQuestions } from '../questions/actions';
 import { HostApplications } from '../actions';
 import { getHasSubmittedHostApplicationSuccessfully, getHostApplicationPermissions } from '../selectors';

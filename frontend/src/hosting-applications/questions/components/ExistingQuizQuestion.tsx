@@ -1,8 +1,7 @@
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
 import { ManageQuizQuestion } from '../../../models/QuizQuestion';
 import { useDispatch } from 'react-redux';
-import { useCallback, useState } from 'react';
 // import { getDeleteQuizQuestionApiState } from '../selectors';
 import { QuizQuestions } from '../actions';
 

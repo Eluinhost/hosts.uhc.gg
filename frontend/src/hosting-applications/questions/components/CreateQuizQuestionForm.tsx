@@ -1,8 +1,7 @@
-import * as React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
 import { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useMemo, useState } from 'react';
 import { getCreateQuizQuestionApiState } from '../selectors';
 import { QuizQuestions } from '../actions';
 

@@ -1,9 +1,8 @@
-import * as React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { ExistingHostApplication } from './ExistingHostApplication';
-import { useEffect, useMemo } from 'react';
 import { HostApplications } from '../actions';
 import { getHostApplicationPermissions, getHostApplicationsListState } from '../selectors';
 
