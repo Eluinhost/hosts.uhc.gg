@@ -25,7 +25,10 @@ class ListUsersInPermission(customDirectives: CustomDirectives, database: Databa
   def apply(permission: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(listUsersInPermission(permission)) { result =>
-        complete(result.asJson)
+        complete(result match {
+          case Left(list) => list.asJson
+          case Right(map) => map.asJson
+        })
       }
     }
 }
