@@ -1,8 +1,7 @@
-import * as React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import moment from 'moment-timezone';
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
 import { HostApplication } from '../../models/HostApplication';
-import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { HostApplications } from '../actions';
 import { createSelector } from 'reselect';

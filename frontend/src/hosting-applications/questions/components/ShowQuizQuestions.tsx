@@ -1,6 +1,5 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CreateQuizQuestionForm } from './CreateQuizQuestionForm';
 import { ExistingQuizQuestion } from './ExistingQuizQuestion';

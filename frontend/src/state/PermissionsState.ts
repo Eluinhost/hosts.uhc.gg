@@ -2,7 +2,7 @@ import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
 import { concat, converge, head, pipe, tail, toPairs, toUpper } from 'ramda';
 import { Classes, ITreeNode, Spinner } from '@blueprintjs/core';
-import * as React from 'react';
+import React from 'react';
 
 import {
   AddPermission,
