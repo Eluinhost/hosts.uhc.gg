@@ -1,25 +1,16 @@
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 
-type HoverSwapState = {
-  readonly isHovered: boolean;
+export const HoverSwap: React.FC = ({ children }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+  const [notHovered, hovered] = React.Children.toArray(children);
+
+  return (
+    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      {isHovered ? hovered : notHovered}
+    </div>
+  );
 };
-
-export class HoverSwap extends React.PureComponent<{}, HoverSwapState> {
-  state = {
-    isHovered: false,
-  };
-
-  private handleMouseEnter = () => this.setState({ isHovered: true });
-
-  private handleMouseLeave = () => this.setState({ isHovered: false });
-
-  public render() {
-    const [notHovered, hovered] = React.Children.toArray(this.props.children);
-
-    return (
-      <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        {this.state.isHovered ? hovered : notHovered}
-      </div>
-    );
-  }
-}

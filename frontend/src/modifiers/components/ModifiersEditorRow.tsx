@@ -1,8 +1,7 @@
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Classes, Icon, IconName, Intent, MaybeElement, Tag } from '@blueprintjs/core';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector, ParametricSelector } from 'reselect';
-import { Dispatch } from 'redux';
 
 import { Modifier } from '../Modifier';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -13,57 +12,11 @@ export type ModifiersEditorRowProps = {
   modifier: Modifier;
 };
 
-type StateProps = {
-  isDeleting: boolean;
-  hasDeleteError: boolean;
-};
-
-type DispatchProps = {
-  onDelete: (modifier: Modifier) => void;
-};
-
-class ModifiersEditorRowComponent extends React.PureComponent<
-  ModifiersEditorRowProps & StateProps & DispatchProps,
-  { isHovered: boolean }
-> {
-  state = {
-    isHovered: false,
-  };
-
-  onClick = () => this.props.onDelete(this.props.modifier);
-
-  onMouseEnter = () => this.setState({ isHovered: true });
-  onMouseLeave = () => this.setState({ isHovered: false });
-
-  render() {
-    let icon: IconName | MaybeElement = undefined;
-
-    if (this.props.isDeleting) {
-      icon = <Icon icon="refresh" className={Classes.SPINNER_ANIMATION} />;
-    } else if (this.state.isHovered) {
-      icon = 'trash';
-    }
-
-    return (
-      <span onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} className="modifiers-editor_entry">
-        <span>-</span>
-        <Tag
-          interactive
-          title="Delete modifier"
-          onClick={this.onClick}
-          large
-          rightIcon={icon}
-          intent={this.state.isHovered ? Intent.DANGER : Intent.NONE}
-          className="modifiers-editor_entry_tag"
-        >
-          {this.props.modifier.displayName}
-        </Tag>
-      </span>
-    );
-  }
-}
-
-const mapStateToProps: ParametricSelector<ApplicationState, ModifiersEditorRowProps, StateProps> = createSelector(
+const mapStateToProps: ParametricSelector<
+  ApplicationState,
+  ModifiersEditorRowProps,
+  { isDeleting: boolean; hasDeleteError: boolean }
+> = createSelector(
   getDeleteModifersState,
   (state: ApplicationState, props: ModifiersEditorRowProps) => props.modifier.id,
   (state, id) => ({
@@ -72,11 +25,40 @@ const mapStateToProps: ParametricSelector<ApplicationState, ModifiersEditorRowPr
   }),
 );
 
-const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
-  onDelete: modifier => dispatch(DELETE_MODIFIER.TRIGGER(modifier.id)),
-});
+export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = React.memo((props: ModifiersEditorRowProps) => {
+  const { modifier } = props;
+  const { isDeleting } = useSelector(state => mapStateToProps(state, { modifier }));
+  const dispatch = useDispatch();
 
-export const ModifierEditorRow: React.ComponentType<ModifiersEditorRowProps> = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ModifiersEditorRowComponent);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const onMouseEnter = useCallback(() => setIsHovered(true), []);
+  const onMouseLeave = useCallback(() => setIsHovered(false), []);
+
+  const onDelete = useCallback(() => dispatch(DELETE_MODIFIER.TRIGGER(modifier.id)), [dispatch, modifier.id]);
+
+  let icon: IconName | MaybeElement = undefined;
+
+  if (isDeleting) {
+    icon = <Icon icon="refresh" className={Classes.SPINNER_ANIMATION} />;
+  } else if (isHovered) {
+    icon = 'trash';
+  }
+
+  return (
+    <span onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className="modifiers-editor_entry">
+      <span>-</span>
+      <Tag
+        interactive
+        title="Delete modifier"
+        onClick={onDelete}
+        large
+        rightIcon={icon}
+        intent={isHovered ? Intent.DANGER : Intent.NONE}
+        className="modifiers-editor_entry_tag"
+      >
+        {modifier.displayName}
+      </Tag>
+    </span>
+  );
+});
