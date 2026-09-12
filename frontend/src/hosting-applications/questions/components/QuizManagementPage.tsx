@@ -1,17 +1,12 @@
-import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
+import React from 'react';
 import { H1 } from '@blueprintjs/core';
 import { ShowQuizQuestions } from './ShowQuizQuestions';
 
-export class QuizManagementPage extends React.PureComponent<RouteComponentProps<any>> {
-  render() {
-    return (
-      <div>
-        <H1>Host Application Quiz</H1>
-        <div style={{ margin: 30 }}>
-          <ShowQuizQuestions />
-        </div>
-      </div>
-    );
-  }
-}
+export const QuizManagementPage: React.FC = () => (
+  <div>
+    <H1>Host Application Quiz</H1>
+    <div style={{ margin: 30 }}>
+      <ShowQuizQuestions />
+    </div>
+  </div>
+);

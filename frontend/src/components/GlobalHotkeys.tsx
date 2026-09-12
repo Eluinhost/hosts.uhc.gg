@@ -1,9 +1,10 @@
 import { RouteComponentProps, withRouter } from 'react-router';
-import * as React from 'react';
+import React from 'react';
 import { Hotkey, Hotkeys } from '@blueprintjs/core';
 // workaround for dodgy transpilation
 import { HotkeysTarget } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysTarget.js';
 
+/** explicitly not a functional component as decorator will not work on functional components */
 @HotkeysTarget
 class GlobalHotkeysComponent extends React.PureComponent<RouteComponentProps<any>> {
   public render() {

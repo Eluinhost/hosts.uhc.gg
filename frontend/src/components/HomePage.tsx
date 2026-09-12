@@ -1,10 +1,9 @@
-import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { HostingRules } from './hosting-rules';
 import { Card, H4 } from '@blueprintjs/core';
 
-export const HomePage: React.FunctionComponent<RouteComponentProps<any>> = () => (
+export const HomePage: React.FC = () => (
   <div className="home-page">
     <HostingRules />
 

@@ -1,7 +1,7 @@
-import React, { ComponentType } from 'react';
+import React, { ComponentType, useCallback, useEffect, useState } from 'react';
 import { HostingPage } from './host';
 import { Classes, NonIdealState } from '@blueprintjs/core';
-import { Route, RouteComponentProps, RouteProps, Switch, withRouter } from 'react-router';
+import { Route, RouteComponentProps, RouteProps, Switch, useHistory } from 'react-router';
 import { LoginPage } from './LoginPage';
 import { HomePage } from './HomePage';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
@@ -10,9 +10,7 @@ import { MembersPage } from './members';
 import { ProfilePage } from './profile';
 import { WithPermission } from './WithPermission';
 import { HistoryPage } from './host-history-page';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../state/ApplicationState';
-import { createSelector } from 'reselect';
+import { useSelector } from 'react-redux';
 import { isDarkMode, isLoggedIn } from '../state/Selectors';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
 import { GlobalHotkeys } from './GlobalHotkeys';
@@ -29,114 +27,38 @@ import { QuizManagementPage } from '../hosting-applications/questions/components
 
 reactGa.initialize('UA-71696797-2');
 
-class NotFoundPage extends React.PureComponent<RouteComponentProps<any>> {
-  render() {
-    return <NonIdealState title="Not Found" icon="geosearch" />;
-  }
-}
-
-type AuthenticatedRouteOwnProps = {
-  readonly permission: string | string[];
-} & RouteProps;
-
-type AuthenticatedRouteStateProps = {
-  readonly isLoggedIn: boolean;
-};
-
-type AuthenticatedRouteProps = AuthenticatedRouteOwnProps & AuthenticatedRouteStateProps;
+const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon="geosearch" />;
 
 const requiresHostPermission = (permission: string | string[]): boolean =>
   (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));
 
-class AuthenticatedRouteComponent extends React.PureComponent<AuthenticatedRouteProps> {
-  public render() {
-    const { permission, isLoggedIn, ...routeProps } = this.props;
+type AuthenticatedRouteProps = {
+  readonly permission: string | string[];
+} & RouteProps;
 
-    const Component: React.ComponentType<any> = this.props.component!;
+const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ permission, component, ...routeProps }) => {
+  const Component: React.ComponentType<RouteComponentProps<any>> = component!;
+  const authenticated = useSelector(isLoggedIn);
 
-    const alternative = !isLoggedIn
-      ? PromptToLogin
-      : requiresHostPermission(permission)
-      ? PromptToApplyForHost
-      : NotAllowed;
+  const alternative = !authenticated
+    ? PromptToLogin
+    : requiresHostPermission(permission)
+    ? PromptToApplyForHost
+    : NotAllowed;
 
-    const component: React.FunctionComponent<RouteComponentProps<any>> = props => (
-      <WithPermission permission={permission} alternative={alternative}>
-        <Component {...props} />
-      </WithPermission>
-    );
+  const wrapped: React.FunctionComponent<RouteComponentProps<any>> = props => (
+    <WithPermission permission={permission} alternative={alternative}>
+      <Component {...props} />
+    </WithPermission>
+  );
 
-    return <Route {...routeProps} component={component} />;
-  }
-}
-
-const authenticatedRouteStateSelector = createSelector<ApplicationState, boolean, AuthenticatedRouteStateProps>(
-  isLoggedIn,
-  isLoggedIn => ({
-    isLoggedIn,
-  }),
-);
-
-const AuthenticatedRoute = connect(authenticatedRouteStateSelector)(AuthenticatedRouteComponent);
-
-type AppProps = {
-  readonly isDarkMode: boolean;
+  return <Route {...routeProps} component={wrapped} />;
 };
 
-type AppState = {
-  readonly navbarSticky: boolean;
-};
+const Routes: React.FC = () => {
+  const history = useHistory();
 
-class AppComponent extends React.PureComponent<AppProps, AppState> {
-  state = {
-    navbarSticky: window.scrollY > 50, // upper navbar is 50px
-  };
-
-  private onScroll = (): void =>
-    this.setState({
-      navbarSticky: window.scrollY > 50,
-    });
-
-  componentDidMount() {
-    document.addEventListener('scroll', this.onScroll);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('scroll', this.onScroll);
-  }
-
-  private wrapperClass = () => {
-    let classes = ['full-page'];
-
-    if (this.props.isDarkMode) classes.push(Classes.DARK);
-
-    if (this.state.navbarSticky) classes.push('navbar-sticky');
-
-    return classes.join(' ');
-  };
-
-  public render() {
-    return (
-      <GlobalHotkeys>
-        <div className={this.wrapperClass()}>
-          <div style={{ flexGrow: 0 }}>
-            <Navbar />
-            <TimeSettings />
-          </div>
-          <div className="app-container">
-            <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
-            <Routes />
-          </div>
-
-          <Footer />
-        </div>
-      </GlobalHotkeys>
-    );
-  }
-}
-
-class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
-  public componentDidMount() {
+  useEffect(() => {
     const send = (location: Location) => {
       const path = location.pathname + location.search;
 
@@ -144,35 +66,59 @@ class RoutesComponent extends React.PureComponent<RouteComponentProps<any>> {
       reactGa.pageview(path);
     };
 
-    this.props.history.listen(send);
-    send(this.props.location);
-  }
+    const unsubscribe = history.listen(send);
+    send(history.location);
 
-  public render() {
-    return (
-      <Switch>
-        <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} {...this.props} />
-        <Route path="/m/:id" component={MatchDetailsPage} />
-        <Route path="/matches/:host" component={HistoryPage} />
-        <Route path="/matches" component={UpcomingMatchesPage} />
-        <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
-        <Route path="/host-applications" component={HostApplicationsPage} />
-        <Route path="/members" component={MembersPage} />
-        <Route path="/login" component={LoginPage} />
-        <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} {...this.props} />
-        <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" {...this.props} />
-        <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" {...this.props} />
-        <Route path="/" exact component={HomePage} />
-        <Route component={NotFoundPage} />
-      </Switch>
-    );
-  }
-}
+    return unsubscribe;
+  }, [history]);
 
-const Routes: React.ComponentClass<{}> = withRouter(RoutesComponent);
+  return (
+    <Switch>
+      <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} />
+      <Route path="/m/:id" component={MatchDetailsPage} />
+      <Route path="/matches/:host" component={HistoryPage} />
+      <Route path="/matches" component={UpcomingMatchesPage} />
+      <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
+      <Route path="/host-applications" component={HostApplicationsPage} />
+      <Route path="/members" component={MembersPage} />
+      <Route path="/login" component={LoginPage} />
+      <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} />
+      <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" />
+      <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" />
+      <Route path="/" exact component={HomePage} />
+      <Route component={NotFoundPage} />
+    </Switch>
+  );
+};
 
-const stateSelector = createSelector<ApplicationState, boolean, AppProps>(isDarkMode, isDarkMode => ({
-  isDarkMode,
-}));
+export const App: ComponentType = () => {
+  const darkModeEnabled = useSelector(isDarkMode);
+  const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
+  const onScroll = useCallback(() => setNavbarSticky(window.scrollY > 50), []);
 
-export const App: ComponentType = connect(stateSelector)(AppComponent);
+  useEffect(() => {
+    document.addEventListener('scroll', onScroll);
+    return () => document.removeEventListener('scroll', onScroll);
+  }, [onScroll]);
+
+  let classes = ['full-page'];
+
+  if (darkModeEnabled) classes.push(Classes.DARK);
+  if (navbarSticky) classes.push('navbar-sticky');
+
+  return (
+    <GlobalHotkeys>
+      <div className={classes.join(' ')}>
+        <div style={{ flexGrow: 0 }}>
+          <Navbar />
+          <TimeSettings />
+        </div>
+        <div className="app-container">
+          <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+          <Routes />
+        </div>
+        <Footer />
+      </div>
+    </GlobalHotkeys>
+  );
+};

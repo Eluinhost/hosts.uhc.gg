@@ -1,25 +1,14 @@
-import { connect } from 'react-redux';
-import * as React from 'react';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router';
 import { Button, Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
-import { ApplicationState } from '../state/ApplicationState';
-import { Dispatch } from 'redux';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
 import { LoginButton } from './LoginButton';
 import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 import { getUsername, isLoggedIn } from '../state/Selectors';
 import { Authentication } from '../actions';
 
-type StateProps = {
-  readonly isLoggedIn: boolean;
-  readonly username: string | null;
-};
-
-type DispatchProps = {
-  readonly logout: () => void;
-};
-
-const UserMenu: React.FunctionComponent<DispatchProps> = ({ logout }) => (
+const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ logout }) => (
   <Menu>
     <Link to="/profile">
       <MenuItem icon="cog" text="Profile" />
@@ -28,7 +17,21 @@ const UserMenu: React.FunctionComponent<DispatchProps> = ({ logout }) => (
   </Menu>
 );
 
-const UsernameComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ logout, username, isLoggedIn }) => {
+const stateSelector = createSelector(isLoggedIn, getUsername, (isLoggedIn, username) => ({
+  isLoggedIn,
+  username: username || 'ERROR NO USERNAME IN STORE',
+}));
+
+export const Username: React.ComponentType = React.memo(() => {
+  const { isLoggedIn, username } = useSelector(stateSelector);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const logout = useCallback(() => {
+    dispatch(Authentication.logout());
+    history.push('/');
+  }, [dispatch, history]);
+
   if (isLoggedIn) {
     return (
       <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
@@ -40,26 +43,4 @@ const UsernameComponent: React.FunctionComponent<StateProps & DispatchProps> = (
   }
 
   return <LoginButton />;
-};
-
-const stateSelector = createSelector<ApplicationState, boolean, string | null, StateProps>(
-  isLoggedIn,
-  getUsername,
-  (isLoggedIn, username) => ({
-    isLoggedIn,
-    username: username || 'ERROR NO USERNAME IN STORE',
-  }),
-);
-
-// TODO remove props from dispatch
-export const Username: React.ComponentClass = withRouter(
-  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
-    stateSelector,
-    (dispatch: Dispatch, ownProps?: RouteComponentProps<any>): DispatchProps => ({
-      logout: (): void => {
-        dispatch(Authentication.logout());
-        ownProps!.history.push('/');
-      },
-    }),
-  )(UsernameComponent),
-);
+});
