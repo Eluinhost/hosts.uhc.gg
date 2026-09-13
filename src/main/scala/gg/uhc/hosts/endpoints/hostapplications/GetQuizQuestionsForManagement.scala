@@ -5,7 +5,6 @@ import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax.EncoderOps
 
 import java.time.Instant
 
@@ -41,7 +40,7 @@ class GetQuizQuestionsForManagement(database: Database, customDirectives: Custom
                     .map(c => ManageChoice(c.id, c.text, c.correct))
                 )
               }
-              complete(result.asJson)
+              complete(result)
             }
           }
         }

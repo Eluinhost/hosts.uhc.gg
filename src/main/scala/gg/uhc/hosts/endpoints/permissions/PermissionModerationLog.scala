@@ -5,7 +5,6 @@ import org.apache.pekko.http.scaladsl.server.{Directive1, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax._
 
 class PermissionModerationLog(directives: CustomDirectives, database: Database) {
   import CustomJsonCodec._
@@ -25,7 +24,7 @@ class PermissionModerationLog(directives: CustomDirectives, database: Database) 
             canSeeModifiers { canSee =>
               requireSucessfulQuery(database.getPermissionModerationLog(before, count)) { log =>
                 val visible = if (canSee) log else log.map(_.copy(modifier = redactedModifier))
-                complete(visible.asJson)
+                complete(visible)
               }
             }
           }

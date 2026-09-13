@@ -6,7 +6,6 @@ import doobie._
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax._
 import doobie.free.connection.delay
 
 class ListUsersInPermission(customDirectives: CustomDirectives, database: Database) {
@@ -25,10 +24,7 @@ class ListUsersInPermission(customDirectives: CustomDirectives, database: Databa
   def apply(permission: String): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireSucessfulQuery(listUsersInPermission(permission)) { result =>
-        complete(result match {
-          case Left(list) => list.asJson
-          case Right(map) => map.asJson
-        })
+        complete(result)
       }
     }
 }

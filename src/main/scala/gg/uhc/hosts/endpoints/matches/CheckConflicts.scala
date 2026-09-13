@@ -8,7 +8,6 @@ import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax.EncoderOps
 
 case class ConflictCheck(opens: Instant, region: String, version: String)
 
@@ -27,10 +26,13 @@ class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
             val end   = opens.plus(15, ChronoUnit.MINUTES)
 
             requireSucessfulQuery(
-              database.getPotentialConflicts(start = start, end = end, region = region, version = version)) {
-              conflicts =>
-                complete(conflicts.asJson)
-            }
+              for {
+                conflicts <- database.getPotentialConflicts(start = start, end = end, region = region, version = version)
+                perms     <- database.getPermissions(conflicts.map(_.author))
+              } yield conflicts.map(row => row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
+            ) { conflicts =>
+                complete(conflicts)
+              }
           }
         }
       }

@@ -6,7 +6,6 @@ import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, HostApplicationAnswerRow, HostApplicationRow, QuizQuestionChoiceRow, QuizQuestionRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax.EncoderOps
 
 class CreateHostApplication(database: Database, customDirectives: CustomDirectives) {
   import CustomJsonCodec._
@@ -89,7 +88,7 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
                   case Left(error) => complete(StatusCodes.BadRequest -> error)
                   case Right(answers) =>
                     requireSucessfulQuery(database.submitHostApplication(session.username, answers)) { id =>
-                      complete(StatusCodes.Created, Map("id" -> id).asJson)
+                      complete(StatusCodes.Created, Map("id" -> id))
                     }
                 }
               }

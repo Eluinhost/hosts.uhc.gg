@@ -6,7 +6,6 @@ import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, QuizQuestionRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import io.circe.syntax.EncoderOps
 
 import java.time.Instant
 
@@ -45,7 +44,7 @@ class CreateQuizQuestion(database: Database, customDirectives: CustomDirectives)
               val choices = payload.choices.map(c => c.text.trim -> c.correct)
 
               requireSucessfulQuery(database.createQuizQuestionWithChoices(question, choices)) { id =>
-                complete(StatusCodes.Created, Map("id" -> id).asJson)
+                complete(StatusCodes.Created, Map("id" -> id))
               }
             }
           }
