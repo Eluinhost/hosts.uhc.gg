@@ -50,19 +50,16 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ permission, com
     ? PromptToApplyForHost
     : NotAllowed;
 
-  // Memoise the wrapped page component so its reference is stable across re-renders of `App`
-  // as if the component ref changes React Router will remount the page.
-  const wrapped = React.useMemo<React.FunctionComponent<RouteComponentProps<any>>>(
-    () => props => (
-      <WithPermission permission={permission} alternative={alternative}>
-        <Component {...props} />
-      </WithPermission>
-    ),
-    // `Component` intentionally omitted from deps: it is the route's fixed page and never changes.
-    [permission, alternative],
+  return (
+    <Route
+      {...routeProps}
+      render={props => (
+        <WithPermission permission={permission} alternative={alternative}>
+          <Component {...props} />
+        </WithPermission>
+      )}
+    />
   );
-
-  return <Route {...routeProps} component={wrapped} />;
 };
 
 const Routes: React.FC = () => {
