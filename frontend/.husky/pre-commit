@@ -1,1 +1,3 @@
-yarn run prettier:fix && yarn run lint
+cd frontend
+yarn run prettier:fix
+yarn run lint

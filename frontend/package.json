@@ -11,7 +11,7 @@
     "prettier:fix": "prettier --write \"src/**/*.{json,js,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "husky"
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "main": "src/index.tsx",
   "license": "MIT",
