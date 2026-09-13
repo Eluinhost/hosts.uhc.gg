@@ -1,138 +1,42 @@
-import * as React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Settings } from '../../actions';
 import moment from 'moment-timezone';
 import { Popover, Button, MenuItem, Position, Card, Classes } from '@blueprintjs/core';
-import { contains, toLower, filter, always } from 'ramda';
+import { contains, toLower, filter as rFilter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 import { CurrentTime } from './CurrentTime';
 
 const tzs = moment.tz.names();
 
+const searchFilter = (query: string): ((item: string) => boolean) => {
+  if (!query) {
+    return always(true);
+  }
+
+  const loweredQuery = toLower(query);
+
+  return (item: string) => contains(loweredQuery, toLower(item));
+};
+
 type TimezoneItemProps = {
   readonly timezone: string;
   readonly onSelect: (timezone: string) => void;
 };
 
-class TimezoneItem extends React.PureComponent<TimezoneItemProps> {
-  private onSelect = () => this.props.onSelect(this.props.timezone);
+const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onSelect }) => (
+  <MenuItem key={timezone} text={timezone} onClick={() => onSelect(timezone)} />
+);
 
-  public render() {
-    return <MenuItem key={this.props.timezone} text={this.props.timezone} onClick={this.onSelect} />;
-  }
-}
-
-type StateProps = {
+type StateSlice = {
   readonly is12h: boolean;
   readonly timezone: string;
 };
 
-type DispatchProps = {
-  readonly toggleTimeFormat: () => void;
-  readonly changeTimezone: (timezone: string) => void;
-};
-
-type State = {
-  readonly filter: string;
-  readonly open: boolean;
-};
-
-class TimeSettingsComponent extends React.PureComponent<StateProps & DispatchProps, State> {
-  state = {
-    filter: '',
-    open: false,
-  };
-
-  private searchFilter = (query: string): ((item: string) => boolean) => {
-    if (!query) {
-      return always(true);
-    }
-
-    const loweredQuery = toLower(query);
-
-    return (item: string) => contains(loweredQuery, toLower(item));
-  };
-
-  private onFilterChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ filter: event.target.value });
-
-  private onSelect = (timezone: string): void => this.props.changeTimezone(timezone);
-
-  private noRows = () => <MenuItem text="No items found." />;
-
-  private toggleOpen = () => this.setState(prevState => ({ open: !prevState.open }));
-
-  public render() {
-    const filtered = filter(this.searchFilter(this.state.filter), tzs);
-
-    const renderRow = (props: ListRowProps) => (
-      <div style={props.style} key={props.key}>
-        <TimezoneItem timezone={filtered[props.index]} onSelect={this.onSelect} />
-      </div>
-    );
-
-    const rowHeight = 30;
-    const allRowsHeight = Math.min(490, filtered.length * rowHeight);
-    const renderedHeight = Math.max(rowHeight, allRowsHeight); // keep space for at least 1 row even if 0 length
-    const height = renderedHeight + 10; // 10px padding
-
-    return (
-      <Card className="time-settings">
-        <Button minimal large className="current-time">
-          <CurrentTime />
-        </Button>
-        <div className="time-settings-popout">
-          {this.state.open && (
-            <Button
-              text={this.props.is12h ? '12h' : '24h'}
-              icon="time"
-              minimal
-              large
-              onClick={this.props.toggleTimeFormat}
-            />
-          )}
-          {this.state.open && (
-            <div style={{ position: 'relative' }}>
-              <Popover canEscapeKeyClose inheritDarkTheme lazy minimal usePortal={false} position={Position.BOTTOM}>
-                <Button minimal large text={this.props.timezone} rightIcon="double-caret-vertical" />
-                <div>
-                  <input
-                    autoFocus
-                    type="text"
-                    className={`${Classes.INPUT} ${Classes.FILL}`}
-                    value={this.state.filter}
-                    onChange={this.onFilterChange}
-                  />
-                  <List
-                    className={`${Classes.MENU} ${Classes.LARGE} ${Classes.MINIMAL}`}
-                    height={height}
-                    width={200}
-                    rowCount={filtered.length}
-                    rowHeight={rowHeight}
-                    rowRenderer={renderRow}
-                    noRowsRenderer={this.noRows}
-                  />
-                </div>
-              </Popover>
-            </div>
-          )}
-          <Button
-            large
-            minimal
-            className="toggle-time-settings"
-            icon={this.state.open ? 'chevron-right' : 'cog'}
-            onClick={this.toggleOpen}
-          />
-        </div>
-      </Card>
-    );
-  }
-}
-
-const stateSelector = createSelector<ApplicationState, string, boolean, StateProps>(
+const stateSelector = createSelector<ApplicationState, string, boolean, StateSlice>(
   getTimezone,
   is12hFormat,
   (timezone, is12h) => ({
@@ -141,10 +45,81 @@ const stateSelector = createSelector<ApplicationState, string, boolean, StatePro
   }),
 );
 
-export const TimeSettings: React.ComponentType = connect<StateProps, DispatchProps, {}>(
-  stateSelector,
-  (dispatch): DispatchProps => ({
-    toggleTimeFormat: () => dispatch(Settings.toggleIs12h()),
-    changeTimezone: (timezone: string) => dispatch(Settings.setTimezone(timezone)),
-  }),
-)(TimeSettingsComponent);
+export const TimeSettings = React.memo(() => {
+  const { is12h, timezone } = useSelector(stateSelector);
+  const dispatch = useDispatch();
+
+  const [filter, setFilter] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.target.value), []);
+
+  const noRows = useCallback(() => <MenuItem text="No items found." />, []);
+
+  const toggleOpen = () => setOpen(prev => !prev);
+
+  const changeTimezone = useCallback((newTimezone: string) => dispatch(Settings.setTimezone(newTimezone)), [dispatch]);
+
+  const toggleTimeFormat = useCallback(() => dispatch(Settings.toggleIs12h()), [dispatch]);
+
+  const onSelect = useCallback((newTimezone: string) => changeTimezone(newTimezone), [changeTimezone]);
+
+  const filtered = useMemo(() => rFilter(searchFilter(filter), tzs), [filter]);
+
+  const renderRow = useCallback(
+    (props: ListRowProps) => (
+      <div style={props.style} key={props.key}>
+        <TimezoneItem timezone={filtered[props.index]} onSelect={onSelect} />
+      </div>
+    ),
+    [filtered, onSelect],
+  );
+
+  const rowHeight = 30;
+  const allRowsHeight = Math.min(490, filtered.length * rowHeight);
+  const renderedHeight = Math.max(rowHeight, allRowsHeight); // keep space for at least 1 row even if 0 length
+  const height = renderedHeight + 10; // 10px padding
+
+  return (
+    <Card className="time-settings">
+      <Button minimal large className="current-time">
+        <CurrentTime />
+      </Button>
+      <div className="time-settings-popout">
+        {open && <Button text={is12h ? '12h' : '24h'} icon="time" minimal large onClick={toggleTimeFormat} />}
+        {open && (
+          <div style={{ position: 'relative' }}>
+            <Popover canEscapeKeyClose inheritDarkTheme lazy minimal usePortal={false} position={Position.BOTTOM}>
+              <Button minimal large text={timezone} rightIcon="double-caret-vertical" />
+              <div>
+                <input
+                  autoFocus
+                  type="text"
+                  className={`${Classes.INPUT} ${Classes.FILL}`}
+                  value={filter}
+                  onChange={onFilterChange}
+                />
+                <List
+                  className={`${Classes.MENU} ${Classes.LARGE} ${Classes.MINIMAL}`}
+                  height={height}
+                  width={200}
+                  rowCount={filtered.length}
+                  rowHeight={rowHeight}
+                  rowRenderer={renderRow}
+                  noRowsRenderer={noRows}
+                />
+              </div>
+            </Popover>
+          </div>
+        )}
+        <Button
+          large
+          minimal
+          className="toggle-time-settings"
+          icon={open ? 'chevron-right' : 'cog'}
+          onClick={toggleOpen}
+        />
+      </div>
+    </Card>
+  );
+});

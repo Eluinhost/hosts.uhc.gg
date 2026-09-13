@@ -1,0 +1,3 @@
+cd frontend
+pnpm prettier:fix
+pnpm lint

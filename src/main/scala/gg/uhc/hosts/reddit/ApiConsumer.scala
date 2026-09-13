@@ -1,10 +1,10 @@
 package gg.uhc.hosts.reddit
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.{Materializer, OverflowStrategy, QueueOfferResult, ThrottleMode}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.{HttpRequest, HttpResponse}
+import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
+import org.apache.pekko.stream.{Materializer, QueueOfferResult, ThrottleMode}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
@@ -16,10 +16,10 @@ class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
   implicit val mz: Materializer = Materializer.matFromSystem
   implicit val ec: ExecutionContext = system.dispatcher
 
-  private[this] val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
+  private val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)
 
-  private[this] val queue = Source
-    .queue[(HttpRequest, Promise[HttpResponse])](queueSize, OverflowStrategy.dropNew)
+  private val queue = Source
+    .queue[(HttpRequest, Promise[HttpResponse])](queueSize)
     .throttle(30, 1.minute, 1, ThrottleMode.Shaping)
     .via(pool)
     .toMat(Sink.foreach({
@@ -31,13 +31,11 @@ class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
   def queueRequest(request: HttpRequest): Future[HttpResponse] = {
     val promise = Promise[HttpResponse]()
 
-    queue
-      .offer(request -> promise)
-      .flatMap {
-        case QueueOfferResult.Enqueued    => promise.future
-        case QueueOfferResult.Dropped     => Future failed new RuntimeException("Queue overflowed")
-        case QueueOfferResult.Failure(ex) => Future failed ex
-        case QueueOfferResult.QueueClosed => Future failed new RuntimeException("Queue closed")
-      }
+    queue.offer(request -> promise) match {
+      case QueueOfferResult.Enqueued    => promise.future
+      case QueueOfferResult.Dropped     => Future failed new RuntimeException("Queue overflowed")
+      case QueueOfferResult.Failure(ex) => Future failed ex
+      case QueueOfferResult.QueueClosed => Future failed new RuntimeException("Queue closed")
+    }
   }
 }

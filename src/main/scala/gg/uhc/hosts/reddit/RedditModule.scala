@@ -1,13 +1,13 @@
 package gg.uhc.hosts.reddit
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import com.softwaremill.tagging.@@
 import gg.uhc.hosts.{ConfigurationModule, RedditApiSystem}
 
 trait RedditModule extends ConfigurationModule {
   def redditApiSystem: ActorSystem @@ RedditApiSystem
 
-  private[this] lazy val queueSize = config.getInt("reddit.queueSize")
+  private lazy val queueSize = config.getInt("reddit.queueSize")
 
   lazy val authenticationApi: RedditAuthenticationApi = new RedditAuthenticationApi(
     redditApiSystem,

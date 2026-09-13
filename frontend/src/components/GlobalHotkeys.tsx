@@ -1,31 +1,42 @@
-import { RouteComponentProps, withRouter } from 'react-router';
-import * as React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Hotkey, Hotkeys } from '@blueprintjs/core';
 // workaround for dodgy transpilation
-import { HotkeysTarget } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysTarget.js';
+import { HotkeysEvents, HotkeyScope } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysEvents.js';
+import { useHistory } from 'react-router';
 
-@HotkeysTarget
-class GlobalHotkeysComponent extends React.PureComponent<RouteComponentProps<any>> {
-  public render() {
-    return <>{this.props.children}</>;
-  }
+export const GlobalHotkeys: React.FC = ({ children }) => {
+  const history = useHistory();
+  const globalHotkeysEventsRef = useRef(new HotkeysEvents(HotkeyScope.GLOBAL));
 
-  private goToMatches = () => this.props.history.push('/matches');
-  private goToUbl = () => this.props.history.push('/ubl');
-  private goToPermissions = () => this.props.history.push('/members');
-  private goBack = () => this.props.history.goBack();
+  const goToMatches = useCallback(() => history.push('/matches'), [history]);
+  const goToPermissions = useCallback(() => history.push('/members'), [history]);
+  const goBack = useCallback(() => history.goBack(), [history]);
 
-  public renderHotkeys() {
-    return (
+  const hotkeys = useMemo(
+    () => (
       <Hotkeys>
-        <Hotkey global combo="H" label="Create a new match" onKeyDown={this.goToMatches} />
-        <Hotkey global combo="M" label="Go to match listing" onKeyDown={this.goToMatches} />
-        <Hotkey global combo="B" label="Go to current UBL" onKeyDown={this.goToUbl} />
-        <Hotkey global combo="P" label="Go to permissions" onKeyDown={this.goToPermissions} />
-        <Hotkey global combo="backspace" label="Go back" onKeyDown={this.goBack} />
+        <Hotkey global combo="H" label="Create a new match" onKeyDown={goToMatches} />
+        <Hotkey global combo="M" label="Go to match listing" onKeyDown={goToMatches} />
+        <Hotkey global combo="P" label="Go to permissions" onKeyDown={goToPermissions} />
+        <Hotkey global combo="backspace" label="Go back" onKeyDown={goBack} />
       </Hotkeys>
-    );
-  }
-}
+    ),
+    [goBack, goToMatches, goToPermissions],
+  );
 
-export const GlobalHotkeys: React.ComponentClass = withRouter(GlobalHotkeysComponent);
+  useEffect(() => {
+    const events = globalHotkeysEventsRef.current;
+    events.setHotkeys(hotkeys.props);
+
+    document.addEventListener('keydown', events.handleKeyDown);
+    document.addEventListener('keyup', events.handleKeyUp);
+
+    return () => {
+      document.removeEventListener('keydown', events.handleKeyDown);
+      document.removeEventListener('keyup', events.handleKeyUp);
+      events.clear();
+    };
+  }, [hotkeys, goToMatches, goToPermissions, goBack]);
+
+  return <>{children}</>;
+};

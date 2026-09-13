@@ -1,9 +1,9 @@
 package gg.uhc.hosts.endpoints.matches
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.HttpChallenges
-import akka.http.scaladsl.server.Directives.{entity, _}
-import akka.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.model.headers.HttpChallenges
+import org.apache.pekko.http.scaladsl.server.Directives.{entity, _}
+import org.apache.pekko.http.scaladsl.server._
 import doobie.free.connection.ConnectionIO
 import doobie.free.connection.pure
 import gg.uhc.hosts._

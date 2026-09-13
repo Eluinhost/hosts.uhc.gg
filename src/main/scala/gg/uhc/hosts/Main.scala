@@ -1,11 +1,9 @@
 package gg.uhc.hosts
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.Materializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.Http.ServerBinding
 import cats.effect._
-import cats.implicits._
 import com.softwaremill.macwire.wire
 import com.softwaremill.tagging._
 import com.typesafe.config.ConfigFactory
@@ -18,7 +16,7 @@ import org.flywaydb.core.Flyway
 
 class MainModule(
     transactor: Transactor[IO],
-    val materializer: Materializer,
+    val httpSystem: ActorSystem @@ HttpSystem,
     val databaseSystem: ActorSystem @@ DatabaseSystem,
     val redditApiSystem: ActorSystem @@ RedditApiSystem)
     extends EndpointsModule {
@@ -39,7 +37,7 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
     val resources: Resource[IO, Resources] = for {
-      config <- Resource.liftF(IO {
+      config <- Resource.eval(IO {
         ConfigFactory.load()
       })
       httpSystem        <- makeActorSystem("http-actor-system")
@@ -55,30 +53,28 @@ object Main extends IOApp {
         executionContexts,
         blocker
       )
-      _ <- Resource.liftF(IO {
+      _ <- Resource.eval(IO {
         httpSystem.log.info("Starting migrations...")
 
-        val flyway = new Flyway()
-        flyway.setDataSource(transactor.kernel)
-        flyway.migrate()
+        Flyway.configure().dataSource(transactor.kernel).table("schema_version").load().migrate()
       })
       binding <- Resource.make(
         IO.fromFuture(IO {
-          implicit val ac: ActorSystem  = httpSystem
-          implicit val mz: Materializer = Materializer.matFromSystem
+          implicit val ac: ActorSystem = httpSystem
 
           val mainModule = new MainModule(transactor,
-                                          mz,
+                                          httpSystem.taggedWith[HttpSystem],
                                           databaseSystem.taggedWith[DatabaseSystem],
                                           redditApiSystem.taggedWith[RedditApiSystem])
 
           httpSystem.log.info("Starting web server...")
 
-          Http().bindAndHandle(
-            handler = mainModule.baseRoute(),
-            interface = config.getString("http.interface"),
-            port = config.getInt("http.port")
-          )
+          Http()
+            .newServerAt(
+              interface = config.getString("http.interface"),
+              port = config.getInt("http.port")
+            )
+            .bind(mainModule.baseRoute())
         })
       )(binding =>
         IO.fromFuture {

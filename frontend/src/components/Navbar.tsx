@@ -1,13 +1,11 @@
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, { useCallback } from 'react';
+import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
-import * as React from 'react';
 import { Username } from './Username';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
 import { isDarkMode } from '../state/Selectors';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Settings } from '../actions';
 import { WithPermission } from './WithPermission';
 
@@ -17,67 +15,56 @@ type NavBarButtonProps = {
   readonly to: string;
 };
 
-const NavBarButtonComponent: React.FunctionComponent<NavBarButtonProps & RouteComponentProps<any>> = ({
-  text,
-  icon,
-  to,
-  location,
-}) => (
-  <Link to={to}>
-    <Button minimal icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
-      {text}
-    </Button>
-  </Link>
-);
+const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) => {
+  const location = useLocation();
 
-const NavbarButton: React.ComponentClass<NavBarButtonProps> = withRouter(NavBarButtonComponent);
-
-type StateProps = {
-  readonly isDarkMode: boolean;
+  return (
+    <Link to={to}>
+      <Button minimal icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
+        {text}
+      </Button>
+    </Link>
+  );
 };
 
-type DispatchProps = {
-  readonly toggleDarkMode: () => void;
-};
+const NavbarButton: React.FC<NavBarButtonProps> = NavBarButtonComponent;
 
-const NavbarComponent: React.FunctionComponent<StateProps & DispatchProps> = ({ isDarkMode, toggleDarkMode }) => (
-  <BpNavbar>
-    <NavbarGroup>
-      <Link to="/">
-        <img src="/logo.png" alt="logo" className="brand-logo" />
-      </Link>
-      <Link to="/">
-        <NavbarHeading>uhc.gg hosting</NavbarHeading>
-      </Link>
-    </NavbarGroup>
-    <NavbarGroup>
-      <NavbarButton to="/host" text="Host" icon="cloud-upload" />
-      <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
-      <NavbarButton to="/members" text="Members" icon="user" />
-      {/*<NavbarButton to="/ubl" text="Ban List" icon="take-action" />*/}
-      <WithPermission permission="hosting advisor">
-        <NavbarButton to="/hosting-alerts" text="Hosting Alerts" icon="notifications" />
-      </WithPermission>
-      <WithPermission permission="hosting advisor">
-        <NavbarButton text="Modifiers" icon="unresolve" to="/modifiers" />
-      </WithPermission>
-    </NavbarGroup>
-    <NavbarGroup>
-      <Username />
-      <Button minimal icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
-    </NavbarGroup>
-  </BpNavbar>
-);
-
-const stateSelector = createSelector<ApplicationState, boolean, StateProps>(isDarkMode, isDarkMode => ({
+const stateSelector = createSelector(isDarkMode, isDarkMode => ({
   isDarkMode,
 }));
 
-export const Navbar: React.ComponentClass = withRouter(
-  connect<StateProps, DispatchProps, RouteComponentProps<any>>(
-    stateSelector,
-    (dispatch: Dispatch): DispatchProps => ({
-      toggleDarkMode: () => dispatch(Settings.toggleDarkMode()),
-    }),
-  )(NavbarComponent),
-);
+export const Navbar: React.ComponentType = React.memo(() => {
+  const { isDarkMode } = useSelector(stateSelector);
+  const dispatch = useDispatch();
+
+  const toggleDarkMode = useCallback(() => dispatch(Settings.toggleDarkMode()), [dispatch]);
+
+  return (
+    <BpNavbar>
+      <NavbarGroup>
+        <Link to="/">
+          <img src="/logo.png" alt="logo" className="brand-logo" />
+        </Link>
+        <Link to="/">
+          <NavbarHeading>uhc.gg hosting</NavbarHeading>
+        </Link>
+      </NavbarGroup>
+      <NavbarGroup>
+        <NavbarButton to="/host" text="Host" icon="cloud-upload" />
+        <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
+        <NavbarButton to="/host-applications" text="Host Applications" icon="inbox" />
+        <NavbarButton to="/members" text="Members" icon="user" />
+        <WithPermission permission="hosting advisor">
+          <NavbarButton text="Modifiers" icon="unresolve" to="/modifiers" />
+        </WithPermission>
+        <WithPermission permission="hosting advisor">
+          <NavbarButton to="/quiz" text="Application Quiz" icon="help" />
+        </WithPermission>
+      </NavbarGroup>
+      <NavbarGroup>
+        <Username />
+        <Button minimal icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
+      </NavbarGroup>
+    </BpNavbar>
+  );
+});

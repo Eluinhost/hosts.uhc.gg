@@ -1,16 +1,16 @@
 package gg.uhc.hosts.reddit
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
+import org.mdedetrich.pekko.http.support.CirceHttpSupport
 
 import scala.concurrent.Future
 
 class RedditAuthenticationApi(actorSystem: ActorSystem, clientId: String, secret: String, redirectUri: String, queueSize: Int)
     extends ApiConsumer(actorSystem, "www.reddit.com", queueSize)
-    with FailFastCirceSupport {
+    with CirceHttpSupport {
   import io.circe.generic.auto._
 
   def startAuthFlowUrl(state: String) =

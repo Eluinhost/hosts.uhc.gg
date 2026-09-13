@@ -2,10 +2,9 @@ package gg.uhc.hosts.endpoints.matches
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.unmarshalling.Unmarshaller
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
@@ -27,10 +26,13 @@ class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
             val end   = opens.plus(15, ChronoUnit.MINUTES)
 
             requireSucessfulQuery(
-              database.getPotentialConflicts(start = start, end = end, region = region, version = version)) {
-              conflicts =>
+              for {
+                conflicts <- database.getPotentialConflicts(start = start, end = end, region = region, version = version)
+                perms     <- database.getPermissions(conflicts.map(_.author))
+              } yield conflicts.map(row => row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
+            ) { conflicts =>
                 complete(conflicts)
-            }
+              }
           }
         }
       }

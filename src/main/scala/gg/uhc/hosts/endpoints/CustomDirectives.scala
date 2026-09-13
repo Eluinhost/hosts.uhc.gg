@@ -2,11 +2,11 @@ package gg.uhc.hosts.endpoints
 
 import java.net.InetAddress
 
-import akka.http.scaladsl.model.RemoteAddress
-import akka.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2BearerToken}
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.directives.Credentials
-import akka.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
+import org.apache.pekko.http.scaladsl.model.RemoteAddress
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2BearerToken}
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.directives.Credentials
+import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
 import cats.data.OptionT
 import doobie.free.connection
 import doobie._

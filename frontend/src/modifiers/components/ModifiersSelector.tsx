@@ -1,9 +1,7 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 
-import { ListModifiersState } from '../reducer';
 import { getListModifiersState } from '../selectors';
 import { FETCH_MODIFIERS } from '../actions';
 
@@ -13,76 +11,62 @@ export type ModifiersSelectorProps = {
   selected: string[];
 };
 
-type StateProps = ListModifiersState;
+const ModifierSwitch: React.FC<ModifiersSelectorProps & { displayName: string; isSelected: boolean }> = ({
+  displayName,
+  isSelected,
+  onAdded,
+  onRemoved,
+}) => (
+  <Switch
+    inline
+    large
+    checked={isSelected}
+    label={displayName}
+    onChange={() => (isSelected ? onRemoved(displayName) : onAdded(displayName))}
+  />
+);
 
-type DispatchProps = {
-  updateModifiers: () => void;
-};
+export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((props: ModifiersSelectorProps) => {
+  const { onAdded, onRemoved, selected } = props;
+  const { isFetching, error, data } = useSelector(getListModifiersState);
+  const dispatch = useDispatch();
 
-class ModifierSwitch extends React.PureComponent<
-  ModifiersSelectorProps & { displayName: string; isSelected: boolean }
-> {
-  onChange = () => {
-    if (this.props.isSelected) {
-      this.props.onRemoved(this.props.displayName);
-    } else {
-      this.props.onAdded(this.props.displayName);
-    }
-  };
+  const updateModifiers = useCallback(() => dispatch(FETCH_MODIFIERS.TRIGGER()), [dispatch]);
 
-  render() {
+  useEffect(() => {
+    updateModifiers();
+  }, [updateModifiers]);
+
+  if (isFetching) {
+    return <Spinner />;
+  }
+
+  if (error) {
     return (
-      <Switch inline large checked={this.props.isSelected} label={this.props.displayName} onChange={this.onChange} />
+      <NonIdealState
+        icon="warning-sign"
+        title="Failed to lookup modifiers"
+        action={
+          <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
+            Try Again
+          </Button>
+        }
+      />
     );
   }
-}
 
-class ModifiersSelectorComponent extends React.PureComponent<ModifiersSelectorProps & StateProps & DispatchProps> {
-  componentDidMount(): void {
-    this.updateModifiers();
-  }
-
-  updateModifiers = () => this.props.updateModifiers();
-
-  render() {
-    if (this.props.isFetching) {
-      return <Spinner />;
-    }
-
-    if (this.props.error) {
-      return (
-        <NonIdealState
-          icon="warning-sign"
-          title="Failed to lookup modifiers"
-          action={
-            <Button intent={Intent.PRIMARY} onClick={this.updateModifiers}>
-              Try Again
-            </Button>
-          }
+  return (
+    <div>
+      {data.map(modifier => (
+        <ModifierSwitch
+          onAdded={onAdded}
+          onRemoved={onRemoved}
+          selected={selected}
+          key={modifier.id}
+          isSelected={selected.includes(modifier.displayName)}
+          displayName={modifier.displayName}
         />
-      );
-    }
-
-    return (
-      <div>
-        {this.props.data.map(modifier => (
-          <ModifierSwitch
-            {...this.props}
-            key={modifier.id}
-            isSelected={this.props.selected.includes(modifier.displayName)}
-            displayName={modifier.displayName}
-          />
-        ))}
-      </div>
-    );
-  }
-}
-
-const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
-  updateModifiers: () => dispatch(FETCH_MODIFIERS.TRIGGER()),
+      ))}
+    </div>
+  );
 });
-
-export const ModifierSelector: React.ComponentType<ModifiersSelectorProps> = connect(
-  getListModifiersState,
-  mapDispatchToProps,
-)(ModifiersSelectorComponent);

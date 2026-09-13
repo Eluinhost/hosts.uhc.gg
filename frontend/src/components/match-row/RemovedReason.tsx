@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
@@ -10,6 +10,7 @@ export const RemovedReason = React.memo(({ match: { removedBy, removedAt, remove
 
   const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
     format,
+    removedAt,
     timezone,
   ]);
 

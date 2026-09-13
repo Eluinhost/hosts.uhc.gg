@@ -1,12 +1,14 @@
-import * as React from 'react';
+import React, { useCallback, useState } from 'react';
 import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import * as Mark from 'markup-js';
 import moment from 'moment-timezone';
 import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
 import { Preset, presets } from './presets';
-import { memoizeWith, toString } from 'ramda';
 import { Markdown } from '../Markdown';
+import { getLocalPresets } from '../../state/Selectors';
+import { Presets } from '../../actions';
+import { useDispatch, useSelector } from 'react-redux';
 
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement | string;
@@ -102,63 +104,126 @@ const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; read
   </Button>
 );
 
-const PresetsTab: React.FunctionComponent<{ readonly onPresetClick: (p: Preset) => () => void }> = ({
-  onPresetClick,
-}) => (
+const PresetsTab: React.FunctionComponent<{
+  readonly onPresetClick: (p: Preset) => () => void;
+  readonly onSaveCurrentAsPreset: () => void;
+  readonly onDeleteLocalPreset: (presetName: string) => void;
+  readonly localPresets: Preset[];
+}> = ({ onPresetClick, onSaveCurrentAsPreset, onDeleteLocalPreset, localPresets }) => (
   <Callout intent={Intent.PRIMARY}>
-    {presets.map(p => (
-      <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
-    ))}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      <H5 style={{ margin: 0 }}>Built-in presets</H5>
+      <Button minimal icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
+        Save current template as preset
+      </Button>
+    </div>
+
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+      {presets.map(p => (
+        <PresetButton key={p.name} onClick={onPresetClick(p)} id={p.name} />
+      ))}
+    </div>
+
+    <H5 style={{ marginBottom: 8 }}>Your saved presets</H5>
+    {localPresets.length === 0 ? (
+      <div>No saved presets yet.</div>
+    ) : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {localPresets.map(preset => (
+          <div key={preset.name} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <PresetButton onClick={onPresetClick(preset)} id={preset.name} />
+            <Button minimal icon="trash" intent={Intent.DANGER} onClick={() => onDeleteLocalPreset(preset.name)}>
+              Remove
+            </Button>
+          </div>
+        ))}
+      </div>
+    )}
   </Callout>
 );
 
-type TemplateFieldComponentState = {
-  readonly currentTabId: string | number;
+const TemplateFieldComponent: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> = props => {
+  const { meta, required, className, label, changeTemplate, input } = props;
+  const localPresets = useSelector(getLocalPresets);
+  const dispatch = useDispatch();
+
+  const [currentTabId, setCurrentTabId] = useState<string | number>('host-form-template-tab-template');
+
+  const onTabChange = (newTabId: string | number): void => setCurrentTabId(newTabId);
+
+  const onPresetClick = useCallback(
+    (p: Preset) => () => {
+      changeTemplate(p.template);
+      setCurrentTabId('host-form-template-tab-template');
+    },
+    [changeTemplate],
+  );
+
+  const onSaveCurrentAsPreset = useCallback((): void => {
+    if (typeof window === 'undefined') return;
+
+    const name = window.prompt('Preset name');
+    const trimmedName = (name || '').trim();
+
+    if (!trimmedName) return;
+
+    const alreadyExists = localPresets.some(existing => existing.name.toLowerCase() === trimmedName.toLowerCase());
+
+    if (alreadyExists && !window.confirm(`Preset "${trimmedName}" already exists. Overwrite it?`)) return;
+
+    const preset = {
+      name: trimmedName,
+      template: input.value || '',
+    };
+
+    const nextLocalPresets = [
+      ...localPresets.filter(p => p.name.toLowerCase() !== trimmedName.toLowerCase()),
+      preset,
+    ].sort((a, b) => a.name.localeCompare(b.name));
+
+    dispatch(Presets.save(nextLocalPresets));
+  }, [dispatch, input.value, localPresets]);
+
+  const onDeleteLocalPreset = useCallback(
+    (presetName: string): void => {
+      if (typeof window === 'undefined') return;
+
+      if (!window.confirm(`Remove preset "${presetName}"?`)) return;
+
+      const nextLocalPresets = localPresets.filter(preset => preset.name.toLowerCase() !== presetName.toLowerCase());
+
+      dispatch(Presets.save(nextLocalPresets));
+    },
+    [dispatch, localPresets],
+  );
+
+  return (
+    <FieldWrapper meta={meta} required={required} hideErrors>
+      <div className={`markdown-field-wrapper ${className || ''}`}>
+        {!!label && <RenderLabel label={label!} required={required} />}
+        <Tabs id="host-form-template-tabs" onChange={onTabChange} selectedTabId={currentTabId}>
+          <Tab id="host-form-template-tab-template" title="Template" panel={<TemplateTab {...props} />} />
+          <Tab id="host-form-template-tab-preview" title="Preview" panel={<PreviewTab {...props} />} />
+          <Tab id="host-form-template-tab-help" title="Help" panel={<HelpTab {...props} />} />
+          <Tab
+            id="host-form-template-tab-presets"
+            title="Presets"
+            panel={
+              <PresetsTab
+                onPresetClick={onPresetClick}
+                onSaveCurrentAsPreset={onSaveCurrentAsPreset}
+                onDeleteLocalPreset={onDeleteLocalPreset}
+                localPresets={localPresets}
+              />
+            }
+          />
+        </Tabs>
+      </div>
+      <RenderErrors {...meta} />
+    </FieldWrapper>
+  );
 };
 
-class TemplateFieldComponent extends React.PureComponent<
-  WrappedFieldProps & TemplateFieldProps,
-  TemplateFieldComponentState
-> {
-  state = {
-    currentTabId: 'host-form-template-tab-template',
-  };
-
-  onTabChange = (newTabId: string | number): void =>
-    this.setState({
-      currentTabId: newTabId,
-    });
-
-  onPresetClick: (p: Preset) => () => void = memoizeWith(toString, (p: Preset) => (): void => {
-    this.props.changeTemplate(p.template);
-    this.setState({
-      currentTabId: 'host-form-template-tab-template',
-    });
-  });
-
-  render() {
-    const Template = <TemplateTab {...this.props} />;
-    const Preview = <PreviewTab {...this.props} />;
-    const Help = <HelpTab {...this.props} />;
-    const Presets = <PresetsTab onPresetClick={this.onPresetClick} />;
-
-    return (
-      <FieldWrapper meta={this.props.meta} required={this.props.required} hideErrors>
-        <div className={`markdown-field-wrapper ${this.props.className || ''}`}>
-          {!!this.props.label && <RenderLabel label={this.props.label!} required={this.props.required} />}
-          <Tabs id="host-form-template-tabs" onChange={this.onTabChange} selectedTabId={this.state.currentTabId}>
-            <Tab id="host-form-template-tab-template" title="Template" panel={Template} />
-            <Tab id="host-form-template-tab-preview" title="Preview" panel={Preview} />
-            <Tab id="host-form-template-tab-help" title="Help" panel={Help} />
-            <Tab id="host-form-template-tab-presets" title="Presets" panel={Presets} />
-          </Tabs>
-        </div>
-        <RenderErrors {...this.props.meta} />
-      </FieldWrapper>
-    );
-  }
-}
-
-export const TemplateField: React.FunctionComponent<TemplateFieldProps> = props => (
+export const TemplateField: React.FC<TemplateFieldProps> = props => (
   <Field {...props} component={TemplateFieldComponent} />
 );

@@ -2,10 +2,15 @@
 
 All in `/frontend`
 
+#### Setup 
+
+`nvm use` - installs required node version
+`corepack enable` - required for pnpm
+
 #### Install
 
 ```bash
-yarn install
+pnpm install
 ```
 
 #### Build production
@@ -13,7 +18,7 @@ yarn install
 Builds optimised bundles to `/frontend/build` for the backend to serve
 
 ```bash
-yarn build
+pnpm build
 ```
 
 #### Build dev 
@@ -21,7 +26,7 @@ yarn build
 Builds development bundles and listens for changes for recompilation. Runs on port 3000
 
 ```bash
-yarn start
+pnpm start
 ```
 
 When running dev frontend make sure there is a server running on port 10000 (or modify src/setupProxy for actual port)

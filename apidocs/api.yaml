@@ -345,114 +345,6 @@ components:
         pvpEnabledAt: 20
         hostingName: Name Override
         tournament: false
-    UblEntryResponse:
-      type: object
-      example:
-        id: 10
-        ign: test
-        uuid: 00000000-0000-0000-0000-000000000000
-        reason: reasoning
-        created: '2017-08-10T09:11:22.031Z'
-        expires: '2018-08-10T09:11:22.031Z'
-        link: 'https://redd.it/aaaaa'
-        createdBy: ghowden
-      required:
-        - id
-        - ign
-        - uuid
-        - reason
-        - created
-        - link
-        - createdBy
-      properties:
-        id:
-          type: integer
-          description: 'The unique ID of this entry'
-        ign:
-          type: string
-          description: 'The in game name of the banned account (at time of ban)'
-        uuid:
-          type: string
-          description: 'The in game UUID of the banned account'
-        reason:
-          type: string
-          description: 'The reason this ban was added'
-        created:
-          type: string
-          description: 'When the ban started'
-        expires:
-          type: string
-          description: 'When the ban ends'
-        link:
-          type: string
-          description: 'The courtroom post for the ban'
-        createdBy:
-          type: string
-          description: Username of the account that created the ban
-    CreateUblEntryRequest:
-      type: object
-      required:
-        - ign
-        - uuid
-        - reason
-        - link
-      example:
-        ign: test
-        uuid: 00000000-0000-0000-0000-000000000000
-        reason: test
-        expires: '2017-08-10T09:11:22.031Z'
-        link: https://redd.it/test
-      properties:
-        ign:
-          type: string
-          description: 'The in game name of the banned account (at time of ban)'
-        uuid:
-          type: string
-          description: 'The in game UUID of the banned account'
-        reason:
-          type: string
-          description: 'The reason this ban was added'
-        expires:
-          type: string
-          description: 'When the ban ends, if not provided then infinite'
-        link:
-          type: string
-          description: 'The courtroom post for the ban'
-    AlertResponse:
-      type: object
-      required:
-        - id
-        - field
-        - alertOn
-        - exact
-        - createdBy
-        - created
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this alert
-        field:
-          type: string
-          description: The field to check, must be one of 'ip' | 'address' | 'hosting name' | 'content' | 'tags'. 'tags' checks each tag individually
-        alertOn:
-          type: string
-          description: Value to search for
-        exact:
-          type: boolean
-          description: Whether to alert on exact match or not. If true the entire field must match, if false the field only has to contain the alertOn value
-        createdBy:
-          type: string
-          description: Username of whoever created the alert
-        created:
-          type: string
-          description: The date + time the alert was created
-      example:
-        id: 11
-        field: tags
-        alertOn: exact tag
-        exact: true
-        createdBy: ghowden
-        created: "2017-09-29T11:33:07.039Z"
     ModifierResponse:
       type: object
       required:
@@ -468,6 +360,250 @@ components:
       example:
         id: 100
         displayName: CutClean
+    HostApplicationResponse:
+      type: object
+      required:
+        - id
+        - username
+        - created
+        - status
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this application
+        username:
+          type: string
+          description: The username of the applicant
+        created:
+          type: string
+          description: The date + time the application was submitted
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - declined
+          description: The current status of the application
+        reviewedBy:
+          type: string
+          description: Username of whoever reviewed this application, only present once reviewed
+        reviewedAt:
+          type: string
+          description: The date + time the application was reviewed, only present once reviewed
+        reviewReason:
+          type: string
+          description: The reason given by the reviewer, only ever present when `status` is `declined`
+      example:
+        id: 1
+        username: test
+        created: '2017-08-10T09:11:22.031Z'
+        status: declined
+        reviewedBy: ghowden
+        reviewedAt: '2017-08-11T09:11:22.031Z'
+        reviewReason: Did not answer the rules question correctly
+    HostApplicationAnswerResponse:
+      type: object
+      required:
+        - questionPrompt
+        - questionType
+      properties:
+        questionPrompt:
+          type: string
+          description: The prompt of the question at the time it was answered
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choiceText:
+          type: string
+          description: The text of the choice picked, only present for `multiple choice` questions
+        choiceCorrect:
+          type: boolean
+          description: Whether the picked choice was correct. Only ever present when requested with a `hosting advisor` token, otherwise omitted
+        textAnswer:
+          type: string
+          description: The free-text answer given, only present for `text` questions
+      example:
+        questionPrompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choiceText: '1500'
+        choiceCorrect: true
+    HostApplicationDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/HostApplicationResponse'
+        - type: object
+          required:
+            - answers
+          properties:
+            answers:
+              type: array
+              items:
+                $ref: '#/components/schemas/HostApplicationAnswerResponse'
+    CreateHostApplicationRequest:
+      type: object
+      required:
+        - answers
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            required:
+              - questionId
+            properties:
+              questionId:
+                type: integer
+                description: The ID of the quiz question being answered
+              choiceId:
+                type: integer
+                description: The ID of the choice picked, required for `multiple choice` questions
+              textAnswer:
+                type: string
+                description: The free-text answer, required for `text` questions
+      example:
+        answers:
+          - questionId: 1
+            choiceId: 3
+          - questionId: 2
+            textAnswer: My answer to the question
+    ReviewHostApplicationRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: The reason for the decision, required (and must be non-blank) when declining an application, ignored when approving
+      example:
+        reason: Did not answer the rules question correctly
+    QuizQuestionChoiceResponse:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this choice
+        text:
+          type: string
+          description: The text shown for this choice
+    QuizQuestionResponse:
+      type: object
+      required:
+        - id
+        - prompt
+        - questionType
+        - choices
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this question
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choices:
+          type: array
+          description: Only populated for `multiple choice` questions
+          items:
+            $ref: '#/components/schemas/QuizQuestionChoiceResponse'
+      example:
+        id: 1
+        prompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choices:
+          - id: 1
+            text: '1000'
+          - id: 2
+            text: '1500'
+    QuizQuestionManageChoiceResponse:
+      type: object
+      required:
+        - id
+        - text
+        - correct
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this choice
+        text:
+          type: string
+          description: The text shown for this choice
+        correct:
+          type: boolean
+          description: Whether this is the correct choice
+    QuizQuestionManageResponse:
+      type: object
+      required:
+        - id
+        - prompt
+        - questionType
+        - createdBy
+        - created
+        - choices
+      properties:
+        id:
+          type: integer
+          description: The unique ID of this question
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        createdBy:
+          type: string
+          description: Username of whoever created this question
+        created:
+          type: string
+          description: The date + time the question was created
+        choices:
+          type: array
+          description: Only populated for `multiple choice` questions
+          items:
+            $ref: '#/components/schemas/QuizQuestionManageChoiceResponse'
+    CreateQuizQuestionRequest:
+      type: object
+      required:
+        - prompt
+        - questionType
+        - choices
+      properties:
+        prompt:
+          type: string
+          description: The question being asked
+        questionType:
+          type: string
+          enum:
+            - multiple choice
+            - text
+        choices:
+          type: array
+          description: Required for `multiple choice` questions (at least 2, exactly 1 correct), must be empty for `text` questions
+          items:
+            type: object
+            required:
+              - text
+              - correct
+            properties:
+              text:
+                type: string
+              correct:
+                type: boolean
+      example:
+        prompt: What is the maximum allowed border size?
+        questionType: multiple choice
+        choices:
+          - text: '1000'
+            correct: false
+          - text: '1500'
+            correct: true
 
 paths:
   /sync:
@@ -753,13 +889,13 @@ paths:
                   hosting advisor: 13
                   hosting banned: 3
                   trial host: 808
-                  ubl moderator: 1
   /permissions/log:
     get:
       tags:
         - Permissions
       summary: Lists log of permissions changes
-      description: Lists a recent history of permissions changes
+      description: Lists a recent history of permissions changes. Authentication is optional; unless the
+        authenticated user has the `admin` or `hosting advisor` permission, `modifier` will be `moderation team`
       parameters:
         - in: query
           name: before
@@ -798,7 +934,8 @@ paths:
                     modifier:
                       type: string
                       required: true
-                      description: The username of the user that did this action
+                      description: The username of the user that did this action. Will be `moderation team`
+                        unless the caller has the `admin` or `hosting advisor` permission
                     username:
                       type: string
                       required: true
@@ -928,249 +1065,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
-  /ubl/current:
-    get:
-      tags:
-        - UBL
-      summary: List all current bans
-      description: List all of the bans that are currently being applied, most recently created first
-      responses:
-        '200':
-          description: 'Success'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UblEntryResponse'
-  /ubl:
-    post:
-      tags:
-        - UBL
-      summary: Create a new ban Entry
-      description: Creates a new ban entry, requires `ubl moderator` permission
-      security:
-        - SiteApiToken: []
-        - UserApiToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUblEntryRequest'
-      responses:
-        '201':
-          description: Created, returns the stored data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UblEntryResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-  /ubl/{id}:
-    delete:
-     tags:
-       - UBL
-     summary: Deletes a ban Entry
-     description: Deletes an existing ban entry, requires `ubl moderator` permission
-     parameters:
-       - in: path
-         name: id
-         type: number
-         required: true
-         description: The id of the ban to delete
-     security:
-       - SiteApiToken: []
-       - UserApiToken: []
-     responses:
-       '204':
-         description: Deleted
-       '400':
-         $ref: '#/components/responses/BadRequest'
-       '401':
-         $ref: '#/components/responses/UnauthorizedError'
-       '403':
-         $ref: '#/components/responses/ForbiddenError'
-       '404':
-         description: Could not find a ban with the given ID
-    post:
-      tags:
-        - UBL
-      summary: Edits a ban Entry
-      description: Edit an existing ban entry, requires `ubl moderator` permission
-      parameters:
-        - in: path
-          name: id
-          type: number
-          required: true
-          description: The id of the ban to edit
-      security:
-        - SiteApiToken: []
-        - UserApiToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUblEntryRequest'
-      responses:
-        '200':
-          description: Created, returns the stored data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UblEntryResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-        '404':
-          description: Could not find a ban with the given ID
-  /ubl/search/{query}:
-    post:
-      tags:
-        - UBL
-      summary: Search for username
-      description: Searches for partial username in the UBL and lists UUIDs
-      parameters:
-        - in: path
-          name: query
-          type: string
-          required: true
-          description: The partial username to search for
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                description: Map of username -> uuid mappings
-                example:
-                  user1:
-                    - 00000000-0000-0000-0000-000000000000
-                    - 00000000-0000-0000-0000-000000000001
-                  user2:
-                    - 00000000-0000-0000-0000-000000000002
-                additionalProperties:
-                  type: array
-                  items:
-                    type: string
-                    description: List of matching UUIDs for the username
-  /ubl/{uuid}:
-    get:
-      tags:
-        - UBL
-      summary: List bans for UUID
-      description: Shows every ban that has been created for the given UUID ordered by created date descending
-      parameters:
-        - in: path
-          name: uuid
-          type: string
-          required: true
-          description: The uuid to lookup
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UblEntryResponse'
-
-  /alerts:
-    get:
-      tags:
-        - Hosting Alerts
-      summary: List all alerts
-      description: Lists all alerts, requires `hosting advisor` permission
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AlertResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-    post:
-      tags:
-        - Hosting Alerts
-      summary: Create a new alert
-      description: Creates a new alert, requires `hosting advisor` permission
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - field
-                - alertOn
-                - exact
-              properties:
-                field:
-                  type: string
-                  description: The field to check, must be one of 'ip' | 'address' | 'hosting name' | 'content' | 'tags'. 'tags' checks each tag individually
-                alertOn:
-                  type: string
-                  description: Value to search for
-                exact:
-                  type: boolean
-                  description: Whether to alert on exact match or not. If true the entire field must match, if false the field only has to contain the alertOn value
-              example:
-                field: tags
-                alertOn: exact tag
-                exact: true
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlertResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-  /alerts/{id}:
-    delete:
-      tags:
-        - Hosting Alerts
-      summary: Delete an alert
-      description: Deletes an alert, requries `hosting advisor` permission
-      parameters:
-        - in: path
-          name: id
-          type: integer
-          required: true
-          description: The ID to delete
-      responses:
-        '204':
-          description: Deleted
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-        '404':
-          description: Could not find an alert with the given ID
   /users/{username}/permissions:
     get:
       tags:
@@ -1251,4 +1145,223 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Could not find an modifier with the given ID
+  /host-applications:
+    get:
+      tags:
+        - Host Applications
+      summary: List recent host applications
+      description: Lists the 50 most recently created host applications, most recently created first. Public endpoint
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HostApplicationResponse'
+    post:
+      tags:
+        - Host Applications
+      summary: Submit a host application
+      description: Submits a new host application answering every configured quiz question. Requires the user to not already be a `host`/`trial host`, to not have the `hosting banned` permission, and to not already have a pending application
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHostApplicationRequest'
+      responses:
+        '201':
+          description: Created, returns the ID of the new application
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /host-applications/{id}:
+    get:
+      tags:
+        - Host Applications
+      summary: Get a specific host application
+      description: Returns full details of an application including submitted answers. Public endpoint, however `choiceCorrect` on each answer is only included when authenticated with a `hosting advisor` token
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostApplicationDetailsResponse'
+        '404':
+          description: Could not find an application with the given ID
+  /host-applications/{id}/approve:
+    post:
+      tags:
+        - Host Applications
+      summary: Approve a host application
+      description: Approves a pending application and grants the applicant the `trial host` permission, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewHostApplicationRequest'
+      responses:
+        '200':
+          description: Approved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an application with the given ID
+  /host-applications/{id}/decline:
+    post:
+      tags:
+        - Host Applications
+      summary: Decline a host application
+      description: Declines a pending application, requires `hosting advisor` permission. A non-blank `reason` must be supplied in the request body
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewHostApplicationRequest'
+      responses:
+        '200':
+          description: Declined
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Could not find an application with the given ID
+  /quiz:
+    get:
+      tags:
+        - Quiz
+      summary: List quiz questions
+      description: Lists all quiz questions that must be answered to submit a host application. Public endpoint, does not indicate which choice is correct
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizQuestionResponse'
+    post:
+      tags:
+        - Quiz
+      summary: Create a quiz question
+      description: Creates a new quiz question, requires `hosting advisor` permission. `multiple choice` questions require at least 2 choices with exactly 1 correct, `text` questions must not have any choices
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuizQuestionRequest'
+      responses:
+        '201':
+          description: Created, returns the ID of the new question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /quiz/manage:
+    get:
+      tags:
+        - Quiz
+      summary: List quiz questions for management
+      description: Lists all quiz questions including which choice is correct, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      responses:
+        '200':
+          description: 'Successful query'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizQuestionManageResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /quiz/{id}:
+    delete:
+      tags:
+        - Quiz
+      summary: Delete a quiz question
+      description: Deletes a quiz question and its choices, requires `hosting advisor` permission
+      security:
+        - SiteApiToken: []
+        - UserApiToken: []
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: The ID of the question to delete
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
 

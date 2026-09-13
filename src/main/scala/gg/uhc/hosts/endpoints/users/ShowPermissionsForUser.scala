@@ -1,7 +1,7 @@
 package gg.uhc.hosts.endpoints.users
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server._
 
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database

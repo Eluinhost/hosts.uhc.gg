@@ -1,5 +1,5 @@
 import { Classes, H5, Icon } from '@blueprintjs/core';
-import * as React from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
@@ -12,6 +12,7 @@ export const RemovedInfo = React.memo(
 
     const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
       format,
+      removedAt,
       timezone,
     ]);
 

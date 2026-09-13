@@ -2,7 +2,7 @@ import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
 import { concat, converge, head, pipe, tail, toPairs, toUpper } from 'ramda';
 import { Classes, ITreeNode, Spinner } from '@blueprintjs/core';
-import * as React from 'react';
+import React from 'react';
 
 import {
   AddPermission,
@@ -65,7 +65,6 @@ const permissionGroupNames: { [key: string]: string } = {
   'hosting advisor': 'Hosting Advisors',
   'hosting banned': 'Hosting Banned',
   'trial host': 'Trial Hosts',
-  'ubl moderator': 'UBL Moderators',
 };
 
 const getGroupName = (permission: string) =>
@@ -117,7 +116,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   addDialog: null,
   allowableModifications: {
     'hosting advisor': ['host', 'trial host', 'hosting banned'],
-    admin: ['trial host', 'host', 'hosting advisor', 'ubl moderator', 'beta tester'],
+    admin: ['trial host', 'host', 'hosting advisor', 'beta tester'],
   },
 })
   .handleAction(FetchUserCountPerPermission.started, state => ({

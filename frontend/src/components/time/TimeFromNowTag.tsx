@@ -1,6 +1,6 @@
+import React, { useEffect, useMemo, useState } from 'react';
 import moment from 'moment-timezone';
-import * as React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Icon, Intent, Tag, ITagProps } from '@blueprintjs/core';
@@ -10,39 +10,30 @@ type Props = {
   readonly hideSuffix?: boolean;
 } & ITagProps;
 
-type State = {
-  readonly currentTime: moment.Moment;
-};
+const stateSelector = createSelector(
+  (state: ApplicationState) => state.timeSync.offset,
+  offset => ({
+    offset,
+  }),
+);
 
-type StateProps = {
-  readonly offset: number;
-};
+export const TimeFromNowTag: React.ComponentType<Props> = React.memo((props: Props) => {
+  const { offset } = useSelector(stateSelector);
+  const { time, hideSuffix } = props;
 
-class TimeFromNowComponent extends React.PureComponent<Props & StateProps, State> {
-  state = {
-    currentTime: moment.utc(),
-  };
+  const [currentTime, setCurrentTime] = useState(moment.utc());
 
-  private timerId: number | null = null;
+  useEffect(() => {
+    const timerId = window.setInterval(() => setCurrentTime(moment.utc()), 2000);
+    return () => window.clearInterval(timerId);
+  }, []);
 
-  private update = (): void => this.setState({ currentTime: moment.utc() });
-
-  public componentDidMount(): void {
-    this.timerId = window.setInterval(this.update, 2000);
-  }
-
-  public componentWillUnmount(): void {
-    if (this.timerId) {
-      window.clearInterval(this.timerId);
-    }
-  }
-
-  public render() {
-    const now = this.state.currentTime.add(this.props.offset, 'milliseconds');
-    const text = this.props.time.from(now, this.props.hideSuffix);
+  const { text, intent } = useMemo(() => {
+    const now = currentTime.add(offset, 'milliseconds');
+    const text = time.from(now, hideSuffix);
 
     let intent: Intent = Intent.SUCCESS;
-    const diff = this.props.time.diff(now, 'minutes');
+    const diff = time.diff(now, 'minutes');
 
     if (diff < 0) {
       intent = Intent.WARNING;
@@ -52,19 +43,12 @@ class TimeFromNowComponent extends React.PureComponent<Props & StateProps, State
       intent = Intent.DANGER;
     }
 
-    return (
-      <Tag {...this.props} intent={intent}>
-        <Icon icon="time" /> {text}
-      </Tag>
-    );
-  }
-}
+    return { text, intent };
+  }, [time, currentTime, offset, hideSuffix]);
 
-const stateSelector = createSelector<ApplicationState, number, StateProps>(
-  state => state.timeSync.offset,
-  offset => ({
-    offset,
-  }),
-);
-
-export const TimeFromNowTag: React.ComponentType<Props> = connect(stateSelector)(TimeFromNowComponent);
+  return (
+    <Tag {...props} intent={intent}>
+      <Icon icon="time" /> {text}
+    </Tag>
+  );
+});

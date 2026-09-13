@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { WrappedFieldMetaProps } from 'redux-form';
 import { Classes, FormGroup, Intent, Label } from '@blueprintjs/core';
 
@@ -22,7 +22,7 @@ const formIntent = (meta: WrappedFieldMetaProps): Intent => {
   return Intent.NONE;
 };
 
-export const RenderErrors: React.FunctionComponent<WrappedFieldMetaProps> = ({ error, warning }) => {
+export const RenderErrors: React.FC<WrappedFieldMetaProps> = ({ error, warning }) => {
   if (error) return <div className={Classes.FORM_HELPER_TEXT}>{error}</div>;
 
   if (warning) return <div className={Classes.FORM_HELPER_TEXT}>{warning}</div>;
@@ -30,7 +30,7 @@ export const RenderErrors: React.FunctionComponent<WrappedFieldMetaProps> = ({ e
   return null;
 };
 
-export const RenderLabel: React.FunctionComponent<{ label: string | React.ReactElement; required?: boolean }> = ({
+export const RenderLabel: React.FC<{ label: string | React.ReactElement; required?: boolean }> = ({
   label,
   required = false,
 }) => (
@@ -40,14 +40,18 @@ export const RenderLabel: React.FunctionComponent<{ label: string | React.ReactE
   </Label>
 );
 
-export const FieldWrapper: React.FunctionComponent<FieldWrapperProps> = props => (
-  <FormGroup intent={formIntent(props.meta)} className={props.className}>
-    {!!props.label && <RenderLabel label={props.label!} required={props.required} />}
+export const FieldWrapper: React.FC<FieldWrapperProps> = props => {
+  const { meta, label, required, hideErrors, className, children } = props;
 
-    <div className={Classes.FORM_CONTENT}>
-      {props.children}
+  return (
+    <FormGroup intent={formIntent(meta)} className={className}>
+      {!!label && <RenderLabel label={label!} required={required} />}
 
-      {!props.hideErrors && <RenderErrors {...props.meta} />}
-    </div>
-  </FormGroup>
-);
+      <div className={Classes.FORM_CONTENT}>
+        {children}
+
+        {!hideErrors && <RenderErrors {...meta} />}
+      </div>
+    </FormGroup>
+  );
+};

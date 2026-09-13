@@ -1,13 +1,8 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { ApplicationState } from '../state/ApplicationState';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { matchesPermissions } from '../state/Selectors';
 import { createSelector } from 'reselect';
 import { memoizeWith, toString } from 'ramda';
-
-type StateProps = {
-  readonly show: boolean;
-};
 
 export type WithPermissionProps = {
   readonly permission: string | string[];
@@ -15,11 +10,16 @@ export type WithPermissionProps = {
   readonly children: React.ReactNode;
 };
 
-const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissionProps> = ({
-  show,
-  alternative,
-  children,
-}) => {
+const memoizedStateSelector = memoizeWith(toString, (perms: string | string[]) =>
+  createSelector(matchesPermissions(perms), show => ({
+    show,
+  })),
+);
+
+export const WithPermission: React.FC<WithPermissionProps> = React.memo((props: WithPermissionProps) => {
+  const { permission, alternative, children } = props;
+  const { show } = useSelector(state => memoizedStateSelector(permission)(state));
+
   if (show) {
     return <>{children}</> || null;
   }
@@ -31,14 +31,4 @@ const WithPermissionComponent: React.FunctionComponent<StateProps & WithPermissi
   }
 
   return null;
-};
-
-const memoizedStateSelector = memoizeWith(toString, (perms: string | string[]) =>
-  createSelector(matchesPermissions(perms), show => ({
-    show,
-  })),
-);
-
-export const WithPermission = connect<StateProps, {}, WithPermissionProps>(
-  (state: ApplicationState, props?: WithPermissionProps): StateProps => memoizedStateSelector(props!.permission)(state),
-)(WithPermissionComponent);
+});

@@ -1,27 +1,12 @@
-import * as React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import moment from 'moment-timezone';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { TimeSyncState } from '../../state/TimeSyncState';
 import { memoizeWith, toString } from 'ramda';
 import { Tooltip, Position } from '@blueprintjs/core';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 import { SyncTime } from '../../actions';
-
-type State = {
-  readonly time: moment.Moment;
-};
-
-type StateProps = {
-  readonly timeSync: TimeSyncState;
-  readonly timeFormat: string;
-  readonly timezone: string;
-};
-
-type DispatchProps = {
-  readonly resync: () => void;
-};
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -29,84 +14,36 @@ const MILLIS_PER_MINUTE = MILLIS_PER_SECOND * SECONDS_PER_MINUTE;
 const MINUTES_PER_HOUR = 60;
 const MILLIS_PER_HOUR = MILLIS_PER_MINUTE * MINUTES_PER_HOUR;
 
-class CurrentTimeComponent extends React.PureComponent<StateProps & DispatchProps, State> {
-  state = {
-    time: moment.utc(),
-  };
+const formatOffset = memoizeWith(toString, (offset: number): string => {
+  let o = offset;
+  const negative = o < 0;
 
-  private timerId: number | null = null;
+  let output = '';
 
-  private update = (): void =>
-    this.setState({
-      time: moment.utc(),
-    });
-
-  public componentDidMount(): void {
-    window.setInterval(() => this.update(), 1000);
+  if (negative) {
+    output = '-';
+    o *= -1;
   }
 
-  public componentWillUnmount(): void {
-    if (this.timerId) {
-      window.clearInterval(this.timerId);
-    }
+  if (o > MILLIS_PER_HOUR) {
+    output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
+    o %= MILLIS_PER_HOUR;
   }
 
-  private formatOffset = memoizeWith(toString, (offset: number): string => {
-    let o = offset;
-    const negative = o < 0;
-
-    let output = '';
-
-    if (negative) {
-      output = '-';
-      o *= -1;
-    }
-
-    if (o > MILLIS_PER_HOUR) {
-      output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
-      o %= MILLIS_PER_HOUR;
-    }
-
-    if (o > MILLIS_PER_MINUTE) {
-      output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
-      o %= MILLIS_PER_MINUTE;
-    }
-
-    const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
-
-    output += `${display}s `;
-
-    return output.trim();
-  });
-
-  private tooltipText = (): string =>
-    this.props.timeSync.synced
-      ? `Synced with the server with ${this.formatOffset(this.props.timeSync.offset)} offset. Click to resync`
-      : 'Not synced with the server';
-
-  private timeText = () =>
-    this.state.time
-      .add(this.props.timeSync.offset, 'milliseconds')
-      .clone()
-      .tz(this.props.timezone)
-      .format(this.props.timeFormat);
-
-  render() {
-    return (
-      <Tooltip content={this.tooltipText()} position={Position.BOTTOM}>
-        <span
-          className={`current-time ${this.props.timeSync.synced ? '' : 'current-time-unsynced'}`}
-          onClick={this.props.resync}
-        >
-          {this.timeText()}
-        </span>
-      </Tooltip>
-    );
+  if (o > MILLIS_PER_MINUTE) {
+    output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
+    o %= MILLIS_PER_MINUTE;
   }
-}
 
-const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, string, StateProps>(
-  state => state.timeSync,
+  const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
+
+  output += `${display}s `;
+
+  return output.trim();
+});
+
+const stateSelector = createSelector(
+  (state: ApplicationState) => state.timeSync,
   is12hFormat,
   getTimezone,
   (timeSync, is12h, timezone) => ({
@@ -116,9 +53,39 @@ const stateSelector = createSelector<ApplicationState, TimeSyncState, boolean, s
   }),
 );
 
-export const CurrentTime: React.ComponentType = connect<StateProps, DispatchProps, {}>(
-  stateSelector,
-  (dispatch): DispatchProps => ({
-    resync: () => dispatch(SyncTime.start()),
-  }),
-)(CurrentTimeComponent);
+export const CurrentTime = React.memo(() => {
+  const { timeSync, timezone, timeFormat } = useSelector(stateSelector);
+  const dispatch = useDispatch();
+
+  const [time, setTime] = useState(moment.utc());
+
+  const resync = useCallback(() => dispatch(SyncTime.start()), [dispatch]);
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => setTime(moment.utc()), 1000);
+    return () => window.clearInterval(timerId);
+  }, []);
+
+  const tooltipText = useMemo(
+    () =>
+      timeSync.synced
+        ? `Synced with the server with ${formatOffset(timeSync.offset)} offset. Click to resync`
+        : 'Not synced with the server',
+    [timeSync],
+  );
+
+  const timeText = useMemo(() => time.add(timeSync.offset, 'milliseconds').clone().tz(timezone).format(timeFormat), [
+    time,
+    timeSync.offset,
+    timezone,
+    timeFormat,
+  ]);
+
+  return (
+    <Tooltip content={tooltipText} position={Position.BOTTOM}>
+      <span className={`current-time ${timeSync.synced ? '' : 'current-time-unsynced'}`} onClick={resync}>
+        {timeText}
+      </span>
+    </Tooltip>
+  );
+});

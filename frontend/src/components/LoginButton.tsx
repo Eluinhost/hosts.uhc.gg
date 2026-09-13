@@ -1,11 +1,13 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useLocation } from 'react-router';
 import { AnchorButton } from '@blueprintjs/core';
 
-const LoginButtonComponent: React.FunctionComponent<RouteComponentProps> = ({ location }) => (
-  <AnchorButton minimal icon="user" href={`/authenticate?path=${encodeURIComponent(location.pathname)}`}>
-    Log In
-  </AnchorButton>
-);
+export const LoginButton: React.FC = () => {
+  const location = useLocation();
 
-export const LoginButton: React.ComponentClass<any> = withRouter(LoginButtonComponent);
+  return (
+    <AnchorButton minimal icon="user" href={`/authenticate?path=${encodeURIComponent(location.pathname)}`}>
+      Log In
+    </AnchorButton>
+  );
+};

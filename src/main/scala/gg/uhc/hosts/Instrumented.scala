@@ -2,8 +2,8 @@ package gg.uhc.hosts
 
 import java.util.concurrent.TimeUnit
 
-import akka.http.scaladsl.server.directives.BasicDirectives.{extractRequestContext, mapRouteResult}
-import akka.http.scaladsl.server.{Directive, Directive0}
+import org.apache.pekko.http.scaladsl.server.directives.BasicDirectives.{extractRequestContext, mapRouteResult}
+import org.apache.pekko.http.scaladsl.server.{Directive, Directive0}
 import com.codahale.metrics.MetricRegistry
 import metrics_influxdb.{HttpInfluxdbProtocol, InfluxdbReporter}
 import nl.grons.metrics4.scala.{Counter, InstrumentedBuilder, Timer}
