@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
 import TimePicker, { TimePickerProps } from 'rc-time-picker';
 import moment from 'moment-timezone';
-import { Callout, Intent, Overlay } from '@blueprintjs/core';
+import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
 import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } from 'react-dates';
 
 import { FieldWrapper } from './FieldWrapper';
@@ -146,7 +146,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
         />
         <Errors {...meta} />
       </div>
-      <Overlay
+      <Overlay2
         hasBackdrop
         isOpen={!!disabled}
         usePortal={false}
@@ -155,7 +155,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
         canOutsideClickClose={false}
       >
         <div />
-      </Overlay>
+      </Overlay2>
     </FieldWrapper>
   );
 });

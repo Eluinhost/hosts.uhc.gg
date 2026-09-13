@@ -22,12 +22,12 @@ const onAdd = (input?: WrappedFieldInputProps) => (newValues: string[]): void =>
   input.onChange(combined);
 };
 
-const onRemove = (input?: WrappedFieldInputProps) => (removed: string): void => {
+const onRemove = (input?: WrappedFieldInputProps) => (_: unknown, removed: number): void => {
   if (!input) return;
 
   const current = (input.value as string[]) || [];
 
-  const newValues = current.filter(it => it !== removed);
+  const newValues = current.filter((_, index) => index !== removed);
 
   if (newValues.length !== current.length) {
     input.onChange(newValues);

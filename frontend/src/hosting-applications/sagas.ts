@@ -11,7 +11,7 @@ import {
 import { getAccessToken } from '../state/Selectors';
 import { HostApplication, HostApplicationDetails } from '../models/HostApplication';
 import { listenForQuizQuestionsSagas } from './questions/sagas';
-import { AppToaster } from '../services/AppToaster';
+import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 export class FetchHostingApplicationsError extends Error {
@@ -80,7 +80,7 @@ function* reviewHostingApplicationDetailsSaga({
     const error = new ReviewHostingApplicationError(id, err);
     console.error(error);
     yield put(HostApplications.respond.completed.failed(error));
-    yield call([AppToaster, 'show'], { message: 'Error responding to application', intent: Intent.DANGER });
+    yield call(showToast, { message: 'Error responding to application', intent: Intent.DANGER });
   }
 }
 

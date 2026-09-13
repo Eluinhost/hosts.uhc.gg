@@ -164,7 +164,6 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
           <p>Please provide a reason for declining this application. This will be visible to the applicant.</p>
           <TextArea
             fill
-            growVertically
             value={declineReason}
             onChange={handleDeclineReasonChange}
             placeholder="Reason for declining"

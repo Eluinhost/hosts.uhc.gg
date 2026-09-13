@@ -3,12 +3,13 @@ import moment from 'moment-timezone';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
-import { Icon, Intent, Tag, ITagProps } from '@blueprintjs/core';
+import { Intent, Tag, TagProps } from '@blueprintjs/core';
+import { TimeIcon } from '@blueprintjs/icons';
 
 type Props = {
   readonly time: moment.Moment;
   readonly hideSuffix?: boolean;
-} & ITagProps;
+} & TagProps;
 
 const stateSelector = createSelector(
   (state: ApplicationState) => state.timeSync.offset,
@@ -48,7 +49,7 @@ export const TimeFromNowTag: React.ComponentType<Props> = React.memo((props: Pro
 
   return (
     <Tag {...props} intent={intent}>
-      <Icon icon="time" /> {text}
+      <TimeIcon /> {text}
     </Tag>
   );
 });

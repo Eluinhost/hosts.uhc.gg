@@ -5,7 +5,7 @@ import { createSelector, Selector } from 'reselect';
 import { flatten, map } from 'ramda';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getPermissions } from '../../state/Selectors';
-import { BasicNode, LetterFolder, PermissionsState, UsernameNode } from '../../state/PermissionsState';
+import { LetterFolder, NodeType, PermissionsState, UsernameNode } from '../../state/PermissionsState';
 import {
   AddPermission,
   FetchUserCountPerPermission,
@@ -62,49 +62,49 @@ export const MembersPage = React.memo(() => {
 
   const canModifyFn = useCallback((permission: string): boolean => canModify.indexOf(permission) >= 0, [canModify]);
 
-  const onNodeClick: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const onNodeClick: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      if (!canModifyFn(node.permission)) return;
+      if (!canModifyFn(node.nodeData.permission)) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          openAddPermission(node.permission);
+          openAddPermission(node.nodeData.permission);
           break;
         case 'username':
-          openRemovePermission(node.permission, (node as UsernameNode).username);
+          openRemovePermission(node.nodeData.permission, (node.nodeData as UsernameNode).username);
       }
     },
     [canModifyFn, openAddPermission, openRemovePermission],
   );
 
-  const collapseNode: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const collapseNode: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          collapsePermissionNode(node.permission);
+          collapsePermissionNode(node.nodeData.permission);
           break;
         case 'letter':
-          collapseLetterNode(node.permission, (node as LetterFolder).letter);
+          collapseLetterNode(node.nodeData.permission, node.nodeData.letter);
           break;
       }
     },
     [collapsePermissionNode, collapseLetterNode],
   );
 
-  const expandNode: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const expandNode: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          expandPermissionNode(node.permission);
+          expandPermissionNode(node.nodeData.permission);
           break;
         case 'letter':
-          expandLetterNode(node.permission, (node as LetterFolder).letter);
+          expandLetterNode(node.nodeData.permission, (node.nodeData as LetterFolder).letter);
           break;
       }
     },
@@ -114,7 +114,9 @@ export const MembersPage = React.memo(() => {
   const nodesWithClassNames = useMemo(
     () =>
       nodes.map(node => {
-        if (!canModifyFn(node.permission)) return node;
+        if (!node.nodeData) return node;
+
+        if (!canModifyFn(node.nodeData.permission)) return node;
 
         return {
           ...node,

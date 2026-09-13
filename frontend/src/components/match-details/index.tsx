@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Classes, Icon, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
+import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
 import { UsernameLink } from '../UsernameLink';
 import { TeamStyle } from '../team-style';
 import { ClipboardControlGroup } from '../clipboard-control-group';
@@ -15,6 +15,7 @@ import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { RemovedTag } from './RemovedTag';
 import { RemovedInfo } from './RemovedInfo';
 import { HostStatus } from '../host-status';
+import { CubeIcon, GlobeIcon, PeopleIcon, TagIcon, TickIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
 
 type StateProps = {
   readonly details: MatchDetailsState;
@@ -66,7 +67,7 @@ export const MatchDetails = React.memo((props: OwnProps) => {
     (tags: string[]): React.ReactElement<any>[] =>
       tags.map((tag, index) => (
         <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
-          <Icon icon="tag" /> {tag}
+          <TagIcon /> {tag}
         </Tag>
       )),
     [],
@@ -121,12 +122,12 @@ export const MatchDetails = React.memo((props: OwnProps) => {
         <div className="match-details__header__floating-tags__top">
           <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens" />
           <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
-            <Icon icon="globe" /> {region} - {location}
+            <GlobeIcon /> {region} - {location}
           </Tag>
           <HostStatus roles={roles} />
           {tournament && (
             <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-              <Icon icon="timeline-bar-chart" /> Tournament
+              <TimelineBarChartIcon /> Tournament
             </Tag>
           )}
           <RemovedTag match={details.match} />
@@ -145,10 +146,10 @@ export const MatchDetails = React.memo((props: OwnProps) => {
         <div className="match-details__header__floating-tags__bottom">
           <div>
             <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
-              <Icon icon="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
+              <PeopleIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
             </Tag>
             <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} large>
-              <Icon icon="cube" /> {version}
+              <CubeIcon /> {version}
             </Tag>
             {renderTags(tags)}
           </div>
@@ -195,7 +196,7 @@ export const MatchDetails = React.memo((props: OwnProps) => {
         {!removed && !!approvedBy && (
           <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
             <H5>
-              <Icon icon="tick" /> Approved by /u/{approvedBy}
+              <TickIcon /> Approved by /u/{approvedBy}
             </H5>
           </div>
         )}

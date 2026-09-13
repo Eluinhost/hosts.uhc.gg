@@ -5,7 +5,7 @@ import { GetHostingRules, SetHostingRules } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { HostingRules } from '../state/HostingRulesState';
 import moment from 'moment-timezone';
-import { AppToaster } from '../services/AppToaster';
+import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* getHostingRulesSaga(): SagaIterator {
@@ -40,7 +40,7 @@ function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>):
     yield call(HostingRulesApi.callSetHostingRules, action.payload, accessToken);
     yield put(SetHostingRules.success({ parameters: action.payload, result: rules }));
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       icon: 'tick',
       message: `Updated hosting rules`,
@@ -48,7 +48,7 @@ function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>):
   } catch (error) {
     console.error(error, 'error setting hosting rules');
     yield put(SetHostingRules.failure({ parameters: action.payload, error }));
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',
       message:

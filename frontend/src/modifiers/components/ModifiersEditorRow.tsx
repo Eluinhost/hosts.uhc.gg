@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { Classes, Icon, IconName, Intent, MaybeElement, Tag } from '@blueprintjs/core';
+import { Classes, Intent, MaybeElement, Tag } from '@blueprintjs/core';
+import { IconName, RefreshIcon } from '@blueprintjs/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector, ParametricSelector } from 'reselect';
 
@@ -40,7 +41,7 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = React.memo((
   let icon: IconName | MaybeElement = undefined;
 
   if (isDeleting) {
-    icon = <Icon icon="refresh" className={Classes.SPINNER_ANIMATION} />;
+    icon = <RefreshIcon className={Classes.SPINNER_ANIMATION} />;
   } else if (isHovered) {
     icon = 'trash';
   }

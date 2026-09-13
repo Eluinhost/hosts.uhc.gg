@@ -82,7 +82,7 @@ const HelpTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> =
       </a>
       <span> for generating content. Here are some template examples:</span>
     </div>
-    <HTMLTable bordered small striped>
+    <HTMLTable bordered striped>
       <thead>
         <tr>
           <th>Example</th>

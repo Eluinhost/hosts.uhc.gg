@@ -4,7 +4,7 @@ import { select, put, call, takeEvery } from 'redux-saga/effects';
 import { ApproveMatch } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
-import { AppToaster } from '../services/AppToaster';
+import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaIterator {
@@ -25,7 +25,7 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
     yield put(ApproveMatch.success({ parameters: action.payload }));
     yield put(ApproveMatch.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       icon: 'tick',
       message: `Approved match #${action.payload.id}`,
@@ -34,7 +34,7 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
     console.error(error, 'error approving match');
     yield put(ApproveMatch.failure({ parameters: action.payload, error }));
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',
       message:
