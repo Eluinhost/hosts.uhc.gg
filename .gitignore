@@ -6,5 +6,5 @@ target
 /application.conf
 /.idea
 *.iml
-/data/pgdata
+/database/postgres
 /caddy/.env
