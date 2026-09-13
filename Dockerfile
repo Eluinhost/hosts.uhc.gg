@@ -1,13 +1,15 @@
 FROM node:20-alpine AS frontend-build
 WORKDIR /app
 
-COPY frontend/package.json frontend/yarn.lock ./
+RUN corepack enable
 
-RUN yarn install --frozen-lockfile
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
+
+RUN pnpm install --frozen-lockfile
 
 COPY frontend/ .
 
-RUN yarn run build
+RUN pnpm build
 
 FROM eclipse-temurin:17-jdk AS backend-build
 WORKDIR /app
