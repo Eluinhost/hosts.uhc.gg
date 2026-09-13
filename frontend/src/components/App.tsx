@@ -36,6 +36,10 @@ type AuthenticatedRouteProps = {
   readonly permission: string | string[];
 } & RouteProps;
 
+const HOST_PERMISSIONS: string[] = ['host', 'trial host'];
+const NO_PERMISSIONS: string[] = [];
+const ADVISOR_PERMISSION: string = 'hosting advisor';
+
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ permission, component, ...routeProps }) => {
   const Component: React.ComponentType<RouteComponentProps<any>> = component!;
   const authenticated = useSelector(isLoggedIn);
@@ -46,10 +50,16 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ permission, com
     ? PromptToApplyForHost
     : NotAllowed;
 
-  const wrapped: React.FunctionComponent<RouteComponentProps<any>> = props => (
-    <WithPermission permission={permission} alternative={alternative}>
-      <Component {...props} />
-    </WithPermission>
+  // Memoise the wrapped page component so its reference is stable across re-renders of `App`
+  // as if the component ref changes React Router will remount the page.
+  const wrapped = React.useMemo<React.FunctionComponent<RouteComponentProps<any>>>(
+    () => props => (
+      <WithPermission permission={permission} alternative={alternative}>
+        <Component {...props} />
+      </WithPermission>
+    ),
+    // `Component` intentionally omitted from deps: it is the route's fixed page and never changes.
+    [permission, alternative],
   );
 
   return <Route {...routeProps} component={wrapped} />;
@@ -74,7 +84,7 @@ const Routes: React.FC = () => {
 
   return (
     <Switch>
-      <AuthenticatedRoute path="/host" component={HostingPage} permission={['host', 'trial host']} />
+      <AuthenticatedRoute path="/host" component={HostingPage} permission={HOST_PERMISSIONS} />
       <Route path="/m/:id" component={MatchDetailsPage} />
       <Route path="/matches/:host" component={HistoryPage} />
       <Route path="/matches" component={UpcomingMatchesPage} />
@@ -82,9 +92,9 @@ const Routes: React.FC = () => {
       <Route path="/host-applications" component={HostApplicationsPage} />
       <Route path="/members" component={MembersPage} />
       <Route path="/login" component={LoginPage} />
-      <AuthenticatedRoute path="/profile" component={ProfilePage} permission={[]} />
-      <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission="hosting advisor" />
-      <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission="hosting advisor" />
+      <AuthenticatedRoute path="/profile" component={ProfilePage} permission={NO_PERMISSIONS} />
+      <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission={ADVISOR_PERMISSION} />
+      <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission={ADVISOR_PERMISSION} />
       <Route path="/" exact component={HomePage} />
       <Route component={NotFoundPage} />
     </Switch>
