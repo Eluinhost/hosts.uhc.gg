@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
 import { useSelector } from 'react-redux';
 import { isDarkMode } from '../../state/Selectors';
