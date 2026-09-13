@@ -117,8 +117,12 @@ export const MatchListing: FC<MatchListingProps> = React.memo(
       [disableApprove, disableRemove],
     );
 
-    const noMatches = !loading && (
-      <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
+    const noMatches = useMemo(
+      () =>
+        !loading && (
+          <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
+        ),
+      [loading],
     );
 
     const removedMatchesFilter = useCallback(

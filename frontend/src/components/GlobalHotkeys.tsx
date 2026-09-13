@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Hotkey, Hotkeys } from '@blueprintjs/core';
 // workaround for dodgy transpilation
 import { HotkeysEvents, HotkeyScope } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysEvents.js';
@@ -12,13 +12,16 @@ export const GlobalHotkeys: React.FC = ({ children }) => {
   const goToPermissions = useCallback(() => history.push('/members'), [history]);
   const goBack = useCallback(() => history.goBack(), [history]);
 
-  const hotkeys = (
-    <Hotkeys>
-      <Hotkey global combo="H" label="Create a new match" onKeyDown={goToMatches} />
-      <Hotkey global combo="M" label="Go to match listing" onKeyDown={goToMatches} />
-      <Hotkey global combo="P" label="Go to permissions" onKeyDown={goToPermissions} />
-      <Hotkey global combo="backspace" label="Go back" onKeyDown={goBack} />
-    </Hotkeys>
+  const hotkeys = useMemo(
+    () => (
+      <Hotkeys>
+        <Hotkey global combo="H" label="Create a new match" onKeyDown={goToMatches} />
+        <Hotkey global combo="M" label="Go to match listing" onKeyDown={goToMatches} />
+        <Hotkey global combo="P" label="Go to permissions" onKeyDown={goToPermissions} />
+        <Hotkey global combo="backspace" label="Go back" onKeyDown={goBack} />
+      </Hotkeys>
+    ),
+    [goBack, goToMatches, goToPermissions],
   );
 
   useEffect(() => {
