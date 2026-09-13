@@ -2,6 +2,7 @@
   "name": "gg.uhc.hosts",
   "version": "1.4.6",
   "description": "",
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
