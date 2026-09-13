@@ -1,7 +1,7 @@
 import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
 import { concat, converge, head, pipe, tail, toPairs, toUpper } from 'ramda';
-import { Classes, ITreeNode, Spinner } from '@blueprintjs/core';
+import { Classes, TreeNodeInfo, Spinner } from '@blueprintjs/core';
 import React from 'react';
 
 import {
@@ -23,38 +23,37 @@ export type RemovePermissionDialogState = {
   readonly username: string;
 };
 
-export interface BasicNode extends ITreeNode {
-  readonly type: string;
-  readonly permission: string;
-}
+export type NodeType = UsernameNode | PermissionFolder | LetterFolder;
 
-export interface UsernameNode extends BasicNode {
+export type UsernameNode = {
   readonly type: 'username';
   readonly username: string;
-}
+  readonly permission: string;
+};
 
-export interface FolderNode extends BasicNode {
+export type PermissionFolder = {
+  readonly type: 'permission';
+  readonly permission: string;
   readonly isFetching: boolean;
   readonly count: number;
-}
+};
 
-export interface PermissionFolder extends FolderNode {
-  readonly type: 'permission';
-  readonly childNodes: LetterFolder[] | UsernameNode[];
-}
-
-export interface LetterFolder extends FolderNode {
+export type LetterFolder = {
   readonly type: 'letter';
-  readonly childNodes: UsernameNode[];
+  readonly permission: string;
   readonly letter: string;
-}
+  readonly isFetching: boolean;
+  readonly count: number;
+};
 
-const createUsernameNode = (permission: string, username: string): UsernameNode => ({
-  username,
-  permission,
+const createUsernameNode = (permission: string, username: string): TreeNodeInfo<UsernameNode> => ({
   id: `p~${permission}~u~${username}`,
   label: username,
-  type: 'username',
+  nodeData: {
+    type: 'username',
+    username,
+    permission,
+  },
   icon: 'user',
   className: 'username-node',
 });
@@ -70,32 +69,34 @@ const permissionGroupNames: { [key: string]: string } = {
 const getGroupName = (permission: string) =>
   permissionGroupNames[permission] || converge(concat, [pipe(head, toUpper), tail])(permission) + 's';
 
-const createPermissionFolder = (permission: string, count: number): PermissionFolder => ({
-  permission,
-  count,
+const createPermissionFolder = (permission: string, count: number): TreeNodeInfo<PermissionFolder> => ({
   id: `p~${permission}`,
   label: `${getGroupName(permission)} (${count})`,
   hasCaret: true,
-  isFetching: false,
+  nodeData: {
+    type: 'permission',
+    permission,
+    count,
+    isFetching: false,
+  },
   isExpanded: false,
   icon: 'folder-close',
-  type: 'permission',
-  childNodes: [],
   className: 'permission-folder-node',
 });
 
-const createLetterFolder = (permission: string, letter: string, count: number): LetterFolder => ({
-  permission,
-  letter,
-  count,
+const createLetterFolder = (permission: string, letter: string, count: number): TreeNodeInfo<LetterFolder> => ({
   id: `p~${permission}~l~${letter}`,
   label: `${letter} (${count})`,
   hasCaret: true,
   icon: 'folder-close',
-  isFetching: false,
+  nodeData: {
+    type: 'letter',
+    permission,
+    letter,
+    count,
+    isFetching: false,
+  },
   isExpanded: false,
-  type: 'letter',
-  childNodes: [],
   className: 'letter-folder-node',
 });
 
@@ -103,7 +104,7 @@ export type PermissionsState = {
   readonly addDialog: AddPermissionDialogState | null;
   readonly removeDialog: RemovePermissionDialogState | null;
   readonly isFetching: boolean;
-  readonly nodes: PermissionFolder[];
+  readonly nodes: TreeNodeInfo<NodeType>[];
   readonly allowableModifications: { [key: string]: string[] };
 };
 
@@ -134,73 +135,86 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   }))
   .handleAction(FetchUsersInPermission.started, (state, action) => ({
     ...state,
-    nodes: state.nodes.map<PermissionFolder>(node => {
-      if (node.permission !== action.payload.parameters) return node;
+    nodes: state.nodes.map(node => {
+      if (!node.nodeData || node.nodeData.permission !== action.payload.parameters) return node;
 
       return {
         ...node,
-        isFetching: true,
-        secondaryLabel: loadingIcon,
+        nodeData: {
+          ...node.nodeData,
+          isFetching: true,
+          secondaryLabel: loadingIcon,
+        },
       };
     }),
   }))
   .handleAction(FetchUsersInPermission.success, (state, action) => ({
     ...state,
-    nodes: state.nodes.map<PermissionFolder>(node => {
-      if (node.permission !== action.payload.parameters) return node;
+    nodes: state.nodes.map(node => {
+      if (!node.nodeData || node.nodeData.permission !== action.payload.parameters) return node;
 
       const permission = action.payload.parameters;
 
-      let childNodes: UsernameNode[] | LetterFolder[];
+      let childNodes: Array<TreeNodeInfo<NodeType>>;
 
       if (Array.isArray(action.payload.result)) {
         const usernames = action.payload.result as string[];
 
         childNodes = usernames
           .sort((left, right) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
-          .map<UsernameNode>(name => createUsernameNode(permission, name));
+          .map(name => createUsernameNode(permission, name));
       } else {
         const letters = action.payload.result as { [key: string]: number };
 
         childNodes = toPairs(letters)
-          .map<LetterFolder>(pair => createLetterFolder(permission, pair[0], pair[1]))
-          .sort((left, right) => left.letter.localeCompare(right.letter));
+          .map(pair => createLetterFolder(permission, pair[0], pair[1]))
+          .sort((left, right) => left.nodeData!.letter.localeCompare(right.nodeData!.letter));
       }
 
       return {
         ...node,
         childNodes,
-        isFetching: false,
-        secondaryLabel: undefined,
+        nodeData: {
+          ...node.nodeData,
+          isFetching: false,
+          secondaryLabel: undefined,
+        },
       };
     }),
   }))
   .handleAction(FetchUsersInPermission.failure, (state, action) => ({
     ...state,
     nodes: state.nodes.map(node => {
-      if (node.permission !== action.payload.parameters) return node;
+      if (!node.nodeData || node.nodeData.permission !== action.payload.parameters) return node;
 
       return {
         ...node,
-        isFetching: false,
-        secondaryLabel: undefined,
+        nodeData: {
+          ...node.nodeData,
+          isFetching: false,
+          secondaryLabel: undefined,
+        },
       };
     }),
   }))
   .handleAction(FetchUsersInPermissionWithLetter.started, (state, action) => ({
     ...state,
-    nodes: state.nodes.map<PermissionFolder>(permNode => {
-      if (permNode.permission !== action.payload.parameters.permission) return permNode;
+    nodes: state.nodes.map<TreeNodeInfo<NodeType>>(permNode => {
+      if (!permNode.nodeData || permNode.nodeData.permission !== action.payload.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
-          if (letterNode.letter !== action.payload.parameters.letter) return letterNode;
+        childNodes: permNode.childNodes?.map<TreeNodeInfo<NodeType>>(letterNode => {
+          if (letterNode.nodeData?.type !== 'letter' || letterNode.nodeData.letter !== action.payload.parameters.letter)
+            return letterNode;
 
           return {
             ...letterNode,
-            isFetching: true,
-            secondaryLabel: loadingIcon,
+            nodeData: {
+              ...letterNode.nodeData,
+              isFetching: true,
+              secondaryLabel: loadingIcon,
+            },
           };
         }),
       };
@@ -208,21 +222,25 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   }))
   .handleAction(FetchUsersInPermissionWithLetter.success, (state, action) => ({
     ...state,
-    nodes: state.nodes.map<PermissionFolder>(permNode => {
-      if (permNode.permission !== action.payload.parameters.permission) return permNode;
+    nodes: state.nodes.map(permNode => {
+      if (!permNode.nodeData || permNode.nodeData.permission !== action.payload.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
-          if (letterNode.letter !== action.payload.parameters.letter) return letterNode;
+        childNodes: permNode.childNodes?.map(letterNode => {
+          if (letterNode.nodeData?.type !== 'letter' || letterNode.nodeData.letter !== action.payload.parameters.letter)
+            return letterNode;
 
           return {
             ...letterNode,
-            isFetching: false,
-            secondaryLabel: undefined,
+            nodeData: {
+              ...letterNode.nodeData,
+              isFetching: false,
+              secondaryLabel: undefined,
+            },
             childNodes: action.payload.result
-              .sort((left, right) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
-              .map(name => createUsernameNode(action.payload.parameters.permission, name)),
+              .sort((left: string, right: string) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
+              .map((name: string) => createUsernameNode(action.payload.parameters.permission, name)),
           };
         }),
       };
@@ -230,18 +248,22 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   }))
   .handleAction(FetchUsersInPermissionWithLetter.failure, (state, action) => ({
     ...state,
-    nodes: state.nodes.map<PermissionFolder>(permNode => {
-      if (permNode.permission !== action.payload.parameters.permission) return permNode;
+    nodes: state.nodes.map<TreeNodeInfo<NodeType>>(permNode => {
+      if (!permNode.nodeData || permNode.nodeData.permission !== action.payload.parameters.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
-          if (letterNode.letter !== action.payload.parameters.letter) return letterNode;
+        childNodes: permNode.childNodes?.map<TreeNodeInfo<NodeType>>(letterNode => {
+          if (letterNode.nodeData?.type !== 'letter' || letterNode.nodeData.letter !== action.payload.parameters.letter)
+            return letterNode;
 
           return {
             ...letterNode,
-            isFetching: false,
-            secondaryLabel: undefined,
+            nodeData: {
+              ...letterNode.nodeData,
+              isFetching: false,
+              secondaryLabel: undefined,
+            },
           };
         }),
       };
@@ -249,63 +271,77 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
   }))
   .handleAction(PermissionNode.open, (state, action) => ({
     ...state,
-    nodes: state.nodes.map(node => {
-      if (node.permission !== action.payload) return node;
+    nodes: state.nodes.map<TreeNodeInfo<NodeType>>(node => {
+      if (!node.nodeData || node.nodeData.permission !== action.payload) return node;
 
       return {
         ...node,
-        isExpanded: true,
+        nodeData: {
+          ...node.nodeData,
+          isExpanded: true,
+        },
         icon: 'folder-open',
-      } as PermissionFolder;
+      };
     }),
   }))
   .handleAction(PermissionNode.close, (state, action) => ({
     ...state,
     nodes: state.nodes.map(node => {
-      if (node.permission !== action.payload) return node;
+      if (!node.nodeData || node.nodeData.permission !== action.payload) return node;
 
       return {
         ...node,
-        isExpanded: false,
+        nodeData: {
+          ...node.nodeData,
+          isExpanded: false,
+        },
         icon: 'folder-close',
-      } as PermissionFolder;
+      };
     }),
   }))
   .handleAction(PermissionLetterNode.open, (state, action) => ({
     ...state,
-    nodes: state.nodes.map(permNode => {
-      if (permNode.permission !== action.payload.permission) return permNode;
+    nodes: state.nodes.map<TreeNodeInfo<NodeType>>(permNode => {
+      if (!permNode.nodeData || permNode.nodeData.permission !== action.payload.permission) return permNode;
 
       return {
         ...permNode,
         isExpanded: true,
-        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
-          if (letterNode.letter !== action.payload.letter) return letterNode;
+        childNodes: permNode.childNodes?.map(letterNode => {
+          if (letterNode.nodeData?.type !== 'letter' || letterNode.nodeData.letter !== action.payload.letter)
+            return letterNode;
 
           return {
             ...letterNode,
-            isExpanded: true,
+            nodeData: {
+              ...letterNode.nodeData,
+              isExpanded: true,
+            },
             icon: 'folder-open',
-          } as LetterFolder;
+          };
         }),
       };
     }),
   }))
   .handleAction(PermissionLetterNode.close, (state, action) => ({
     ...state,
-    nodes: state.nodes.map(permNode => {
-      if (permNode.permission !== action.payload.permission) return permNode;
+    nodes: state.nodes.map<TreeNodeInfo<NodeType>>(permNode => {
+      if (!permNode.nodeData || permNode.nodeData.permission !== action.payload.permission) return permNode;
 
       return {
         ...permNode,
-        childNodes: (permNode.childNodes as LetterFolder[]).map(letterNode => {
-          if (letterNode.letter !== action.payload.letter) return letterNode;
+        childNodes: permNode.childNodes?.map<TreeNodeInfo<NodeType>>(letterNode => {
+          if (letterNode.nodeData?.type !== 'letter' || letterNode.nodeData.letter !== action.payload.letter)
+            return letterNode;
 
           return {
             ...letterNode,
-            isExpanded: false,
+            nodeData: {
+              ...letterNode.nodeData,
+              isExpanded: false,
+            },
             icon: 'folder-close',
-          } as LetterFolder;
+          };
         }),
       };
     }),

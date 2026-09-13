@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Hotkey, Hotkeys } from '@blueprintjs/core';
 // workaround for dodgy transpilation
-import { HotkeysEvents, HotkeyScope } from '@blueprintjs/core/lib/esnext/components/hotkeys/hotkeysEvents.js';
 import { useHistory } from 'react-router';
 
 export const GlobalHotkeys: React.FC = ({ children }) => {
   const history = useHistory();
-  const globalHotkeysEventsRef = useRef(new HotkeysEvents(HotkeyScope.GLOBAL));
+  // const globalHotkeysEventsRef = useRef(new HotkeysEvents(HotkeyScope.GLOBAL));
 
   const goToMatches = useCallback(() => history.push('/matches'), [history]);
   const goToPermissions = useCallback(() => history.push('/members'), [history]);
@@ -24,19 +23,19 @@ export const GlobalHotkeys: React.FC = ({ children }) => {
     [goBack, goToMatches, goToPermissions],
   );
 
-  useEffect(() => {
-    const events = globalHotkeysEventsRef.current;
-    events.setHotkeys(hotkeys.props);
+  // useEffect(() => {
+  // const events = globalHotkeysEventsRef.current;
+  // events.setHotkeys(hotkeys.props);
 
-    document.addEventListener('keydown', events.handleKeyDown);
-    document.addEventListener('keyup', events.handleKeyUp);
+  // document.addEventListener('keydown', events.handleKeyDown);
+  // document.addEventListener('keyup', events.handleKeyUp);
 
-    return () => {
-      document.removeEventListener('keydown', events.handleKeyDown);
-      document.removeEventListener('keyup', events.handleKeyUp);
-      events.clear();
-    };
-  }, [hotkeys, goToMatches, goToPermissions, goBack]);
+  // return () => {
+  //   document.removeEventListener('keydown', events.handleKeyDown);
+  //   document.removeEventListener('keyup', events.handleKeyUp);
+  //   events.clear();
+  // };
+  // }, [hotkeys, goToMatches, goToPermissions, goBack]);
 
   return <>{children}</>;
 };

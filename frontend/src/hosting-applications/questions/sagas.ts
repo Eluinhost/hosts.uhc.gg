@@ -4,7 +4,7 @@ import { takeLatest, put, call, select, takeEvery } from 'redux-saga/effects';
 import { fetchQuizQuestions, createQuizQuestion, deleteQuizQuestion, fetchQuizQuestionsForManagement } from './api';
 import { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
 import { getAccessToken } from '../../state/Selectors';
-import { AppToaster } from '../../services/AppToaster';
+import { showToast } from '../../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 import { QuizQuestions } from './actions';
 
@@ -44,14 +44,14 @@ function* createQuizQuestionSaga({
     const result: { id: number } = yield call(createQuizQuestion, data, accessToken);
 
     yield put(QuizQuestions.create.completed(result));
-    yield call([AppToaster, 'show'], { message: 'Created new question', intent: Intent.SUCCESS });
+    yield call(showToast, { message: 'Created new question', intent: Intent.SUCCESS });
     yield call(onSuccess);
     yield put(QuizQuestions.fetchForManagement.start());
   } catch (err) {
     const error = new CreateQuizQuestionError(err);
     console.error(error);
     yield put(QuizQuestions.create.completed.failed(error));
-    yield call([AppToaster, 'show'], { message: 'Error creating question', intent: Intent.DANGER });
+    yield call(showToast, { message: 'Error creating question', intent: Intent.DANGER });
   }
 }
 
@@ -69,13 +69,13 @@ function* deleteQuizQuestionSaga({ payload: { id } }: ReturnType<typeof QuizQues
     yield call(deleteQuizQuestion, id, accessToken);
 
     yield put(QuizQuestions.delete.completed(id));
-    yield call([AppToaster, 'show'], { message: 'Question deleted', intent: Intent.SUCCESS });
+    yield call(showToast, { message: 'Question deleted', intent: Intent.SUCCESS });
     yield put(QuizQuestions.fetchForManagement.start());
   } catch (err) {
     const error = new DeleteQuizQuestionError(err);
     console.error(error);
     yield put(QuizQuestions.delete.completed.failed(error));
-    yield call([AppToaster, 'show'], { message: 'Error deleting question', intent: Intent.DANGER });
+    yield call(showToast, { message: 'Error deleting question', intent: Intent.DANGER });
   }
 }
 

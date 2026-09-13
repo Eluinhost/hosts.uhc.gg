@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
-import { AppToaster } from '../../services/AppToaster';
+import { showToast } from '../../services/AppToaster';
 
 type Props = {
   readonly value: string;
@@ -13,14 +13,14 @@ export const ClipboardControlGroup = React.memo(({ value }: Props) => {
     try {
       inputRef.current!.select();
       document.execCommand('copy');
-      AppToaster.show({
+      void showToast({
         intent: Intent.SUCCESS,
         message: `Added \`${inputRef.current!.value}\` to clipboard`,
       });
     } catch (e) {
       console.error(e);
 
-      AppToaster.show({
+      void showToast({
         intent: Intent.DANGER,
         message: 'Your browser does not support copy, you must copy manually',
       });

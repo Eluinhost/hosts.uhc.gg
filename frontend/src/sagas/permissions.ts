@@ -17,7 +17,7 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
 import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
-import { AppToaster } from '../services/AppToaster';
+import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
@@ -31,7 +31,7 @@ function* fetchPermissionsSaga(): SagaIterator {
   } catch (error) {
     console.error(error, 'error fetching permissions');
     yield put(FetchUserCountPerPermission.failure({ error }));
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission list`,
     });
@@ -52,7 +52,7 @@ function* fetchUsersInPermissionSaga(
   } catch (error) {
     console.error(error, 'error fetching permission content');
     yield put(FetchUsersInPermission.failure({ parameters, error }));
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
     });
@@ -77,7 +77,7 @@ function* fetchUsersInPermissionWithLetterSaga(
   } catch (error) {
     console.error(error, 'error fetching permission with letter content');
     yield put(FetchUsersInPermissionWithLetter.failure({ parameters, error }));
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
     });
@@ -112,7 +112,7 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
     yield put(FetchUserCountPerPermission.start());
     yield put(RefreshPermissionModerationLog.start());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       message: `Added permission '${permission}' to /u/${username}`,
     });
@@ -122,7 +122,7 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
     yield put(AddPermission.failure({ parameters, error }));
     yield put(AddPermission.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',
       message:
@@ -158,7 +158,7 @@ function* removePermission(): SagaIterator {
     yield put(FetchUserCountPerPermission.start());
     yield put(RefreshPermissionModerationLog.start());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       message: `Removed permission '${parameters.permission}' from /u/${parameters.username}`,
     });
@@ -168,7 +168,7 @@ function* removePermission(): SagaIterator {
     yield put(RemovePermission.failure({ error, parameters: parameters! }));
     yield put(RemovePermission.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',
       message:

@@ -5,7 +5,7 @@ import { RemoveMatch } from '../actions';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
 import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
-import { AppToaster } from '../services/AppToaster';
+import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 
 function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIterator {
@@ -30,7 +30,7 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
     yield put(RemoveMatch.success({ parameters }));
     yield put(RemoveMatch.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       icon: 'tick',
       message: `Removed match #${parameters.id}`,
@@ -46,7 +46,7 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
 
     yield put(RemoveMatch.failure({ parameters, error }));
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',
       message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to remove match #${parameters.id}`,

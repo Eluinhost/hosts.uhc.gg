@@ -1,10 +1,10 @@
 {
   "extends": ["react-app"],
-  "plugins": ["@blueprintjs/blueprint"],
+  "plugins": ["@blueprintjs/eslint-plugin"],
   "overrides": [
     {
       "files": ["**/*.ts?(x)"],
-      "extends": ["plugin:@blueprintjs/blueprint/recommended"]
+      "extends": ["plugin:@blueprintjs/eslint-plugin/recommended"]
     }
   ]
 }

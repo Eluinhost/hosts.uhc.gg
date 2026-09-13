@@ -1,4 +1,5 @@
-import { Classes, Icon, Intent, Tag } from '@blueprintjs/core';
+import { Classes, Intent, Tag } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -21,7 +22,7 @@ export const RemovedTag = React.memo(({ match: { removed, removedAt } }: { match
 
   return (
     <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`} title={removedAtFormatted || undefined}>
-      <Icon icon="warning-sign" /> REMOVED
+      <WarningSignIcon /> REMOVED
     </Tag>
   );
 });

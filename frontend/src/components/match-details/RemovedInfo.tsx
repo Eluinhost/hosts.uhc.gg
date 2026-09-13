@@ -1,4 +1,5 @@
-import { Classes, H5, Icon } from '@blueprintjs/core';
+import { Classes, H5 } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -23,7 +24,7 @@ export const RemovedInfo = React.memo(
     return (
       <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
         <H5>
-          <Icon icon="warning-sign" /> REMOVED
+          <WarningSignIcon /> REMOVED
         </H5>
         <p>This game is no longer on the calendar:</p>
         <p>

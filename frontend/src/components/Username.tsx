@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router';
-import { Button, Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
+import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoginButton } from './LoginButton';
 import { Link } from 'react-router-dom';
@@ -34,11 +34,11 @@ export const Username: React.ComponentType = React.memo(() => {
 
   if (isLoggedIn) {
     return (
-      <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
-        <Button minimal icon="user">
+      <PopoverNext content={<UserMenu logout={logout} />} placement="bottom-end">
+        <Button variant="minimal" icon="user">
           {username}
         </Button>
-      </Popover>
+      </PopoverNext>
     );
   }
 

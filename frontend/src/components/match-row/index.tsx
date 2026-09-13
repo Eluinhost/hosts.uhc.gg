@@ -2,7 +2,8 @@ import React, { useCallback } from 'react';
 import { Match } from '../../models/Match';
 import { TeamStyle } from '../team-style';
 import { TagList } from '../tag-list';
-import { Button, Classes, H4, Icon, Intent, Tag } from '@blueprintjs/core';
+import { Button, Classes, H4, Intent, Tag } from '@blueprintjs/core';
+import { CubeIcon, PeopleIcon, TagIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
 import { RemovedReason } from './RemovedReason';
 import { UsernameLink } from '../UsernameLink';
 import { Link } from 'react-router-dom';
@@ -93,10 +94,10 @@ export const MatchRow = React.memo((props: MatchRowProps) => {
       </div>
       <div className="match-top-right-ribbon">
         <HostStatus roles={match.roles} />
-        <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon="tag" />
+        <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon={<TagIcon />} />
         {match.tournament && (
           <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-            <Icon icon="timeline-bar-chart" /> Tournament
+            <TimelineBarChartIcon /> Tournament
           </Tag>
         )}
       </div>
@@ -109,11 +110,11 @@ export const MatchRow = React.memo((props: MatchRowProps) => {
         </H4>
         <div className="match-tags">
           <Tag intent={Intent.PRIMARY} large title={`Server version: ${match.mainVersion}`}>
-            <Icon icon="cube" />
+            <CubeIcon />
             &nbsp;&nbsp;<b>{match.version || match.mainVersion}</b>
           </Tag>
           <Tag intent={Intent.DANGER} large>
-            <Icon icon="people" /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
+            <PeopleIcon /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
           </Tag>
           <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
         </div>

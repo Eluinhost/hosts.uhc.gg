@@ -1,10 +1,11 @@
 import React from 'react';
 import moment from 'moment-timezone';
-import { Classes, Icon, Intent, Button } from '@blueprintjs/core';
+import { Classes, Intent, Button } from '@blueprintjs/core';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import * as Selectors from '../../state/Selectors';
+import { RefreshIcon } from '@blueprintjs/icons';
 
 type OwnProps = {
   readonly lastUpdated: moment.Moment | null;
@@ -35,11 +36,11 @@ export const RefreshButton: React.FC<OwnProps> = React.memo(({ lastUpdated, onCl
   return (
     <Button
       intent={Intent.SUCCESS}
-      minimal
-      large
+      variant="minimal"
+      size="large"
       onClick={onClick}
       disabled={loading}
-      icon={<Icon icon="refresh" className={loading ? Classes.SPINNER_ANIMATION : ''} />}
+      icon={<RefreshIcon className={loading ? Classes.SPINNER_ANIMATION : ''} />}
       text={buttonContent}
     />
   );

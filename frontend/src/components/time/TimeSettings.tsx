@@ -4,7 +4,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { useSelector, useDispatch } from 'react-redux';
 import { Settings } from '../../actions';
 import moment from 'moment-timezone';
-import { Popover, Button, MenuItem, Position, Card, Classes } from '@blueprintjs/core';
+import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
 import { contains, toLower, filter as rFilter, always } from 'ramda';
 import { List, ListRowProps } from 'react-virtualized';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
@@ -82,15 +82,15 @@ export const TimeSettings = React.memo(() => {
 
   return (
     <Card className="time-settings">
-      <Button minimal large className="current-time">
+      <Button variant="minimal" size="large" className="current-time">
         <CurrentTime />
       </Button>
       <div className="time-settings-popout">
         {open && <Button text={is12h ? '12h' : '24h'} icon="time" minimal large onClick={toggleTimeFormat} />}
         {open && (
           <div style={{ position: 'relative' }}>
-            <Popover canEscapeKeyClose inheritDarkTheme lazy minimal usePortal={false} position={Position.BOTTOM}>
-              <Button minimal large text={timezone} rightIcon="double-caret-vertical" />
+            <PopoverNext canEscapeKeyClose inheritDarkTheme lazy usePortal={false} placement="bottom">
+              <Button variant="minimal" size="large" text={timezone} endIcon="double-caret-vertical" />
               <div>
                 <input
                   autoFocus
@@ -109,12 +109,12 @@ export const TimeSettings = React.memo(() => {
                   noRowsRenderer={noRows}
                 />
               </div>
-            </Popover>
+            </PopoverNext>
           </div>
         )}
         <Button
-          large
-          minimal
+          size="large"
+          variant="minimal"
           className="toggle-time-settings"
           icon={open ? 'chevron-right' : 'cog'}
           onClick={toggleOpen}
