@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
 import { HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 
-import * as serviceWorker from './serviceWorker';
 import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 
@@ -27,5 +26,3 @@ createReduxStore().then(store => {
     </React.StrictMode>,
   );
 });
-
-serviceWorker.unregister();
