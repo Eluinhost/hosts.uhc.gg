@@ -18,7 +18,7 @@ const stateSelector = createSelector(
   }),
 );
 
-export const TimeFromNowTag: React.ComponentType<Props> = React.memo((props: Props) => {
+export const TimeFromNowTag: React.FC<Props> = React.memo(props => {
   const { offset } = useSelector(stateSelector);
   const { time, hideSuffix } = props;
 

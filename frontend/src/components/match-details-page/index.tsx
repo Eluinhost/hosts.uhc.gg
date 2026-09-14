@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import { ApprovalModal } from '../approval-modal';
 import { RemovalModal } from '../removal-modal';
 import { MatchDetails } from '../match-details';
@@ -9,7 +9,7 @@ type Params = {
 };
 
 export const MatchDetailsPage: React.FC = () => {
-  const { params } = useRouteMatch<Params>();
+  const params = useParams<Params>();
 
   return (
     <div>

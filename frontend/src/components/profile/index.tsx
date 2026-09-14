@@ -11,7 +11,7 @@ const stateSelector = createSelector(
   apiKey => ({ apiKey }),
 );
 
-export const ProfilePage = React.memo(() => {
+export const ProfilePage: React.FC = () => {
   const {
     apiKey: { fetching, error, key },
   } = useSelector(stateSelector);
@@ -53,4 +53,4 @@ export const ProfilePage = React.memo(() => {
       </Button>
     </div>
   );
-});
+};

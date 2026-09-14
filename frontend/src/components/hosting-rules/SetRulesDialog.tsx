@@ -7,6 +7,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { RulesField } from './RulesField';
 import { SetHostingRules } from '../../actions';
 import { Validator } from '../../services/Validator';
+import { Dispatch } from 'redux';
 
 type SetRulesDialogData = {
   rules: string;
@@ -35,10 +36,14 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
   'Must be at least 3 characters long',
 );
 
-const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogState & InjectedFormProps<SetRulesDialogData, SetRulesDialogState>
-> = ({ handleSubmit, submitting, invalid, isOpen, currentRules, change, isDarkMode }) => {
+const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> = ({
+  handleSubmit,
+  submitting,
+  invalid,
+  change,
+}) => {
   const dispatch = useDispatch();
+  const { currentRules, isDarkMode, isOpen } = useSelector(setRulesSelector);
 
   useEffect(() => {
     if (isOpen) {
@@ -75,18 +80,11 @@ const SetRulesDialogComponent: React.FunctionComponent<
   );
 };
 
-const SetRulesDialogForm: React.ComponentType<SetRulesDialogState> = reduxForm<SetRulesDialogData, SetRulesDialogState>(
-  {
-    form: 'set-rules-form',
-    validate: validator.validate,
-    onSubmit: (values, dispatch) => {
-      dispatch(SetHostingRules.start(values.rules));
-      dispatch(SetHostingRules.closeEditor());
-    },
+export const SetRulesDialog = reduxForm<SetRulesDialogData>({
+  form: 'set-rules-form',
+  validate: validator.validate,
+  onSubmit: (values: SetRulesDialogData, dispatch: Dispatch) => {
+    dispatch(SetHostingRules.start(values.rules));
+    dispatch(SetHostingRules.closeEditor());
   },
-)(SetRulesDialogComponent);
-
-export const SetRulesDialog: React.ComponentType = () => {
-  const state = useSelector(setRulesSelector);
-  return <SetRulesDialogForm {...state} />;
-};
+})(SetRulesDialogComponent);

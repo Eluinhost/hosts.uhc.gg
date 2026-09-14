@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { WrappedFieldMetaProps } from 'redux-form';
 import { Classes, FormGroup, Intent, Label } from '@blueprintjs/core';
 
@@ -40,7 +40,7 @@ export const RenderLabel: React.FC<{ label: string | React.ReactElement; require
   </Label>
 );
 
-export const FieldWrapper: React.FC<FieldWrapperProps> = props => {
+export const FieldWrapper: React.FC<PropsWithChildren<FieldWrapperProps>> = props => {
   const { meta, label, required, hideErrors, className, children } = props;
 
   return (

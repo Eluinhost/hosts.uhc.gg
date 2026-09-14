@@ -16,7 +16,7 @@ const memoizedStateSelector = memoizeWith(toString, (perms: string | string[]) =
   })),
 );
 
-export const WithPermission: React.FC<WithPermissionProps> = React.memo((props: WithPermissionProps) => {
+export const WithPermission: React.FC<WithPermissionProps> = (props: WithPermissionProps) => {
   const { permission, alternative, children } = props;
   const { show } = useSelector(state => memoizedStateSelector(permission)(state));
 
@@ -31,4 +31,4 @@ export const WithPermission: React.FC<WithPermissionProps> = React.memo((props: 
   }
 
   return null;
-});
+};

@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
 
-export const HoverSwap: React.FC = ({ children }) => {
+export const HoverSwap: React.FC<PropsWithChildren> = ({ children }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);

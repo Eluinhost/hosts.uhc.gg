@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
 import { FieldWrapper } from './FieldWrapper';
 import { Intent, TagInput } from '@blueprintjs/core';
@@ -13,28 +13,32 @@ export type TagsFieldProps = BaseFieldProps & {
 
 const combineTags = (a: string[], b: string[]) => uniqBy(toLower, union(a, b));
 
-const onAdd = (input?: WrappedFieldInputProps) => (newValues: string[]): void => {
-  if (!input) return;
+const onAdd =
+  (input?: WrappedFieldInputProps) =>
+  (newValues: string[]): void => {
+    if (!input) return;
 
-  const current = (input.value as string[]) || [];
-  const combined = combineTags(current, newValues);
+    const current = (input.value as string[]) || [];
+    const combined = combineTags(current, newValues);
 
-  input.onChange(combined);
-};
+    input.onChange(combined);
+  };
 
-const onRemove = (input?: WrappedFieldInputProps) => (_: unknown, removed: number): void => {
-  if (!input) return;
+const onRemove =
+  (input?: WrappedFieldInputProps) =>
+  (_: unknown, removed: number): void => {
+    if (!input) return;
 
-  const current = (input.value as string[]) || [];
+    const current = (input.value as string[]) || [];
 
-  const newValues = current.filter((_, index) => index !== removed);
+    const newValues = current.filter((_, index) => index !== removed);
 
-  if (newValues.length !== current.length) {
-    input.onChange(newValues);
-  }
-};
+    if (newValues.length !== current.length) {
+      input.onChange(newValues);
+    }
+  };
 
-const renderField: React.FC<WrappedFieldProps & TagsFieldProps> = props => {
+const renderField: React.FC<PropsWithChildren<WrappedFieldProps & TagsFieldProps>> = props => {
   const { meta, label, required, input, disabled, children } = props;
 
   return (
@@ -51,4 +55,6 @@ const renderField: React.FC<WrappedFieldProps & TagsFieldProps> = props => {
   );
 };
 
-export const TagsField: React.FC<TagsFieldProps> = props => <Field {...props} component={renderField} />;
+export const TagsField: React.FC<PropsWithChildren<TagsFieldProps>> = props => (
+  <Field {...props} component={renderField} />
+);

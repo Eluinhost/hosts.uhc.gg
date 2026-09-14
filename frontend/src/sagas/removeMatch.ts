@@ -7,6 +7,7 @@ import { ApplicationState } from '../state/ApplicationState';
 import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
 import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { wrapError } from '../utils/wrapError';
 
 function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIterator {
   const parameters = action.payload;
@@ -44,7 +45,7 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
       yield put(stopSubmit(RemoveMatch.formId, { _error: 'Unexpected error' }));
     }
 
-    yield put(RemoveMatch.failure({ parameters, error }));
+    yield put(RemoveMatch.failure({ parameters, error: wrapError(error) }));
 
     yield call(showToast, {
       intent: Intent.DANGER,

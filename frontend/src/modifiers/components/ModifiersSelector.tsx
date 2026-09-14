@@ -26,7 +26,7 @@ const ModifierSwitch: React.FC<ModifiersSelectorProps & { displayName: string; i
   />
 );
 
-export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((props: ModifiersSelectorProps) => {
+export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: ModifiersSelectorProps) => {
   const { onAdded, onRemoved, selected } = props;
   const { isFetching, error, data } = useSelector(getListModifiersState);
   const dispatch = useDispatch();
@@ -69,4 +69,4 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((pr
       ))}
     </div>
   );
-});
+};

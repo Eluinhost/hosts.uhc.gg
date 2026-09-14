@@ -13,7 +13,7 @@ const rulesSelector = createSelector(
   rules => rules,
 );
 
-export const HostingRules = React.memo(() => {
+export const HostingRules: React.FC = () => {
   const rules = useSelector(rulesSelector);
   const dispatch = useDispatch();
 
@@ -64,4 +64,4 @@ export const HostingRules = React.memo(() => {
       </Collapse>
     </Callout>
   );
-});
+};

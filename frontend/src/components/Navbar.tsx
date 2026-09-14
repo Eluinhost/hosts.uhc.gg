@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
-import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router';
 import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
 import { Username } from './Username';
 import { createSelector } from 'reselect';
@@ -33,7 +32,7 @@ const stateSelector = createSelector(isDarkMode, isDarkMode => ({
   isDarkMode,
 }));
 
-export const Navbar: React.ComponentType = React.memo(() => {
+export const Navbar: React.FC = () => {
   const { isDarkMode } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -67,4 +66,4 @@ export const Navbar: React.ComponentType = React.memo(() => {
       </NavbarGroup>
     </BpNavbar>
   );
-});
+};

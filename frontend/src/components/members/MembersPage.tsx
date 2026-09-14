@@ -24,7 +24,7 @@ type MembersPageState = PermissionsState & {
 
 const stateSelector: Selector<ApplicationState, MembersPageState> = createSelector(
   getPermissions,
-  state => state.permissions,
+  (state: ApplicationState) => state.permissions,
   (permissions, permissionState) => ({
     ...permissionState,
     canModify: flatten(map(perm => permissionState.allowableModifications[perm] || [], permissions)),
@@ -41,16 +41,18 @@ export const MembersPage = React.memo(() => {
     (permission: string, username: string) => dispatch(RemovePermission.openDialog({ username, permission })),
     [dispatch],
   );
-  const expandPermissionNode = useCallback((permission: string) => dispatch(PermissionNode.open(permission)), [
-    dispatch,
-  ]);
+  const expandPermissionNode = useCallback(
+    (permission: string) => dispatch(PermissionNode.open(permission)),
+    [dispatch],
+  );
   const expandLetterNode = useCallback(
     (permission: string, letter: string) => dispatch(PermissionLetterNode.open({ permission, letter })),
     [dispatch],
   );
-  const collapsePermissionNode = useCallback((permission: string) => dispatch(PermissionNode.close(permission)), [
-    dispatch,
-  ]);
+  const collapsePermissionNode = useCallback(
+    (permission: string) => dispatch(PermissionNode.close(permission)),
+    [dispatch],
+  );
   const collapseLetterNode = useCallback(
     (permission: string, letter: string) => dispatch(PermissionLetterNode.close({ permission, letter })),
     [dispatch],

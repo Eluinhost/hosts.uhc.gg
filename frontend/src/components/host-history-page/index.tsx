@@ -23,9 +23,17 @@ export const HistoryPage = React.memo(() => {
 
   const { host } = useParams<RouteParams>();
 
-  const reload = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: true })), [dispatch, host]);
+  const reload = useCallback(() => {
+    if (host) {
+      dispatch(LoadHostHistory.start({ host, refresh: true }));
+    }
+  }, [dispatch, host]);
 
-  const next = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: false })), [dispatch, host]);
+  const next = useCallback(() => {
+    if (host) {
+      dispatch(LoadHostHistory.start({ host, refresh: false }));
+    }
+  }, [dispatch, host]);
 
   useEffect(() => {
     return () => {

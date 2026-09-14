@@ -3,7 +3,7 @@ import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
 import { useSelector } from 'react-redux';
 import { isDarkMode } from '../../state/Selectors';
 
-export const Footer = React.memo(() => {
+export const Footer: React.FC = () => {
   const isDark = useSelector(isDarkMode);
 
   const intent = isDark ? Intent.DANGER : Intent.PRIMARY;
@@ -40,4 +40,4 @@ export const Footer = React.memo(() => {
       </div>
     </div>
   );
-});
+};

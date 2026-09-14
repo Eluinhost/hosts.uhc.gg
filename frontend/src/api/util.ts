@@ -1,26 +1,31 @@
 import { BadDataError, ForbiddenError, NotAuthenticatedError, NotFoundError, UnexpectedResponseError } from './Errors';
-import { contains, always } from 'ramda';
+import { includes, always } from 'ramda';
 
-export const verifyStatus = (expected: number[] | number = 200) => async (response: Response): Promise<Response> => {
-  if (contains(response.status, Array.isArray(expected) ? expected : [expected])) return response;
+export const verifyStatus =
+  (expected: number[] | number = 200) =>
+  async (response: Response): Promise<Response> => {
+    if (includes(response.status, Array.isArray(expected) ? expected : [expected])) return response;
 
-  switch (response.status) {
-    case 400:
-      const error = await response.text();
-      throw new BadDataError(error);
-    case 401:
-      throw new NotAuthenticatedError();
-    case 403:
-      throw new ForbiddenError();
-    case 404:
-      throw new NotFoundError();
-    default:
-      throw new UnexpectedResponseError(response.status);
-  }
-};
+    switch (response.status) {
+      case 400:
+        const error = await response.text();
+        throw new BadDataError(error);
+      case 401:
+        throw new NotAuthenticatedError();
+      case 403:
+        throw new ForbiddenError();
+      case 404:
+        throw new NotFoundError();
+      default:
+        throw new UnexpectedResponseError(response.status);
+    }
+  };
 
 // simple function to get JSON, assumes return type is correct
-export const toJson = <T>() => (response: Response): Promise<T> => response.json();
+export const toJson =
+  <T>() =>
+  (response: Response): Promise<T> =>
+    response.json();
 
 export const authHeaders = (accessToken: string) => ({
   Authorization: `Bearer ${accessToken}`,

@@ -53,7 +53,7 @@ const stateSelector = createSelector(
   }),
 );
 
-export const CurrentTime = React.memo(() => {
+export const CurrentTime: React.FC = () => {
   const { timeSync, timezone, timeFormat } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -74,12 +74,10 @@ export const CurrentTime = React.memo(() => {
     [timeSync],
   );
 
-  const timeText = useMemo(() => time.add(timeSync.offset, 'milliseconds').clone().tz(timezone).format(timeFormat), [
-    time,
-    timeSync.offset,
-    timezone,
-    timeFormat,
-  ]);
+  const timeText = useMemo(
+    () => time.add(timeSync.offset, 'milliseconds').clone().tz(timezone).format(timeFormat),
+    [time, timeSync.offset, timezone, timeFormat],
+  );
 
   return (
     <Tooltip content={tooltipText} position={Position.BOTTOM}>
@@ -88,4 +86,4 @@ export const CurrentTime = React.memo(() => {
       </span>
     </Tooltip>
   );
-});
+};

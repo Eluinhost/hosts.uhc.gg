@@ -35,7 +35,10 @@ function* fetchHostingApplicationsSaga(): SagaIterator {
 }
 
 export class FetchHostingApplicationError extends Error {
-  constructor(public id: number, public cause: any) {
+  constructor(
+    public id: number,
+    public cause: any,
+  ) {
     super(`Failed to fetch host application '${id}', caused by:\n ${cause?.message ?? cause}`);
   }
 }
@@ -58,7 +61,10 @@ function* fetchHostingApplicationDetailsSaga({
 }
 
 export class ReviewHostingApplicationError extends Error {
-  constructor(public id: number, public cause: any) {
+  constructor(
+    public id: number,
+    public cause: any,
+  ) {
     super(`Failed to review host application '${id}', caused by:\n ${cause?.message ?? cause}`);
   }
 }

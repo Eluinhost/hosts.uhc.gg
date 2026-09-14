@@ -24,7 +24,7 @@ const stateSelector = createSelector(
   it => it,
 );
 
-export const ModerationLog = React.memo(() => {
+export const ModerationLog: React.FC = () => {
   const { fetching, log, error } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -50,4 +50,4 @@ export const ModerationLog = React.memo(() => {
       </Button>
     </div>
   );
-});
+};
