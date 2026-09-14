@@ -29,7 +29,7 @@ Builds development bundles and listens for changes for recompilation. Runs on po
 pnpm start
 ```
 
-When running dev frontend make sure there is a server running on port 10000 (or modify src/setupProxy for actual port)
+When running dev frontend make sure there is a server running on port 10000 (or modify the `server.proxy` target in frontend/vite.config.mjs for actual port)
 
 ### Backend
 
