@@ -5,17 +5,12 @@ import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { TextField } from '../fields/TextField';
-import { AddPermissionDialogState } from '../../state/PermissionsState';
 import { AddPermission } from '../../actions';
 import { Validator } from '../../services/Validator';
+import { Dispatch } from 'redux';
 
 type AddPermissionDialogData = {
   username: string;
-};
-
-type AddPermissionDialogStateSlice = {
-  readonly state: AddPermissionDialogState | null;
-  readonly isDarkMode: boolean;
 };
 
 const addPermissionSelector = createSelector(
@@ -24,10 +19,13 @@ const addPermissionSelector = createSelector(
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
-const AddPermissionDialogComponent: React.FunctionComponent<
-  AddPermissionDialogStateSlice & InjectedFormProps<AddPermissionDialogData, AddPermissionDialogStateSlice>
-> = ({ handleSubmit, submitting, invalid, state, isDarkMode }) => {
+const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<AddPermissionDialogData>> = ({
+  handleSubmit,
+  submitting,
+  invalid,
+}) => {
   const dispatch = useDispatch();
+  const { state, isDarkMode } = useSelector(addPermissionSelector);
 
   const onClose = useCallback(() => dispatch(AddPermission.closeDialog()), [dispatch]);
 
@@ -68,13 +66,10 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
   return undefined;
 });
 
-const AddPermissionDialogForm: React.ComponentType<AddPermissionDialogStateSlice> = reduxForm<
-  AddPermissionDialogData,
-  AddPermissionDialogStateSlice
->({
+export const AddPermissionDialog = reduxForm<AddPermissionDialogData>({
   form: 'add-permission-form',
   validate: validator.validate,
-  onSubmit: async (values, dispatch): Promise<void> => {
+  onSubmit: async (values: AddPermissionDialogData, dispatch: Dispatch): Promise<void> => {
     try {
       await dispatch(AddPermission.start(values.username));
       dispatch(AddPermission.closeDialog());
@@ -83,8 +78,3 @@ const AddPermissionDialogForm: React.ComponentType<AddPermissionDialogStateSlice
     }
   },
 })(AddPermissionDialogComponent);
-
-export const AddPermissionDialog: React.ComponentType = () => {
-  const state = useSelector(addPermissionSelector);
-  return <AddPermissionDialogForm {...state} />;
-};

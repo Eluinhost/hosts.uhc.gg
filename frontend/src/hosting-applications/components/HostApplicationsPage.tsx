@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { ExistingHostApplication } from './ExistingHostApplication';
 import { HostApplications } from '../actions';
 import { getHostApplicationPermissions, getHostApplicationsListState } from '../selectors';

@@ -6,15 +6,14 @@ import { useSelector } from 'react-redux';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { Match } from '../../models/Match';
 
-export const RemovedTag = React.memo(({ match: { removed, removedAt } }: { match: Match }) => {
+export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, removedAt } }) => {
   const format = useSelector(getTagDateTimeFormat);
   const timezone = useSelector(getTimezone);
 
-  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
-    format,
-    removedAt,
-    timezone,
-  ]);
+  const removedAtFormatted = React.useMemo(
+    () => removedAt && removedAt.clone().tz(timezone).format(format),
+    [format, removedAt, timezone],
+  );
 
   if (!removed) {
     return null;
@@ -25,4 +24,4 @@ export const RemovedTag = React.memo(({ match: { removed, removedAt } }: { match
       <WarningSignIcon /> REMOVED
     </Tag>
   );
-});
+};

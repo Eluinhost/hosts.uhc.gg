@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-export const Title: React.FunctionComponent = ({ children }) => (
+export const Title: React.FunctionComponent<PropsWithChildren> = ({ children }) => (
   <Helmet>
     <title>{children}</title>
   </Helmet>

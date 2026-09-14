@@ -6,6 +6,7 @@ import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { RemovePermissionDialogState } from '../../state/PermissionsState';
 import { RemovePermission } from '../../actions';
+import { Dispatch } from 'redux';
 
 type RemovePermissionDialogStateSlice = {
   readonly state: RemovePermissionDialogState | null;
@@ -53,12 +54,9 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
   );
 };
 
-const RemovePermissionDialogForm: React.ComponentType<RemovePermissionDialogStateSlice> = reduxForm<
-  {},
-  RemovePermissionDialogStateSlice
->({
+const RemovePermissionDialogForm = reduxForm<{}, RemovePermissionDialogStateSlice>({
   form: 'remove-permission-form',
-  onSubmit: async (values, dispatch): Promise<void> => {
+  onSubmit: async (values: {}, dispatch: Dispatch): Promise<void> => {
     try {
       await dispatch(RemovePermission.start());
       dispatch(RemovePermission.closeDialog());

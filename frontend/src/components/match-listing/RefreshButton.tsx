@@ -3,8 +3,7 @@ import moment from 'moment-timezone';
 import { Classes, Intent, Button } from '@blueprintjs/core';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import * as Selectors from '../../state/Selectors';
+import { getTimeFormat, getTimezone } from '../../state/Selectors';
 import { RefreshIcon } from '@blueprintjs/icons';
 
 type OwnProps = {
@@ -13,16 +12,10 @@ type OwnProps = {
   readonly loading: boolean;
 };
 
-type StateSlice = {
-  readonly format: string;
-  readonly timezone: string;
-};
-
-const stateSelector = createSelector<ApplicationState, string, string, StateSlice>(
-  Selectors.getTimeFormat,
-  Selectors.getTimezone,
-  (format, timezone) => ({ format, timezone }),
-);
+const stateSelector = createSelector(getTimeFormat, getTimezone, (format, timezone) => ({
+  format,
+  timezone,
+}));
 
 export const RefreshButton: React.FC<OwnProps> = React.memo(({ lastUpdated, onClick, loading }) => {
   const { format, timezone } = useSelector(stateSelector);
@@ -30,8 +23,8 @@ export const RefreshButton: React.FC<OwnProps> = React.memo(({ lastUpdated, onCl
   const buttonContent = loading
     ? 'Refreshing...'
     : lastUpdated
-    ? `Refreshed @ ${lastUpdated.clone().tz(timezone).format(format)}`
-    : `Refresh`;
+      ? `Refreshed @ ${lastUpdated.clone().tz(timezone).format(format)}`
+      : `Refresh`;
 
   return (
     <Button

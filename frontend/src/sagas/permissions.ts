@@ -15,11 +15,12 @@ import {
 } from '../actions';
 import { createSelector } from 'reselect';
 import { ApplicationState } from '../state/ApplicationState';
-import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
+import { RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
 import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
 import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchPermissionsSaga(): SagaIterator {
   try {
@@ -30,7 +31,7 @@ function* fetchPermissionsSaga(): SagaIterator {
     yield put(FetchUserCountPerPermission.success({ result }));
   } catch (error) {
     console.error(error, 'error fetching permissions');
-    yield put(FetchUserCountPerPermission.failure({ error }));
+    yield put(FetchUserCountPerPermission.failure({ error: wrapError(error) }));
     yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission list`,
@@ -51,7 +52,7 @@ function* fetchUsersInPermissionSaga(
     yield put(FetchUsersInPermission.success({ parameters, result }));
   } catch (error) {
     console.error(error, 'error fetching permission content');
-    yield put(FetchUsersInPermission.failure({ parameters, error }));
+    yield put(FetchUsersInPermission.failure({ parameters, error: wrapError(error) }));
     yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
@@ -76,7 +77,7 @@ function* fetchUsersInPermissionWithLetterSaga(
     yield put(FetchUsersInPermissionWithLetter.success({ parameters, result }));
   } catch (error) {
     console.error(error, 'error fetching permission with letter content');
-    yield put(FetchUsersInPermissionWithLetter.failure({ parameters, error }));
+    yield put(FetchUsersInPermissionWithLetter.failure({ parameters, error: wrapError(error) }));
     yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
@@ -84,8 +85,8 @@ function* fetchUsersInPermissionWithLetterSaga(
   }
 }
 
-const getAddPermission = createSelector<ApplicationState, AddPermissionDialogState | null, string | null>(
-  state => state.permissions.addDialog,
+const getAddPermission = createSelector(
+  (state: ApplicationState) => state.permissions.addDialog,
   dialogState => (dialogState ? dialogState.permission : null),
 );
 
@@ -119,7 +120,7 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
   } catch (error) {
     console.error(error, 'Failed to add permission');
 
-    yield put(AddPermission.failure({ parameters, error }));
+    yield put(AddPermission.failure({ parameters, error: wrapError(error) }));
     yield put(AddPermission.closeDialog());
 
     yield call(showToast, {
@@ -133,12 +134,8 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
   }
 }
 
-const getRemovePermissionState = createSelector<
-  ApplicationState,
-  RemovePermissionDialogState | null,
-  RemovePermissionDialogState | null
->(
-  state => state.permissions.removeDialog,
+const getRemovePermissionState = createSelector(
+  (state: ApplicationState) => state.permissions.removeDialog,
   dialogState => dialogState,
 );
 
@@ -165,7 +162,7 @@ function* removePermission(): SagaIterator {
   } catch (error) {
     console.error(error, 'Failed to remove permission');
 
-    yield put(RemovePermission.failure({ error, parameters: parameters! }));
+    yield put(RemovePermission.failure({ error: wrapError(error), parameters: parameters! }));
     yield put(RemovePermission.closeDialog());
 
     yield call(showToast, {

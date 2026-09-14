@@ -11,7 +11,7 @@ const mapStateToProps = createSelector(getCreateModifiersState, getAllModifierNa
   taken: names.map(name => name.toLowerCase()),
 }));
 
-export const CreateModifierForm: React.FC = React.memo(() => {
+export const CreateModifierForm: React.FC = () => {
   const { isFetching, error, taken } = useSelector(mapStateToProps);
   const dispatch = useDispatch();
 
@@ -54,4 +54,4 @@ export const CreateModifierForm: React.FC = React.memo(() => {
       </FormGroup>
     </form>
   );
-});
+};

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { MatchRow } from '../match-row';
 
-export const PotentialConflicts = React.memo(() => {
+export const PotentialConflicts: React.FC = () => {
   const { fetching, error, conflicts } = useSelector(state => state.hostFormConflicts);
 
   if (fetching) return <NonIdealState icon={<Spinner />} title="Checking..." />;
@@ -20,4 +20,4 @@ export const PotentialConflicts = React.memo(() => {
       ))}
     </div>
   );
-});
+};

@@ -15,3 +15,7 @@ interface PromiseConstructor {
     values: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>, T3 | PromiseLike<T3>, T4 | PromiseList<T4>],
   ): Promise<[T1, T2, T3, T4]>;
 }
+
+declare module '*.scss';
+declare module '*.sass';
+declare module '*.css';

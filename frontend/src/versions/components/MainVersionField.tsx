@@ -8,7 +8,7 @@ import { FETCH_VERSIONS } from '../actions';
 
 export type MainVersionFieldProps = Omit<SelectFieldProps, 'options'>;
 
-export const MainVersionField: React.FC<MainVersionFieldProps> = React.memo((props: MainVersionFieldProps) => {
+export const MainVersionField: React.FC<MainVersionFieldProps> = (props: MainVersionFieldProps) => {
   const { isFetching, error, data } = useSelector(getListVersionsState);
   const dispatch = useDispatch();
 
@@ -42,4 +42,4 @@ export const MainVersionField: React.FC<MainVersionFieldProps> = React.memo((pro
   }));
 
   return <SelectField {...props} options={options} />;
-});
+};

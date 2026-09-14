@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { HostingRules } from './hosting-rules';
 import { Card, H4 } from '@blueprintjs/core';
 

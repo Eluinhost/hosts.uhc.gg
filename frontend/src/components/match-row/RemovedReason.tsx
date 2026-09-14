@@ -4,15 +4,14 @@ import { useSelector } from 'react-redux';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { Match } from '../../models/Match';
 
-export const RemovedReason = React.memo(({ match: { removedBy, removedAt, removedReason } }: { match: Match }) => {
+export const RemovedReason: React.FC<{ match: Match }> = ({ match: { removedBy, removedAt, removedReason } }) => {
   const format = useSelector(getTagDateTimeFormat);
   const timezone = useSelector(getTimezone);
 
-  const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
-    format,
-    removedAt,
-    timezone,
-  ]);
+  const removedAtFormatted = React.useMemo(
+    () => removedAt && removedAt.clone().tz(timezone).format(format),
+    [format, removedAt, timezone],
+  );
 
   return (
     <div className="removed-reason">
@@ -23,4 +22,4 @@ export const RemovedReason = React.memo(({ match: { removedBy, removedAt, remove
       </div>
     </div>
   );
-});
+};

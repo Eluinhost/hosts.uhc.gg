@@ -13,7 +13,7 @@ const approvalModalSelector = createSelector(
   (id, isDarkMode) => ({ id, isDarkMode }),
 );
 
-export const ApprovalModal = React.memo(() => {
+export const ApprovalModal: React.FC = () => {
   const { id, isDarkMode } = useSelector(approvalModalSelector);
   const dispatch = useDispatch();
 
@@ -43,4 +43,4 @@ export const ApprovalModal = React.memo(() => {
       </div>
     </Dialog>
   );
-});
+};

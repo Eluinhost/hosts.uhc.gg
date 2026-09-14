@@ -23,8 +23,7 @@ interface VersionMap {
 
 export const getAllVersions = async (): Promise<Array<string>> => {
   const versions = await fetchArray<PrismarineJSVersion>({
-    url:
-      'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
+    url: 'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
     status: 200,
   });
 

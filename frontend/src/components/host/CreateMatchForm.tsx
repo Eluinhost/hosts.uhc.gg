@@ -1,8 +1,7 @@
-import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
+import { SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
 import React, { useCallback, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
-import { Dispatch } from 'redux';
 import { SagaIterator } from 'redux-saga';
 import { all, put, race, take } from 'redux-saga/effects';
 import { find } from 'ramda';
@@ -409,15 +408,9 @@ const CreateMatchFormComponent: React.FunctionComponent<
   );
 };
 
-export const CreateMatchForm: React.ComponentType<
-  CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>
-> = reduxForm<CreateMatchData, CreateMatchFormProps>({
+export const CreateMatchForm = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: async (
-    values: CreateMatchData,
-    dispatch: Dispatch<any>,
-    props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>,
-  ): Promise<void> => {
+  asyncValidate: async (values, dispatch, props): Promise<void> => {
     try {
       // a quick check for when we don't have any initial values then fallback to the ones provided in
       // props, kinda weird and janky but gets around the componentDidMount asyncvalidate race condition

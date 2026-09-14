@@ -136,8 +136,9 @@ export const MatchListing: FC<MatchListingProps> = React.memo(
     );
 
     const searchQueryFilter = useCallback(
-      (query: string) => (m: Match): boolean =>
-        !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0,
+      (query: string) =>
+        (m: Match): boolean =>
+          !query || JSON.stringify(m).toLowerCase().indexOf(query.toLowerCase()) > 0,
       [],
     );
 
@@ -163,11 +164,10 @@ export const MatchListing: FC<MatchListingProps> = React.memo(
 
     const afterRemovedFilter = useMemo(() => matches.filter(removedMatchesFilter), [matches, removedMatchesFilter]);
 
-    const afterSearchQuery = useMemo(() => afterRemovedFilter.filter(searchQueryFilter(search)), [
-      afterRemovedFilter,
-      searchQueryFilter,
-      search,
-    ]);
+    const afterSearchQuery = useMemo(
+      () => afterRemovedFilter.filter(searchQueryFilter(search)),
+      [afterRemovedFilter, searchQueryFilter, search],
+    );
 
     const renderedMatches = useMemo(
       () => (afterSearchQuery.length > 0 ? afterSearchQuery.map(renderMatch) : noMatches),

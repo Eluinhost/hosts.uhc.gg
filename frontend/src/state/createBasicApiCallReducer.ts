@@ -41,7 +41,7 @@ export const createBasicApiCallReducer = <Data>(initialData: Data) => ({
             }),
             (_, { payload }) => ({
               isFetching: false,
-              error: displayError('cause' in payload ? payload['cause'] : payload),
+              error: displayError('cause' in payload ? (payload['cause'] as Error) : payload),
               data: initialData,
             }),
           ),

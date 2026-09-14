@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Redirect, useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { isLoggedIn } from '../state/Selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { NonIdealState } from '@blueprintjs/core';
-import { parse } from 'query-string';
+import qs from 'query-string';
 import { createSelector } from 'reselect';
 import { Authentication, LoginPayload } from '../actions';
 
 const InvalidToken: React.FunctionComponent = () => <NonIdealState title="Invalid login token" icon="warning-sign" />;
 
-const zeroth = <T extends string | string[]>(t: T | null | undefined): string | null | undefined =>
+const zeroth = <T extends string | (string | null)[]>(t: T | null | undefined): string | null | undefined =>
   Array.isArray(t) ? t[0] : t;
 
 const stateSelector = createSelector(isLoggedIn, loggedIn => ({
@@ -20,12 +20,19 @@ export const LoginPage: React.FC = () => {
   const { loggedIn } = useSelector(stateSelector);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
   const login = useCallback((data: LoginPayload) => dispatch(Authentication.login(data)), [dispatch]);
 
   useEffect(() => {
-    const { path, token, refresh } = parse(location.search);
+    if (loggedIn) {
+      navigate(redirectPath || '/');
+    }
+  }, [loggedIn, redirectPath, navigate]);
+
+  useEffect(() => {
+    const { path, token, refresh } = qs.parse(location.search);
 
     const redirectPath = zeroth(path);
     const accessToken = zeroth(token);
@@ -40,10 +47,6 @@ export const LoginPage: React.FC = () => {
     // make sure it runs just once to match old componentDidMount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  if (loggedIn) {
-    return <Redirect to={redirectPath || '/'} />;
-  }
 
   return <InvalidToken />;
 };

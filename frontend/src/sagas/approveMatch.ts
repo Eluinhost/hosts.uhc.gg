@@ -6,6 +6,7 @@ import { getAccessToken, getUsername } from '../state/Selectors';
 import { ApplicationState } from '../state/ApplicationState';
 import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { wrapError } from '../utils/wrapError';
 
 function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaIterator {
   try {
@@ -32,7 +33,7 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
     });
   } catch (error) {
     console.error(error, 'error approving match');
-    yield put(ApproveMatch.failure({ parameters: action.payload, error }));
+    yield put(ApproveMatch.failure({ parameters: action.payload, error: wrapError(error) }));
 
     yield call(showToast, {
       intent: Intent.DANGER,

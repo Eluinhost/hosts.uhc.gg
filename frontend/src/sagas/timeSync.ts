@@ -3,6 +3,7 @@ import { SagaIterator } from 'redux-saga';
 import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
 import { SyncTime } from '../actions';
 import moment from 'moment-timezone';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchServerTimeSaga(): SagaIterator {
   try {
@@ -15,7 +16,7 @@ function* fetchServerTimeSaga(): SagaIterator {
     yield put(SyncTime.success({ result: diff }));
   } catch (error) {
     console.error(error, 'error updating upcoming');
-    yield put(SyncTime.failure({ error }));
+    yield put(SyncTime.failure({ error: wrapError(error) }));
   }
 }
 

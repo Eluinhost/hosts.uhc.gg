@@ -6,7 +6,7 @@ type Props = {
   readonly value: string;
 };
 
-export const ClipboardControlGroup = React.memo(({ value }: Props) => {
+export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const triggerCopy = useCallback(() => {
@@ -33,4 +33,4 @@ export const ClipboardControlGroup = React.memo(({ value }: Props) => {
       <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
     </ControlGroup>
   );
-});
+};

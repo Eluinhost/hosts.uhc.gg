@@ -41,7 +41,7 @@ const stateSelector = createSelector(
   }),
 );
 
-export const MatchDetails = React.memo((props: OwnProps) => {
+export const MatchDetails: React.FC<OwnProps> = props => {
   const { id } = props;
   const { details, canApprove, canRemove } = useSelector(stateSelector);
   const dispatch = useDispatch();
@@ -211,4 +211,4 @@ export const MatchDetails = React.memo((props: OwnProps) => {
       </div>
     </div>
   );
-});
+};

@@ -5,6 +5,7 @@ import * as localForage from 'localforage';
 import { CreateMatchData } from '../models/CreateMatchData';
 import { ActionCreator } from 'typesafe-redux-helpers';
 import { AnyAction } from 'redux';
+import { wrapError } from '../utils/wrapError';
 
 export const storage: LocalForage = localForage.createInstance({
   name: 'hosts-uhcgg-data',
@@ -46,10 +47,10 @@ function* watchClearStorage(): SagaIterator {
     try {
       yield call([storage, storage.clear]);
       yield put(ClearStorage.success());
-      yield call(window.location.reload, true);
+      yield call(window.location.reload);
     } catch (error) {
       console.error(error, 'failed to clear storage');
-      yield put(ClearStorage.failure({ error }));
+      yield put(ClearStorage.failure({ error: wrapError(error) }));
     }
   });
 }
@@ -64,21 +65,22 @@ function* syncHostFormData(): SagaIterator {
   }
 
   yield spawn(function* (): SagaIterator {
-    yield takeLatest(SetSavedHostFormData.start, function* (
-      action: ReturnType<typeof SetSavedHostFormData.start>,
-    ): SagaIterator {
-      const parameters = action.payload;
+    yield takeLatest(
+      SetSavedHostFormData.start,
+      function* (action: ReturnType<typeof SetSavedHostFormData.start>): SagaIterator {
+        const parameters = action.payload;
 
-      yield put(SetSavedHostFormData.started({ parameters }));
+        yield put(SetSavedHostFormData.started({ parameters }));
 
-      try {
-        yield call([storage, storage.setItem], key, { ...parameters, opens: undefined });
-        yield put(SetSavedHostFormData.success({ parameters }));
-      } catch (error) {
-        console.error(error, 'failed to save host form data');
-        yield put(SetSavedHostFormData.failure({ parameters, error }));
-      }
-    });
+        try {
+          yield call([storage, storage.setItem], key, { ...parameters, opens: undefined });
+          yield put(SetSavedHostFormData.success({ parameters }));
+        } catch (error) {
+          console.error(error, 'failed to save host form data');
+          yield put(SetSavedHostFormData.failure({ parameters, error: wrapError(error) }));
+        }
+      },
+    );
   });
 }
 

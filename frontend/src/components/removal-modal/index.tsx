@@ -9,12 +9,13 @@ import { RemoveMatch } from '../../actions';
 import { isDarkMode } from '../../state/Selectors';
 import { Validator } from '../../services/Validator';
 import { TextField } from '../fields/TextField';
+import { Dispatch } from 'redux';
 
 type RemovalModalData = {
   reason: string;
 };
 
-type RemovalModalState = {
+type RemovalModalProps = {
   readonly id: number | null;
   readonly isDarkMode: boolean;
 };
@@ -36,7 +37,7 @@ const validator = new Validator<RemovalModalData>().withValidationFunction('reas
 });
 
 const RemovalModalComponent: React.FunctionComponent<
-  RemovalModalState & InjectedFormProps<RemovalModalData, RemovalModalState>
+  RemovalModalProps & InjectedFormProps<RemovalModalData, RemovalModalProps>
 > = ({ handleSubmit, submitting, invalid, id, isDarkMode }) => {
   const dispatch = useDispatch();
 
@@ -72,10 +73,10 @@ const RemovalModalComponent: React.FunctionComponent<
   );
 };
 
-const RemovalModalForm: React.ComponentType<RemovalModalState> = reduxForm<RemovalModalData, RemovalModalState>({
+const RemovalModalForm = reduxForm<RemovalModalData, RemovalModalProps>({
   form: RemoveMatch.formId,
   validate: validator.validate,
-  onSubmit: (values, dispatch, props): void => {
+  onSubmit: (values: RemovalModalData, dispatch: Dispatch, props: RemovalModalProps): void => {
     if (props.id !== null) {
       dispatch(RemoveMatch.start({ id: props.id, reason: values.reason }));
     }

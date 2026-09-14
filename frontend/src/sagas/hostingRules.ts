@@ -7,6 +7,7 @@ import { HostingRules } from '../state/HostingRulesState';
 import moment from 'moment-timezone';
 import { showToast } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { wrapError } from '../utils/wrapError';
 
 function* getHostingRulesSaga(): SagaIterator {
   try {
@@ -17,7 +18,7 @@ function* getHostingRulesSaga(): SagaIterator {
     yield put(GetHostingRules.success({ result: rules }));
   } catch (error) {
     console.error(error, 'error getting hosting rules');
-    yield put(GetHostingRules.failure({ error }));
+    yield put(GetHostingRules.failure({ error: wrapError(error) }));
   }
 }
 
@@ -47,7 +48,7 @@ function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>):
     });
   } catch (error) {
     console.error(error, 'error setting hosting rules');
-    yield put(SetHostingRules.failure({ parameters: action.payload, error }));
+    yield put(SetHostingRules.failure({ parameters: action.payload, error: wrapError(error) }));
     yield call(showToast, {
       intent: Intent.DANGER,
       icon: 'warning-sign',

@@ -13,13 +13,19 @@ export class FetchModifiersError extends Error {
 }
 
 export class DeleteModifierError extends Error {
-  constructor(public id: number, public cause: any) {
+  constructor(
+    public id: number,
+    public cause: any,
+  ) {
     super(`Failed to delete modifier '${id}', caused by:\n ${cause?.message ?? cause}`);
   }
 }
 
 export class CreateModifierError extends Error {
-  constructor(public modifier: string, public cause: any) {
+  constructor(
+    public modifier: string,
+    public cause: any,
+  ) {
     super(`Failed to create modifier: ${modifier}, caused by:\n ${cause?.message ?? cause}`);
   }
 }

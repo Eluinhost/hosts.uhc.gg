@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { ApplicationState } from '../../state/ApplicationState';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { CreateMatchForm } from './CreateMatchForm';
 import { useSelector, useDispatch } from 'react-redux';
 import { nextAvailableSlot } from './nextAvailableSlot';
@@ -39,14 +39,15 @@ const stateSelector = createSelector(
 );
 
 // Main goal of this is to save form data back to local storage when the component unmounts
-export const HostingPage = React.memo(() => {
+export const HostingPage: React.FC = () => {
   const { formValues, savedData, username, accessToken, is12h, roles } = useSelector(stateSelector);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const changeTemplate = useCallback((newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)), [
-    dispatch,
-  ]);
+  const changeTemplate = useCallback(
+    (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
+    [dispatch],
+  );
 
   const saveData = useCallback((data: CreateMatchData) => dispatch(SetSavedHostFormData.start(data)), [dispatch]);
 
@@ -112,7 +113,7 @@ export const HostingPage = React.memo(() => {
         await MatchesApi.create(withRenderedTemplate, accessToken);
 
         // if success send them to the matches page to view it
-        history.push('/matches');
+        navigate('/matches');
       } catch (err) {
         if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
@@ -129,7 +130,7 @@ export const HostingPage = React.memo(() => {
         throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
       }
     },
-    [accessToken, createTemplateContext, history],
+    [accessToken, createTemplateContext, navigate],
   );
 
   // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)
@@ -150,4 +151,4 @@ export const HostingPage = React.memo(() => {
       roles={roles}
     />
   );
-});
+};

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { HostApplicationForm } from './HostApplicationForm';
 import { getFetchQuizQuestionsApiState } from '../questions/selectors';
 import { QuizQuestions } from '../questions/actions';

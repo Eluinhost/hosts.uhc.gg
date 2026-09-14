@@ -6,12 +6,12 @@ import { Button, Classes, H4, Intent, Tag } from '@blueprintjs/core';
 import { CubeIcon, PeopleIcon, TagIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
 import { RemovedReason } from './RemovedReason';
 import { UsernameLink } from '../UsernameLink';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { TimeFromNowTag } from '../time/TimeFromNowTag';
 import { HoverSwap } from '../HoverSwap';
 import { MatchOpensTag } from '../time/MatchOpensTag';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, ParametricSelector } from 'reselect';
+import { createSelector } from 'reselect';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { ApproveMatch, RemoveMatch } from '../../actions';
@@ -25,12 +25,7 @@ type MatchRowProps = {
   readonly disableApproval?: boolean;
 };
 
-type StateProps = {
-  readonly canRemove: boolean;
-  readonly canApprove: boolean;
-};
-
-const stateSelector: ParametricSelector<ApplicationState, MatchRowProps | undefined, StateProps> = createSelector(
+const stateSelector = createSelector(
   matchesPermissions('hosting advisor'),
   getUsername,
   (_: ApplicationState, props: MatchRowProps | undefined) => props!.match.author,
@@ -40,7 +35,7 @@ const stateSelector: ParametricSelector<ApplicationState, MatchRowProps | undefi
   }),
 );
 
-export const MatchRow = React.memo((props: MatchRowProps) => {
+export const MatchRow: React.FC<MatchRowProps> = props => {
   const { match, disableLink, disableRemoval, disableApproval } = props;
   const { canRemove, canApprove } = useSelector(state => stateSelector(state, props));
   const dispatch = useDispatch();
@@ -156,4 +151,4 @@ export const MatchRow = React.memo((props: MatchRowProps) => {
       {card}
     </Link>
   );
-});
+};

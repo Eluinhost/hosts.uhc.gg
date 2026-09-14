@@ -1,6 +1,6 @@
 import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
-import { concat, converge, head, pipe, tail, toPairs, toUpper } from 'ramda';
+import { toPairs } from 'ramda';
 import { Classes, TreeNodeInfo, Spinner } from '@blueprintjs/core';
 import React from 'react';
 
@@ -67,7 +67,7 @@ const permissionGroupNames: { [key: string]: string } = {
 };
 
 const getGroupName = (permission: string) =>
-  permissionGroupNames[permission] || converge(concat, [pipe(head, toUpper), tail])(permission) + 's';
+  permissionGroupNames[permission] || permission.charAt(0).toUpperCase() + permission.slice(1) + 's';
 
 const createPermissionFolder = (permission: string, count: number): TreeNodeInfo<PermissionFolder> => ({
   id: `p~${permission}`,

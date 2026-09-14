@@ -1,22 +1,5 @@
 import moment from 'moment-timezone';
-import {
-  all,
-  map,
-  take,
-  pipe,
-  drop,
-  view,
-  lensIndex,
-  ifElse,
-  T,
-  both,
-  flip,
-  gte,
-  lte,
-  cond,
-  complement,
-  always,
-} from 'ramda';
+import { both, flip, gte, lte } from 'ramda';
 import { CreateMatchData } from '../../models/CreateMatchData';
 import { Validator } from '../../services/Validator';
 import { TeamStyles } from '../../models/TeamStyles';
@@ -46,32 +29,21 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
 
     const matches: RegExpMatchArray | null = ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
 
-    const validMatches = (matches: string[] | null): boolean => matches !== null;
+    if (!matches) return 'Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123';
 
-    const validPort = (matches: string[]): boolean =>
-      pipe(
-        view(lensIndex(5)), // if it exists it will be at index 5
-        // it is valid if it doesn't exist or if the port is a number and within the range
-        ifElse((x: string) => x === undefined, T, pipe(asInt, between(1, 65535))),
-      )(matches);
+    const port = matches[5]; // if it exists it will be at index 5
 
-    const validOctets = (matches: string[]): boolean =>
-      pipe(
-        drop<string>(1), // skip full match from regex
-        take(4), // just the 4 octet matches
-        map(asInt), // convert to numbers
-        all(between(0, 255)), // make sure valid octet
-      )(matches);
+    // valid if it doesn't exist, or the port is a number within range
+    if (port !== undefined && between(1, 65535)(asInt(port))) return 'Port must be 1-65535';
 
-    return cond([
-      [
-        complement(validMatches),
-        always('Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123'),
-      ],
-      [complement(validPort), always('Port must be 1-65535')],
-      [complement(validOctets), always('Segments in an IP must be between 0-255')],
-      [T, always(undefined)],
-    ])(matches);
+    const validOctets = matches.slice(1, 5).every(octet => {
+      const n = asInt(octet);
+      return Number.isInteger(n) && n >= 0 && n <= 255;
+    });
+
+    if (!validOctets) return 'Segments in an IP must be between 0-255';
+
+    return undefined;
   })
   .withValidationFunction('teams', (teams, obj) => {
     if (!teams) return 'You must select a team style';

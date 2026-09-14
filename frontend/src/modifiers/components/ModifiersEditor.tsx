@@ -9,7 +9,7 @@ import { ModifierEditorRow } from './ModifiersEditorRow';
 import './ModifiersEditor.scss';
 import { CreateModifierForm } from './CreateModifierForm';
 
-export const ModifiersEditor: React.FC = React.memo(() => {
+export const ModifiersEditor: React.FC = () => {
   const { list } = useSelector(getModifiersState);
   const dispatch = useDispatch();
 
@@ -49,4 +49,4 @@ export const ModifiersEditor: React.FC = React.memo(() => {
       <CreateModifierForm />
     </div>
   );
-});
+};

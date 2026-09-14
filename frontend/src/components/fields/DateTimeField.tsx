@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
-import TimePicker, { TimePickerProps } from 'rc-time-picker';
+import Picker, { PickerProps } from 'rc-picker';
+import enGB from 'rc-picker/lib/locale/en_GB';
+import generateMomentConfig from 'rc-picker/lib/generate/moment';
 import moment from 'moment-timezone';
 import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
 import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } from 'react-dates';
@@ -16,7 +18,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly datePickerProps?: Partial<DayPickerSingleDateControllerShape>;
   readonly minDate?: moment.Moment;
   readonly maxDate?: moment.Moment;
-  readonly timePicker?: Omit<TimePickerProps, 'value' | 'onChange' | 'disabled' | 'allowEmpty' | 'showSecond'>;
+  readonly timePicker?: Pick<PickerProps, 'minuteStep' | 'use12Hours' | 'className'>;
   readonly renderClearButton?: React.ComponentType<{ value: any; onClear: () => void }>;
 }
 
@@ -103,17 +105,21 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
     [minDate, maxDate],
   );
 
-  const renderInfoPanel = (clear?: JSX.Element) => (
+  const renderInfoPanel = (clear?: React.ReactNode) => (
     <div>
       {timePicker && (
-        <TimePicker
-          {...timePicker}
-          allowEmpty={!!ClearButton}
+        <Picker
+          picker="time"
+          showTime
+          locale={enGB}
+          generateConfig={generateMomentConfig}
+          allowClear={!!ClearButton}
           disabled={disabled}
           value={value}
-          onChange={handleTimeChange}
+          onPickerValueChange={handleTimeChange}
           className={`date-time-field-time-picker ${timePicker?.className || ''}`}
           showSecond={false}
+          {...timePicker}
         />
       )}
       {clear}
@@ -132,6 +138,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
         <DayPickerSingleDateController
           hideKeyboardShortcutsPanel
           isDayBlocked={isDayBlocked}
+          initialVisibleMonth={value}
           // if we make the function below part of the class body the timepicker sometimes
           // doesn't rerender properly, presumably due to daypickersingledatecontroller's
           // shouldComponentUpdate. We're passing a new function each render just to make

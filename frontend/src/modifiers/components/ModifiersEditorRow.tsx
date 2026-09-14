@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Classes, Intent, MaybeElement, Tag } from '@blueprintjs/core';
 import { IconName, RefreshIcon } from '@blueprintjs/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector, ParametricSelector } from 'reselect';
+import { createSelector } from 'reselect';
 
 import { Modifier } from '../Modifier';
 import { ApplicationState } from '../../state/ApplicationState';
@@ -13,11 +13,7 @@ export type ModifiersEditorRowProps = {
   modifier: Modifier;
 };
 
-const mapStateToProps: ParametricSelector<
-  ApplicationState,
-  ModifiersEditorRowProps,
-  { isDeleting: boolean; hasDeleteError: boolean }
-> = createSelector(
+const mapStateToProps = createSelector(
   getDeleteModifersState,
   (state: ApplicationState, props: ModifiersEditorRowProps) => props.modifier.id,
   (state, id) => ({
@@ -26,7 +22,7 @@ const mapStateToProps: ParametricSelector<
   }),
 );
 
-export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = React.memo((props: ModifiersEditorRowProps) => {
+export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: ModifiersEditorRowProps) => {
   const { modifier } = props;
   const { isDeleting } = useSelector(state => mapStateToProps(state, { modifier }));
   const dispatch = useDispatch();
@@ -62,4 +58,4 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = React.memo((
       </Tag>
     </span>
   );
-});
+};
