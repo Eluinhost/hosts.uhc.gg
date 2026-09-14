@@ -1,7 +1,7 @@
 import { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
 import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
-import * as localForage from 'localforage';
+import localForage from 'localforage';
 import { CreateMatchData } from '../models/CreateMatchData';
 import { ActionCreator } from 'typesafe-redux-helpers';
 import { AnyAction } from 'redux';

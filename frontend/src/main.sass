@@ -1,30 +1,28 @@
-@import "~normalize.css/normalize.css"
-@import "~rc-picker/assets/index.css"
-@import "~react-virtualized/styles.css"
-@import "~react-dates/lib/css/_datepicker.css"
+@use "sass:color"
 
-$icon-font-path: "~@blueprintjs/core/resources/icons"
+@import "normalize.css/normalize.css"
+@import "rc-picker/assets/index.css"
+@import "react-virtualized/styles.css"
+@import "react-dates/lib/css/_datepicker.css"
 
-$pt-font-family: "Share Tech"
-$pt-intent-warning: #FD971F
-$pt-intent-danger: #DB3737
-$pt-dark-app-background-color: #282828
-//$dark-card-background-color: lighten($pt-dark-app-background-color, 3%)
-//$dark-navbar-background-color: $dark-card-background-color
-//$dark-popover-background-color: $dark-card-background-color
-//$dark-input-background-color: $dark-card-background-color
-//$dark-button-background-color: $dark-card-background-color
-//$dark-popover-background-color: $dark-card-background-color
-//$dark-menu-background-color: $dark-card-background-color
-$pt-text-selection-color: #A8A8A8
-$dark-input-shadow-color-focus: $pt-intent-danger
-$pt-dark-link-color: $pt-intent-danger
+@import "../resources/blueprint.css"
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css"
 
-//@import "~@blueprintjs/core/src/blueprint.scss"
-//@import "~@blueprintjs/icons/lib/css/blueprint-icons.css"
+$custom-intent-danger: #DB3737
+$custom-dark-app-background-color: #282828
+$dark-card-background-color: color.adjust($custom-dark-app-background-color, $lightness: 3%)
+$dark-navbar-background-color: $dark-card-background-color
+$dark-popover-background-color: $dark-card-background-color
+$dark-input-background-color: $dark-card-background-color
+$dark-button-background-color: $dark-card-background-color
+$dark-popover-background-color: $dark-card-background-color
+$dark-menu-background-color: $dark-card-background-color
+$custom-text-selection-color: #A8A8A8
+$dark-input-shadow-color-focus: $custom-intent-danger
+$custom-dark-link-color: $custom-intent-danger
 
 .bp6-dark .bp6-dialog-header
-//background-color: $dark-card-background-color
+  background-color: $dark-card-background-color
 
 html, body, #root
   width: 100%
@@ -43,10 +41,10 @@ html, body, #root
   justify-content: flex-start
   align-content: center
   min-height: 100%
-  //background-color: $pt-app-background-color
+  background-color: var(--bp-surface-background-color-default-rest)
 
   &.bp6-dark
-    background: $pt-dark-app-background-color
+    background: $custom-dark-app-background-color
 
   &.navbar-sticky
     margin-top: 44px
@@ -66,10 +64,10 @@ html, body, #root
     flex-direction: column
 
 .current-time-unsynced
-  color: $pt-intent-danger
+  color: $custom-intent-danger
 
 .required-star
-  //color: $red4
+  color: var(--bp-palette-red-4)
   padding-left: 5px
 
 .opening-time
@@ -107,7 +105,7 @@ html, body, #root
 
 .removed-reason
   text-align: center
-  //color: $light-gray3
+  color: var(--bp-palette-light-gray-3)
   border-top: 1px solid
   margin-top: 10px
 
@@ -121,7 +119,7 @@ html, body, #root
   border-top: none
 
 .bp6-card.time-settings
-  //z-index: $pt-z-index-overlay + 10
+  z-index: var(--bp-surface-z-index-2)
   border-top: none
   width: 100%
   display: flex
@@ -195,7 +193,7 @@ a.match-row-link:hover
     padding-bottom: 7px
 
 .bp6-card.bp6-intent-danger
-  //background-color: $red1
+  background-color: var(--bp-palette-red-1)
   opacity: .8
 
 .bp6-card.application-footer
@@ -231,10 +229,10 @@ a.match-row-link:hover
   &.permission-folder-node:hover, .letter-folder-node:hover
     & > .bp6-tree-node-content
       svg
-  //color: $pt-intent-success
+        color: var(--bp-intent-success-hover)
 
   .username-node:hover > .bp6-tree-node-content svg
-//color: $pt-intent-danger
+    color: $custom-intent-danger
 
 .hosting-rules
   margin-bottom: 10px
@@ -267,27 +265,20 @@ a.match-row-link:hover
 
 a.username-link, span.username-link
   border-bottom: 1px dotted
-  //border-bottom-color: $pt-text-color
+  border-bottom-color: var(--bp-typography-color-default-rest)
   text-decoration: none
-  //color: $pt-text-color
+  color: var(--bp-typography-color-default-rest)
 
   &:hover
-    //color: $pt-text-color
+    color: var(--bp-typography-color-default-rest)
     border-bottom-style: solid
-
-.bp6-dark a.username-link, .bp6-dark span.username-link
-  //color: $pt-dark-text-color
-  //border-bottom-color: $pt-dark-text-color
-
-  &:hover
-//color: $pt-dark-text-color
 
 .bp6-dark
   .bp6-card, .bp6-navbar, .bp6-dialog, .navbar-sticky .bp6-card.time-settings
-    border-top: 3px solid $pt-intent-danger
+    border-top: 3px solid $custom-intent-danger
 
 .bp6-card, .bp6-navbar, .bp6-dialog, .navbar-sticky .bp6-card.time-settings
-  //border-top: 3px solid $pt-intent-primary
+  border-top: 3px solid var(--bp-intent-success-hover)
   border-top-left-radius: 0
   border-top-right-radius: 0
 

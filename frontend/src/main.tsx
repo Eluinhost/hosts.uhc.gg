@@ -9,7 +9,6 @@ import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 
 import './main.sass';
-import '@blueprintjs/core/lib/css/blueprint.css';
 
 import 'react-dates/initialize';
 
