@@ -1,5 +1,5 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
 

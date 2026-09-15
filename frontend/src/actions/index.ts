@@ -1,11 +1,11 @@
 import { createAction } from 'typesafe-redux-helpers';
 
-import { Preset } from '../components/host/presets';
-import { CreateMatchData } from '../models/CreateMatchData';
-import { Match } from '../models/Match';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
-import { HostingRules } from '../state/HostingRulesState';
+import type { Preset } from '../components/host/presets';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import type { Match } from '../models/Match';
+import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import type { HostingRules } from '../state/HostingRulesState';
 
 export type WithResult<Result> = {
   readonly result: Result;

@@ -1,10 +1,10 @@
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { SetSavedHostFormData } from '../actions';
 import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
 import { presets } from '../components/host/presets';
-import { CreateMatchData } from '../models/CreateMatchData';
+import type { CreateMatchData } from '../models/CreateMatchData';
 import { Regions } from '../models/Regions';
 import { TeamStyles } from '../models/TeamStyles';
 

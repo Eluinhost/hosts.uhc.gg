@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { SyncTime } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 const MILLIS_PER_SECOND = 1000;

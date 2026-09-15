@@ -2,18 +2,18 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { change, getFormValues, SubmissionError } from 'redux-form';
-import { createSelector, Selector } from 'reselect';
+import { createSelector, type Selector } from 'reselect';
 
 import { SetSavedHostFormData } from '../../actions';
 import { MatchesApi, ApiErrors } from '../../api';
-import { CreateMatchData } from '../../models/CreateMatchData';
+import type { CreateMatchData } from '../../models/CreateMatchData';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
-import { ApplicationState } from '../../state/ApplicationState';
-import { getAccessToken, getUsername, isDarkMode, is12hFormat, getPermissions } from '../../state/Selectors';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { getAccessToken, getUsername, is12hFormat, getPermissions } from '../../state/Selectors';
 
 import { CreateMatchForm } from './CreateMatchForm';
 import { nextAvailableSlot } from './nextAvailableSlot';
-import { renderToMarkdown, TemplateContext } from './TemplateField';
+import { renderToMarkdown, type TemplateContext } from './TemplateField';
 
 export const formKey: string = 'create-match-form';
 
@@ -27,10 +27,9 @@ const stateSelector = createSelector(
   getPermissions,
   valuesSelector,
   getAccessToken,
-  isDarkMode,
   is12hFormat,
   (state: ApplicationState) => state.hostFormSavedData,
-  (username, permissions, formValues, accessToken, isDarkMode, is12h, savedData) => ({
+  (username, permissions, formValues, accessToken, is12h, savedData) => ({
     formValues,
     is12h,
     savedData,

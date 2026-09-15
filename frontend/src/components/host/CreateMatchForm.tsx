@@ -2,13 +2,13 @@ import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/co
 import moment from 'moment-timezone';
 import { find } from 'ramda';
 import React, { useCallback, useEffect } from 'react';
-import { SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
-import { SagaIterator } from 'redux-saga';
+import { SubmissionError, type InjectedFormProps, reduxForm } from 'redux-form';
+import type { SagaIterator } from 'redux-saga';
 import { all, put, race, take } from 'redux-saga/effects';
 
 import { HostFormConflicts } from '../../actions';
-import { CreateMatchData } from '../../models/CreateMatchData';
-import { Match } from '../../models/Match';
+import type { CreateMatchData } from '../../models/CreateMatchData';
+import type { Match } from '../../models/Match';
 import { Regions } from '../../models/Regions';
 import { TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
@@ -26,7 +26,7 @@ import { Title } from '../Title';
 
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { PotentialConflicts } from './PotentialConflicts';
-import { TemplateContext, TemplateField } from './TemplateField';
+import { type TemplateContext, TemplateField } from './TemplateField';
 import { validator } from './validation';
 
 export type CreateMatchFormProps = {
@@ -417,7 +417,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
 
 export const CreateMatchForm = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: async (values, dispatch, props): Promise<void> => {
+  asyncValidate: async (values, _dispatch, props): Promise<void> => {
     try {
       // a quick check for when we don't have any initial values then fallback to the ones provided in
       // props, kinda weird and janky but gets around the componentDidMount asyncvalidate race condition

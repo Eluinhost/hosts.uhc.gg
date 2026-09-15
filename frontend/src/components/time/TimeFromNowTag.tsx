@@ -1,11 +1,11 @@
-import { Intent, Tag, TagProps } from '@blueprintjs/core';
+import { Intent, Tag, type TagProps } from '@blueprintjs/core';
 import { TimeIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 
 type Props = {
   readonly time: moment.Moment;

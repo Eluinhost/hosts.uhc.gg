@@ -2,7 +2,7 @@ import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SelectField, SelectFieldProps } from '../../components/fields/SelectField';
+import { SelectField, type SelectFieldProps } from '../../components/fields/SelectField';
 import { FETCH_VERSIONS } from '../actions';
 import { getListVersionsState } from '../selectors';
 

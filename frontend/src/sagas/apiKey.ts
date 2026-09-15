@@ -1,4 +1,4 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, select, all, takeLatest } from 'redux-saga/effects';
 
 import { FetchApiKey, RegenerateApiKey } from '../actions';

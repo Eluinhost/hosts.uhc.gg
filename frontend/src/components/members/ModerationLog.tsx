@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { RefreshPermissionModerationLog } from '../../actions';
-import { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { MatchOpens } from '../time/MatchOpens';
 
 const renderRow = (row: PermissionModerationLogEntry) => (

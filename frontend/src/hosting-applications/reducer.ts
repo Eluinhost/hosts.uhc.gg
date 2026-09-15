@@ -1,8 +1,8 @@
-import { combineReducers, Reducer } from 'redux';
+import { combineReducers, type Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { HostApplication, HostApplicationDetails } from '../models/HostApplication';
-import { BasicApiCallState, createBasicApiCallReducer, displayError } from '../state/createBasicApiCallReducer';
+import type { HostApplication, HostApplicationDetails } from '../models/HostApplication';
+import { type BasicApiCallState, createBasicApiCallReducer, displayError } from '../state/createBasicApiCallReducer';
 
 import { HostApplications } from './actions';
 import { reducer as quizQuestions } from './questions/reducer';

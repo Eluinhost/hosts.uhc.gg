@@ -1,8 +1,8 @@
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
-import { BasicApiCallState, createBasicApiCallReducer } from '../../state/createBasicApiCallReducer';
+import type { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
+import { type BasicApiCallState, createBasicApiCallReducer } from '../../state/createBasicApiCallReducer';
 
 import { QuizQuestions } from './actions';
 

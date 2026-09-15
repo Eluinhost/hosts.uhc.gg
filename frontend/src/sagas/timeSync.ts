@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
 
 import { SyncTime } from '../actions';

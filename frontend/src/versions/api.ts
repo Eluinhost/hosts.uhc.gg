@@ -41,8 +41,8 @@ export const getAllVersions = async (): Promise<Array<string>> => {
     );
 
   const combined = [
-    ...map.netty.values().toArray().sort(compareVersion),
-    ...map.prenetty.values().toArray().sort(compareVersion),
+    ...Array.from(map.netty.values()).sort(compareVersion),
+    ...Array.from(map.prenetty.values()).sort(compareVersion),
   ];
 
   return [

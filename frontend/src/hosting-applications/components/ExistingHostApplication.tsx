@@ -4,10 +4,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { HostApplication } from '../../models/HostApplication';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { HostApplication } from '../../models/HostApplication';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { HostApplications } from '../actions';
-import { HostApplicationDetailsState } from '../reducer';
+import type { HostApplicationDetailsState } from '../reducer';
 import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
 
 interface ExistingHostApplicationProps {

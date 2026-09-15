@@ -1,4 +1,4 @@
-import { FormErrors } from 'redux-form';
+import type { FormErrors } from 'redux-form';
 
 type DataShape = { [key: string]: unknown };
 

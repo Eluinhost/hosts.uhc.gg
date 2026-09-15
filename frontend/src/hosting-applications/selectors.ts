@@ -1,7 +1,7 @@
 import { identity } from 'ramda';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../state/ApplicationState';
+import type { ApplicationState } from '../state/ApplicationState';
 import { getPermissions, getUsername } from '../state/Selectors';
 
 export const getHostApplicationsListState = createSelector(

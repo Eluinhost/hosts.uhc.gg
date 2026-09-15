@@ -1,5 +1,5 @@
-import { ActionCreator, createReducer } from 'typesafe-redux-helpers';
-import { SuccessAction } from 'typesafe-redux-helpers/dist/PayloadAction';
+import { type ActionCreator, createReducer } from 'typesafe-redux-helpers';
+import type { SuccessAction } from 'typesafe-redux-helpers/dist/PayloadAction';
 
 import { ApiErrors } from '../api';
 

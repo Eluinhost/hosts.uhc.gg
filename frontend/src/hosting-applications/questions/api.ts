@@ -1,5 +1,5 @@
 import { authHeaders, callApi, fetchArray, fetchObject } from '../../api/util';
-import { CreateQuizQuestionData, ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
+import type { CreateQuizQuestionData, ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
 
 export const fetchQuizQuestions = (): Promise<QuizQuestion[]> =>
   fetchArray<QuizQuestion>({

@@ -21,6 +21,11 @@ export default tseslint.config(
         version: 'detect',
       },
     },
+    // using the automatic (react-jsx) runtime, so the classic-runtime rules don't apply
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-react': 'off',
+    },
   },
   reactHooks.configs.flat['recommended-latest'],
   {

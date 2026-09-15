@@ -1,5 +1,5 @@
 import { Intent } from '@blueprintjs/core';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 
@@ -8,18 +8,18 @@ import {
   FetchUserCountPerPermission,
   FetchUsersInPermission,
   FetchUsersInPermissionWithLetter,
-  FetchUsersInPermissionWithLetterParameters,
+  type FetchUsersInPermissionWithLetterParameters,
   PermissionLetterNode,
   PermissionNode,
-  PermissionParameters,
+  type PermissionParameters,
   RefreshPermissionModerationLog,
   RemovePermission,
 } from '../actions';
 import { PermissionsApi, ApiErrors } from '../api';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 import { showToast } from '../services/AppToaster';
-import { ApplicationState } from '../state/ApplicationState';
-import { RemovePermissionDialogState } from '../state/PermissionsState';
+import type { ApplicationState } from '../state/ApplicationState';
+import type { RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 

@@ -1,6 +1,6 @@
 import { Classes } from '@blueprintjs/core';
 import React from 'react';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
+import { type BaseFieldProps, Field, type WrappedFieldProps } from 'redux-form';
 
 import { FieldWrapper } from './FieldWrapper';
 

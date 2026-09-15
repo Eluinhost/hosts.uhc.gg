@@ -1,10 +1,10 @@
-import { AnyAction } from 'redux';
+import type { AnyAction } from 'redux';
 import { actionTypes, change, getFormValues } from 'redux-form';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, select, takeEvery } from 'redux-saga/effects';
-import { isSuccessfulAction, PayloadAction } from 'typesafe-redux-helpers';
+import { isSuccessfulAction, type PayloadAction } from 'typesafe-redux-helpers';
 
-import { CreateMatchData } from '../../models/CreateMatchData';
+import type { CreateMatchData } from '../../models/CreateMatchData';
 import { FETCH_VERSIONS } from '../../versions/actions';
 
 import { formKey } from './index';

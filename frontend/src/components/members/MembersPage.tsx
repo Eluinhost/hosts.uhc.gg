@@ -1,8 +1,8 @@
-import { Button, H2, Intent, NonIdealState, Spinner, Tree, TreeEventHandler } from '@blueprintjs/core';
+import { Button, H2, Intent, NonIdealState, Spinner, Tree, type TreeEventHandler } from '@blueprintjs/core';
 import { flatten, map } from 'ramda';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, Selector } from 'reselect';
+import { createSelector, type Selector } from 'reselect';
 
 import {
   AddPermission,
@@ -11,8 +11,8 @@ import {
   PermissionNode,
   RemovePermission,
 } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
-import { NodeType, PermissionsState } from '../../state/PermissionsState';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { NodeType, PermissionsState } from '../../state/PermissionsState';
 import { getPermissions } from '../../state/Selectors';
 import { Title } from '../Title';
 

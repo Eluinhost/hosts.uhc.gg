@@ -1,8 +1,8 @@
 import moment from 'moment-timezone';
 import qs from 'query-string';
 
-import { CreateMatchData } from '../models/CreateMatchData';
-import { Match } from '../models/Match';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import type { Match } from '../models/Match';
 
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 

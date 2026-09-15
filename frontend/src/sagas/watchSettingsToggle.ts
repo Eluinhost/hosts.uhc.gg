@@ -1,9 +1,9 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { select, takeLatest, put, all, fork } from 'redux-saga/effects';
-import { ActionCreator } from 'typesafe-redux-helpers';
+import type { ActionCreator } from 'typesafe-redux-helpers';
 
 import { Settings } from '../actions';
-import { ApplicationState } from '../state/ApplicationState';
+import type { ApplicationState } from '../state/ApplicationState';
 import * as Selectors from '../state/Selectors';
 
 const genericToggle = (

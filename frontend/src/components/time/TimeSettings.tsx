@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import { toLower, filter as rFilter, always, includes } from 'ramda';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { List, ListRowProps } from 'react-virtualized';
+import { List, type ListRowProps } from 'react-virtualized';
 import { createSelector } from 'reselect';
 
 import { Settings } from '../../actions';

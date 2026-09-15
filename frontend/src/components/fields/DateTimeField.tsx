@@ -1,11 +1,11 @@
 import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
 import moment from 'moment-timezone';
-import RcPicker, { PickerProps } from 'rc-picker';
+import RcPicker, { type PickerProps } from 'rc-picker';
 import generateMomentConfig from 'rc-picker/lib/generate/moment';
 import enGB from 'rc-picker/lib/locale/en_GB';
 import React, { useCallback, useState } from 'react';
-import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } from 'react-dates';
-import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
+import { DayPickerSingleDateController, type DayPickerSingleDateControllerShape } from 'react-dates';
+import { type BaseFieldProps, Field, type WrappedFieldMetaProps, type WrappedFieldProps } from 'redux-form';
 
 import { FieldWrapper } from './FieldWrapper';
 import './DateTimeField.sass';

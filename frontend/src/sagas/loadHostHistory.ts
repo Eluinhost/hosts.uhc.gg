@@ -1,9 +1,9 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { select, put, call, takeLatest } from 'redux-saga/effects';
 
 import { LoadHostHistory } from '../actions';
 import { MatchesApi } from '../api';
-import { Match } from '../models/Match';
+import type { Match } from '../models/Match';
 import { getHostingHistoryCursor } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 

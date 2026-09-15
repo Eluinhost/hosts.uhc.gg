@@ -1,12 +1,12 @@
-import { Classes, Intent, MaybeElement, Tag } from '@blueprintjs/core';
-import { IconName, RefreshIcon } from '@blueprintjs/icons';
+import { Classes, Intent, type MaybeElement, Tag } from '@blueprintjs/core';
+import { type IconName, RefreshIcon } from '@blueprintjs/icons';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { DELETE_MODIFIER } from '../actions';
-import { Modifier } from '../Modifier';
+import type { Modifier } from '../Modifier';
 import { getDeleteModifersState } from '../selectors';
 
 export type ModifiersEditorRowProps = {
@@ -15,7 +15,7 @@ export type ModifiersEditorRowProps = {
 
 const mapStateToProps = createSelector(
   getDeleteModifersState,
-  (state: ApplicationState, props: ModifiersEditorRowProps) => props.modifier.id,
+  (_state: ApplicationState, props: ModifiersEditorRowProps) => props.modifier.id,
   (state, id) => ({
     isDeleting: state.arguments === id,
     hasDeleteError: !!state.error,

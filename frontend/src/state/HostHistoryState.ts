@@ -1,11 +1,11 @@
 import moment from 'moment-timezone';
 import { concat } from 'ramda';
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
 import { ApiErrors } from '../api';
-import { Match } from '../models/Match';
+import type { Match } from '../models/Match';
 
 export type HostHistoryState = {
   readonly fetching: boolean;

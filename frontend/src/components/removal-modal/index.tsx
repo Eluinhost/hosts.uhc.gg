@@ -1,13 +1,13 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
-import { InjectedFormProps, reduxForm } from 'redux-form';
+import type { Dispatch } from 'redux';
+import { type InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
 
 import { RemoveMatch } from '../../actions';
 import { Validator } from '../../services/Validator';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { isDarkMode } from '../../state/Selectors';
 import { TextField } from '../fields/TextField';
 

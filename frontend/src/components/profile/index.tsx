@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { Title } from '../Title';
 
 const stateSelector = createSelector(

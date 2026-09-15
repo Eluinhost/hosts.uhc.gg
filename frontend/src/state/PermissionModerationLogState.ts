@@ -1,8 +1,8 @@
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { RefreshPermissionModerationLog } from '../actions';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 
 export type PermissionModerationLogState = {
   readonly fetching: boolean;
@@ -20,7 +20,7 @@ export const reducer: Reducer<PermissionModerationLogState> = createReducer<Perm
     error: null,
     log: state.log,
   }))
-  .handleAction(RefreshPermissionModerationLog.success, (state, action) => ({
+  .handleAction(RefreshPermissionModerationLog.success, (_state, action) => ({
     fetching: false,
     error: null,
     log: action.payload.result,

@@ -1,4 +1,4 @@
-import React, { Children, PropsWithChildren, useCallback, useState } from 'react';
+import React, { Children, type PropsWithChildren, useCallback, useState } from 'react';
 
 export const HoverSwap: React.FC<PropsWithChildren> = ({ children }) => {
   const [isHovered, setIsHovered] = useState(false);

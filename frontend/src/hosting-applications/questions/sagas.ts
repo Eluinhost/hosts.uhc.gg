@@ -1,8 +1,8 @@
 import { Intent } from '@blueprintjs/core';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call, select, takeEvery } from 'redux-saga/effects';
 
-import { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
+import type { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
 import { showToast } from '../../services/AppToaster';
 import { getAccessToken } from '../../state/Selectors';
 import { GenericError } from '../../utils/GenericError';

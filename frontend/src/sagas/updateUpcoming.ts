@@ -1,9 +1,9 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest } from 'redux-saga/effects';
 
 import { UpdateUpcoming } from '../actions';
 import { MatchesApi } from '../api';
-import { Match } from '../models/Match';
+import type { Match } from '../models/Match';
 import { wrapError } from '../utils/wrapError';
 
 function* fetchUpcomingSaga(): SagaIterator {

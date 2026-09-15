@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import { intersection, isEmpty, memoizeWith, toString, identity } from 'ramda';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from './ApplicationState';
+import type { ApplicationState } from './ApplicationState';
 
 export const isDarkMode = createSelector((state: ApplicationState) => state.settings.isDarkMode, identity);
 

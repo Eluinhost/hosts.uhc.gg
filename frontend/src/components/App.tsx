@@ -1,5 +1,5 @@
 import { Classes, NonIdealState } from '@blueprintjs/core';
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { type PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
 import ReactHelmet from 'react-helmet';
 import { useSelector } from 'react-redux';

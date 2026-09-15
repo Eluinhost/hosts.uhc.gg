@@ -1,6 +1,6 @@
 import { authHeaders, callApi, fetchArray, fetchObject } from '../api/util';
 
-import { Modifier } from './Modifier';
+import type { Modifier } from './Modifier';
 
 export const getAllModifiers = (): Promise<Modifier[]> =>
   fetchArray<Modifier>({
