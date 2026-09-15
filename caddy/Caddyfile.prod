@@ -20,7 +20,7 @@ hosts.uhc.gg {
 }
 
 c.uhc.gg {
-	root * /srv
+	root * /srv/old
 	file_server
 
 	header {

@@ -23,5 +23,5 @@ RUN xcaddy build --with github.com/caddy-dns/porkbun
 
 FROM caddy:2.11.4-alpine
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
-COPY --from=old-calendar /Match-Calendar/web /srv
+COPY --from=old-calendar /Match-Calendar/web /srv/old
 COPY --from=frontend-build /app/build /srv/hosts
