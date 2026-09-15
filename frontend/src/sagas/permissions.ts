@@ -1,4 +1,6 @@
 import { Intent } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
 import type { SagaIterator } from 'redux-saga';
 import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
@@ -126,7 +128,7 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
 
     yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
@@ -168,7 +170,7 @@ function* removePermission(): SagaIterator {
 
     yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message

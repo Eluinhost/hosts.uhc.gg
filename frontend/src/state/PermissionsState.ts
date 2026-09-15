@@ -1,4 +1,5 @@
 import { Classes, type TreeNodeInfo, Spinner } from '@blueprintjs/core';
+import { FolderCloseIcon, FolderOpenIcon, UserIcon } from '@blueprintjs/icons';
 import { toPairs } from 'ramda';
 import React, { createElement } from 'react';
 import type { Reducer } from 'redux';
@@ -54,7 +55,7 @@ const createUsernameNode = (permission: string, username: string): TreeNodeInfo<
     username,
     permission,
   },
-  icon: 'user',
+  icon: createElement(UserIcon),
   className: 'username-node',
 });
 
@@ -80,7 +81,7 @@ const createPermissionFolder = (permission: string, count: number): TreeNodeInfo
     isFetching: false,
   },
   isExpanded: false,
-  icon: 'folder-close',
+  icon: createElement(FolderCloseIcon),
   className: 'permission-folder-node',
 });
 
@@ -88,7 +89,7 @@ const createLetterFolder = (permission: string, letter: string, count: number): 
   id: `p~${permission}~l~${letter}`,
   label: `${letter} (${count})`,
   hasCaret: true,
-  icon: 'folder-close',
+  icon: createElement(FolderCloseIcon),
   nodeData: {
     type: 'letter',
     permission,
@@ -281,7 +282,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
           ...node.nodeData,
           isExpanded: true,
         },
-        icon: 'folder-open',
+        icon: createElement(FolderOpenIcon),
       };
     }),
   }))
@@ -296,7 +297,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
           ...node.nodeData,
           isExpanded: false,
         },
-        icon: 'folder-close',
+        icon: createElement(FolderCloseIcon),
       };
     }),
   }))
@@ -318,7 +319,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
               ...letterNode.nodeData,
               isExpanded: true,
             },
-            icon: 'folder-open',
+            icon: createElement(FolderOpenIcon),
           };
         }),
       };
@@ -341,7 +342,7 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
               ...letterNode.nodeData,
               isExpanded: false,
             },
-            icon: 'folder-close',
+            icon: createElement(FolderCloseIcon),
           };
         }),
       };

@@ -1,4 +1,5 @@
 import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
+import { UploadIcon } from '@blueprintjs/icons';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -48,7 +49,7 @@ export const CreateModifierForm: React.FC = () => {
           <Button
             intent={alreadyExists ? Intent.DANGER : valid ? Intent.SUCCESS : Intent.NONE}
             type="submit"
-            icon="upload"
+            icon={<UploadIcon />}
             size="large"
             disabled={!valid}
           />

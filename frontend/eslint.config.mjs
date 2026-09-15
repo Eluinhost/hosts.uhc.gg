@@ -6,6 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importx from 'eslint-plugin-import-x';
 import blueprint from '@blueprintjs/eslint-plugin';
+import noStringIcons from './eslint/rules/no-string-icons.mjs';
 
 // jsxA11y has a `parserOptions` key, which flat config rejects for, moved it under `languageOptions`
 const { parserOptions: a11yParserOptions, ...a11yRecommended } = jsxA11y.configs.recommended;
@@ -67,7 +68,9 @@ export default tseslint.config(
     },
   },
   {
+    plugins: { local: { rules: { 'no-string-icons': noStringIcons } } },
     rules: {
+      'local/no-string-icons': 'error',
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

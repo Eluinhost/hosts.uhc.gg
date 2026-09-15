@@ -1,4 +1,21 @@
-import { Button, type IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
+import {
+  Button,
+  type IconName,
+  type MaybeElement,
+  NavbarGroup,
+  NavbarHeading,
+  Navbar as BpNavbar,
+} from '@blueprintjs/core';
+import {
+  CloudUploadIcon,
+  FlashIcon,
+  HelpIcon,
+  InboxIcon,
+  MoonIcon,
+  NumberedListIcon,
+  UnresolveIcon,
+  UserIcon,
+} from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router';
@@ -12,7 +29,7 @@ import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
   readonly text: string;
-  readonly icon: IconName;
+  readonly icon: IconName | MaybeElement;
   readonly to: string;
 };
 
@@ -51,20 +68,20 @@ export const Navbar: React.FC = () => {
         </Link>
       </NavbarGroup>
       <NavbarGroup>
-        <NavbarButton to="/host" text="Host" icon="cloud-upload" />
-        <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
-        <NavbarButton to="/host-applications" text="Host Applications" icon="inbox" />
-        <NavbarButton to="/members" text="Members" icon="user" />
+        <NavbarButton to="/host" text="Host" icon={<CloudUploadIcon />} />
+        <NavbarButton to="/matches" text="Matches" icon={<NumberedListIcon />} />
+        <NavbarButton to="/host-applications" text="Host Applications" icon={<InboxIcon />} />
+        <NavbarButton to="/members" text="Members" icon={<UserIcon />} />
         <WithPermission permission="hosting advisor">
-          <NavbarButton text="Modifiers" icon="unresolve" to="/modifiers" />
+          <NavbarButton text="Modifiers" icon={<UnresolveIcon />} to="/modifiers" />
         </WithPermission>
         <WithPermission permission="hosting advisor">
-          <NavbarButton to="/quiz" text="Application Quiz" icon="help" />
+          <NavbarButton to="/quiz" text="Application Quiz" icon={<HelpIcon />} />
         </WithPermission>
       </NavbarGroup>
       <NavbarGroup>
         <Username />
-        <Button variant="minimal" icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
+        <Button variant="minimal" icon={isDarkMode ? <MoonIcon /> : <FlashIcon />} onClick={toggleDarkMode} />
       </NavbarGroup>
     </BpNavbar>
   );

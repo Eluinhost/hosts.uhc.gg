@@ -1,4 +1,5 @@
 import { NonIdealState } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import qs from 'query-string';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +9,9 @@ import { createSelector } from 'reselect';
 import { Authentication, type LoginPayload } from '../actions';
 import { isLoggedIn } from '../state/Selectors';
 
-const InvalidToken: React.FunctionComponent = () => <NonIdealState title="Invalid login token" icon="warning-sign" />;
+const InvalidToken: React.FunctionComponent = () => (
+  <NonIdealState title="Invalid login token" icon={<WarningSignIcon />} />
+);
 
 const zeroth = (t: string | (string | null)[] | null | undefined): string | null | undefined =>
   Array.isArray(t) ? t[0] : t;

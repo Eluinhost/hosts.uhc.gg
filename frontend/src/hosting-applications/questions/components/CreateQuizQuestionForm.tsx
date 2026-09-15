@@ -1,4 +1,5 @@
 import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
+import { AddIcon, TrashIcon } from '@blueprintjs/icons';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -57,7 +58,13 @@ const Choice: React.FC<ChoiceProps> = ({
         style={{ flex: 1 }}
       />
       {canRemove && (
-        <Button icon="trash" variant="minimal" onClick={handleRemove} disabled={isDisabled} style={{ marginLeft: 5 }} />
+        <Button
+          icon={<TrashIcon />}
+          variant="minimal"
+          onClick={handleRemove}
+          disabled={isDisabled}
+          style={{ marginLeft: 5 }}
+        />
       )}
     </div>
   );
@@ -180,13 +187,13 @@ export const CreateQuizQuestionForm = () => {
       )}
 
       {questionType === 'multiple choice' && (
-        <Button icon="add" variant="minimal" onClick={handleAddChoice} disabled={isFetching}>
+        <Button icon={<AddIcon />} variant="minimal" onClick={handleAddChoice} disabled={isFetching}>
           Add choice
         </Button>
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button intent={Intent.PRIMARY} icon="add" disabled={isFetching || !isValid} onClick={handleSubmit}>
+        <Button intent={Intent.PRIMARY} icon={<AddIcon />} disabled={isFetching || !isValid} onClick={handleSubmit}>
           Create question
         </Button>
       </div>

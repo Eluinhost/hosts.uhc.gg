@@ -1,4 +1,5 @@
 import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
+import { ClipboardIcon } from '@blueprintjs/icons';
 import React, { useCallback, useRef } from 'react';
 
 import { showToast } from '../../services/AppToaster';
@@ -32,7 +33,7 @@ export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
   return (
     <ControlGroup fill>
       <input type="text" className={`${Classes.INPUT} ${Classes.LARGE}`} value={value} readOnly ref={inputRef} />
-      <Button size="large" variant="minimal" icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
+      <Button size="large" variant="minimal" icon={<ClipboardIcon />} className={Classes.FIXED} onClick={triggerCopy} />
     </ControlGroup>
   );
 };

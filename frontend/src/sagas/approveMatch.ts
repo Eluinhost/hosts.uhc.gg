@@ -1,4 +1,6 @@
 import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
 import type { SagaIterator } from 'redux-saga';
 import { select, put, call, takeEvery } from 'redux-saga/effects';
 
@@ -29,7 +31,7 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
 
     yield call(showToast, {
       intent: Intent.SUCCESS,
-      icon: 'tick',
+      icon: createElement(TickIcon),
       message: `Approved match #${action.payload.id}`,
     });
   } catch (error) {
@@ -38,7 +40,7 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
 
     yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError ? error.message : `Failed to approve match #${action.payload.id}`,
     });

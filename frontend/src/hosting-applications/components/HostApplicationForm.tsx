@@ -1,4 +1,5 @@
 import { Button, Classes, H5, Intent, Radio, RadioGroup, TextArea } from '@blueprintjs/core';
+import { AddIcon } from '@blueprintjs/icons';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -125,7 +126,7 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
       <Button
         type="button"
         intent={Intent.PRIMARY}
-        icon="add"
+        icon={<AddIcon />}
         disabled={isSubmitting || !isComplete}
         onClick={handleSubmit}
       >

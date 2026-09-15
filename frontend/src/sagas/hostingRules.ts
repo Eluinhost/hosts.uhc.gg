@@ -1,5 +1,7 @@
 import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
+import { createElement } from 'react';
 import type { SagaIterator } from 'redux-saga';
 import { call, put, select, all, takeLatest } from 'redux-saga/effects';
 
@@ -44,7 +46,7 @@ function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>):
 
     yield call(showToast, {
       intent: Intent.SUCCESS,
-      icon: 'tick',
+      icon: createElement(TickIcon),
       message: `Updated hosting rules`,
     });
   } catch (error) {
@@ -52,7 +54,7 @@ function* setHostingRulesSaga(action: ReturnType<typeof SetHostingRules.start>):
     yield put(SetHostingRules.failure({ parameters: action.payload, error: wrapError(error) }));
     yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError
           ? `Failed to update hosting rules: ${error.message}`

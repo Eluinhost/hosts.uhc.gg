@@ -1,4 +1,5 @@
 import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
+import { ArrowLeftIcon, RemoveIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';
@@ -29,7 +30,7 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
 
   return (
     <Dialog
-      icon="remove"
+      icon={<RemoveIcon />}
       isOpen={!!state}
       onClose={onClose}
       title="Remove role"
@@ -44,10 +45,10 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon="remove">
+          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon={<RemoveIcon />}>
             Remove permission
           </Button>
         </div>

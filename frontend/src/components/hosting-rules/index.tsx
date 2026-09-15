@@ -1,4 +1,5 @@
 import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
+import { ChevronDownIcon, ChevronUpIcon } from '@blueprintjs/icons';
 import React, { useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -50,7 +51,11 @@ export const HostingRules: React.FC = () => {
   const startEdit = useCallback(() => dispatch(SetHostingRules.openEditor()), [dispatch]);
 
   return (
-    <Callout icon={areRulesOpen ? 'chevron-up' : 'chevron-down'} className="hosting-rules" onClick={toggleDropdown}>
+    <Callout
+      icon={areRulesOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      className="hosting-rules"
+      onClick={toggleDropdown}
+    >
       <H3>
         Hosting Rules<small style={{ float: 'right' }}>{headerInfo}</small>
       </H3>

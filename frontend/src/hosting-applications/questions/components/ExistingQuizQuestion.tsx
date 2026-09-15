@@ -1,4 +1,5 @@
 import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
+import { TrashIcon } from '@blueprintjs/icons';
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -34,7 +35,7 @@ export const ExistingQuizQuestion: React.FC<ExistingQuizQuestionProps> = ({ ques
     <div className={`${Classes.CARD} ${Classes.ELEVATION_1}`} style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <strong>{question.prompt}</strong>
-        <Button icon="trash" intent={Intent.DANGER} variant="minimal" onClick={handleClick} />
+        <Button icon={<TrashIcon />} intent={Intent.DANGER} variant="minimal" onClick={handleClick} />
       </div>
 
       <Tag minimal style={{ marginTop: 5 }}>
