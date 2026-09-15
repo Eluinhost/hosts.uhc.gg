@@ -1,6 +1,6 @@
 import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
 import moment from 'moment-timezone';
-import Picker, { PickerProps } from 'rc-picker';
+import RcPicker, { PickerProps } from 'rc-picker';
 import generateMomentConfig from 'rc-picker/lib/generate/moment';
 import enGB from 'rc-picker/lib/locale/en_GB';
 import React, { useCallback, useState } from 'react';
@@ -114,7 +114,7 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
   const renderInfoPanel = (clear?: React.ReactNode) => (
     <div>
       {timePicker && (
-        <Picker
+        <RcPicker
           picker="time"
           showTime
           locale={enGB}

@@ -7,23 +7,41 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importx from 'eslint-plugin-import-x';
 import blueprint from '@blueprintjs/eslint-plugin';
 
+// jsxA11y has a `parserOptions` key, which flat config rejects for, moved it under `languageOptions`
+const { parserOptions: a11yParserOptions, ...a11yRecommended } = jsxA11y.configs.recommended;
+
 export default tseslint.config(
   { ignores: ['build/**'] },
   js.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
+  tseslint.configs.strictTypeChecked,
+  react.configs.flat.recommended,
   {
-    plugins: {
-      react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-      'import-x': importx,
-      '@blueprintjs': blueprint,
-    },
     settings: {
       react: {
         version: 'detect',
       },
     },
+  },
+  reactHooks.configs.flat['recommended-latest'],
+  {
+    ...a11yRecommended,
+    plugins: { 'jsx-a11y': jsxA11y },
+    languageOptions: {
+      parserOptions: a11yParserOptions,
+    },
+    // using all jsxA11y rules but mapping each rule to warn instead of error
+    rules: Object.fromEntries(
+      Object.entries(jsxA11y.configs.recommended.rules).map(([rule, config]) => [
+        rule,
+        config === 'off' ? 'off' : Array.isArray(config) ? ['warn', ...config.slice(1)] : 'warn',
+      ]),
+    ),
+  },
+  blueprint.flatConfigs.recommended,
+  importx.flatConfigs.recommended,
+  importx.flatConfigs.react,
+  importx.flatConfigs.typescript,
+  {
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
@@ -35,25 +53,31 @@ export default tseslint.config(
       },
       globals: { ...globals.browser, ...globals.es2021 },
     },
+  },
+  {
+    // Sagas can't type yields correctly, so turn off the rule for 'any' assignment
+    files: ['src/**/saga.ts', 'src/**/sagas.ts', 'src/sagas/*.ts'],
     rules: {
-      ...react.configs.flat.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      // using jsxA11y but mapping each rule to warn instead of error
-      ...Object.fromEntries(
-        Object.entries(jsxA11y.configs.recommended.rules).map(([rule, config]) => [
-          rule,
-          config === 'off' ? 'off' : Array.isArray(config) ? ['warn', ...config.slice(1)] : 'warn',
-        ]),
-      ),
-      ...blueprint.flatConfigs.recommended.rules,
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+    },
+  },
+  {
+    rules: {
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowNumber: true,
+        },
+      ],
       'import-x/first': 'error',
       'import-x/no-amd': 'error',
-      'import-x/no-anonymous-default-export': 'warn',
+      'import-x/no-anonymous-default-export': 'error',
       'import-x/order': [
         'error',
         {
           groups: ['external', 'parent', 'sibling'],
-          pathGroups: [{ pattern: '^\\.\\/index$', group: 'sibling', position: 'after' }],
+          // fixes our react-redux override module counting as 'internal' instead of 'external'
+          pathGroups: [{ pattern: 'react-redux', group: 'external' }],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
@@ -76,23 +100,6 @@ export default tseslint.config(
         {
           selector: "CallExpression[callee.object.name='React'][callee.property.name='memo']",
           message: 'Do not use React.memo — components are not memoized.',
-        },
-      ],
-    },
-  },
-  {
-    // Sagas can't type yields correctly, so turn off the rule for 'any' assignment
-    files: ['src/**/saga.ts', 'src/**/sagas.ts', 'src/sagas/*.ts'],
-    rules: {
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-    },
-  },
-  {
-    rules: {
-      '@typescript-eslint/restrict-template-expressions': [
-        'error',
-        {
-          allowNumber: true,
         },
       ],
     },

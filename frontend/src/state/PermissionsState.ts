@@ -1,6 +1,6 @@
 import { Classes, TreeNodeInfo, Spinner } from '@blueprintjs/core';
 import { toPairs } from 'ramda';
-import React from 'react';
+import React, { createElement } from 'react';
 import { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
@@ -108,7 +108,7 @@ export type PermissionsState = {
   readonly allowableModifications: { [key: string]: string[] };
 };
 
-const loadingIcon: React.ReactElement = React.createElement(Spinner, { className: Classes.SMALL });
+const loadingIcon: React.ReactElement = createElement(Spinner, { className: Classes.SMALL });
 
 export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState>({
   isFetching: false,
