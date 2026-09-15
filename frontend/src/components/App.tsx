@@ -1,7 +1,7 @@
 import { Classes, NonIdealState } from '@blueprintjs/core';
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
-import Helmet from 'react-helmet';
+import ReactHelmet from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router';
 
@@ -138,7 +138,7 @@ export const App: React.FC = () => {
         <TimeSettings />
       </div>
       <div className="app-container">
-        <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+        <ReactHelmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
         <AppRoutes />
       </div>
       <Footer />

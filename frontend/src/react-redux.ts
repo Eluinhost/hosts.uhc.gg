@@ -1,3 +1,4 @@
+/* eslint-disable import-x/export */
 import {
   TypedUseSelectorHook,
   useDispatch as originalUseDispatch,

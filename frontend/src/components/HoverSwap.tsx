@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useState } from 'react';
+import React, { Children, PropsWithChildren, useCallback, useState } from 'react';
 
 export const HoverSwap: React.FC<PropsWithChildren> = ({ children }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -10,7 +10,7 @@ export const HoverSwap: React.FC<PropsWithChildren> = ({ children }) => {
     setIsHovered(false);
   }, []);
 
-  const [notHovered, hovered] = React.Children.toArray(children);
+  const [notHovered, hovered] = Children.toArray(children);
 
   return (
     <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
