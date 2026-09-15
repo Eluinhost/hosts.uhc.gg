@@ -169,51 +169,12 @@ importers:
       '@blueprintjs/core':
         specifier: 6.18.0
         version: 6.18.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@blueprintjs/eslint-plugin':
-        specifier: 6.2.1
-        version: 6.2.1(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)
       '@blueprintjs/icons':
         specifier: 6.13.0
         version: 6.13.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@types/moment-timezone':
-        specifier: 0.5.30
-        version: 0.5.30
-      '@types/ramda':
-        specifier: 0.32.0
-        version: 0.32.0
-      '@types/react':
-        specifier: 19.3.0
-        version: 19.3.0
-      '@types/react-dates':
-        specifier: 21.8.8
-        version: 21.8.8(moment@2.30.1)
-      '@types/react-dom':
-        specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      '@types/react-helmet':
-        specifier: 6.1.11
-        version: 6.1.11
-      '@types/react-virtualized':
-        specifier: 9.22.3
-        version: 9.22.3
-      '@types/redux-form':
-        specifier: 8.3.11
-        version: 8.3.11
-      '@vitejs/plugin-react':
-        specifier: 6.1.1
-        version: 6.1.1(vite@8.3.0(@types/node@26.5.1)(jiti@1.21.7)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1))
-      eslint:
-        specifier: 8.57.1
-        version: 8.57.1(supports-color@8.1.1)
-      eslint-config-react-app:
-        specifier: 7.0.1
-        version: 7.0.1(@babel/plugin-syntax-flow@7.29.7(@babel/core@7.29.7(supports-color@8.1.1)))(@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(eslint@8.57.1(supports-color@8.1.1))(jest@27.5.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@26.5.1)(typescript@6.0.3)))(supports-color@8.1.1)(typescript@6.0.3)
       history:
         specifier: 5.3.0
         version: 5.3.0
-      husky:
-        specifier: 9.1.7
-        version: 9.1.7
       jwt-decode:
         specifier: 4.0.0
         version: 4.0.0
@@ -232,9 +193,6 @@ importers:
       normalize.css:
         specifier: 8.0.1
         version: 8.0.1
-      prettier:
-        specifier: 3.9.6
-        version: 3.9.6
       query-string:
         specifier: 9.5.1
         version: 9.5.1
@@ -283,15 +241,58 @@ importers:
       reselect:
         specifier: 5.3.0
         version: 5.3.0
-      sass:
-        specifier: 1.104.1
-        version: 1.104.1
       snuownd:
         specifier: 1.1.0
         version: 1.1.0
       typesafe-redux-helpers:
         specifier: 0.0.2
         version: 0.0.2(redux@4.0.5)
+    devDependencies:
+      '@blueprintjs/eslint-plugin':
+        specifier: 6.2.1
+        version: 6.2.1(eslint@8.57.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)
+      '@types/moment-timezone':
+        specifier: 0.5.30
+        version: 0.5.30
+      '@types/ramda':
+        specifier: 0.32.0
+        version: 0.32.0
+      '@types/react':
+        specifier: 19.3.0
+        version: 19.3.0
+      '@types/react-dates':
+        specifier: 21.8.8
+        version: 21.8.8(moment@2.30.1)
+      '@types/react-dom':
+        specifier: 19.3.0
+        version: 19.3.0(@types/react@19.3.0)
+      '@types/react-helmet':
+        specifier: 6.1.11
+        version: 6.1.11
+      '@types/react-virtualized':
+        specifier: 9.22.3
+        version: 9.22.3
+      '@types/redux-form':
+        specifier: 8.3.11
+        version: 8.3.11
+      '@vitejs/plugin-react':
+        specifier: 6.1.1
+        version: 6.1.1(vite@8.3.0(@types/node@26.5.1)(jiti@1.21.7)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1))
+      eslint:
+        specifier: 8.57.1
+        version: 8.57.1(supports-color@8.1.1)
+      eslint-config-react-app:
+        specifier: 7.0.1
+        version: 7.0.1(@babel/plugin-syntax-flow@7.29.7(@babel/core@7.29.7(supports-color@8.1.1)))(@babel/plugin-transform-react-jsx@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(eslint@8.57.1(supports-color@8.1.1))(jest@27.5.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@26.5.1)(typescript@6.0.3)))(supports-color@8.1.1)(typescript@6.0.3)
+      husky:
+        specifier: 9.1.7
+        version: 9.1.7
+      prettier:
+        specifier: 3.9.6
+        version: 3.9.6
+      sass:
+        specifier: 1.104.1
+        version: 1.104.1
       typescript:
         specifier: 6.0.3
         version: 6.0.3
