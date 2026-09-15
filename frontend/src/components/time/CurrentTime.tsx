@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Tooltip, Position } from '@blueprintjs/core';
 import moment from 'moment-timezone';
+import { memoizeWith, toString } from 'ramda';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import { memoizeWith, toString } from 'ramda';
-import { Tooltip, Position } from '@blueprintjs/core';
-import { getTimezone, is12hFormat } from '../../state/Selectors';
+
 import { SyncTime } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
+import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -62,8 +63,12 @@ export const CurrentTime: React.FC = () => {
   const resync = useCallback(() => dispatch(SyncTime.start()), [dispatch]);
 
   useEffect(() => {
-    const timerId = window.setInterval(() => setTime(moment.utc()), 1000);
-    return () => window.clearInterval(timerId);
+    const timerId = window.setInterval(() => {
+      setTime(moment.utc());
+    }, 1000);
+    return () => {
+      window.clearInterval(timerId);
+    };
   }, []);
 
   const tooltipText = useMemo(

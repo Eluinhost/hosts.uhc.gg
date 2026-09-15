@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 
 type Props = {
@@ -10,5 +11,5 @@ type Props = {
 export const TeamStyle: React.FC<Props> = ({ style, size, custom }) => {
   const lookup = TeamStyles.find(it => it.value === style);
 
-  return <span>{renderTeamStyle(lookup!, size, custom)}</span>;
+  return <span>{lookup ? renderTeamStyle(lookup, size, custom) : 'Unknown Team Style'}</span>;
 };

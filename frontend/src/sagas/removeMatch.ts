@@ -1,12 +1,13 @@
-import { ApiErrors, MatchesApi } from '../api';
+import { Intent } from '@blueprintjs/core';
+import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
 import { SagaIterator } from 'redux-saga';
 import { put, call, select, takeEvery } from 'redux-saga/effects';
+
 import { RemoveMatch } from '../actions';
-import { getAccessToken, getUsername } from '../state/Selectors';
-import { ApplicationState } from '../state/ApplicationState';
-import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
+import { ApiErrors, MatchesApi } from '../api';
 import { showToast } from '../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
+import { ApplicationState } from '../state/ApplicationState';
+import { getAccessToken, getUsername } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 
 function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIterator {

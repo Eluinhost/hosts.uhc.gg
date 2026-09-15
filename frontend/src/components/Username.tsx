@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
-import { useNavigate, Link } from 'react-router';
 import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginButton } from './LoginButton';
+import { useNavigate, Link } from 'react-router';
 import { createSelector } from 'reselect';
-import { getUsername, isLoggedIn } from '../state/Selectors';
+
 import { Authentication } from '../actions';
+import { getUsername, isLoggedIn } from '../state/Selectors';
+
+import { LoginButton } from './LoginButton';
 
 const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ logout }) => (
   <Menu>
@@ -28,7 +30,7 @@ export const Username: React.FC = () => {
 
   const logout = useCallback(() => {
     dispatch(Authentication.logout());
-    navigate('/');
+    void navigate('/');
   }, [dispatch, navigate]);
 
   if (isLoggedIn) {

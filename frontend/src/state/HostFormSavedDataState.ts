@@ -1,12 +1,12 @@
-import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
 import { SetSavedHostFormData } from '../actions';
-import { CreateMatchData } from '../models/CreateMatchData';
 import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
-import { TeamStyles } from '../models/TeamStyles';
-import { Regions } from '../models/Regions';
 import { presets } from '../components/host/presets';
+import { CreateMatchData } from '../models/CreateMatchData';
+import { Regions } from '../models/Regions';
+import { TeamStyles } from '../models/TeamStyles';
 
 export type HostFormSavedDataState = CreateMatchData;
 

@@ -1,9 +1,10 @@
-import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
 import { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
-import { QuizQuestions } from './actions';
 import { BasicApiCallState, createBasicApiCallReducer } from '../../state/createBasicApiCallReducer';
+
+import { QuizQuestions } from './actions';
 
 export type QuizQuestionsState = {
   questions: BasicApiCallState<Array<QuizQuestion>>;
@@ -13,9 +14,13 @@ export type QuizQuestionsState = {
 };
 
 export const reducer: Reducer<QuizQuestionsState> = createReducer<QuizQuestionsState>({
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   questions: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   questionsForManagement: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   create: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   delete: undefined!,
 })
   .forProperty(

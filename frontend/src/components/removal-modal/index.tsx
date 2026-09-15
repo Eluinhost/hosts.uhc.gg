@@ -1,15 +1,15 @@
-import React, { useCallback } from 'react';
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
-import { InjectedFormProps, reduxForm } from 'redux-form';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../../state/ApplicationState';
 import { RemoveMatch } from '../../actions';
-import { isDarkMode } from '../../state/Selectors';
 import { Validator } from '../../services/Validator';
+import { ApplicationState } from '../../state/ApplicationState';
+import { isDarkMode } from '../../state/Selectors';
 import { TextField } from '../fields/TextField';
-import { Dispatch } from 'redux';
 
 type RemovalModalData = {
   reason: string;
@@ -59,8 +59,8 @@ const RemovalModalComponent: React.FunctionComponent<
           <H5>This cannot be undone once confirmed</H5>
         </form>
       </div>
-      <div className={`${Classes.DIALOG_FOOTER}`}>
-        <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <Button onClick={onClose} icon="arrow-left">
             Cancel
           </Button>

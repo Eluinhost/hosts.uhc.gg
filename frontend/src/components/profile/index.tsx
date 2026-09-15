@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
-import { useSelector, useDispatch } from 'react-redux';
 import { Button, Intent, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
-import { Title } from '../Title';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+
 import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
+import { Title } from '../Title';
 
 const stateSelector = createSelector(
   (state: ApplicationState) => state.apiKey,

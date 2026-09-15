@@ -1,13 +1,14 @@
-import React, { useCallback } from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { TextField } from '../fields/TextField';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
 import { AddPermission } from '../../actions';
 import { Validator } from '../../services/Validator';
-import { Dispatch } from 'redux';
+import { ApplicationState } from '../../state/ApplicationState';
+import { TextField } from '../fields/TextField';
 
 type AddPermissionDialogData = {
   username: string;
@@ -15,7 +16,7 @@ type AddPermissionDialogData = {
 
 const addPermissionSelector = createSelector(
   (state: ApplicationState) => state.permissions.addDialog,
-  state => state.settings.isDarkMode,
+  (state: ApplicationState) => state.settings.isDarkMode,
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
@@ -69,12 +70,8 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
 export const AddPermissionDialog = reduxForm<AddPermissionDialogData>({
   form: 'add-permission-form',
   validate: validator.validate,
-  onSubmit: async (values: AddPermissionDialogData, dispatch: Dispatch): Promise<void> => {
-    try {
-      await dispatch(AddPermission.start(values.username));
-      dispatch(AddPermission.closeDialog());
-    } catch (err) {
-      throw new SubmissionError({ reason: 'Unexpected response from the server' });
-    }
+  onSubmit: (values: AddPermissionDialogData, dispatch: Dispatch) => {
+    dispatch(AddPermission.start(values.username));
+    dispatch(AddPermission.closeDialog());
   },
 })(AddPermissionDialogComponent);

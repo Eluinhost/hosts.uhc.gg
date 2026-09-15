@@ -1,12 +1,13 @@
-import React, { useCallback } from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
-import { RemovePermissionDialogState } from '../../state/PermissionsState';
-import { RemovePermission } from '../../actions';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
+import { RemovePermission } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
+import { RemovePermissionDialogState } from '../../state/PermissionsState';
 
 type RemovePermissionDialogStateSlice = {
   readonly state: RemovePermissionDialogState | null;
@@ -15,12 +16,12 @@ type RemovePermissionDialogStateSlice = {
 
 const removePermissionSelector = createSelector(
   (state: ApplicationState) => state.permissions.removeDialog,
-  state => state.settings.isDarkMode,
+  (state: ApplicationState) => state.settings.isDarkMode,
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
 const RemovePermissionDialogComponent: React.FunctionComponent<
-  RemovePermissionDialogStateSlice & InjectedFormProps<{}, RemovePermissionDialogStateSlice>
+  RemovePermissionDialogStateSlice & InjectedFormProps<Record<string, never>, RemovePermissionDialogStateSlice>
 > = ({ state, submitting, invalid, handleSubmit, error, isDarkMode }) => {
   const dispatch = useDispatch();
 
@@ -36,7 +37,8 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
     >
       <div className={`${Classes.DIALOG_BODY} remove-permission-body`}>
         <H5>
-          Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
+          Are you sure you want to remove &#39;{state ? state.permission : '...'}&#39; from /u/
+          {state ? state.username : '...'}
         </H5>
         {!!error && <Callout intent={Intent.DANGER}>{error}</Callout>}
       </div>
@@ -54,15 +56,11 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
   );
 };
 
-const RemovePermissionDialogForm = reduxForm<{}, RemovePermissionDialogStateSlice>({
+const RemovePermissionDialogForm = reduxForm<Record<string, never>, RemovePermissionDialogStateSlice>({
   form: 'remove-permission-form',
-  onSubmit: async (values: {}, dispatch: Dispatch): Promise<void> => {
-    try {
-      await dispatch(RemovePermission.start());
-      dispatch(RemovePermission.closeDialog());
-    } catch (err) {
-      throw new SubmissionError({ __error: 'Unexpected response from the server' });
-    }
+  onSubmit: (values: Record<string, never>, dispatch: Dispatch) => {
+    dispatch(RemovePermission.start());
+    dispatch(RemovePermission.closeDialog());
   },
 })(RemovePermissionDialogComponent);
 

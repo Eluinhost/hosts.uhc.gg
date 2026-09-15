@@ -1,10 +1,10 @@
+import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
 
-import { getAllModifierNames, getCreateModifiersState } from '../selectors';
 import { CREATE_MODIFIER } from '../actions';
+import { getAllModifierNames, getCreateModifiersState } from '../selectors';
 
 const mapStateToProps = createSelector(getCreateModifiersState, getAllModifierNames, (state, names) => ({
   ...state,
@@ -19,17 +19,16 @@ export const CreateModifierForm: React.FC = () => {
 
   const createModifier = useCallback((name: string) => dispatch(CREATE_MODIFIER.TRIGGER(name)), [dispatch]);
   const handleSubmit = useCallback(
-    (event: React.FormEvent): void => {
+    (event: React.SubmitEvent): void => {
       event.preventDefault();
 
       createModifier(modifier);
     },
     [createModifier, modifier],
   );
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>): void => setModifier(event.target.value),
-    [],
-  );
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
+    setModifier(event.target.value);
+  }, []);
 
   const alreadyExists = taken.includes(modifier.toLowerCase());
   const valid = !alreadyExists && modifier.length > 0;
@@ -38,12 +37,19 @@ export const CreateModifierForm: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <FormGroup label="Create new modifier:">
         <ControlGroup>
-          <InputGroup large type="string" value={modifier} onChange={handleChange} disabled={isFetching} required />
+          <InputGroup
+            size="large"
+            type="string"
+            value={modifier}
+            onChange={handleChange}
+            disabled={isFetching}
+            required
+          />
           <Button
             intent={alreadyExists ? Intent.DANGER : valid ? Intent.SUCCESS : Intent.NONE}
             type="submit"
             icon="upload"
-            large
+            size="large"
             disabled={!valid}
           />
         </ControlGroup>

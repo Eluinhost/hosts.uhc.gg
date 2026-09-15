@@ -1,11 +1,12 @@
-import { createReducer } from 'typesafe-redux-helpers';
 import { combineReducers, Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
+
+import { HostApplication, HostApplicationDetails } from '../models/HostApplication';
+import { BasicApiCallState, createBasicApiCallReducer, displayError } from '../state/createBasicApiCallReducer';
 
 import { HostApplications } from './actions';
-import { FetchHostingApplicationError } from './sagas';
-import { HostApplication, HostApplicationDetails } from '../models/HostApplication';
 import { reducer as quizQuestions } from './questions/reducer';
-import { BasicApiCallState, createBasicApiCallReducer, displayError } from '../state/createBasicApiCallReducer';
+import { FetchHostingApplicationError } from './sagas';
 
 export type HostApplicationDetailsState = BasicApiCallState<HostApplicationDetails | undefined>;
 
@@ -17,9 +18,13 @@ export type HostApplicationsState = {
 };
 
 const applications: Reducer<HostApplicationsState> = createReducer<HostApplicationsState>({
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   list: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   details: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   reviewing: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   creating: undefined!,
 })
   .forProperty(
@@ -54,7 +59,7 @@ const applications: Reducer<HostApplicationsState> = createReducer<HostApplicati
           ...state,
           [(payload as FetchHostingApplicationError).id]: {
             isFetching: false,
-            error: displayError((payload as FetchHostingApplicationError).cause),
+            error: displayError((payload as FetchHostingApplicationError).cause as Error),
             data: undefined,
           },
         }),
@@ -73,7 +78,7 @@ const applications: Reducer<HostApplicationsState> = createReducer<HostApplicati
       .withStartedAction(HostApplications.create.started, () => false)
       .withCompletedAction(HostApplications.create.completed, () => true)
       .build()
-      .handleAction(HostApplications.create.reset, state => ({ error: null, isFetching: false, data: false })),
+      .handleAction(HostApplications.create.reset, () => ({ error: null, isFetching: false, data: false })),
   );
 
 export const reducer = combineReducers({

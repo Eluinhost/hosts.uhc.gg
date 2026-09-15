@@ -1,22 +1,24 @@
-import React, { useCallback } from 'react';
-import { Match } from '../../models/Match';
-import { TeamStyle } from '../team-style';
-import { TagList } from '../tag-list';
 import { Button, Classes, H4, Intent, Tag } from '@blueprintjs/core';
 import { CubeIcon, PeopleIcon, TagIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
-import { RemovedReason } from './RemovedReason';
-import { UsernameLink } from '../UsernameLink';
-import { Link } from 'react-router';
-import { TimeFromNowTag } from '../time/TimeFromNowTag';
-import { HoverSwap } from '../HoverSwap';
-import { MatchOpensTag } from '../time/MatchOpensTag';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router';
 import { createSelector } from 'reselect';
+
+import { ApproveMatch, RemoveMatch } from '../../actions';
+import { Match } from '../../models/Match';
 import { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
-import { ApproveMatch, RemoveMatch } from '../../actions';
-import { ServerTag } from './ServerTag';
 import { HostStatus } from '../host-status';
+import { HoverSwap } from '../HoverSwap';
+import { TagList } from '../tag-list';
+import { TeamStyle } from '../team-style';
+import { MatchOpensTag } from '../time/MatchOpensTag';
+import { TimeFromNowTag } from '../time/TimeFromNowTag';
+import { UsernameLink } from '../UsernameLink';
+
+import { RemovedReason } from './RemovedReason';
+import { ServerTag } from './ServerTag';
 
 type MatchRowProps = {
   readonly match: Match;
@@ -28,7 +30,7 @@ type MatchRowProps = {
 const stateSelector = createSelector(
   matchesPermissions('hosting advisor'),
   getUsername,
-  (_: ApplicationState, props: MatchRowProps | undefined) => props!.match.author,
+  (_: ApplicationState, props: MatchRowProps | undefined) => props?.match.author,
   (isHostingAdvisor, username, author) => ({
     canApprove: isHostingAdvisor,
     canRemove: isHostingAdvisor || (username != null && username === author),
@@ -82,7 +84,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
           </HoverSwap>
         </Tag>
         {match.id !== 0 && (
-          <Tag intent={Intent.SUCCESS} className={`${Classes.LARGE}`} title="Unique ID">
+          <Tag intent={Intent.SUCCESS} className={Classes.LARGE} title="Unique ID">
             {match.id}
           </Tag>
         )}
@@ -91,7 +93,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         <HostStatus roles={match.roles} />
         <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon={<TagIcon />} />
         {match.tournament && (
-          <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
+          <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
             <TimelineBarChartIcon /> Tournament
           </Tag>
         )}
@@ -100,22 +102,22 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         <H4>
           <UsernameLink username={match.author} override={authorElement(match)} />
           {!!match.hostingName && <span> {match.hostingName}</span>}
-          <span>'s</span>
+          <span>&#39;s</span>
           <span> #{match.count}</span>
         </H4>
         <div className="match-tags">
-          <Tag intent={Intent.PRIMARY} large title={`Server version: ${match.mainVersion}`}>
+          <Tag intent={Intent.PRIMARY} size="large" title={`Server version: ${match.mainVersion}`}>
             <CubeIcon />
             &nbsp;&nbsp;<b>{match.version || match.mainVersion}</b>
           </Tag>
-          <Tag intent={Intent.DANGER} large>
+          <Tag intent={Intent.DANGER} size="large">
             <PeopleIcon /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
           </Tag>
           <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
         </div>
         <div className="server-tags">
-          {!!match.ip && <ServerTag title="Server IP" text={match.ip!} />}
-          {!!match.address && <ServerTag title="Server Address" text={match.address!} />}
+          {!!match.ip && <ServerTag title="Server IP" text={match.ip} />}
+          {!!match.address && <ServerTag title="Server Address" text={match.address} />}
           <ServerTag title="slots" text={`${match.slots} Slots`} />
           <ServerTag title="Map Size" text={`${match.mapSize}x${match.mapSize}`} />
           <ServerTag title="PVP Enabled/Meetup @" text={`${match.pvpEnabledAt}m / ${match.length}m`} />

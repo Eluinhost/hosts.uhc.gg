@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { SelectField, SelectFieldProps } from '../../components/fields/SelectField';
-import { useDispatch, useSelector } from 'react-redux';
-import { getListVersionsState } from '../selectors';
 import { FETCH_VERSIONS } from '../actions';
+import { getListVersionsState } from '../selectors';
 
 export type MainVersionFieldProps = Omit<SelectFieldProps, 'options'>;
 

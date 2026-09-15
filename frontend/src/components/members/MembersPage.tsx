@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button, H2, Intent, NonIdealState, Spinner, Tree, TreeEventHandler } from '@blueprintjs/core';
+import { flatten, map } from 'ramda';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector, Selector } from 'reselect';
-import { flatten, map } from 'ramda';
-import { ApplicationState } from '../../state/ApplicationState';
-import { getPermissions } from '../../state/Selectors';
-import { LetterFolder, NodeType, PermissionsState, UsernameNode } from '../../state/PermissionsState';
+
 import {
   AddPermission,
   FetchUserCountPerPermission,
@@ -13,10 +11,14 @@ import {
   PermissionNode,
   RemovePermission,
 } from '../../actions';
-import { AddPermissionDialog } from './AddPermissionDialog';
-import { RemovePermissionDialog } from './RemovePermissionDialog';
+import { ApplicationState } from '../../state/ApplicationState';
+import { NodeType, PermissionsState } from '../../state/PermissionsState';
+import { getPermissions } from '../../state/Selectors';
 import { Title } from '../Title';
+
+import { AddPermissionDialog } from './AddPermissionDialog';
 import { ModerationLog } from './ModerationLog';
+import { RemovePermissionDialog } from './RemovePermissionDialog';
 
 type MembersPageState = PermissionsState & {
   readonly canModify: string[];
@@ -27,11 +29,12 @@ const stateSelector: Selector<ApplicationState, MembersPageState> = createSelect
   (state: ApplicationState) => state.permissions,
   (permissions, permissionState) => ({
     ...permissionState,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     canModify: flatten(map(perm => permissionState.allowableModifications[perm] || [], permissions)),
   }),
 );
 
-export const MembersPage = React.memo(() => {
+export const MembersPage = () => {
   const { nodes, isFetching, canModify } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -75,7 +78,7 @@ export const MembersPage = React.memo(() => {
           openAddPermission(node.nodeData.permission);
           break;
         case 'username':
-          openRemovePermission(node.nodeData.permission, (node.nodeData as UsernameNode).username);
+          openRemovePermission(node.nodeData.permission, node.nodeData.username);
       }
     },
     [canModifyFn, openAddPermission, openRemovePermission],
@@ -106,7 +109,7 @@ export const MembersPage = React.memo(() => {
           expandPermissionNode(node.nodeData.permission);
           break;
         case 'letter':
-          expandLetterNode(node.nodeData.permission, (node.nodeData as LetterFolder).letter);
+          expandLetterNode(node.nodeData.permission, node.nodeData.letter);
           break;
       }
     },
@@ -162,4 +165,4 @@ export const MembersPage = React.memo(() => {
       )}
     </div>
   );
-});
+};

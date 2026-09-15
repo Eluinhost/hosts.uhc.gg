@@ -1,23 +1,24 @@
 import { SagaIterator } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
-import { watchUpcomingMatches } from './updateUpcoming';
-import { watchRemoveMatch } from './removeMatch';
-import { watchApproveMatch } from './approveMatch';
-import { watchLoadHostHistory } from './loadHostHistory';
-import { watchFetchMatchDetails } from './fetchMatchDetails';
-import { refreshAuthentication } from './refreshAuthentication';
-import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
-import { watchHostingRules } from './hostingRules';
-import { watchSyncTime } from './timeSync';
-import { watchSettingsToggle } from './watchSettingsToggle';
-import { watchPermissions } from './permissions';
-import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
-import { watchApiKey } from './apiKey';
-import { listenForModifierActions } from '../modifiers/sagas';
-import { listenForVersionActions } from '../versions/sagas';
 import { fixHostFormVersionOnVersionsUpdate, removeVanillaPlusWhenOtherScenarioAdded } from '../components/host/saga';
 import { listenForHostingApplicationSagas } from '../hosting-applications/sagas';
+import { listenForModifierActions } from '../modifiers/sagas';
+import { listenForVersionActions } from '../versions/sagas';
+
+import { watchApiKey } from './apiKey';
+import { watchApproveMatch } from './approveMatch';
+import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
+import { watchFetchMatchDetails } from './fetchMatchDetails';
+import { watchHostingRules } from './hostingRules';
+import { watchLoadHostHistory } from './loadHostHistory';
+import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
+import { watchPermissions } from './permissions';
+import { refreshAuthentication } from './refreshAuthentication';
+import { watchRemoveMatch } from './removeMatch';
+import { watchSyncTime } from './timeSync';
+import { watchUpcomingMatches } from './updateUpcoming';
+import { watchSettingsToggle } from './watchSettingsToggle';
 
 // Don't include watchSettingsToggle here, we run that once at the beggining of the store to make sure data
 // is loaded before first render

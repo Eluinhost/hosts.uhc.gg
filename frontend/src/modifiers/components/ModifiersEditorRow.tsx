@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from 'react';
 import { Classes, Intent, MaybeElement, Tag } from '@blueprintjs/core';
 import { IconName, RefreshIcon } from '@blueprintjs/icons';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { Modifier } from '../Modifier';
 import { ApplicationState } from '../../state/ApplicationState';
-import { getDeleteModifersState } from '../selectors';
 import { DELETE_MODIFIER } from '../actions';
+import { Modifier } from '../Modifier';
+import { getDeleteModifersState } from '../selectors';
 
 export type ModifiersEditorRowProps = {
   modifier: Modifier;
@@ -29,8 +29,12 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
 
   const [isHovered, setIsHovered] = useState(false);
 
-  const onMouseEnter = useCallback(() => setIsHovered(true), []);
-  const onMouseLeave = useCallback(() => setIsHovered(false), []);
+  const onMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+  const onMouseLeave = useCallback(() => {
+    setIsHovered(false);
+  }, []);
 
   const onDelete = useCallback(() => dispatch(DELETE_MODIFIER.TRIGGER(modifier.id)), [dispatch, modifier.id]);
 
@@ -49,8 +53,8 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
         interactive
         title="Delete modifier"
         onClick={onDelete}
-        large
-        rightIcon={icon}
+        size="large"
+        endIcon={icon}
         intent={isHovered ? Intent.DANGER : Intent.NONE}
         className="modifiers-editor_entry_tag"
       >

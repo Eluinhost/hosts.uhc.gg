@@ -1,11 +1,12 @@
-import { MatchesApi, ApiErrors } from '../api';
+import { Intent } from '@blueprintjs/core';
 import { SagaIterator } from 'redux-saga';
 import { select, put, call, takeEvery } from 'redux-saga/effects';
+
 import { ApproveMatch } from '../actions';
-import { getAccessToken, getUsername } from '../state/Selectors';
-import { ApplicationState } from '../state/ApplicationState';
+import { MatchesApi, ApiErrors } from '../api';
 import { showToast } from '../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
+import { ApplicationState } from '../state/ApplicationState';
+import { getAccessToken, getUsername } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 
 function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaIterator {

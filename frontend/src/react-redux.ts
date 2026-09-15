@@ -3,8 +3,9 @@ import {
   useDispatch as originalUseDispatch,
   useSelector as originalUseSelector,
 } from 'react-redux-original';
-import { ApplicationState } from './state/ApplicationState';
 import { createStore } from 'redux';
+
+import { ApplicationState } from './state/ApplicationState';
 
 export * from 'react-redux-original';
 

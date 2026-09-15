@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
-import { InjectedFormProps, reduxForm } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { ApplicationState } from '../../state/ApplicationState';
-import { RulesField } from './RulesField';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
 import { SetHostingRules } from '../../actions';
 import { Validator } from '../../services/Validator';
-import { Dispatch } from 'redux';
+import { ApplicationState } from '../../state/ApplicationState';
+
+import { RulesField } from './RulesField';
 
 type SetRulesDialogData = {
   rules: string;
@@ -40,6 +42,8 @@ const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> =
   handleSubmit,
   submitting,
   invalid,
+  // coming from 3rd party, safe
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   change,
 }) => {
   const dispatch = useDispatch();

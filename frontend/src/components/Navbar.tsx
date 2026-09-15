@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
-import { useLocation, Link } from 'react-router';
 import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
-import { Username } from './Username';
-import { createSelector } from 'reselect';
-import { isDarkMode } from '../state/Selectors';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, Link } from 'react-router';
+import { createSelector } from 'reselect';
+
 import { Settings } from '../actions';
+import { isDarkMode } from '../state/Selectors';
+
+import { Username } from './Username';
 import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
@@ -19,7 +21,7 @@ const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) 
 
   return (
     <Link to={to}>
-      <Button minimal icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
+      <Button variant="minimal" icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
         {text}
       </Button>
     </Link>
@@ -62,7 +64,7 @@ export const Navbar: React.FC = () => {
       </NavbarGroup>
       <NavbarGroup>
         <Username />
-        <Button minimal icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
+        <Button variant="minimal" icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
       </NavbarGroup>
     </BpNavbar>
   );

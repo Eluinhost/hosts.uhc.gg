@@ -1,6 +1,6 @@
-import React from 'react';
 import { Classes, Intent, Tag } from '@blueprintjs/core';
 import { PersonIcon, TickCircleIcon } from '@blueprintjs/icons';
+import React from 'react';
 
 type HostStatusProps = {
   // matches returned by the conflicts endpoint historically had no roles, so this can be undefined
@@ -10,7 +10,7 @@ type HostStatusProps = {
 export const HostStatus: React.FC<HostStatusProps> = ({ roles = [] }) => {
   if (roles.indexOf('host') !== -1) {
     return (
-      <Tag intent={Intent.SUCCESS} className={`${Classes.LARGE}`} title="Verified Host">
+      <Tag intent={Intent.SUCCESS} className={Classes.LARGE} title="Verified Host">
         <TickCircleIcon /> Verified Host
       </Tag>
     );
@@ -18,7 +18,7 @@ export const HostStatus: React.FC<HostStatusProps> = ({ roles = [] }) => {
 
   if (roles.indexOf('trial host') !== -1) {
     return (
-      <Tag intent={Intent.WARNING} className={`${Classes.LARGE}`} title="Trial Host">
+      <Tag intent={Intent.WARNING} className={Classes.LARGE} title="Trial Host">
         <PersonIcon /> Trial Host
       </Tag>
     );

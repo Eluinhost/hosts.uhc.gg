@@ -1,25 +1,30 @@
-import React, { useCallback, useState } from 'react';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
+import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
 import * as Mark from 'markup-js';
 import moment from 'moment-timezone';
-import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
-import { Preset, presets } from './presets';
-import { Markdown } from '../Markdown';
-import { getLocalPresets } from '../../state/Selectors';
-import { Presets } from '../../actions';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
+
+import { Presets } from '../../actions';
+import { CreateMatchData } from '../../models/CreateMatchData';
+import { getLocalPresets } from '../../state/Selectors';
+import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
+import { Markdown } from '../Markdown';
+
+import { Preset, presets } from './presets';
+
+export type TemplateContext = CreateMatchData & { teamStyle: string; author: string };
 
 export type TemplateFieldProps = BaseFieldProps & {
   readonly label?: React.ReactElement | string;
   readonly required: boolean;
   readonly disabled?: boolean;
   readonly className?: string;
-  readonly context: any;
+  readonly context: TemplateContext;
   readonly changeTemplate: (value: string) => void;
 };
 
-export const renderToMarkdown = (template: string, context: any): string =>
+export const renderToMarkdown = (template: string, context: TemplateContext): string =>
   Mark.up(template, context, {
     pipes: {
       moment: (date: moment.Moment, format: string): string => date.clone().utc().format(format),
@@ -31,7 +36,7 @@ const TemplateTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProp
 );
 
 const PreviewTab: React.FunctionComponent<WrappedFieldProps & TemplateFieldProps> = ({ input, context }) => (
-  <Markdown markdown={renderToMarkdown(input!.value, context)} />
+  <Markdown markdown={renderToMarkdown(typeof input.value === 'string' ? input.value : String(input.value), context)} />
 );
 
 const samples = [
@@ -59,7 +64,7 @@ const samples = [
   ['{{pvpEnabledAt}}', 'When PVP turns on'],
 ];
 
-const renderSamples = (context: any): React.ReactElement[] =>
+const renderSamples = (context: TemplateContext): React.ReactElement[] =>
   samples.map((sample, index) => (
     <tr key={index}>
       <td className={Classes.MONOSPACE_TEXT}>{sample[0]}</td>
@@ -99,7 +104,7 @@ const PresetButton: React.FunctionComponent<{ readonly onClick: () => void; read
   onClick,
   id,
 }) => (
-  <Button onClick={onClick} intent={Intent.PRIMARY} large>
+  <Button onClick={onClick} intent={Intent.PRIMARY} size="large">
     {id}
   </Button>
 );
@@ -113,7 +118,7 @@ const PresetsTab: React.FunctionComponent<{
   <Callout intent={Intent.PRIMARY}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
       <H5 style={{ margin: 0 }}>Built-in presets</H5>
-      <Button minimal icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
+      <Button variant="minimal" icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
         Save current template as preset
       </Button>
     </div>
@@ -132,7 +137,14 @@ const PresetsTab: React.FunctionComponent<{
         {localPresets.map(preset => (
           <div key={preset.name} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <PresetButton onClick={onPresetClick(preset)} id={preset.name} />
-            <Button minimal icon="trash" intent={Intent.DANGER} onClick={() => onDeleteLocalPreset(preset.name)}>
+            <Button
+              variant="minimal"
+              icon="trash"
+              intent={Intent.DANGER}
+              onClick={() => {
+                onDeleteLocalPreset(preset.name);
+              }}
+            >
               Remove
             </Button>
           </div>
@@ -149,7 +161,9 @@ const TemplateFieldComponent: React.FunctionComponent<WrappedFieldProps & Templa
 
   const [currentTabId, setCurrentTabId] = useState<string | number>('host-form-template-tab-template');
 
-  const onTabChange = (newTabId: string | number): void => setCurrentTabId(newTabId);
+  const onTabChange = (newTabId: string | number): void => {
+    setCurrentTabId(newTabId);
+  };
 
   const onPresetClick = useCallback(
     (p: Preset) => () => {
@@ -173,7 +187,7 @@ const TemplateFieldComponent: React.FunctionComponent<WrappedFieldProps & Templa
 
     const preset = {
       name: trimmedName,
-      template: input.value || '',
+      template: input.value as string,
     };
 
     const nextLocalPresets = [
@@ -200,7 +214,7 @@ const TemplateFieldComponent: React.FunctionComponent<WrappedFieldProps & Templa
   return (
     <FieldWrapper meta={meta} required={required} hideErrors>
       <div className={`markdown-field-wrapper ${className || ''}`}>
-        {!!label && <RenderLabel label={label!} required={required} />}
+        {!!label && <RenderLabel label={label} required={required} />}
         <Tabs id="host-form-template-tabs" onChange={onTabChange} selectedTabId={currentTabId}>
           <Tab id="host-form-template-tab-template" title="Template" panel={<TemplateTab {...props} />} />
           <Tab id="host-form-template-tab-preview" title="Preview" panel={<PreviewTab {...props} />} />

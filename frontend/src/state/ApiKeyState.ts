@@ -1,6 +1,7 @@
-import { createReducer } from 'typesafe-redux-helpers';
-import { FetchApiKey, RegenerateApiKey } from '../actions';
 import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
+
+import { FetchApiKey, RegenerateApiKey } from '../actions';
 
 export type ApiKeyState = {
   readonly fetching: boolean;

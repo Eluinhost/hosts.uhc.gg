@@ -1,8 +1,8 @@
-import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
-import { toPairs } from 'ramda';
 import { Classes, TreeNodeInfo, Spinner } from '@blueprintjs/core';
+import { toPairs } from 'ramda';
 import React from 'react';
+import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
 import {
   AddPermission,
@@ -158,16 +158,17 @@ export const reducer: Reducer<PermissionsState> = createReducer<PermissionsState
       let childNodes: Array<TreeNodeInfo<NodeType>>;
 
       if (Array.isArray(action.payload.result)) {
-        const usernames = action.payload.result as string[];
+        const usernames = action.payload.result;
 
         childNodes = usernames
           .sort((left, right) => left.toLocaleLowerCase().localeCompare(right.toLocaleLowerCase()))
           .map(name => createUsernameNode(permission, name));
       } else {
-        const letters = action.payload.result as { [key: string]: number };
+        const letters = action.payload.result;
 
         childNodes = toPairs(letters)
           .map(pair => createLetterFolder(permission, pair[0], pair[1]))
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           .sort((left, right) => left.nodeData!.letter.localeCompare(right.nodeData!.letter));
       }
 

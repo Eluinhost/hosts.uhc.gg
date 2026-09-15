@@ -1,9 +1,10 @@
-import { Match } from '../models/Match';
 import moment from 'moment-timezone';
 import qs from 'query-string';
 
-import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 import { CreateMatchData } from '../models/CreateMatchData';
+import { Match } from '../models/Match';
+
+import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({

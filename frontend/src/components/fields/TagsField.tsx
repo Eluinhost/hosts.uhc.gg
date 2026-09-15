@@ -1,8 +1,9 @@
-import React, { PropsWithChildren } from 'react';
-import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper } from './FieldWrapper';
 import { Intent, TagInput } from '@blueprintjs/core';
 import { uniqBy, toLower, union } from 'ramda';
+import React, { PropsWithChildren } from 'react';
+import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
+
+import { FieldWrapper } from './FieldWrapper';
 
 export type TagsFieldProps = BaseFieldProps & {
   readonly label: string;
@@ -18,7 +19,7 @@ const onAdd =
   (newValues: string[]): void => {
     if (!input) return;
 
-    const current = (input.value as string[]) || [];
+    const current = (input.value as string[] | undefined) || [];
     const combined = combineTags(current, newValues);
 
     input.onChange(combined);
@@ -29,7 +30,7 @@ const onRemove =
   (_: unknown, removed: number): void => {
     if (!input) return;
 
-    const current = (input.value as string[]) || [];
+    const current = (input.value as string[] | undefined) || [];
 
     const newValues = current.filter((_, index) => index !== removed);
 
@@ -41,11 +42,14 @@ const onRemove =
 const renderField: React.FC<PropsWithChildren<WrappedFieldProps & TagsFieldProps>> = props => {
   const { meta, label, required, input, disabled, children } = props;
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const values = input && input.value ? (input.value as string[]) : [];
+
   return (
     <FieldWrapper meta={meta} label={label} required={required}>
       <TagInput
         intent={!meta.valid ? Intent.DANGER : Intent.NONE}
-        values={input && input.value ? input.value : []}
+        values={values}
         onAdd={onAdd(input)}
         onRemove={onRemove(input)}
         inputProps={{ disabled }}

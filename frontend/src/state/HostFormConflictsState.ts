@@ -1,8 +1,8 @@
-import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
-import { Match } from '../models/Match';
 import { HostFormConflicts } from '../actions';
+import { Match } from '../models/Match';
 
 export type HostFormConflictsState = {
   readonly conflicts: Match[];

@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import moment from 'moment-timezone';
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
-import { HostApplication } from '../../models/HostApplication';
+import moment from 'moment-timezone';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { HostApplications } from '../actions';
 import { createSelector } from 'reselect';
-import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
-import { HostApplicationDetailsState } from '../reducer';
+
+import { HostApplication } from '../../models/HostApplication';
 import { ApplicationState } from '../../state/ApplicationState';
+import { HostApplications } from '../actions';
+import { HostApplicationDetailsState } from '../reducer';
+import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
 
 interface ExistingHostApplicationProps {
   application: HostApplication;
@@ -21,11 +22,7 @@ const selector = createSelector(
   details => details,
 );
 
-export const ExistingHostApplication = React.memo(function ExistingHostApplication({
-  application,
-  canReview,
-  isOwn,
-}: ExistingHostApplicationProps) {
+export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = ({ application, canReview, isOwn }) => {
   const dispatch = useDispatch();
   const detailsState = useSelector(state => selector(state, application.id));
   const { isFetching: isReviewing } = useSelector(getHostApplicationsReviewingState);
@@ -69,17 +66,18 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
     [application.id, declineReason, handleReviewed, dispatch],
   );
 
-  const handleDeclineReasonChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => setDeclineReason(evt.target.value),
-    [],
-  );
+  const handleDeclineReasonChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDeclineReason(evt.target.value);
+  }, []);
 
   const openDeclineDialog = useCallback(() => {
     setDeclineReason('');
     setIsDeclineDialogOpen(true);
   }, []);
 
-  const closeDeclineDialog = useCallback(() => setIsDeclineDialogOpen(false), []);
+  const closeDeclineDialog = useCallback(() => {
+    setIsDeclineDialogOpen(false);
+  }, []);
 
   const intent = useMemo((): Intent => {
     if (application.status === 'approved') return Intent.SUCCESS;
@@ -110,7 +108,7 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button minimal icon={isExpanded ? 'chevron-up' : 'chevron-down'} onClick={toggleExpanded}>
+        <Button variant="minimal" icon={isExpanded ? 'chevron-up' : 'chevron-down'} onClick={toggleExpanded}>
           {isExpanded ? 'Hide answers' : 'View answers'}
         </Button>
       </div>
@@ -185,4 +183,4 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
       </Dialog>
     </div>
   );
-});
+};

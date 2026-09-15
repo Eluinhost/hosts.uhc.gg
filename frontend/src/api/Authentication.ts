@@ -1,4 +1,5 @@
 import { LoginPayload } from '../actions';
+
 import { authHeaders, fetchObject } from './util';
 
 export const callRefreshTokens = (refreshToken: string): Promise<LoginPayload> =>

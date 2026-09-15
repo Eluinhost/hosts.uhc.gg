@@ -1,24 +1,30 @@
-import { createSelector, Selector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
 import { identity } from 'ramda';
-import { HostApplicationsState } from './reducer';
+import { createSelector } from 'reselect';
+
+import { ApplicationState } from '../state/ApplicationState';
 import { getPermissions, getUsername } from '../state/Selectors';
 
-export const getHostApplicationsListState: Selector<ApplicationState, HostApplicationsState['list']> = createSelector(
-  state => state.hostingApplications.applications.list,
+export const getHostApplicationsListState = createSelector(
+  (state: ApplicationState) => state.hostingApplications.applications.list,
   identity,
 );
 
-export const getHostApplicationsDetailsState: Selector<ApplicationState, HostApplicationsState['details']> =
-  createSelector(state => state.hostingApplications.applications.details, identity);
+export const getHostApplicationsDetailsState = createSelector(
+  (state: ApplicationState) => state.hostingApplications.applications.details,
+  identity,
+);
 
-export const getHostApplicationsReviewingState: Selector<ApplicationState, HostApplicationsState['reviewing']> =
-  createSelector(state => state.hostingApplications.applications.reviewing, identity);
+export const getHostApplicationsReviewingState = createSelector(
+  (state: ApplicationState) => state.hostingApplications.applications.reviewing,
+  identity,
+);
 
-export const getHostApplicationsCreatingState: Selector<ApplicationState, HostApplicationsState['creating']> =
-  createSelector(state => state.hostingApplications.applications.creating, identity);
+export const getHostApplicationsCreatingState = createSelector(
+  (state: ApplicationState) => state.hostingApplications.applications.creating,
+  identity,
+);
 
-export const getHasSubmittedHostApplicationSuccessfully: Selector<ApplicationState, boolean> = createSelector(
+export const getHasSubmittedHostApplicationSuccessfully = createSelector(
   getHostApplicationsCreatingState,
   state => state.data,
 );

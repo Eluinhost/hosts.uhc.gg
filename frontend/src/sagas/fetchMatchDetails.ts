@@ -1,11 +1,12 @@
-import { MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
-import { put, select, call, takeLatest } from 'redux-saga/effects';
-import { FetchMatchDetails } from '../actions';
-import { Match } from '../models/Match';
-import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
 import moment from 'moment-timezone';
 import { find } from 'ramda';
+import { SagaIterator } from 'redux-saga';
+import { put, select, call, takeLatest } from 'redux-saga/effects';
+
+import { FetchMatchDetails } from '../actions';
+import { MatchesApi } from '../api';
+import { Match } from '../models/Match';
+import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 
 function* fetchMatchDetailsSaga(action: ReturnType<typeof FetchMatchDetails.start>): SagaIterator {

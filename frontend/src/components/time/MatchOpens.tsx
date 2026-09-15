@@ -1,7 +1,8 @@
-import React from 'react';
 import moment from 'moment-timezone';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+
 import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 type Props = {

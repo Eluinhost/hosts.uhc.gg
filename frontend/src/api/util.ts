@@ -1,5 +1,6 @@
-import { BadDataError, ForbiddenError, NotAuthenticatedError, NotFoundError, UnexpectedResponseError } from './Errors';
 import { includes, always } from 'ramda';
+
+import { BadDataError, ForbiddenError, NotAuthenticatedError, NotFoundError, UnexpectedResponseError } from './Errors';
 
 export const verifyStatus =
   (expected: number[] | number = 200) =>
@@ -7,9 +8,10 @@ export const verifyStatus =
     if (includes(response.status, Array.isArray(expected) ? expected : [expected])) return response;
 
     switch (response.status) {
-      case 400:
+      case 400: {
         const error = await response.text();
         throw new BadDataError(error);
+      }
       case 401:
         throw new NotAuthenticatedError();
       case 403:
@@ -41,7 +43,7 @@ export const fetchObject = <T>(options: ApiCallParams): Promise<T> =>
   fetch(options.url, options.config).then(verifyStatus(options.status)).then(toJson<T>());
 
 export const maybeFetchObject = <T>(options: ApiCallParams): Promise<T | null> =>
-  fetchObject<T>(options).catch(err => {
+  fetchObject<T>(options).catch((err: unknown) => {
     if (err instanceof NotFoundError) return null;
 
     throw err;

@@ -1,5 +1,5 @@
-import React from 'react';
 import { Classes, Intent, Tag } from '@blueprintjs/core';
+import React from 'react';
 
 type Props = {
   readonly intent: Intent;
@@ -11,7 +11,7 @@ type Props = {
 export const TagList: React.FC<Props> = ({ intent, icon, items }) => (
   <>
     {items.map((item, index) => (
-      <Tag key={index} intent={intent} className={`${Classes.LARGE}`}>
+      <Tag key={index} intent={intent} className={Classes.LARGE}>
         {icon} {item}
       </Tag>
     ))}

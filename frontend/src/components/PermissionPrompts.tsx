@@ -1,6 +1,7 @@
-import React from 'react';
 import { Button, NonIdealState } from '@blueprintjs/core';
+import React from 'react';
 import { Link } from 'react-router';
+
 import { LoginButton } from './LoginButton';
 
 /**

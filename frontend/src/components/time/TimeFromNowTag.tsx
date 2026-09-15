@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import moment from 'moment-timezone';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Intent, Tag, TagProps } from '@blueprintjs/core';
 import { TimeIcon } from '@blueprintjs/icons';
+import moment from 'moment-timezone';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+
+import { ApplicationState } from '../../state/ApplicationState';
 
 type Props = {
   readonly time: moment.Moment;
@@ -18,15 +19,19 @@ const stateSelector = createSelector(
   }),
 );
 
-export const TimeFromNowTag: React.FC<Props> = React.memo(props => {
+export const TimeFromNowTag: React.FC<Props> = props => {
   const { offset } = useSelector(stateSelector);
   const { time, hideSuffix } = props;
 
   const [currentTime, setCurrentTime] = useState(moment.utc());
 
   useEffect(() => {
-    const timerId = window.setInterval(() => setCurrentTime(moment.utc()), 2000);
-    return () => window.clearInterval(timerId);
+    const timerId = window.setInterval(() => {
+      setCurrentTime(moment.utc());
+    }, 2000);
+    return () => {
+      window.clearInterval(timerId);
+    };
   }, []);
 
   const { text, intent } = useMemo(() => {
@@ -52,4 +57,4 @@ export const TimeFromNowTag: React.FC<Props> = React.memo(props => {
       <TimeIcon /> {text}
     </Tag>
   );
-});
+};

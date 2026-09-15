@@ -1,21 +1,23 @@
-import React, { useCallback, useEffect } from 'react';
 import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
-import { UsernameLink } from '../UsernameLink';
-import { TeamStyle } from '../team-style';
-import { ClipboardControlGroup } from '../clipboard-control-group';
-import { Markdown } from '../Markdown';
-import { TimeFromNowTag } from '../time/TimeFromNowTag';
-import { MatchOpens } from '../time/MatchOpens';
-import { MatchDetailsState } from '../../state/MatchDetailsState';
+import { CubeIcon, GlobeIcon, PeopleIcon, TagIcon, TickIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
+
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
+import { MatchDetailsState } from '../../state/MatchDetailsState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
-import { RemovedTag } from './RemovedTag';
-import { RemovedInfo } from './RemovedInfo';
+import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
-import { CubeIcon, GlobeIcon, PeopleIcon, TagIcon, TickIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
+import { Markdown } from '../Markdown';
+import { TeamStyle } from '../team-style';
+import { MatchOpens } from '../time/MatchOpens';
+import { TimeFromNowTag } from '../time/TimeFromNowTag';
+import { UsernameLink } from '../UsernameLink';
+
+import { RemovedInfo } from './RemovedInfo';
+import { RemovedTag } from './RemovedTag';
 
 type StateProps = {
   readonly details: MatchDetailsState;
@@ -64,9 +66,9 @@ export const MatchDetails: React.FC<OwnProps> = props => {
   }, [id, clear, load]);
 
   const renderTags = useCallback(
-    (tags: string[]): React.ReactElement<any>[] =>
+    (tags: string[]): React.ReactElement[] =>
       tags.map((tag, index) => (
-        <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
+        <Tag intent={Intent.PRIMARY} className={Classes.LARGE} title="Tag" key={index}>
           <TagIcon /> {tag}
         </Tag>
       )),
@@ -74,9 +76,9 @@ export const MatchDetails: React.FC<OwnProps> = props => {
   );
 
   const renderScenarios = useCallback(
-    (scenarios: string[]): React.ReactElement<any>[] =>
+    (scenarios: string[]): React.ReactElement[] =>
       scenarios.map((scenario, index) => (
-        <Tag intent={Intent.NONE} className={`${Classes.LARGE}`} title="Scenario" key={index}>
+        <Tag intent={Intent.NONE} className={Classes.LARGE} title="Scenario" key={index}>
           {scenario}
         </Tag>
       )),
@@ -120,13 +122,13 @@ export const MatchDetails: React.FC<OwnProps> = props => {
     <div className={`${Classes.CARD} match-details`}>
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
-          <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens" />
-          <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
+          <TimeFromNowTag time={opens} className={Classes.LARGE} title="Opens" />
+          <Tag intent={Intent.SUCCESS} title="Region - Location" className={Classes.LARGE}>
             <GlobeIcon /> {region} - {location}
           </Tag>
           <HostStatus roles={roles} />
           {tournament && (
-            <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
+            <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
               <TimelineBarChartIcon /> Tournament
             </Tag>
           )}
@@ -135,7 +137,7 @@ export const MatchDetails: React.FC<OwnProps> = props => {
 
         <div className="match-details__header__content">
           <H2>
-            {hostingName || author}'s #{count}
+            {hostingName || author}&#39;s #{count}
           </H2>
           <H4>
             <MatchOpens time={opens} />
@@ -145,10 +147,10 @@ export const MatchDetails: React.FC<OwnProps> = props => {
 
         <div className="match-details__header__floating-tags__bottom">
           <div>
-            <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
+            <Tag intent={Intent.DANGER} title="Team style" className={Classes.LARGE}>
               <PeopleIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
             </Tag>
-            <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} large>
+            <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} size="large">
               <CubeIcon /> {version}
             </Tag>
             {renderTags(tags)}
@@ -157,12 +159,12 @@ export const MatchDetails: React.FC<OwnProps> = props => {
         </div>
       </div>
       <div className="match-details__server-address">
-        {!!ip && <ClipboardControlGroup value={ip!} />}
+        {!!ip && <ClipboardControlGroup value={ip} />}
 
-        {!!address && <ClipboardControlGroup value={address!} />}
+        {!!address && <ClipboardControlGroup value={address} />}
       </div>
       <div className="match-details__extra-info">
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           PVP @
           <input
             className={`${Classes.INPUT} ${Classes.FILL}`}
@@ -172,12 +174,12 @@ export const MatchDetails: React.FC<OwnProps> = props => {
           />
         </label>
 
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Meetup @
           <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${length} minutes`} readOnly />
         </label>
 
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Map
           <input
             className={`${Classes.INPUT} ${Classes.FILL}`}
@@ -186,7 +188,7 @@ export const MatchDetails: React.FC<OwnProps> = props => {
             readOnly
           />
         </label>
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Slots
           <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${slots} slots`} readOnly />
         </label>

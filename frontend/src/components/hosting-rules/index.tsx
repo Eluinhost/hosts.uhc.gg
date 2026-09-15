@@ -1,12 +1,14 @@
-import React, { useCallback, useState, useMemo } from 'react';
 import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
-import { Markdown } from '../Markdown';
-import { SetRulesDialog } from './SetRulesDialog';
-import { WithPermission } from '../WithPermission';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+
 import { GetHostingRules, SetHostingRules } from '../../actions';
 import { ApplicationState } from '../../state/ApplicationState';
+import { Markdown } from '../Markdown';
+import { WithPermission } from '../WithPermission';
+
+import { SetRulesDialog } from './SetRulesDialog';
 
 const rulesSelector = createSelector(
   (state: ApplicationState) => state.rules,
@@ -26,7 +28,9 @@ export const HostingRules: React.FC = () => {
     setAreRulesOpen(prev => !prev);
   }, [areRulesOpen, dispatch]);
 
-  const stopPropagation = useCallback((e: React.MouseEvent<any>) => e.stopPropagation(), []);
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   const rulesToShow = useMemo(() => {
     if (rules.data) return rules.data.content;
@@ -59,7 +63,7 @@ export const HostingRules: React.FC = () => {
             </div>
           </WithPermission>
           {!!rules.error && <Callout intent={Intent.DANGER}>{rules.error}</Callout>}
-          {!!rulesToShow && <Markdown markdown={rulesToShow!} />}
+          {!!rulesToShow && <Markdown markdown={rulesToShow} />}
         </div>
       </Collapse>
     </Callout>

@@ -1,28 +1,30 @@
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
-import { HostingPage } from './host';
 import { Classes, NonIdealState } from '@blueprintjs/core';
-import { Route, Routes, useLocation } from 'react-router';
-import { LoginPage } from './LoginPage';
-import { HomePage } from './HomePage';
-import { UpcomingMatchesPage } from './upcoming-matches-page';
-import { Navbar } from './Navbar';
-import { MembersPage } from './members';
-import { ProfilePage } from './profile';
-import { WithPermission } from './WithPermission';
-import { HistoryPage } from './host-history-page';
-import { useSelector } from 'react-redux';
-import { isDarkMode, isLoggedIn } from '../state/Selectors';
-import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { useGlobalHotkeys } from './useGlobalHotkeys';
-import { MatchDetailsPage } from './match-details-page';
+import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
-import { TimeSettings } from './time/TimeSettings';
-import { Footer } from './footer';
 import Helmet from 'react-helmet';
-import { ModifiersPage } from '../modifiers/components/ModifiersPage';
-import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useLocation } from 'react-router';
+
 import { ApplyHostApplicationPage } from '../hosting-applications/components/ApplyHostApplication';
+import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
 import { QuizManagementPage } from '../hosting-applications/questions/components/QuizManagementPage';
+import { ModifiersPage } from '../modifiers/components/ModifiersPage';
+import { isDarkMode, isLoggedIn } from '../state/Selectors';
+
+import { Footer } from './footer';
+import { HomePage } from './HomePage';
+import { HostingPage } from './host';
+import { HistoryPage } from './host-history-page';
+import { LoginPage } from './LoginPage';
+import { MatchDetailsPage } from './match-details-page';
+import { MembersPage } from './members';
+import { Navbar } from './Navbar';
+import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
+import { ProfilePage } from './profile';
+import { TimeSettings } from './time/TimeSettings';
+import { UpcomingMatchesPage } from './upcoming-matches-page';
+import { useGlobalHotkeys } from './useGlobalHotkeys';
+import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
 
@@ -113,14 +115,18 @@ export const App: React.FC = () => {
 
   const darkModeEnabled = useSelector(isDarkMode);
   const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
-  const onScroll = useCallback(() => setNavbarSticky(window.scrollY > 50), []);
+  const onScroll = useCallback(() => {
+    setNavbarSticky(window.scrollY > 50);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('scroll', onScroll);
-    return () => document.removeEventListener('scroll', onScroll);
+    return () => {
+      document.removeEventListener('scroll', onScroll);
+    };
   }, [onScroll]);
 
-  let classes = ['full-page'];
+  const classes = ['full-page'];
 
   if (darkModeEnabled) classes.push(Classes.DARK);
   if (navbarSticky) classes.push('navbar-sticky');

@@ -1,5 +1,5 @@
-import React from 'react';
 import { NonIdealState, Spinner } from '@blueprintjs/core';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { MatchRow } from '../match-row';

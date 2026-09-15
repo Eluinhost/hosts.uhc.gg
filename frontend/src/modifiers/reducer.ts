@@ -1,7 +1,7 @@
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { Modifier } from './Modifier';
 import { CREATE_MODIFIER, DELETE_MODIFIER, FETCH_MODIFIERS } from './actions';
+import { Modifier } from './Modifier';
 import { CreateModifierError, DeleteModifierError, FetchModifiersError } from './sagas';
 
 export type CreateModifierState = {

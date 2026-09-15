@@ -1,7 +1,8 @@
+import { Card, H4 } from '@blueprintjs/core';
 import React from 'react';
 import { Link } from 'react-router';
+
 import { HostingRules } from './hosting-rules';
-import { Card, H4 } from '@blueprintjs/core';
 
 export const HomePage: React.FC = () => (
   <div className="home-page">

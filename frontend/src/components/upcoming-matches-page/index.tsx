@@ -1,11 +1,12 @@
+import { H1 } from '@blueprintjs/core';
 import React, { useCallback } from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+
+import { UpdateUpcoming } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
 import { Title } from '../Title';
-import { UpdateUpcoming } from '../../actions';
-import { H1 } from '@blueprintjs/core';
 
 const dontLoadMore = () => {
   throw new Error('Should not be called');
@@ -16,7 +17,7 @@ const stateSelector = createSelector(
   state => state,
 );
 
-export const UpcomingMatchesPage = React.memo(() => {
+export const UpcomingMatchesPage = () => {
   const { matches, error, fetching, updated } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -38,4 +39,4 @@ export const UpcomingMatchesPage = React.memo(() => {
       />
     </div>
   );
-});
+};

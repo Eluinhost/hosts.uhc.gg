@@ -1,12 +1,13 @@
+import { H1 } from '@blueprintjs/core';
 import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
+import { createSelector } from 'reselect';
+
+import { LoadHostHistory } from '../../actions';
+import { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
 import { Title } from '../Title';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import { LoadHostHistory } from '../../actions';
-import { H1 } from '@blueprintjs/core';
 
 type RouteParams = {
   readonly host: string;
@@ -17,7 +18,7 @@ const hostHistorySelector = createSelector(
   hostHistory => hostHistory,
 );
 
-export const HistoryPage = React.memo(() => {
+export const HistoryPage = () => {
   const { matches, error, fetching, hasMorePages, updated } = useSelector(hostHistorySelector);
   const dispatch = useDispatch();
 
@@ -61,4 +62,4 @@ export const HistoryPage = React.memo(() => {
       />
     </div>
   );
-});
+};

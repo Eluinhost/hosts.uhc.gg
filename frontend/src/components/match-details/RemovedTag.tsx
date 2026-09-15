@@ -3,8 +3,8 @@ import { WarningSignIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 import { Match } from '../../models/Match';
+import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, removedAt } }) => {
   const format = useSelector(getTagDateTimeFormat);
@@ -20,7 +20,7 @@ export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, remov
   }
 
   return (
-    <Tag intent={Intent.DANGER} className={`${Classes.LARGE}`} title={removedAtFormatted || undefined}>
+    <Tag intent={Intent.DANGER} className={Classes.LARGE} title={removedAtFormatted || undefined}>
       <WarningSignIcon /> REMOVED
     </Tag>
   );

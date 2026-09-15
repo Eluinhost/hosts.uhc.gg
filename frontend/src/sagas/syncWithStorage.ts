@@ -1,10 +1,10 @@
+import localForage from 'localforage';
 import { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
-import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
-import localForage from 'localforage';
-import { CreateMatchData } from '../models/CreateMatchData';
 import { ActionCreator } from 'typesafe-redux-helpers';
-import { AnyAction } from 'redux';
+
+import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
+import { CreateMatchData } from '../models/CreateMatchData';
 import { wrapError } from '../utils/wrapError';
 
 export const storage: LocalForage = localForage.createInstance({
@@ -17,10 +17,10 @@ export const storage: LocalForage = localForage.createInstance({
 const baseKey = `settings`;
 
 // TODO does this only work with strings?
-function* saveAndListen(setAction: ActionCreator<any, any, any>, storageKey: string): SagaIterator {
+function* saveAndListen<Data>(setAction: ActionCreator<Data, Data, string>, storageKey: string): SagaIterator {
   const key = `${baseKey}.${storageKey}`;
 
-  const stored: any = yield call({ context: storage, fn: storage.getItem }, key);
+  const stored: Data = yield call(storage.getItem.bind(storage), key);
 
   if (stored !== null) {
     yield put(setAction(stored));
@@ -28,15 +28,15 @@ function* saveAndListen(setAction: ActionCreator<any, any, any>, storageKey: str
 
   // start a separate task to listen for changes to save them
   yield spawn(function* (): SagaIterator {
-    yield takeLatest(setAction, function* (action: AnyAction): SagaIterator {
-      yield call([storage, storage.setItem], key, action.payload);
+    yield takeLatest(setAction, function* (action): SagaIterator {
+      yield call(storage.setItem.bind(storage), key, action.payload);
     });
   });
 }
 
 function* watchLogout(): SagaIterator {
   yield takeEvery(Authentication.logout, function* (): SagaIterator {
-    yield call([storage, storage.removeItem], `${baseKey}.authentication`);
+    yield call(storage.removeItem.bind(storage), `${baseKey}.authentication`);
   });
 }
 
@@ -45,9 +45,9 @@ function* watchClearStorage(): SagaIterator {
     yield put(ClearStorage.started());
 
     try {
-      yield call([storage, storage.clear]);
+      yield call(storage.clear.bind(storage));
       yield put(ClearStorage.success());
-      yield call(window.location.reload);
+      yield call(window.location.reload.bind(window.location));
     } catch (error) {
       console.error(error, 'failed to clear storage');
       yield put(ClearStorage.failure({ error: wrapError(error) }));
@@ -58,7 +58,7 @@ function* watchClearStorage(): SagaIterator {
 function* syncHostFormData(): SagaIterator {
   const key = `${baseKey}.host-form-data`;
 
-  const stored: CreateMatchData | null = yield call([storage, storage.getItem], key);
+  const stored: CreateMatchData | null = yield call(storage.getItem.bind(storage), key);
 
   if (stored !== null) {
     yield put(SetSavedHostFormData.started({ parameters: stored }));
@@ -73,7 +73,7 @@ function* syncHostFormData(): SagaIterator {
         yield put(SetSavedHostFormData.started({ parameters }));
 
         try {
-          yield call([storage, storage.setItem], key, { ...parameters, opens: undefined });
+          yield call(storage.setItem.bind(storage), key, { ...parameters, opens: undefined });
           yield put(SetSavedHostFormData.success({ parameters }));
         } catch (error) {
           console.error(error, 'failed to save host form data');
@@ -85,9 +85,13 @@ function* syncHostFormData(): SagaIterator {
 }
 
 function* authentication(): SagaIterator {
+  saveAndListen(Authentication.login, 'authentication');
+
   yield call(saveAndListen, Authentication.login, 'authentication');
   // check every minute if we need to refresh our authentication tokens
   yield spawn(function* (): SagaIterator {
+    // safe to loop as we have a delay and intended to run infinite
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       yield put(Authentication.attemptRefresh());
       yield delay(60000);
