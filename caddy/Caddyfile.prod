@@ -1,0 +1,30 @@
+import common.conf
+
+hosts.uhc.gg {
+	import frontend_app
+
+	header {
+		Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
+	}
+}
+
+*.uhc.gg {
+	tls {
+		dns porkbun {
+			api_key {env.PORKBUN_API_KEY}
+			api_secret_key {env.PORKBUN_API_SECRET_KEY}
+		}
+	}
+
+	abort
+}
+
+c.uhc.gg {
+	root * /srv
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
+		Cache-Control "no-cache, no-store, must-revalidate";
+	}
+}

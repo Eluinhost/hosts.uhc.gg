@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { caddyTemplateBlocks } from './vite/caddyTemplateBlocks.mjs';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [caddyTemplateBlocks(), react()],
   server: {
     proxy: {
       '/api': 'http://localhost:10000',
