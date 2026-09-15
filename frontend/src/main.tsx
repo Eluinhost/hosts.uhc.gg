@@ -9,8 +9,6 @@ import { createReduxStore } from './state/ApplicationState';
 
 import './main.sass';
 
-import 'react-dates/initialize';
-
 void createReduxStore().then(store => {
   const root = document.getElementById('root');
 

@@ -189,11 +189,8 @@ const CreateMatchFormComponent: React.FunctionComponent<
           name="opens"
           required
           disabled={disabledAsync}
-          minDate={nextAvailableSlot().set('hours', 0)} // required so react-dates minDate works (it looks at midday)
+          minDate={nextAvailableSlot().set('hours', 0)} // midnight so the boundary day is still selectable
           maxDate={moment.utc().add(30, 'd').set('hours', 23)}
-          datePickerProps={{
-            numberOfMonths: 2,
-          }}
           timePicker={{
             minuteStep: 15,
             use12Hours: is12h,
