@@ -1,16 +1,3 @@
-FROM node:20-alpine AS frontend-build
-WORKDIR /app
-
-RUN corepack enable
-
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
-
-RUN pnpm install --frozen-lockfile
-
-COPY frontend/ .
-
-RUN pnpm build
-
 FROM eclipse-temurin:17-jdk AS backend-build
 WORKDIR /app
 
@@ -34,7 +21,6 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 COPY --from=backend-build /app/target/universal/stage /app
-COPY --from=frontend-build /app/build /app/frontend/build
 COPY application.conf /app/conf/application.conf
 
 EXPOSE 10000
