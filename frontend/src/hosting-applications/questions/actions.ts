@@ -1,5 +1,6 @@
 import { createAction } from 'typesafe-redux-helpers';
-import { CreateQuizQuestionData, ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
+
+import type { CreateQuizQuestionData, ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
 
 export const QuizQuestions = {
   fetch: {

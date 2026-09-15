@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Button, H2, Intent, NonIdealState, Spinner, Tree, TreeEventHandler } from '@blueprintjs/core';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, Selector } from 'reselect';
+import { Button, H2, Intent, NonIdealState, Spinner, Tree, type TreeEventHandler } from '@blueprintjs/core';
+import { RefreshIcon } from '@blueprintjs/icons';
 import { flatten, map } from 'ramda';
-import { ApplicationState } from '../../state/ApplicationState';
-import { getPermissions } from '../../state/Selectors';
-import { BasicNode, LetterFolder, PermissionsState, UsernameNode } from '../../state/PermissionsState';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { createSelector, type Selector } from 'reselect';
+
 import {
   AddPermission,
   FetchUserCountPerPermission,
@@ -13,10 +12,14 @@ import {
   PermissionNode,
   RemovePermission,
 } from '../../actions';
-import { AddPermissionDialog } from './AddPermissionDialog';
-import { RemovePermissionDialog } from './RemovePermissionDialog';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { NodeType, PermissionsState } from '../../state/PermissionsState';
+import { getPermissions } from '../../state/Selectors';
 import { Title } from '../Title';
+
+import { AddPermissionDialog } from './AddPermissionDialog';
 import { ModerationLog } from './ModerationLog';
+import { RemovePermissionDialog } from './RemovePermissionDialog';
 
 type MembersPageState = PermissionsState & {
   readonly canModify: string[];
@@ -24,14 +27,15 @@ type MembersPageState = PermissionsState & {
 
 const stateSelector: Selector<ApplicationState, MembersPageState> = createSelector(
   getPermissions,
-  state => state.permissions,
+  (state: ApplicationState) => state.permissions,
   (permissions, permissionState) => ({
     ...permissionState,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     canModify: flatten(map(perm => permissionState.allowableModifications[perm] || [], permissions)),
   }),
 );
 
-export const MembersPage = React.memo(() => {
+export const MembersPage = () => {
   const { nodes, isFetching, canModify } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -41,16 +45,18 @@ export const MembersPage = React.memo(() => {
     (permission: string, username: string) => dispatch(RemovePermission.openDialog({ username, permission })),
     [dispatch],
   );
-  const expandPermissionNode = useCallback((permission: string) => dispatch(PermissionNode.open(permission)), [
-    dispatch,
-  ]);
+  const expandPermissionNode = useCallback(
+    (permission: string) => dispatch(PermissionNode.open(permission)),
+    [dispatch],
+  );
   const expandLetterNode = useCallback(
     (permission: string, letter: string) => dispatch(PermissionLetterNode.open({ permission, letter })),
     [dispatch],
   );
-  const collapsePermissionNode = useCallback((permission: string) => dispatch(PermissionNode.close(permission)), [
-    dispatch,
-  ]);
+  const collapsePermissionNode = useCallback(
+    (permission: string) => dispatch(PermissionNode.close(permission)),
+    [dispatch],
+  );
   const collapseLetterNode = useCallback(
     (permission: string, letter: string) => dispatch(PermissionLetterNode.close({ permission, letter })),
     [dispatch],
@@ -62,49 +68,49 @@ export const MembersPage = React.memo(() => {
 
   const canModifyFn = useCallback((permission: string): boolean => canModify.indexOf(permission) >= 0, [canModify]);
 
-  const onNodeClick: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const onNodeClick: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      if (!canModifyFn(node.permission)) return;
+      if (!canModifyFn(node.nodeData.permission)) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          openAddPermission(node.permission);
+          openAddPermission(node.nodeData.permission);
           break;
         case 'username':
-          openRemovePermission(node.permission, (node as UsernameNode).username);
+          openRemovePermission(node.nodeData.permission, node.nodeData.username);
       }
     },
     [canModifyFn, openAddPermission, openRemovePermission],
   );
 
-  const collapseNode: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const collapseNode: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          collapsePermissionNode(node.permission);
+          collapsePermissionNode(node.nodeData.permission);
           break;
         case 'letter':
-          collapseLetterNode(node.permission, (node as LetterFolder).letter);
+          collapseLetterNode(node.nodeData.permission, node.nodeData.letter);
           break;
       }
     },
     [collapsePermissionNode, collapseLetterNode],
   );
 
-  const expandNode: TreeEventHandler = useCallback(
-    (n): void => {
-      const node = n as BasicNode;
+  const expandNode: TreeEventHandler<NodeType> = useCallback(
+    (node): void => {
+      if (!node.nodeData) return;
 
-      switch (node.type) {
+      switch (node.nodeData.type) {
         case 'permission':
-          expandPermissionNode(node.permission);
+          expandPermissionNode(node.nodeData.permission);
           break;
         case 'letter':
-          expandLetterNode(node.permission, (node as LetterFolder).letter);
+          expandLetterNode(node.nodeData.permission, node.nodeData.letter);
           break;
       }
     },
@@ -114,7 +120,9 @@ export const MembersPage = React.memo(() => {
   const nodesWithClassNames = useMemo(
     () =>
       nodes.map(node => {
-        if (!canModifyFn(node.permission)) return node;
+        if (!node.nodeData) return node;
+
+        if (!canModifyFn(node.nodeData.permission)) return node;
 
         return {
           ...node,
@@ -136,7 +144,7 @@ export const MembersPage = React.memo(() => {
           onNodeExpand={expandNode}
           onNodeClick={onNodeClick}
         />
-        <Button disabled={isFetching} onClick={fetchPermissionList} icon="refresh" intent={Intent.SUCCESS}>
+        <Button disabled={isFetching} onClick={fetchPermissionList} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
           Refresh
         </Button>
       </div>
@@ -158,4 +166,4 @@ export const MembersPage = React.memo(() => {
       )}
     </div>
   );
-});
+};

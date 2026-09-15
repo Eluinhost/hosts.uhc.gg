@@ -1,12 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { AddIcon, InboxIcon } from '@blueprintjs/icons';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { ExistingHostApplication } from './ExistingHostApplication';
+import { Link } from 'react-router';
+
 import { HostApplications } from '../actions';
 import { getHostApplicationPermissions, getHostApplicationsListState } from '../selectors';
 
-export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
+import { ExistingHostApplication } from './ExistingHostApplication';
+
+export const HostApplicationsPage = () => {
   const { canApply, isBanned, canReview, username } = useSelector(getHostApplicationPermissions);
   const { data, error, isFetching } = useSelector(getHostApplicationsListState);
   const dispatch = useDispatch();
@@ -38,7 +41,7 @@ export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
       {canApply && (
         <div style={{ marginBottom: 20 }}>
           <Link to="/host-applications/apply">
-            <Button intent={Intent.PRIMARY} icon="add">
+            <Button intent={Intent.PRIMARY} icon={<AddIcon />}>
               Apply to host
             </Button>
           </Link>
@@ -49,7 +52,7 @@ export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
         <Spinner />
       ) : data.length === 0 ? (
         <NonIdealState
-          icon="inbox"
+          icon={<InboxIcon />}
           title="No host applications yet"
           description="There are no host applications to see yet."
         />
@@ -65,4 +68,4 @@ export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
       )}
     </div>
   );
-});
+};

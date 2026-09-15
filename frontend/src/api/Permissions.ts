@@ -1,8 +1,9 @@
 import moment from 'moment-timezone';
 
+import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
 export const fetchUserCountPerPermission = (): Promise<UserCountPerPermission> =>
   fetchObject<UserCountPerPermission>({

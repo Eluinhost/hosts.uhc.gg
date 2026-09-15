@@ -1,13 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import { useSelector, useDispatch } from 'react-redux';
-import { Settings } from '../../actions';
+import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
+import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
-import { Popover, Button, MenuItem, Position, Card, Classes } from '@blueprintjs/core';
-import { contains, toLower, filter as rFilter, always } from 'ramda';
-import { List, ListRowProps } from 'react-virtualized';
+import { toLower, filter as rFilter, always, includes } from 'ramda';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { List, type ListRowProps } from 'react-virtualized';
+import { createSelector } from 'reselect';
+
+import { Settings } from '../../actions';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
+
 import { CurrentTime } from './CurrentTime';
 
 const tzs = moment.tz.names();
@@ -19,7 +21,7 @@ const searchFilter = (query: string): ((item: string) => boolean) => {
 
   const loweredQuery = toLower(query);
 
-  return (item: string) => contains(loweredQuery, toLower(item));
+  return (item: string) => includes(loweredQuery, toLower(item));
 };
 
 type TimezoneItemProps = {
@@ -28,35 +30,36 @@ type TimezoneItemProps = {
 };
 
 const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onSelect }) => (
-  <MenuItem key={timezone} text={timezone} onClick={() => onSelect(timezone)} />
+  <MenuItem
+    key={timezone}
+    text={timezone}
+    onClick={() => {
+      onSelect(timezone);
+    }}
+  />
 );
 
-type StateSlice = {
-  readonly is12h: boolean;
-  readonly timezone: string;
-};
+const stateSelector = createSelector(getTimezone, is12hFormat, (timezone, is12h) => ({
+  timezone,
+  is12h,
+}));
 
-const stateSelector = createSelector<ApplicationState, string, boolean, StateSlice>(
-  getTimezone,
-  is12hFormat,
-  (timezone, is12h) => ({
-    timezone,
-    is12h,
-  }),
-);
-
-export const TimeSettings = React.memo(() => {
+export const TimeSettings: React.FC = () => {
   const { is12h, timezone } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
   const [filter, setFilter] = useState('');
   const [open, setOpen] = useState(false);
 
-  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.target.value), []);
+  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+  }, []);
 
   const noRows = useCallback(() => <MenuItem text="No items found." />, []);
 
-  const toggleOpen = () => setOpen(prev => !prev);
+  const toggleOpen = () => {
+    setOpen(prev => !prev);
+  };
 
   const changeTimezone = useCallback((newTimezone: string) => dispatch(Settings.setTimezone(newTimezone)), [dispatch]);
 
@@ -82,15 +85,26 @@ export const TimeSettings = React.memo(() => {
 
   return (
     <Card className="time-settings">
-      <Button minimal large className="current-time">
+      <Button variant="minimal" size="large" className="current-time">
         <CurrentTime />
       </Button>
       <div className="time-settings-popout">
-        {open && <Button text={is12h ? '12h' : '24h'} icon="time" minimal large onClick={toggleTimeFormat} />}
         {open && (
-          <div style={{ position: 'relative' }}>
-            <Popover canEscapeKeyClose inheritDarkTheme lazy minimal usePortal={false} position={Position.BOTTOM}>
-              <Button minimal large text={timezone} rightIcon="double-caret-vertical" />
+          <Button
+            text={is12h ? '12h' : '24h'}
+            icon={<TimeIcon />}
+            variant="minimal"
+            size="large"
+            onClick={toggleTimeFormat}
+          />
+        )}
+        {open && (
+          <PopoverNext
+            canEscapeKeyClose
+            inheritDarkTheme
+            lazy
+            placement="bottom"
+            content={
               <div>
                 <input
                   autoFocus
@@ -109,17 +123,26 @@ export const TimeSettings = React.memo(() => {
                   noRowsRenderer={noRows}
                 />
               </div>
-            </Popover>
-          </div>
+            }
+            renderTarget={targetProps => (
+              <Button
+                {...targetProps}
+                variant="minimal"
+                size="large"
+                text={timezone}
+                endIcon={<DoubleCaretVerticalIcon />}
+              />
+            )}
+          ></PopoverNext>
         )}
         <Button
-          large
-          minimal
+          size="large"
+          variant="minimal"
           className="toggle-time-settings"
-          icon={open ? 'chevron-right' : 'cog'}
+          icon={open ? <ChevronRightIcon /> : <CogIcon />}
           onClick={toggleOpen}
         />
       </div>
     </Card>
   );
-});
+};

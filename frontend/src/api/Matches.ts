@@ -1,9 +1,10 @@
-import { Match } from '../models/Match';
 import moment from 'moment-timezone';
-import { stringify } from 'query-string';
+import qs from 'query-string';
+
+import type { CreateMatchData } from '../models/CreateMatchData';
+import type { Match } from '../models/Match';
 
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
-import { CreateMatchData } from '../models/CreateMatchData';
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({
@@ -78,7 +79,7 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
 
 export const fetchPotentialConflicts = (region: string, time: moment.Moment, version: string): Promise<Match[]> =>
   fetchArray<Match>({
-    url: `/api/matches/conflicts?${stringify({ region, opens: time.toISOString(), version })}`,
+    url: `/api/matches/conflicts?${qs.stringify({ region, opens: time.toISOString(), version })}`,
     status: 200,
   }).then(matches =>
     matches.map(match => ({

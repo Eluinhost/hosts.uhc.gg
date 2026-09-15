@@ -1,9 +1,10 @@
+import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 
-import { getListModifiersState } from '../selectors';
 import { FETCH_MODIFIERS } from '../actions';
+import { getListModifiersState } from '../selectors';
 
 export type ModifiersSelectorProps = {
   onAdded: (selected: string) => void;
@@ -19,14 +20,20 @@ const ModifierSwitch: React.FC<ModifiersSelectorProps & { displayName: string; i
 }) => (
   <Switch
     inline
-    large
+    size="large"
     checked={isSelected}
     label={displayName}
-    onChange={() => (isSelected ? onRemoved(displayName) : onAdded(displayName))}
+    onChange={() => {
+      if (isSelected) {
+        onRemoved(displayName);
+      } else {
+        onAdded(displayName);
+      }
+    }}
   />
 );
 
-export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((props: ModifiersSelectorProps) => {
+export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: ModifiersSelectorProps) => {
   const { onAdded, onRemoved, selected } = props;
   const { isFetching, error, data } = useSelector(getListModifiersState);
   const dispatch = useDispatch();
@@ -44,7 +51,7 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((pr
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Failed to lookup modifiers"
         action={
           <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
@@ -69,4 +76,4 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = React.memo((pr
       ))}
     </div>
   );
-});
+};

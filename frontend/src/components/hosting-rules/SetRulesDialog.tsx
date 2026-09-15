@@ -1,12 +1,16 @@
-import React, { useCallback, useEffect } from 'react';
-import { InjectedFormProps, reduxForm } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { ApplicationState } from '../../state/ApplicationState';
-import { RulesField } from './RulesField';
+import { AddIcon, ArrowLeftIcon, TakeActionIcon } from '@blueprintjs/icons';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { Dispatch } from 'redux';
+import { type InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
 import { SetHostingRules } from '../../actions';
 import { Validator } from '../../services/Validator';
+import type { ApplicationState } from '../../state/ApplicationState';
+
+import { RulesField } from './RulesField';
 
 type SetRulesDialogData = {
   rules: string;
@@ -35,10 +39,16 @@ const validator = new Validator<SetRulesDialogData>().withValidation(
   'Must be at least 3 characters long',
 );
 
-const SetRulesDialogComponent: React.FunctionComponent<
-  SetRulesDialogState & InjectedFormProps<SetRulesDialogData, SetRulesDialogState>
-> = ({ handleSubmit, submitting, invalid, isOpen, currentRules, change, isDarkMode }) => {
+const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> = ({
+  handleSubmit,
+  submitting,
+  invalid,
+  // coming from 3rd party, safe
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  change,
+}) => {
   const dispatch = useDispatch();
+  const { currentRules, isDarkMode, isOpen } = useSelector(setRulesSelector);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,7 +60,7 @@ const SetRulesDialogComponent: React.FunctionComponent<
 
   return (
     <Dialog
-      icon="take-action"
+      icon={<TakeActionIcon />}
       isOpen={isOpen}
       onClose={onClose}
       title="Modify Rules"
@@ -63,10 +73,10 @@ const SetRulesDialogComponent: React.FunctionComponent<
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
+          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon={<AddIcon />}>
             Update Rules
           </Button>
         </div>
@@ -75,18 +85,11 @@ const SetRulesDialogComponent: React.FunctionComponent<
   );
 };
 
-const SetRulesDialogForm: React.ComponentType<SetRulesDialogState> = reduxForm<SetRulesDialogData, SetRulesDialogState>(
-  {
-    form: 'set-rules-form',
-    validate: validator.validate,
-    onSubmit: (values, dispatch) => {
-      dispatch(SetHostingRules.start(values.rules));
-      dispatch(SetHostingRules.closeEditor());
-    },
+export const SetRulesDialog = reduxForm<SetRulesDialogData>({
+  form: 'set-rules-form',
+  validate: validator.validate,
+  onSubmit: (values: SetRulesDialogData, dispatch: Dispatch) => {
+    dispatch(SetHostingRules.start(values.rules));
+    dispatch(SetHostingRules.closeEditor());
   },
-)(SetRulesDialogComponent);
-
-export const SetRulesDialog: React.ComponentType = () => {
-  const state = useSelector(setRulesSelector);
-  return <SetRulesDialogForm {...state} />;
-};
+})(SetRulesDialogComponent);

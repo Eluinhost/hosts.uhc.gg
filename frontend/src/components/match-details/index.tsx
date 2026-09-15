@@ -1,20 +1,34 @@
+import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
+import {
+  ConfirmIcon,
+  CubeIcon,
+  GeosearchIcon,
+  GlobeIcon,
+  PeopleIcon,
+  TagIcon,
+  TickIcon,
+  TimelineBarChartIcon,
+  TrashIcon,
+  WarningSignIcon,
+} from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
-import { Classes, Icon, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
-import { UsernameLink } from '../UsernameLink';
-import { TeamStyle } from '../team-style';
-import { ClipboardControlGroup } from '../clipboard-control-group';
-import { Markdown } from '../Markdown';
-import { TimeFromNowTag } from '../time/TimeFromNowTag';
-import { MatchOpens } from '../time/MatchOpens';
-import { MatchDetailsState } from '../../state/MatchDetailsState';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
+
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { MatchDetailsState } from '../../state/MatchDetailsState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
-import { RemovedTag } from './RemovedTag';
-import { RemovedInfo } from './RemovedInfo';
+import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
+import { Markdown } from '../Markdown';
+import { TeamStyle } from '../team-style';
+import { MatchOpens } from '../time/MatchOpens';
+import { TimeFromNowTag } from '../time/TimeFromNowTag';
+import { UsernameLink } from '../UsernameLink';
+
+import { RemovedInfo } from './RemovedInfo';
+import { RemovedTag } from './RemovedTag';
 
 type StateProps = {
   readonly details: MatchDetailsState;
@@ -40,7 +54,7 @@ const stateSelector = createSelector(
   }),
 );
 
-export const MatchDetails = React.memo((props: OwnProps) => {
+export const MatchDetails: React.FC<OwnProps> = props => {
   const { id } = props;
   const { details, canApprove, canRemove } = useSelector(stateSelector);
   const dispatch = useDispatch();
@@ -63,19 +77,19 @@ export const MatchDetails = React.memo((props: OwnProps) => {
   }, [id, clear, load]);
 
   const renderTags = useCallback(
-    (tags: string[]): React.ReactElement<any>[] =>
+    (tags: string[]): React.ReactElement[] =>
       tags.map((tag, index) => (
-        <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`} title="Tag" key={index}>
-          <Icon icon="tag" /> {tag}
+        <Tag intent={Intent.PRIMARY} className={Classes.LARGE} title="Tag" key={index}>
+          <TagIcon /> {tag}
         </Tag>
       )),
     [],
   );
 
   const renderScenarios = useCallback(
-    (scenarios: string[]): React.ReactElement<any>[] =>
+    (scenarios: string[]): React.ReactElement[] =>
       scenarios.map((scenario, index) => (
-        <Tag intent={Intent.NONE} className={`${Classes.LARGE}`} title="Scenario" key={index}>
+        <Tag intent={Intent.NONE} className={Classes.LARGE} title="Scenario" key={index}>
           {scenario}
         </Tag>
       )),
@@ -84,9 +98,9 @@ export const MatchDetails = React.memo((props: OwnProps) => {
 
   if (details.fetching) return <Spinner />;
 
-  if (details.error) return <NonIdealState icon="warning-sign" title="Error loading data" />;
+  if (details.error) return <NonIdealState icon={<WarningSignIcon />} title="Error loading data" />;
 
-  if (details.match == null) return <NonIdealState icon="geosearch" title="Not found" />;
+  if (details.match == null) return <NonIdealState icon={<GeosearchIcon />} title="Not found" />;
 
   const {
     opens,
@@ -119,14 +133,14 @@ export const MatchDetails = React.memo((props: OwnProps) => {
     <div className={`${Classes.CARD} match-details`}>
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
-          <TimeFromNowTag time={opens} className={`${Classes.LARGE}`} title="Opens" />
-          <Tag intent={Intent.SUCCESS} title="Region - Location" className={`${Classes.LARGE}`}>
-            <Icon icon="globe" /> {region} - {location}
+          <TimeFromNowTag time={opens} className={Classes.LARGE} title="Opens" />
+          <Tag intent={Intent.SUCCESS} title="Region - Location" className={Classes.LARGE}>
+            <GlobeIcon /> {region} - {location}
           </Tag>
           <HostStatus roles={roles} />
           {tournament && (
-            <Tag intent={Intent.PRIMARY} className={`${Classes.LARGE}`}>
-              <Icon icon="timeline-bar-chart" /> Tournament
+            <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
+              <TimelineBarChartIcon /> Tournament
             </Tag>
           )}
           <RemovedTag match={details.match} />
@@ -134,7 +148,7 @@ export const MatchDetails = React.memo((props: OwnProps) => {
 
         <div className="match-details__header__content">
           <H2>
-            {hostingName || author}'s #{count}
+            {hostingName || author}&#39;s #{count}
           </H2>
           <H4>
             <MatchOpens time={opens} />
@@ -144,11 +158,11 @@ export const MatchDetails = React.memo((props: OwnProps) => {
 
         <div className="match-details__header__floating-tags__bottom">
           <div>
-            <Tag intent={Intent.DANGER} title="Team style" className={`${Classes.LARGE}`}>
-              <Icon icon="people" /> <TeamStyle size={size} style={teams} custom={customStyle} />
+            <Tag intent={Intent.DANGER} title="Team style" className={Classes.LARGE}>
+              <PeopleIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
             </Tag>
-            <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} large>
-              <Icon icon="cube" /> {version}
+            <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} size="large">
+              <CubeIcon /> {version}
             </Tag>
             {renderTags(tags)}
           </div>
@@ -156,12 +170,12 @@ export const MatchDetails = React.memo((props: OwnProps) => {
         </div>
       </div>
       <div className="match-details__server-address">
-        {!!ip && <ClipboardControlGroup value={ip!} />}
+        {!!ip && <ClipboardControlGroup value={ip} />}
 
-        {!!address && <ClipboardControlGroup value={address!} />}
+        {!!address && <ClipboardControlGroup value={address} />}
       </div>
       <div className="match-details__extra-info">
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           PVP @
           <input
             className={`${Classes.INPUT} ${Classes.FILL}`}
@@ -171,12 +185,12 @@ export const MatchDetails = React.memo((props: OwnProps) => {
           />
         </label>
 
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Meetup @
           <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${length} minutes`} readOnly />
         </label>
 
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Map
           <input
             className={`${Classes.INPUT} ${Classes.FILL}`}
@@ -185,7 +199,7 @@ export const MatchDetails = React.memo((props: OwnProps) => {
             readOnly
           />
         </label>
-        <label className={`${Classes.LABEL}`}>
+        <label className={Classes.LABEL}>
           Slots
           <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${slots} slots`} readOnly />
         </label>
@@ -195,19 +209,21 @@ export const MatchDetails = React.memo((props: OwnProps) => {
         {!removed && !!approvedBy && (
           <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
             <H5>
-              <Icon icon="tick" /> Approved by /u/{approvedBy}
+              <TickIcon /> Approved by /u/{approvedBy}
             </H5>
           </div>
         )}
 
         {(canApprove || canRemove) && (
           <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
-            {canApprove && <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={approve} />}
-            {canRemove && <Button intent={Intent.DANGER} icon="trash" onClick={remove} title="Remove" />}
+            {canApprove && (
+              <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={approve} />
+            )}
+            {canRemove && <Button intent={Intent.DANGER} icon={<TrashIcon />} onClick={remove} title="Remove" />}
           </div>
         )}
         <Markdown markdown={content} />
       </div>
     </div>
   );
-});
+};

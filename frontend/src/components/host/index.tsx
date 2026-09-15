@@ -1,17 +1,19 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
-import { useHistory } from 'react-router';
-import { CreateMatchForm } from './CreateMatchForm';
 import { useSelector, useDispatch } from 'react-redux';
-import { nextAvailableSlot } from './nextAvailableSlot';
-import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
-import { MatchesApi, ApiErrors } from '../../api';
+import { useNavigate } from 'react-router';
 import { change, getFormValues, SubmissionError } from 'redux-form';
-import { renderToMarkdown } from './TemplateField';
-import { getAccessToken, getUsername, isDarkMode, is12hFormat, getPermissions } from '../../state/Selectors';
-import { createSelector, Selector } from 'reselect';
-import { CreateMatchData } from '../../models/CreateMatchData';
+import { createSelector, type Selector } from 'reselect';
+
 import { SetSavedHostFormData } from '../../actions';
+import { MatchesApi, ApiErrors } from '../../api';
+import type { CreateMatchData } from '../../models/CreateMatchData';
+import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { getAccessToken, getUsername, is12hFormat, getPermissions } from '../../state/Selectors';
+
+import { CreateMatchForm } from './CreateMatchForm';
+import { nextAvailableSlot } from './nextAvailableSlot';
+import { renderToMarkdown, type TemplateContext } from './TemplateField';
 
 export const formKey: string = 'create-match-form';
 
@@ -25,10 +27,9 @@ const stateSelector = createSelector(
   getPermissions,
   valuesSelector,
   getAccessToken,
-  isDarkMode,
   is12hFormat,
-  state => state.hostFormSavedData,
-  (username, permissions, formValues, accessToken, isDarkMode, is12h, savedData) => ({
+  (state: ApplicationState) => state.hostFormSavedData,
+  (username, permissions, formValues, accessToken, is12h, savedData) => ({
     formValues,
     is12h,
     savedData,
@@ -39,14 +40,15 @@ const stateSelector = createSelector(
 );
 
 // Main goal of this is to save form data back to local storage when the component unmounts
-export const HostingPage = React.memo(() => {
+export const HostingPage: React.FC = () => {
   const { formValues, savedData, username, accessToken, is12h, roles } = useSelector(stateSelector);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const changeTemplate = useCallback((newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)), [
-    dispatch,
-  ]);
+  const changeTemplate = useCallback(
+    (newTemplate: string) => dispatch(change(formKey, 'content', newTemplate)),
+    [dispatch],
+  );
 
   const saveData = useCallback((data: CreateMatchData) => dispatch(SetSavedHostFormData.start(data)), [dispatch]);
 
@@ -80,7 +82,7 @@ export const HostingPage = React.memo(() => {
   }, [onUnload, updateOpeningTime]);
 
   const createTemplateContext = useCallback(
-    (data: CreateMatchData): any => {
+    (data: CreateMatchData): TemplateContext => {
       const teams = TeamStyles.find(it => it.value === data.teams) || TeamStyles[0];
 
       return {
@@ -103,7 +105,7 @@ export const HostingPage = React.memo(() => {
       };
 
       // Remove the team size if it isn't required to avoid potential non-ints being sent and rejected at decoding
-      if (!TeamStyles.find(it => it.value === values.teams)!.requiresTeamSize) {
+      if (!TeamStyles.find(it => it.value === values.teams)?.requiresTeamSize) {
         withRenderedTemplate.size = null;
       }
 
@@ -112,7 +114,7 @@ export const HostingPage = React.memo(() => {
         await MatchesApi.create(withRenderedTemplate, accessToken);
 
         // if success send them to the matches page to view it
-        history.push('/matches');
+        void navigate('/matches');
       } catch (err) {
         if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
@@ -129,10 +131,11 @@ export const HostingPage = React.memo(() => {
         throw new SubmissionError({ _error: 'Unexpected server issue, please contact an admin if this persists' });
       }
     },
-    [accessToken, createTemplateContext, history],
+    [accessToken, createTemplateContext, navigate],
   );
 
   // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const data: CreateMatchData = formValues || savedData;
 
   const context = createTemplateContext(data);
@@ -150,4 +153,4 @@ export const HostingPage = React.memo(() => {
       roles={roles}
     />
   );
-});
+};

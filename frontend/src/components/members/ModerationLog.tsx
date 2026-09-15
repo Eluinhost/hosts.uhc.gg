@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect } from 'react';
-import { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
 import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { MatchOpens } from '../time/MatchOpens';
+import { AddIcon, RefreshIcon, RemoveIcon } from '@blueprintjs/icons';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
+
 import { RefreshPermissionModerationLog } from '../../actions';
+import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { MatchOpens } from '../time/MatchOpens';
 
 const renderRow = (row: PermissionModerationLogEntry) => (
   <Callout
@@ -13,7 +15,7 @@ const renderRow = (row: PermissionModerationLogEntry) => (
     className={`moderation-log-entry ${Classes.MONOSPACE_TEXT}`}
     intent={row.added ? Intent.SUCCESS : Intent.DANGER}
     title={`${row.permission} /u/${row.username}`}
-    icon={row.added ? 'add' : 'remove'}
+    icon={row.added ? <AddIcon /> : <RemoveIcon />}
   >
     Actioned by {row.modifier} @ <MatchOpens time={row.at} />
   </Callout>
@@ -24,7 +26,7 @@ const stateSelector = createSelector(
   it => it,
 );
 
-export const ModerationLog = React.memo(() => {
+export const ModerationLog: React.FC = () => {
   const { fetching, log, error } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -45,9 +47,9 @@ export const ModerationLog = React.memo(() => {
           <H5>{error}</H5>
         </div>
       )}
-      <Button disabled={fetching} onClick={refresh} icon="refresh" intent={Intent.SUCCESS}>
+      <Button disabled={fetching} onClick={refresh} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
         Refresh
       </Button>
     </div>
   );
-});
+};

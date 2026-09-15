@@ -1,6 +1,6 @@
-import React from 'react';
-import { WrappedFieldMetaProps } from 'redux-form';
 import { Classes, FormGroup, Intent, Label } from '@blueprintjs/core';
+import React, { type PropsWithChildren } from 'react';
+import type { WrappedFieldMetaProps } from 'redux-form';
 
 export type FieldWrapperProps = {
   readonly label?: string | React.ReactElement;
@@ -40,12 +40,12 @@ export const RenderLabel: React.FC<{ label: string | React.ReactElement; require
   </Label>
 );
 
-export const FieldWrapper: React.FC<FieldWrapperProps> = props => {
+export const FieldWrapper: React.FC<PropsWithChildren<FieldWrapperProps>> = props => {
   const { meta, label, required, hideErrors, className, children } = props;
 
   return (
     <FormGroup intent={formIntent(meta)} className={className}>
-      {!!label && <RenderLabel label={label!} required={required} />}
+      {!!label && <RenderLabel label={label} required={required} />}
 
       <div className={Classes.FORM_CONTENT}>
         {children}

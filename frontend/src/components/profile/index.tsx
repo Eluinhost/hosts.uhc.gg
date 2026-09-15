@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect } from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
-import { useSelector, useDispatch } from 'react-redux';
 import { Button, Intent, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
-import { Title } from '../Title';
+import { WarningSignIcon } from '@blueprintjs/icons';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+
 import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { Title } from '../Title';
 
 const stateSelector = createSelector(
   (state: ApplicationState) => state.apiKey,
   apiKey => ({ apiKey }),
 );
 
-export const ProfilePage = React.memo(() => {
+export const ProfilePage: React.FC = () => {
   const {
     apiKey: { fetching, error, key },
   } = useSelector(stateSelector);
@@ -32,7 +34,7 @@ export const ProfilePage = React.memo(() => {
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Error"
         action={<Button onClick={refreshApiKey}>Click here to reload</Button>}
       />
@@ -53,4 +55,4 @@ export const ProfilePage = React.memo(() => {
       </Button>
     </div>
   );
-});
+};

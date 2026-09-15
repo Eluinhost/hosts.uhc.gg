@@ -1,11 +1,13 @@
-import { MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
-import { put, select, call, takeLatest } from 'redux-saga/effects';
-import { FetchMatchDetails } from '../actions';
-import { Match } from '../models/Match';
-import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
 import moment from 'moment-timezone';
 import { find } from 'ramda';
+import type { SagaIterator } from 'redux-saga';
+import { put, select, call, takeLatest } from 'redux-saga/effects';
+
+import { FetchMatchDetails } from '../actions';
+import { MatchesApi } from '../api';
+import type { Match } from '../models/Match';
+import { getUpcomingLastUpdated, getUpcomingMatches } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchMatchDetailsSaga(action: ReturnType<typeof FetchMatchDetails.start>): SagaIterator {
   try {
@@ -29,7 +31,7 @@ function* fetchMatchDetailsSaga(action: ReturnType<typeof FetchMatchDetails.star
     yield put(FetchMatchDetails.success({ parameters: action.payload, result: match || null }));
   } catch (error) {
     console.error(error, 'error fetching match');
-    yield put(FetchMatchDetails.failure({ parameters: action.payload, error }));
+    yield put(FetchMatchDetails.failure({ parameters: action.payload, error: wrapError(error) }));
   }
 }
 

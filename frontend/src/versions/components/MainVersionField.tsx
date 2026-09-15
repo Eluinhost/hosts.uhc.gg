@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
-
-import { SelectField, SelectFieldProps } from '../../components/fields/SelectField';
+import { WarningSignIcon } from '@blueprintjs/icons';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListVersionsState } from '../selectors';
+
+import { SelectField, type SelectFieldProps } from '../../components/fields/SelectField';
 import { FETCH_VERSIONS } from '../actions';
+import { getListVersionsState } from '../selectors';
 
 export type MainVersionFieldProps = Omit<SelectFieldProps, 'options'>;
 
-export const MainVersionField: React.FC<MainVersionFieldProps> = React.memo((props: MainVersionFieldProps) => {
+export const MainVersionField: React.FC<MainVersionFieldProps> = (props: MainVersionFieldProps) => {
   const { isFetching, error, data } = useSelector(getListVersionsState);
   const dispatch = useDispatch();
 
@@ -29,7 +30,7 @@ export const MainVersionField: React.FC<MainVersionFieldProps> = React.memo((pro
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Failed to load versions list"
         action={<Button onClick={updateVersionList}>Try Again</Button>}
       />
@@ -42,4 +43,4 @@ export const MainVersionField: React.FC<MainVersionFieldProps> = React.memo((pro
   }));
 
   return <SelectField {...props} options={options} />;
-});
+};

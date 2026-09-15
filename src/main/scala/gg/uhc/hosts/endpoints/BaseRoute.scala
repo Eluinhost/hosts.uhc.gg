@@ -3,24 +3,18 @@ package gg.uhc.hosts.endpoints
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.Route
-import gg.uhc.hosts.endpoints.assets.AssetsRoute
 import gg.uhc.hosts.endpoints.authentication.AuthenticationRoute
-import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 
 class BaseRoute(
     apiRoute: ApiRoute,
-    authenticationRoute: AuthenticationRoute,
-    assetsRoute: AssetsRoute,
-    frontendRoute: FrontendRoute) {
+    authenticationRoute: AuthenticationRoute) {
 
   def apply(): Route =
     (logRequest("server") & logResult("server")) {
       concat(
         pathPrefix("api")(apiRoute()),
         pathPrefix("authenticate")(authenticationRoute()),
-        pathPrefix("assets")(assetsRoute()),
-        frontendRoute(),
-        complete(StatusCodes.NotFound) // shouldn't really be hit as frontend should catch anything that falls to it
+        complete(StatusCodes.NotFound)
       )
     }
 }

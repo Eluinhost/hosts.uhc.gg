@@ -1,29 +1,26 @@
-@import "~normalize.css/normalize.css"
-@import "~rc-time-picker/assets/index.css"
-@import "~react-virtualized/styles.css"
-@import "~react-dates/lib/css/_datepicker.css"
+@use "sass:color"
 
-$icon-font-path: "~@blueprintjs/core/resources/icons"
+@import "normalize.css/normalize.css"
+@import "rc-picker/assets/index.css"
+@import "react-virtualized/styles.css"
+@import "react-dates/lib/css/_datepicker.css"
 
-$pt-font-family: "Share Tech"
-$pt-intent-warning: #FD971F
-$pt-intent-danger: #DB3737
-$pt-dark-app-background-color: #282828
-$dark-card-background-color: lighten($pt-dark-app-background-color, 3%)
+@import "../resources/blueprint.css"
+
+$custom-intent-danger: #DB3737
+$custom-dark-app-background-color: #282828
+$dark-card-background-color: color.adjust($custom-dark-app-background-color, $lightness: 3%)
 $dark-navbar-background-color: $dark-card-background-color
 $dark-popover-background-color: $dark-card-background-color
 $dark-input-background-color: $dark-card-background-color
 $dark-button-background-color: $dark-card-background-color
 $dark-popover-background-color: $dark-card-background-color
 $dark-menu-background-color: $dark-card-background-color
-$pt-text-selection-color: #A8A8A8
-$dark-input-shadow-color-focus: $pt-intent-danger
-$pt-dark-link-color: $pt-intent-danger
+$custom-text-selection-color: #A8A8A8
+$dark-input-shadow-color-focus: $custom-intent-danger
+$custom-dark-link-color: $custom-intent-danger
 
-@import "~@blueprintjs/core/src/blueprint.scss"
-@import "~@blueprintjs/icons/lib/css/blueprint-icons.css"
-
-.bp3-dark .bp3-dialog-header
+.bp6-dark .bp6-dialog-header
   background-color: $dark-card-background-color
 
 html, body, #root
@@ -43,10 +40,10 @@ html, body, #root
   justify-content: flex-start
   align-content: center
   min-height: 100%
-  background-color: $pt-app-background-color
+  background-color: var(--bp-surface-background-color-default-rest)
 
-  &.bp3-dark
-    background: $pt-dark-app-background-color
+  &.bp6-dark
+    background: $custom-dark-app-background-color
 
   &.navbar-sticky
     margin-top: 44px
@@ -66,15 +63,15 @@ html, body, #root
     flex-direction: column
 
 .current-time-unsynced
-  color: $pt-intent-danger
+  color: $custom-intent-danger
 
 .required-star
-  color: $red4
+  color: var(--bp-palette-red-4)
   padding-left: 5px
 
 .opening-time
   text-align: center
-  .bp3-callout
+  .bp6-callout
     text-align: left
 
 .host-form fieldset
@@ -96,7 +93,7 @@ html, body, #root
     > *
       flex: initial
 
-.home-page .bp3-card
+.home-page .bp6-card
   margin-bottom: 5px
   padding-bottom: 5px
 
@@ -107,7 +104,7 @@ html, body, #root
 
 .removed-reason
   text-align: center
-  color: $light-gray3
+  color: var(--bp-palette-light-gray-3)
   border-top: 1px solid
   margin-top: 10px
 
@@ -117,11 +114,11 @@ html, body, #root
   .removed-reason-remover
     font-style: italic
 
-.bp3-dark .bp3-card.time-settings
+.bp6-dark .bp6-card.time-settings
   border-top: none
 
-.bp3-card.time-settings
-  z-index: $pt-z-index-overlay + 10
+.bp6-card.time-settings
+  z-index: var(--bp-surface-z-index-2)
   border-top: none
   width: 100%
   display: flex
@@ -136,16 +133,16 @@ html, body, #root
   .current-time
     font-size: 22px
     font-weight: bold
-  .bp3-button
+  .bp6-button
     margin: 0
     &:after
       display: none
 
-.navbar-sticky .bp3-card.time-settings
+.navbar-sticky .bp6-card.time-settings
   position: fixed
   top: 0
 
-.bp3-navbar
+.bp6-navbar
   display: flex
   justify-content: space-between
 
@@ -161,12 +158,12 @@ a.match-row-link:hover
 .match-tags,
 .match-scenarios,
 .server-tags,
-  .bp3-tag
-    margin: 5px
+.bp6-tag
+  margin: 5px
 
 .match-top-left-ribbon,
 .match-top-right-ribbon
-  .bp3-tag
+  .bp6-tag
     margin: 0 3px 0 3px
 
 .match-row
@@ -194,18 +191,18 @@ a.match-row-link:hover
     padding-top: 7px
     padding-bottom: 7px
 
-.bp3-card.bp3-intent-danger
-  background-color: $red1
+.bp6-card.bp6-intent-danger
+  background-color: var(--bp-palette-red-1)
   opacity: .8
 
-.bp3-card.application-footer
+.bp6-card.application-footer
   padding: 3px
   display: flex
   flex-direction: row
   margin-top: 20px
   justify-content: space-between
 
-  .bp3-button-group .bp3-button
+  .bp6-button-group .bp6-button
     margin-right: 0
 
 .moderation-log
@@ -229,19 +226,19 @@ a.match-row-link:hover
 
 .editable-permission-node
   &.permission-folder-node:hover, .letter-folder-node:hover
-    & > .bp3-tree-node-content
+    & > .bp6-tree-node-content
       svg
-        color: $pt-intent-success
+        color: var(--bp-intent-success-hover)
 
-  .username-node:hover > .bp3-tree-node-content svg
-    color: $pt-intent-danger
+  .username-node:hover > .bp6-tree-node-content svg
+    color: $custom-intent-danger
 
 .hosting-rules
   margin-bottom: 10px
   padding-bottom: 0
   cursor: pointer
 
-  > .bp3-collapse
+  > .bp6-collapse
     cursor: auto
 
 .match-row-dialog
@@ -262,32 +259,25 @@ a.match-row-link:hover
   padding-top: 10px
   padding-bottom: 10px
 
-.bp3-button-group.bp3-minimal > .bp3-button::after
+.bp6-button-group.bp6-minimal > .bp6-button::after
   margin: 0
 
 a.username-link, span.username-link
   border-bottom: 1px dotted
-  border-bottom-color: $pt-text-color
+  border-bottom-color: var(--bp-typography-color-default-rest)
   text-decoration: none
-  color: $pt-text-color
+  color: var(--bp-typography-color-default-rest)
 
   &:hover
-    color: $pt-text-color
+    color: var(--bp-typography-color-default-rest)
     border-bottom-style: solid
 
-.bp3-dark a.username-link, .bp3-dark span.username-link
-  color: $pt-dark-text-color
-  border-bottom-color: $pt-dark-text-color
+.bp6-dark
+  .bp6-card, .bp6-navbar, .bp6-dialog, .navbar-sticky .bp6-card.time-settings
+    border-top: 3px solid $custom-intent-danger
 
-  &:hover
-    color: $pt-dark-text-color
-
-.bp3-dark
-  .bp3-card, .bp3-navbar, .bp3-dialog, .navbar-sticky .bp3-card.time-settings
-    border-top: 3px solid $pt-intent-danger
-
-.bp3-card, .bp3-navbar, .bp3-dialog, .navbar-sticky .bp3-card.time-settings
-  border-top: 3px solid $pt-intent-primary
+.bp6-card, .bp6-navbar, .bp6-dialog, .navbar-sticky .bp6-card.time-settings
+  border-top: 3px solid var(--bp-intent-success-hover)
   border-top-left-radius: 0
   border-top-right-radius: 0
 
@@ -311,11 +301,11 @@ a.username-link, span.username-link
       left: -35px
       top: -5px
 
-    .bp3-tag
+    .bp6-tag
       margin-right: 10px
 
   .match-details__server-address
-    .bp3-control-group
+    .bp6-control-group
       margin-bottom: 15px
       input
         text-align: center
@@ -341,10 +331,10 @@ a.username-link, span.username-link
   margin-bottom: 10px
   .alert-rule-set-item__field
     width: 150px
-    span:not(.bp3-icon)
+    span:not(.bp6-icon)
       margin-left: 10px
 
-  .bp3-tag
+  .bp6-tag
     margin-right: 10px
     white-space: nowrap
     overflow: hidden

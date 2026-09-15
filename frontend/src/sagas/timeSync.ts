@@ -1,8 +1,10 @@
-import { ServerTimeApi } from '../api';
-import { SagaIterator } from 'redux-saga';
-import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
-import { SyncTime } from '../actions';
 import moment from 'moment-timezone';
+import type { SagaIterator } from 'redux-saga';
+import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
+
+import { SyncTime } from '../actions';
+import { ServerTimeApi } from '../api';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchServerTimeSaga(): SagaIterator {
   try {
@@ -15,7 +17,7 @@ function* fetchServerTimeSaga(): SagaIterator {
     yield put(SyncTime.success({ result: diff }));
   } catch (error) {
     console.error(error, 'error updating upcoming');
-    yield put(SyncTime.failure({ error }));
+    yield put(SyncTime.failure({ error: wrapError(error) }));
   }
 }
 
@@ -23,6 +25,9 @@ export function* initialSync(): SagaIterator {
   // keeps trying with ramp up delay until success (up to 10 sec)
   let delayTime = 1000;
 
+  // needed for loop to work in saga, this is safe as we intened for it to infinite loop and
+  // a delay is provided below
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   while (true) {
     yield put(SyncTime.start());
 

@@ -1,8 +1,8 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
 
 import { Presets } from '../actions';
-import { Preset } from '../components/host/presets';
+import type { Preset } from '../components/host/presets';
 
 export type PresetsState = Preset[];
 

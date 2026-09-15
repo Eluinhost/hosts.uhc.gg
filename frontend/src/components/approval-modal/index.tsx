@@ -1,11 +1,12 @@
-import React, { useCallback } from 'react';
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
+import { ArrowLeftIcon, TickIcon } from '@blueprintjs/icons';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../../state/ApplicationState';
-import { isDarkMode } from '../../state/Selectors';
 import { ApproveMatch } from '../../actions';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { isDarkMode } from '../../state/Selectors';
 
 const approvalModalSelector = createSelector(
   (state: ApplicationState) => state.matchModeration.approvalModalId,
@@ -13,7 +14,7 @@ const approvalModalSelector = createSelector(
   (id, isDarkMode) => ({ id, isDarkMode }),
 );
 
-export const ApprovalModal = React.memo(() => {
+export const ApprovalModal: React.FC = () => {
   const { id, isDarkMode } = useSelector(approvalModalSelector);
   const dispatch = useDispatch();
 
@@ -26,7 +27,7 @@ export const ApprovalModal = React.memo(() => {
 
   return (
     <Dialog
-      icon="tick"
+      icon={<TickIcon />}
       isOpen={id !== null}
       onClose={onClose}
       title="Approve match"
@@ -35,12 +36,12 @@ export const ApprovalModal = React.memo(() => {
       <div className={`${Classes.DIALOG_BODY} remove-modal-body`}>
         <H5>Are you sure you want to approve this match?</H5>
       </div>
-      <div className={`${Classes.DIALOG_FOOTER}`}>
-        <div className={`${Classes.DIALOG_FOOTER_ACTIONS}`}>
-          <Button onClick={onClose} icon="arrow-left" text="Cancel" />
-          <Button intent={Intent.SUCCESS} onClick={onConfirm} icon="tick" text="Confirm Approval" />
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          <Button onClick={onClose} icon={<ArrowLeftIcon />} text="Cancel" />
+          <Button intent={Intent.SUCCESS} onClick={onConfirm} icon={<TickIcon />} text="Confirm Approval" />
         </div>
       </div>
     </Dialog>
   );
-});
+};

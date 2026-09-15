@@ -1,5 +1,6 @@
-import React from 'react';
 import { H1 } from '@blueprintjs/core';
+import React from 'react';
+
 import { ShowQuizQuestions } from './ShowQuizQuestions';
 
 export const QuizManagementPage: React.FC = () => (

@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from 'react';
 import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
-import { ManageQuizQuestion } from '../../../models/QuizQuestion';
+import { TrashIcon } from '@blueprintjs/icons';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+
+import type { ManageQuizQuestion } from '../../../models/QuizQuestion';
 // import { getDeleteQuizQuestionApiState } from '../selectors';
 import { QuizQuestions } from '../actions';
 
@@ -9,7 +11,7 @@ interface ExistingQuizQuestionProps {
   question: ManageQuizQuestion;
 }
 
-export const ExistingQuizQuestion = React.memo(function ExistingQuizQuestion({ question }: ExistingQuizQuestionProps) {
+export const ExistingQuizQuestion: React.FC<ExistingQuizQuestionProps> = ({ question }) => {
   // TODO error + fetching UIs
   // const { error, isFetching } = useSelector(getDeleteQuizQuestionApiState);
   const dispatch = useDispatch();
@@ -33,7 +35,7 @@ export const ExistingQuizQuestion = React.memo(function ExistingQuizQuestion({ q
     <div className={`${Classes.CARD} ${Classes.ELEVATION_1}`} style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <strong>{question.prompt}</strong>
-        <Button icon="trash" intent={Intent.DANGER} minimal onClick={handleClick} />
+        <Button icon={<TrashIcon />} intent={Intent.DANGER} variant="minimal" onClick={handleClick} />
       </div>
 
       <Tag minimal style={{ marginTop: 5 }}>
@@ -62,4 +64,4 @@ export const ExistingQuizQuestion = React.memo(function ExistingQuizQuestion({ q
       </Alert>
     </div>
   );
-});
+};

@@ -1,10 +1,11 @@
-import { SagaIterator } from 'redux-saga';
+import localForage from 'localforage';
+import type { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
+import type { ActionCreator } from 'typesafe-redux-helpers';
+
 import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
-import * as localForage from 'localforage';
-import { CreateMatchData } from '../models/CreateMatchData';
-import { ActionCreator } from 'typesafe-redux-helpers';
-import { AnyAction } from 'redux';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import { wrapError } from '../utils/wrapError';
 
 export const storage: LocalForage = localForage.createInstance({
   name: 'hosts-uhcgg-data',
@@ -16,26 +17,27 @@ export const storage: LocalForage = localForage.createInstance({
 const baseKey = `settings`;
 
 // TODO does this only work with strings?
-function* saveAndListen(setAction: ActionCreator<any, any, any>, storageKey: string): SagaIterator {
-  const key = `${baseKey}.${storageKey}`;
+const saveAndListen = <Data>(setAction: ActionCreator<Data, Data, string>, storageKey: string) =>
+  function* (): SagaIterator {
+    const key = `${baseKey}.${storageKey}`;
 
-  const stored: any = yield call({ context: storage, fn: storage.getItem }, key);
+    const stored: Data = yield call(storage.getItem.bind(storage), key);
 
-  if (stored !== null) {
-    yield put(setAction(stored));
-  }
+    if (stored !== null) {
+      yield put(setAction(stored));
+    }
 
-  // start a separate task to listen for changes to save them
-  yield spawn(function* (): SagaIterator {
-    yield takeLatest(setAction, function* (action: AnyAction): SagaIterator {
-      yield call([storage, storage.setItem], key, action.payload);
+    // start a separate task to listen for changes to save them
+    yield spawn(function* (): SagaIterator {
+      yield takeLatest(setAction, function* (action): SagaIterator {
+        yield call(storage.setItem.bind(storage), key, action.payload);
+      });
     });
-  });
-}
+  };
 
 function* watchLogout(): SagaIterator {
   yield takeEvery(Authentication.logout, function* (): SagaIterator {
-    yield call([storage, storage.removeItem], `${baseKey}.authentication`);
+    yield call(storage.removeItem.bind(storage), `${baseKey}.authentication`);
   });
 }
 
@@ -44,12 +46,12 @@ function* watchClearStorage(): SagaIterator {
     yield put(ClearStorage.started());
 
     try {
-      yield call([storage, storage.clear]);
+      yield call(storage.clear.bind(storage));
       yield put(ClearStorage.success());
-      yield call(window.location.reload, true);
+      yield call(window.location.reload.bind(window.location));
     } catch (error) {
       console.error(error, 'failed to clear storage');
-      yield put(ClearStorage.failure({ error }));
+      yield put(ClearStorage.failure({ error: wrapError(error) }));
     }
   });
 }
@@ -57,35 +59,38 @@ function* watchClearStorage(): SagaIterator {
 function* syncHostFormData(): SagaIterator {
   const key = `${baseKey}.host-form-data`;
 
-  const stored: CreateMatchData | null = yield call([storage, storage.getItem], key);
+  const stored: CreateMatchData | null = yield call(storage.getItem.bind(storage), key);
 
   if (stored !== null) {
     yield put(SetSavedHostFormData.started({ parameters: stored }));
   }
 
   yield spawn(function* (): SagaIterator {
-    yield takeLatest(SetSavedHostFormData.start, function* (
-      action: ReturnType<typeof SetSavedHostFormData.start>,
-    ): SagaIterator {
-      const parameters = action.payload;
+    yield takeLatest(
+      SetSavedHostFormData.start,
+      function* (action: ReturnType<typeof SetSavedHostFormData.start>): SagaIterator {
+        const parameters = action.payload;
 
-      yield put(SetSavedHostFormData.started({ parameters }));
+        yield put(SetSavedHostFormData.started({ parameters }));
 
-      try {
-        yield call([storage, storage.setItem], key, { ...parameters, opens: undefined });
-        yield put(SetSavedHostFormData.success({ parameters }));
-      } catch (error) {
-        console.error(error, 'failed to save host form data');
-        yield put(SetSavedHostFormData.failure({ parameters, error }));
-      }
-    });
+        try {
+          yield call(storage.setItem.bind(storage), key, { ...parameters, opens: undefined });
+          yield put(SetSavedHostFormData.success({ parameters }));
+        } catch (error) {
+          console.error(error, 'failed to save host form data');
+          yield put(SetSavedHostFormData.failure({ parameters, error: wrapError(error) }));
+        }
+      },
+    );
   });
 }
 
 function* authentication(): SagaIterator {
-  yield call(saveAndListen, Authentication.login, 'authentication');
+  yield call(saveAndListen(Authentication.login, 'authentication'));
   // check every minute if we need to refresh our authentication tokens
   yield spawn(function* (): SagaIterator {
+    // safe to loop as we have a delay and intended to run infinite
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       yield put(Authentication.attemptRefresh());
       yield delay(60000);
@@ -96,12 +101,12 @@ function* authentication(): SagaIterator {
 // This saga needs to complete, once it is done the first render will happen
 export function* syncWithStorage(): SagaIterator {
   yield all([
-    call(saveAndListen, Settings.setDarkMode, 'isDarkMode'),
-    call(saveAndListen, Settings.setIs12h, 'is12h'),
-    call(saveAndListen, Settings.setHideRemoved, 'hideRemoved'),
-    call(saveAndListen, Settings.setShowOwnRemoved, 'showOwnRemoved'),
-    call(saveAndListen, Settings.setTimezone, 'timezone'),
-    call(saveAndListen, Presets.save, 'presets'),
+    call(saveAndListen(Settings.setDarkMode, 'isDarkMode')),
+    call(saveAndListen(Settings.setIs12h, 'is12h')),
+    call(saveAndListen(Settings.setHideRemoved, 'hideRemoved')),
+    call(saveAndListen(Settings.setShowOwnRemoved, 'showOwnRemoved')),
+    call(saveAndListen(Settings.setTimezone, 'timezone')),
+    call(saveAndListen(Presets.save, 'presets')),
     call(authentication),
     call(syncHostFormData),
     spawn(watchLogout), // start separately

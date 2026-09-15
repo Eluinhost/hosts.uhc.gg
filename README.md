@@ -29,7 +29,7 @@ Builds development bundles and listens for changes for recompilation. Runs on po
 pnpm start
 ```
 
-When running dev frontend make sure there is a server running on port 10000 (or modify src/setupProxy for actual port)
+When running dev frontend make sure there is a server running on port 10000 (or modify the `server.proxy` target in frontend/vite.config.mjs for actual port)
 
 ### Backend
 
@@ -80,6 +80,6 @@ docker-compose sets up a postgres database and builds the FE + BE and exposes it
 
 Database files are stored in the `data` directory
 
-Update Caddy env vars PORKBUN_API_KEY + PORKBUN_API_SECRET_KEY in caddy/.env to ensure letsencrypt certs valid
+Caddy uses `caddy/Caddyfile.dev` for local development. For production, create a `caddy/.env` from example `caddy/.env.example` to use `Caddyfile.prod`.
 
 `docker compose up --build`

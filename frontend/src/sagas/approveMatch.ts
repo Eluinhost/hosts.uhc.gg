@@ -1,11 +1,15 @@
-import { MatchesApi, ApiErrors } from '../api';
-import { SagaIterator } from 'redux-saga';
-import { select, put, call, takeEvery } from 'redux-saga/effects';
-import { ApproveMatch } from '../actions';
-import { getAccessToken, getUsername } from '../state/Selectors';
-import { ApplicationState } from '../state/ApplicationState';
-import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
+import type { SagaIterator } from 'redux-saga';
+import { select, put, call, takeEvery } from 'redux-saga/effects';
+
+import { ApproveMatch } from '../actions';
+import { MatchesApi, ApiErrors } from '../api';
+import { showToast } from '../services/AppToaster';
+import type { ApplicationState } from '../state/ApplicationState';
+import { getAccessToken, getUsername } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaIterator {
   try {
@@ -25,18 +29,18 @@ function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaI
     yield put(ApproveMatch.success({ parameters: action.payload }));
     yield put(ApproveMatch.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
-      icon: 'tick',
+      icon: createElement(TickIcon),
       message: `Approved match #${action.payload.id}`,
     });
   } catch (error) {
     console.error(error, 'error approving match');
-    yield put(ApproveMatch.failure({ parameters: action.payload, error }));
+    yield put(ApproveMatch.failure({ parameters: action.payload, error: wrapError(error) }));
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError ? error.message : `Failed to approve match #${action.payload.id}`,
     });

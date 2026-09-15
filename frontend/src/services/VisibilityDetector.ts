@@ -3,14 +3,16 @@ export class VisibilityDetector {
   public readonly isHidden: () => boolean;
 
   constructor() {
+    // checking browser compatibility, typescript says it can't be undefined, but older browsers it can be
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (document.hidden !== undefined) {
-      this.isHidden = () => document.hidden!;
+      this.isHidden = () => document.hidden;
       this.eventName = 'visibilitychange';
     } else if (document.msHidden !== undefined) {
-      this.isHidden = () => document.msHidden!;
+      this.isHidden = () => !!document.msHidden;
       this.eventName = 'msvisibilitychange';
     } else if (document.webkitHidden !== undefined) {
-      this.isHidden = () => document.webkitHidden!;
+      this.isHidden = () => !!document.webkitHidden;
       this.eventName = 'webkitvisibilitychange';
     } else {
       this.isHidden = () => false;

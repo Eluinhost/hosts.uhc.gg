@@ -1,6 +1,8 @@
-import React from 'react';
-import { Title } from '../../components/Title';
 import { H1 } from '@blueprintjs/core';
+import React from 'react';
+
+import { Title } from '../../components/Title';
+
 import { ModifiersEditor } from './ModifiersEditor';
 
 export const ModifiersPage: React.FC = () => (

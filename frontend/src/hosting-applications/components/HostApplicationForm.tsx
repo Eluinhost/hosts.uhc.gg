@@ -1,23 +1,22 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Classes, H5, Intent, Radio, RadioGroup, TextArea } from '@blueprintjs/core';
-import { QuizQuestion } from '../../models/QuizQuestion';
+import { AddIcon } from '@blueprintjs/icons';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getHostApplicationsReviewingState } from '../selectors';
-import { HostApplications } from '../actions';
 
-const MultiChoice = React.memo(function Question({
-  question,
-  value,
-  onChange,
-  isDisabled,
-}: {
+import type { QuizQuestion } from '../../models/QuizQuestion';
+import { HostApplications } from '../actions';
+import { getHostApplicationsReviewingState } from '../selectors';
+
+interface MultiChoiceProps {
   question: QuizQuestion;
   value?: number;
   onChange: (questionId: number, choice: number) => void;
   isDisabled: boolean;
-}) {
+}
+
+const MultiChoice: React.FC<MultiChoiceProps> = ({ question, value, onChange, isDisabled }) => {
   const handleChange = useCallback(
-    (evt: React.FormEvent<HTMLInputElement>) => {
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
       onChange(question.id, Number(evt.currentTarget.value));
     },
     [question.id, onChange],
@@ -30,19 +29,16 @@ const MultiChoice = React.memo(function Question({
       ))}
     </RadioGroup>
   );
-});
+};
 
-const FreeText = React.memo(function FreeText({
-  question,
-  value,
-  onChange,
-  isDisabled,
-}: {
+interface FreeTextProps {
   question: QuizQuestion;
   value: string;
   onChange: (questionId: number, text: string) => void;
   isDisabled: boolean;
-}) {
+}
+
+const FreeText: React.FC<FreeTextProps> = ({ question, value, onChange, isDisabled }) => {
   const handleChange = useCallback(
     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
       onChange(question.id, evt.target.value);
@@ -51,7 +47,7 @@ const FreeText = React.memo(function FreeText({
   );
 
   return <TextArea className={Classes.FILL} fill value={value} onChange={handleChange} disabled={isDisabled} />;
-});
+};
 
 interface HostApplicationFormProps {
   questions: Array<QuizQuestion>;
@@ -62,9 +58,9 @@ interface AnswerState {
   textAnswer?: string;
 }
 
-type AnswerMap = Record<number, AnswerState>;
+type AnswerMap = Partial<Record<number, AnswerState>>;
 
-export const HostApplicationForm = React.memo(function HostApplicationForm({ questions }: HostApplicationFormProps) {
+export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questions }) => {
   const [answers, setAnswers] = useState<AnswerMap>({});
 
   const dispatch = useDispatch();
@@ -88,8 +84,8 @@ export const HostApplicationForm = React.memo(function HostApplicationForm({ que
       HostApplications.create.start(
         questions.map(question => ({
           questionId: question.id,
-          choiceId: answers[question.id] && answers[question.id].choiceId,
-          textAnswer: answers[question.id] && answers[question.id].textAnswer,
+          choiceId: answers[question.id]?.choiceId,
+          textAnswer: answers[question.id]?.textAnswer,
         })),
       ),
     );
@@ -130,7 +126,7 @@ export const HostApplicationForm = React.memo(function HostApplicationForm({ que
       <Button
         type="button"
         intent={Intent.PRIMARY}
-        icon="add"
+        icon={<AddIcon />}
         disabled={isSubmitting || !isComplete}
         onClick={handleSubmit}
       >
@@ -138,4 +134,4 @@ export const HostApplicationForm = React.memo(function HostApplicationForm({ que
       </Button>
     </div>
   );
-});
+};

@@ -1,19 +1,22 @@
-import React, { useCallback, useState, useMemo } from 'react';
 import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
-import { Markdown } from '../Markdown';
-import { SetRulesDialog } from './SetRulesDialog';
-import { WithPermission } from '../WithPermission';
+import { ChevronDownIcon, ChevronUpIcon } from '@blueprintjs/icons';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+
 import { GetHostingRules, SetHostingRules } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { Markdown } from '../Markdown';
+import { WithPermission } from '../WithPermission';
+
+import { SetRulesDialog } from './SetRulesDialog';
 
 const rulesSelector = createSelector(
   (state: ApplicationState) => state.rules,
   rules => rules,
 );
 
-export const HostingRules = React.memo(() => {
+export const HostingRules: React.FC = () => {
   const rules = useSelector(rulesSelector);
   const dispatch = useDispatch();
 
@@ -26,7 +29,9 @@ export const HostingRules = React.memo(() => {
     setAreRulesOpen(prev => !prev);
   }, [areRulesOpen, dispatch]);
 
-  const stopPropagation = useCallback((e: React.MouseEvent<any>) => e.stopPropagation(), []);
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   const rulesToShow = useMemo(() => {
     if (rules.data) return rules.data.content;
@@ -46,7 +51,11 @@ export const HostingRules = React.memo(() => {
   const startEdit = useCallback(() => dispatch(SetHostingRules.openEditor()), [dispatch]);
 
   return (
-    <Callout icon={areRulesOpen ? 'chevron-up' : 'chevron-down'} className="hosting-rules" onClick={toggleDropdown}>
+    <Callout
+      icon={areRulesOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      className="hosting-rules"
+      onClick={toggleDropdown}
+    >
       <H3>
         Hosting Rules<small style={{ float: 'right' }}>{headerInfo}</small>
       </H3>
@@ -59,9 +68,9 @@ export const HostingRules = React.memo(() => {
             </div>
           </WithPermission>
           {!!rules.error && <Callout intent={Intent.DANGER}>{rules.error}</Callout>}
-          {!!rulesToShow && <Markdown markdown={rulesToShow!} />}
+          {!!rulesToShow && <Markdown markdown={rulesToShow} />}
         </div>
       </Collapse>
     </Callout>
   );
-});
+};

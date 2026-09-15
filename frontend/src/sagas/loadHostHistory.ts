@@ -1,9 +1,11 @@
-import { MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { select, put, call, takeLatest } from 'redux-saga/effects';
+
 import { LoadHostHistory } from '../actions';
-import { Match } from '../models/Match';
+import { MatchesApi } from '../api';
+import type { Match } from '../models/Match';
 import { getHostingHistoryCursor } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* loadHostHistorySaga(action: ReturnType<typeof LoadHostHistory.start>): SagaIterator {
   try {
@@ -20,7 +22,7 @@ function* loadHostHistorySaga(action: ReturnType<typeof LoadHostHistory.start>):
     yield put(LoadHostHistory.success({ parameters: action.payload, result }));
   } catch (error) {
     console.error(error, 'error loading hosting history');
-    yield put(LoadHostHistory.failure({ parameters: action.payload, error }));
+    yield put(LoadHostHistory.failure({ parameters: action.payload, error: wrapError(error) }));
   }
 }
 

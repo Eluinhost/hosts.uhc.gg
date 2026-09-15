@@ -1,9 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
-import { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
+import { AddIcon, TrashIcon } from '@blueprintjs/icons';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCreateQuizQuestionApiState } from '../selectors';
+
+import type { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
 import { QuizQuestions } from '../actions';
+import { getCreateQuizQuestionApiState } from '../selectors';
 
 type ChoiceDraft = {
   readonly text: string;
@@ -20,7 +22,7 @@ interface ChoiceProps {
   onRemove: (index: number) => void;
 }
 
-const Choice = React.memo(function Choice({
+const Choice: React.FC<ChoiceProps> = ({
   index,
   text,
   isCorrect,
@@ -29,7 +31,7 @@ const Choice = React.memo(function Choice({
   onSelect,
   onChange,
   onRemove,
-}: ChoiceProps) {
+}: ChoiceProps) => {
   const handleChange = useCallback(() => {
     onSelect(index);
   }, [onSelect, index]);
@@ -56,15 +58,21 @@ const Choice = React.memo(function Choice({
         style={{ flex: 1 }}
       />
       {canRemove && (
-        <Button icon="trash" minimal onClick={handleRemove} disabled={isDisabled} style={{ marginLeft: 5 }} />
+        <Button
+          icon={<TrashIcon />}
+          variant="minimal"
+          onClick={handleRemove}
+          disabled={isDisabled}
+          style={{ marginLeft: 5 }}
+        />
       )}
     </div>
   );
-});
+};
 
 const emptyChoices: ChoiceDraft[] = [{ text: '' }, { text: '' }];
 
-export const CreateQuizQuestionForm = React.memo(function CreateQuizQuestionForm() {
+export const CreateQuizQuestionForm = () => {
   const { isFetching } = useSelector(getCreateQuizQuestionApiState);
   const dispatch = useDispatch();
 
@@ -80,17 +88,17 @@ export const CreateQuizQuestionForm = React.memo(function CreateQuizQuestionForm
     setCorrectIndex(0);
   }, []);
 
-  const handlePromptChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value), []);
+  const handlePromptChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrompt(e.target.value);
+  }, []);
 
-  const handleTypeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => setQuestionType(e.target.value as QuestionType),
-    [],
-  );
+  const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setQuestionType(e.target.value as QuestionType);
+  }, []);
 
-  const handleChoiceTextChange = useCallback(
-    (index: number, text: string) => setChoices(prev => prev.map((choice, i) => (i === index ? { text } : choice))),
-    [],
-  );
+  const handleChoiceTextChange = useCallback((index: number, text: string) => {
+    setChoices(prev => prev.map((choice, i) => (i === index ? { text } : choice)));
+  }, []);
 
   const handleCorrectChoiceChange = useCallback((index: number) => {
     setCorrectIndex(index);
@@ -164,6 +172,7 @@ export const CreateQuizQuestionForm = React.memo(function CreateQuizQuestionForm
         <RadioGroup label="Choices (select the correct answer)" onChange={() => undefined} selectedValue={correctIndex}>
           {choices.map((choice, index) => (
             <Choice
+              key={index}
               index={index}
               text={choice.text}
               isCorrect={index === correctIndex}
@@ -178,16 +187,16 @@ export const CreateQuizQuestionForm = React.memo(function CreateQuizQuestionForm
       )}
 
       {questionType === 'multiple choice' && (
-        <Button icon="add" minimal onClick={handleAddChoice} disabled={isFetching}>
+        <Button icon={<AddIcon />} variant="minimal" onClick={handleAddChoice} disabled={isFetching}>
           Add choice
         </Button>
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button intent={Intent.PRIMARY} icon="add" disabled={isFetching || !isValid} onClick={handleSubmit}>
+        <Button intent={Intent.PRIMARY} icon={<AddIcon />} disabled={isFetching || !isValid} onClick={handleSubmit}>
           Create question
         </Button>
       </div>
     </div>
   );
-});
+};

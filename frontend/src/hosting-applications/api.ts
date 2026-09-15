@@ -1,5 +1,5 @@
 import { authHeaders, callApi, fetchArray, fetchObject } from '../api/util';
-import { HostApplication, HostApplicationDetails, SubmitAnswerData } from '../models/HostApplication';
+import type { HostApplication, HostApplicationDetails, SubmitAnswerData } from '../models/HostApplication';
 
 export const fetchHostApplications = (): Promise<HostApplication[]> =>
   fetchArray<HostApplication>({

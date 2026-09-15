@@ -1,5 +1,6 @@
 import { createAction } from 'typesafe-redux-helpers';
-import { HostApplication, HostApplicationDetails, SubmitAnswerData } from '../models/HostApplication';
+
+import type { HostApplication, HostApplicationDetails, SubmitAnswerData } from '../models/HostApplication';
 
 export const HostApplications = {
   fetch: {

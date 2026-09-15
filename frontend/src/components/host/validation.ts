@@ -1,25 +1,9 @@
 import moment from 'moment-timezone';
-import {
-  all,
-  map,
-  take,
-  pipe,
-  drop,
-  view,
-  lensIndex,
-  ifElse,
-  T,
-  both,
-  flip,
-  gte,
-  lte,
-  cond,
-  complement,
-  always,
-} from 'ramda';
-import { CreateMatchData } from '../../models/CreateMatchData';
-import { Validator } from '../../services/Validator';
+import { both, flip, gte, lte } from 'ramda';
+
+import type { CreateMatchData } from '../../models/CreateMatchData';
 import { TeamStyles } from '../../models/TeamStyles';
+import { Validator } from '../../services/Validator';
 
 const asInt = (x: string): number => Number.parseInt(x, 10);
 const between = (l: number, r: number) => (a: number) => both(flip(gte)(l), flip(lte)(r))(a);
@@ -27,6 +11,7 @@ const between = (l: number, r: number) => (a: number) => both(flip(gte)(l), flip
 export const validator: Validator<CreateMatchData> = new Validator<CreateMatchData>()
   .withValidation('count', count => !count || count <= 0, 'Must provide a valid game #')
   .withValidationFunction('opens', opens => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!opens) return 'Must provide an opening time';
 
     if (opens.get('minute') % 15 !== 0) return 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
@@ -46,43 +31,38 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
 
     const matches: RegExpMatchArray | null = ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/);
 
-    const validMatches = (matches: string[] | null): boolean => matches !== null;
+    if (!matches) return 'Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123';
 
-    const validPort = (matches: string[]): boolean =>
-      pipe(
-        view(lensIndex(5)), // if it exists it will be at index 5
-        // it is valid if it doesn't exist or if the port is a number and within the range
-        ifElse((x: string) => x === undefined, T, pipe(asInt, between(1, 65535))),
-      )(matches);
+    const port = matches[5]; // if it exists it will be at index 5
 
-    const validOctets = (matches: string[]): boolean =>
-      pipe(
-        drop<string>(1), // skip full match from regex
-        take(4), // just the 4 octet matches
-        map(asInt), // convert to numbers
-        all(between(0, 255)), // make sure valid octet
-      )(matches);
+    // ignoring eslint rule - regex says 'string' but the group is optional
+    // valid if it doesn't exist, or the port is a number within range
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (port !== undefined && between(1, 65535)(asInt(port))) return 'Port must be 1-65535';
 
-    return cond([
-      [
-        complement(validMatches),
-        always('Invalid IP address, expected formatted like 123.123.123.123:12345 or 123.123.123.123'),
-      ],
-      [complement(validPort), always('Port must be 1-65535')],
-      [complement(validOctets), always('Segments in an IP must be between 0-255')],
-      [T, always(undefined)],
-    ])(matches);
+    const validOctets = matches.slice(1, 5).every(octet => {
+      const n = asInt(octet);
+      return Number.isInteger(n) && n >= 0 && n <= 255;
+    });
+
+    if (!validOctets) return 'Segments in an IP must be between 0-255';
+
+    return undefined;
   })
   .withValidationFunction('teams', (teams, obj) => {
     if (!teams) return 'You must select a team style';
 
     const style = TeamStyles.find(i => i.value === teams);
 
-    if (style!.requiresTeamSize && (!obj.size || obj.size < 0 || obj.size > 32767)) {
+    if (!style) {
+      return 'Invalid team style';
+    }
+
+    if (style.requiresTeamSize && (!obj.size || obj.size < 0 || obj.size > 32767)) {
       return 'Must provide a valid team size with this scenario';
     }
 
-    if (style!.value === 'custom' && (!obj.customStyle || obj.customStyle.trim().length === 0)) {
+    if (style.value === 'custom' && (!obj.customStyle || obj.customStyle.trim().length === 0)) {
       return "Must provide a custom style if 'custom' is selected";
     }
 

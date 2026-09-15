@@ -1,11 +1,14 @@
-import React, { useCallback } from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
-import { RemovePermissionDialogState } from '../../state/PermissionsState';
+import { ArrowLeftIcon, RemoveIcon } from '@blueprintjs/icons';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { Dispatch } from 'redux';
+import { type InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
 import { RemovePermission } from '../../actions';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { RemovePermissionDialogState } from '../../state/PermissionsState';
 
 type RemovePermissionDialogStateSlice = {
   readonly state: RemovePermissionDialogState | null;
@@ -14,12 +17,12 @@ type RemovePermissionDialogStateSlice = {
 
 const removePermissionSelector = createSelector(
   (state: ApplicationState) => state.permissions.removeDialog,
-  state => state.settings.isDarkMode,
+  (state: ApplicationState) => state.settings.isDarkMode,
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
 const RemovePermissionDialogComponent: React.FunctionComponent<
-  RemovePermissionDialogStateSlice & InjectedFormProps<{}, RemovePermissionDialogStateSlice>
+  RemovePermissionDialogStateSlice & InjectedFormProps<Record<string, never>, RemovePermissionDialogStateSlice>
 > = ({ state, submitting, invalid, handleSubmit, error, isDarkMode }) => {
   const dispatch = useDispatch();
 
@@ -27,7 +30,7 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
 
   return (
     <Dialog
-      icon="remove"
+      icon={<RemoveIcon />}
       isOpen={!!state}
       onClose={onClose}
       title="Remove role"
@@ -35,16 +38,17 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
     >
       <div className={`${Classes.DIALOG_BODY} remove-permission-body`}>
         <H5>
-          Are you sure you want to remove '{state ? state.permission : '...'}' from /u/{state ? state.username : '...'}
+          Are you sure you want to remove &#39;{state ? state.permission : '...'}&#39; from /u/
+          {state ? state.username : '...'}
         </H5>
         {!!error && <Callout intent={Intent.DANGER}>{error}</Callout>}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon="remove">
+          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon={<RemoveIcon />}>
             Remove permission
           </Button>
         </div>
@@ -53,18 +57,11 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
   );
 };
 
-const RemovePermissionDialogForm: React.ComponentType<RemovePermissionDialogStateSlice> = reduxForm<
-  {},
-  RemovePermissionDialogStateSlice
->({
+const RemovePermissionDialogForm = reduxForm<Record<string, never>, RemovePermissionDialogStateSlice>({
   form: 'remove-permission-form',
-  onSubmit: async (values, dispatch): Promise<void> => {
-    try {
-      await dispatch(RemovePermission.start());
-      dispatch(RemovePermission.closeDialog());
-    } catch (err) {
-      throw new SubmissionError({ __error: 'Unexpected response from the server' });
-    }
+  onSubmit: (_values: Record<string, never>, dispatch: Dispatch) => {
+    dispatch(RemovePermission.start());
+    dispatch(RemovePermission.closeDialog());
   },
 })(RemovePermissionDialogComponent);
 

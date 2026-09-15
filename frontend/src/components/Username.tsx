@@ -1,19 +1,21 @@
+import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
+import { CogIcon, LogOutIcon, UserIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
-import { useHistory } from 'react-router';
-import { Button, Menu, MenuItem, Popover, Position } from '@blueprintjs/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginButton } from './LoginButton';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import { createSelector } from 'reselect';
-import { getUsername, isLoggedIn } from '../state/Selectors';
+
 import { Authentication } from '../actions';
+import { getUsername, isLoggedIn } from '../state/Selectors';
+
+import { LoginButton } from './LoginButton';
 
 const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ logout }) => (
   <Menu>
     <Link to="/profile">
-      <MenuItem icon="cog" text="Profile" />
+      <MenuItem icon={<CogIcon />} text="Profile" />
     </Link>
-    <MenuItem icon="log-out" onClick={logout} text="Logout" />
+    <MenuItem icon={<LogOutIcon />} onClick={logout} text="Logout" />
   </Menu>
 );
 
@@ -22,25 +24,29 @@ const stateSelector = createSelector(isLoggedIn, getUsername, (isLoggedIn, usern
   username: username || 'ERROR NO USERNAME IN STORE',
 }));
 
-export const Username: React.ComponentType = React.memo(() => {
+export const Username: React.FC = () => {
   const { isLoggedIn, username } = useSelector(stateSelector);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const logout = useCallback(() => {
     dispatch(Authentication.logout());
-    history.push('/');
-  }, [dispatch, history]);
+    void navigate('/');
+  }, [dispatch, navigate]);
 
   if (isLoggedIn) {
     return (
-      <Popover content={<UserMenu logout={logout} />} position={Position.BOTTOM_RIGHT}>
-        <Button minimal icon="user">
-          {username}
-        </Button>
-      </Popover>
+      <PopoverNext
+        content={<UserMenu logout={logout} />}
+        placement="bottom-end"
+        renderTarget={triggerProps => (
+          <Button {...triggerProps} variant="minimal" icon={<UserIcon />}>
+            {username}
+          </Button>
+        )}
+      ></PopoverNext>
     );
   }
 
   return <LoginButton />;
-});
+};

@@ -1,6 +1,6 @@
-import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
 import moment from 'moment-timezone';
+import type { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
 import { Settings } from '../actions';
 

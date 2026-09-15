@@ -1,15 +1,17 @@
+import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 
-import { getModifiersState } from '../selectors';
 import { FETCH_MODIFIERS } from '../actions';
+import { getModifiersState } from '../selectors';
+
+import { CreateModifierForm } from './CreateModifierForm';
 import { ModifierEditorRow } from './ModifiersEditorRow';
 
 import './ModifiersEditor.scss';
-import { CreateModifierForm } from './CreateModifierForm';
 
-export const ModifiersEditor: React.FC = React.memo(() => {
+export const ModifiersEditor: React.FC = () => {
   const { list } = useSelector(getModifiersState);
   const dispatch = useDispatch();
 
@@ -26,7 +28,7 @@ export const ModifiersEditor: React.FC = React.memo(() => {
   if (list.error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Failed to lookup modifiers"
         action={
           <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
@@ -49,4 +51,4 @@ export const ModifiersEditor: React.FC = React.memo(() => {
       <CreateModifierForm />
     </div>
   );
-});
+};

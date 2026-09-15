@@ -1,90 +1,56 @@
-import decodeJwt from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import moment from 'moment-timezone';
-import { ApplicationState } from './ApplicationState';
-import {
-  always,
-  when,
-  equals,
-  complement,
-  tryCatch,
-  intersection,
-  isEmpty,
-  memoizeWith,
-  toString,
-  identity,
-} from 'ramda';
-import { createSelector, Selector } from 'reselect';
-import { AccessTokenClaims, RefreshTokenClaims } from './AuthenticationState';
-import { Match } from '../models/Match';
-import { Preset } from '../components/host/presets';
+import { intersection, isEmpty, memoizeWith, toString, identity } from 'ramda';
+import { createSelector } from 'reselect';
 
-export const isDarkMode: Selector<ApplicationState, boolean> = createSelector(
-  state => state.settings.isDarkMode,
+import type { ApplicationState } from './ApplicationState';
+
+export const isDarkMode = createSelector((state: ApplicationState) => state.settings.isDarkMode, identity);
+
+export const getTimezone = createSelector((state: ApplicationState) => state.settings.timezone, identity);
+
+export const is12hFormat = createSelector((state: ApplicationState) => state.settings.is12h, identity);
+
+export const getTimeFormat = createSelector(is12hFormat, is12h => (is12h ? 'h:mm A' : 'HH:mm'));
+
+export const shouldHideRemoved = createSelector((state: ApplicationState) => state.settings.hideRemoved, identity);
+
+export const shouldShowOwnRemoved = createSelector(
+  (state: ApplicationState) => state.settings.showOwnRemoved,
   identity,
 );
 
-export const getTimezone: Selector<ApplicationState, string> = createSelector(
-  state => state.settings.timezone,
-  identity,
-);
+export const getTagDateTimeFormat = createSelector(getTimeFormat, timeFormat => `MMM Do ${timeFormat} z`);
 
-export const is12hFormat: Selector<ApplicationState, boolean> = createSelector(state => state.settings.is12h, identity);
+export const getDetailsDateTimeFormat = createSelector(getTimeFormat, timeFormat => `MMM Do YYYY - ${timeFormat} z`);
 
-export const getTimeFormat: Selector<ApplicationState, string> = createSelector(is12hFormat, is12h =>
-  is12h ? 'h:mm A' : 'HH:mm',
-);
+export const getAccessToken = createSelector((state: ApplicationState) => state.authentication.accessToken, identity);
 
-export const shouldHideRemoved: Selector<ApplicationState, boolean> = createSelector(
-  state => state.settings.hideRemoved,
-  identity,
-);
+export const getAccessTokenClaims = createSelector(getAccessToken, token => {
+  if (!token) {
+    return null;
+  }
 
-export const shouldShowOwnRemoved: Selector<ApplicationState, boolean> = createSelector(
-  state => state.settings.showOwnRemoved,
-  identity,
-);
+  try {
+    const decoded = jwtDecode<{
+      readonly iat: number;
+      readonly exp: number;
+      readonly username: string;
+      readonly permissions: string[];
+    }>(token);
 
-export const getTagDateTimeFormat: Selector<ApplicationState, string> = createSelector(
-  getTimeFormat,
-  timeFormat => `MMM Do ${timeFormat} z`,
-);
+    return {
+      username: decoded.username,
+      permissions: decoded.permissions,
+      expires: moment(decoded.exp, 'X'),
+    };
+  } catch {
+    return null;
+  }
+});
 
-export const getDetailsDateTimeFormat: Selector<ApplicationState, string> = createSelector(
-  getTimeFormat,
-  timeFormat => `MMM Do YYYY - ${timeFormat} z`,
-);
-
-export const getAccessToken: Selector<ApplicationState, string | null> = createSelector(
-  state => state.authentication.accessToken,
-  identity,
-);
-
-export const getAccessTokenClaims: Selector<ApplicationState, AccessTokenClaims | null> = createSelector(
-  getAccessToken,
-  when(
-    complement(equals(null)), // if it's null just pass it along, otherwise try to parse
-    tryCatch(
-      (token: string) => {
-        const decoded = decodeJwt<{
-          readonly iat: number;
-          readonly exp: number;
-          readonly username: string;
-          readonly permissions: string[];
-        }>(token);
-
-        return {
-          username: decoded.username,
-          permissions: decoded.permissions,
-          expires: moment(decoded.exp, 'X'),
-        };
-      },
-      always(null), // return null on any parse errors
-    ),
-  ),
-);
-
-export const getHostingHistoryCursor: Selector<ApplicationState, number | undefined> = createSelector(
-  state => state.hostHistory.matches,
+export const getHostingHistoryCursor = createSelector(
+  (state: ApplicationState) => state.hostHistory.matches,
   matches => {
     if (matches.length === 0) return;
 
@@ -92,72 +58,55 @@ export const getHostingHistoryCursor: Selector<ApplicationState, number | undefi
   },
 );
 
-export const getRefreshToken: Selector<ApplicationState, string | null> = createSelector(
-  state => state.authentication.refreshToken,
-  identity,
-);
+export const getRefreshToken = createSelector((state: ApplicationState) => state.authentication.refreshToken, identity);
 
-export const getRefreshTokenClaims: Selector<ApplicationState, RefreshTokenClaims | null> = createSelector(
-  getRefreshToken,
-  when(
-    complement(equals(null)), // if it's null just pass it along, otherwise try to parse
-    tryCatch(
-      (token: string) => {
-        const decoded = decodeJwt<{
-          readonly iat: number;
-          readonly exp: number;
-          readonly username: string;
-        }>(token);
+export const getRefreshTokenClaims = createSelector(getRefreshToken, token => {
+  if (!token) {
+    return null;
+  }
 
-        return {
-          username: decoded.username,
-          expires: moment(decoded.exp, 'X'),
-        };
-      },
-      always(null), // return null on any parse errors
-    ),
-  ),
-);
+  try {
+    const decoded = jwtDecode<{
+      readonly iat: number;
+      readonly exp: number;
+      readonly username: string;
+    }>(token);
 
-export const isLoggedIn: Selector<ApplicationState, boolean> = createSelector(getAccessTokenClaims, claims => !!claims);
+    return {
+      username: decoded.username,
+      expires: moment(decoded.exp, 'X'),
+    };
+  } catch {
+    return null;
+  }
+});
 
-export const getUsername: Selector<ApplicationState, string | null> = createSelector(getAccessTokenClaims, claims =>
-  claims ? claims.username : null,
-);
+export const isLoggedIn = createSelector(getAccessTokenClaims, claims => !!claims);
 
-export const getPermissions: Selector<ApplicationState, string[]> = createSelector(getAccessTokenClaims, claims =>
-  claims ? claims.permissions : [],
-);
+export const getUsername = createSelector(getAccessTokenClaims, claims => (claims ? claims.username : null));
+
+export const getPermissions = createSelector(getAccessTokenClaims, claims => (claims ? claims.permissions : []));
 
 const toArray = <T>(a: T | T[]): T[] => (Array.isArray(a) ? a : [a]);
-const containsAny = <T>(required: T[]) => (toCheck: T[]): boolean => intersection(required, toCheck).length > 0;
+const containsAny =
+  <T>(required: T[]) =>
+  (toCheck: T[]): boolean =>
+    intersection(required, toCheck).length > 0;
 
 /**
  * Check if the user has any of the permissions, empty array/string
  * means every user passes as long as they are logged in
  */
-export const matchesPermissions: (required: string | string[]) => Selector<ApplicationState, boolean> = memoizeWith(
-  toString,
-  (required: string | string[]) =>
-    createSelector<ApplicationState, boolean, string[], boolean>(
-      isLoggedIn,
-      getPermissions,
-      (logged, perms): boolean => {
-        if (!logged) return false;
+export const matchesPermissions = memoizeWith(toString, (required: string | string[]) =>
+  createSelector(isLoggedIn, getPermissions, (logged, perms): boolean => {
+    if (!logged) return false;
 
-        return isEmpty(required) || containsAny(toArray(required))(perms);
-      },
-    ),
+    return isEmpty(required) || containsAny(toArray(required))(perms);
+  }),
 );
 
-export const getLocalPresets: Selector<ApplicationState, Preset[]> = createSelector(state => state.presets, identity);
+export const getLocalPresets = createSelector((state: ApplicationState) => state.presets, identity);
 
-export const getUpcomingMatches: Selector<ApplicationState, Match[]> = createSelector(
-  state => state.upcoming.matches,
-  identity,
-);
+export const getUpcomingMatches = createSelector((state: ApplicationState) => state.upcoming.matches, identity);
 
-export const getUpcomingLastUpdated: Selector<ApplicationState, moment.Moment | null> = createSelector(
-  state => state.upcoming.updated,
-  identity,
-);
+export const getUpcomingLastUpdated = createSelector((state: ApplicationState) => state.upcoming.updated, identity);

@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { BanCircleIcon, HelpIcon, TickCircleIcon, TickIcon } from '@blueprintjs/icons';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { HostApplicationForm } from './HostApplicationForm';
-import { getFetchQuizQuestionsApiState } from '../questions/selectors';
-import { QuizQuestions } from '../questions/actions';
+import { Link } from 'react-router';
+
 import { HostApplications } from '../actions';
+import { QuizQuestions } from '../questions/actions';
+import { getFetchQuizQuestionsApiState } from '../questions/selectors';
 import { getHasSubmittedHostApplicationSuccessfully, getHostApplicationPermissions } from '../selectors';
 
-export const ApplyHostApplicationPage = React.memo(function ApplyHostApplicationPage() {
+import { HostApplicationForm } from './HostApplicationForm';
+
+export const ApplyHostApplicationPage: React.FC = () => {
   const dispatch = useDispatch();
   const { error, data, isFetching } = useSelector(getFetchQuizQuestionsApiState);
   const { canApply, isBanned } = useSelector(getHostApplicationPermissions);
@@ -25,7 +28,7 @@ export const ApplyHostApplicationPage = React.memo(function ApplyHostApplication
   if (isBanned) {
     return (
       <NonIdealState
-        icon="ban-circle"
+        icon={<BanCircleIcon />}
         title="You cannot apply"
         description="You are banned from hosting and cannot submit an application."
         action={
@@ -40,7 +43,7 @@ export const ApplyHostApplicationPage = React.memo(function ApplyHostApplication
   if (!canApply) {
     return (
       <NonIdealState
-        icon="tick-circle"
+        icon={<TickCircleIcon />}
         title="You don't need to apply"
         description="You're already a host, or you're not logged in."
         action={
@@ -55,7 +58,7 @@ export const ApplyHostApplicationPage = React.memo(function ApplyHostApplication
   if (hasSubmittedHostApplicationSuccessfully) {
     return (
       <NonIdealState
-        icon="tick"
+        icon={<TickIcon />}
         title="Application submitted"
         description="Head back to Host Applications to check on its status."
         action={
@@ -76,10 +79,10 @@ export const ApplyHostApplicationPage = React.memo(function ApplyHostApplication
       {isFetching ? (
         <Spinner />
       ) : data.length === 0 ? (
-        <NonIdealState icon="help" title="No quiz questions have been configured yet" />
+        <NonIdealState icon={<HelpIcon />} title="No quiz questions have been configured yet" />
       ) : (
         <HostApplicationForm questions={data} />
       )}
     </div>
   );
-});
+};

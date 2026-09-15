@@ -1,17 +1,35 @@
+import {
+  Button,
+  type IconName,
+  type MaybeElement,
+  NavbarGroup,
+  NavbarHeading,
+  Navbar as BpNavbar,
+} from '@blueprintjs/core';
+import {
+  CloudUploadIcon,
+  FlashIcon,
+  HelpIcon,
+  InboxIcon,
+  MoonIcon,
+  NumberedListIcon,
+  UnresolveIcon,
+  UserIcon,
+} from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
-import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
-import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
-import { Username } from './Username';
-import { createSelector } from 'reselect';
-import { isDarkMode } from '../state/Selectors';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, Link } from 'react-router';
+import { createSelector } from 'reselect';
+
 import { Settings } from '../actions';
+import { isDarkMode } from '../state/Selectors';
+
+import { Username } from './Username';
 import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
   readonly text: string;
-  readonly icon: IconName;
+  readonly icon: IconName | MaybeElement;
   readonly to: string;
 };
 
@@ -20,7 +38,7 @@ const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) 
 
   return (
     <Link to={to}>
-      <Button minimal icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
+      <Button variant="minimal" icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
         {text}
       </Button>
     </Link>
@@ -33,7 +51,7 @@ const stateSelector = createSelector(isDarkMode, isDarkMode => ({
   isDarkMode,
 }));
 
-export const Navbar: React.ComponentType = React.memo(() => {
+export const Navbar: React.FC = () => {
   const { isDarkMode } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
@@ -50,21 +68,21 @@ export const Navbar: React.ComponentType = React.memo(() => {
         </Link>
       </NavbarGroup>
       <NavbarGroup>
-        <NavbarButton to="/host" text="Host" icon="cloud-upload" />
-        <NavbarButton to="/matches" text="Matches" icon="numbered-list" />
-        <NavbarButton to="/host-applications" text="Host Applications" icon="inbox" />
-        <NavbarButton to="/members" text="Members" icon="user" />
+        <NavbarButton to="/host" text="Host" icon={<CloudUploadIcon />} />
+        <NavbarButton to="/matches" text="Matches" icon={<NumberedListIcon />} />
+        <NavbarButton to="/host-applications" text="Host Applications" icon={<InboxIcon />} />
+        <NavbarButton to="/members" text="Members" icon={<UserIcon />} />
         <WithPermission permission="hosting advisor">
-          <NavbarButton text="Modifiers" icon="unresolve" to="/modifiers" />
+          <NavbarButton text="Modifiers" icon={<UnresolveIcon />} to="/modifiers" />
         </WithPermission>
         <WithPermission permission="hosting advisor">
-          <NavbarButton to="/quiz" text="Application Quiz" icon="help" />
+          <NavbarButton to="/quiz" text="Application Quiz" icon={<HelpIcon />} />
         </WithPermission>
       </NavbarGroup>
       <NavbarGroup>
         <Username />
-        <Button minimal icon={isDarkMode ? 'moon' : 'flash'} onClick={toggleDarkMode} />
+        <Button variant="minimal" icon={isDarkMode ? <MoonIcon /> : <FlashIcon />} onClick={toggleDarkMode} />
       </NavbarGroup>
     </BpNavbar>
   );
-});
+};
