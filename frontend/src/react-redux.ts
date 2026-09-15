@@ -1,12 +1,12 @@
 /* eslint-disable import-x/export */
 import {
-  TypedUseSelectorHook,
+  type TypedUseSelectorHook,
   useDispatch as originalUseDispatch,
   useSelector as originalUseSelector,
 } from 'react-redux-original';
 import { createStore } from 'redux';
 
-import { ApplicationState } from './state/ApplicationState';
+import type { ApplicationState } from './state/ApplicationState';
 
 export * from 'react-redux-original';
 

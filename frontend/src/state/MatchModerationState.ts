@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { ApproveMatch, RemoveMatch } from '../actions';
@@ -12,7 +12,7 @@ export const reducer: Reducer<MatchModerationState> = createReducer<MatchModerat
   removalModalId: null,
   approvalModalId: null,
 })
-  .handleAction(RemoveMatch.openDialog, (state, action) => ({
+  .handleAction(RemoveMatch.openDialog, (_state, action) => ({
     removalModalId: action.payload,
     approvalModalId: null,
   }))
@@ -20,7 +20,7 @@ export const reducer: Reducer<MatchModerationState> = createReducer<MatchModerat
     removalModalId: null,
     approvalModalId: state.approvalModalId,
   }))
-  .handleAction(ApproveMatch.openDialog, (state, action) => ({
+  .handleAction(ApproveMatch.openDialog, (_state, action) => ({
     approvalModalId: action.payload,
     removalModalId: null,
   }))

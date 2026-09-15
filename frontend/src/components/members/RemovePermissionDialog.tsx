@@ -1,13 +1,13 @@
 import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
-import { InjectedFormProps, reduxForm } from 'redux-form';
+import type { Dispatch } from 'redux';
+import { type InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
 
 import { RemovePermission } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
-import { RemovePermissionDialogState } from '../../state/PermissionsState';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { RemovePermissionDialogState } from '../../state/PermissionsState';
 
 type RemovePermissionDialogStateSlice = {
   readonly state: RemovePermissionDialogState | null;
@@ -58,7 +58,7 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
 
 const RemovePermissionDialogForm = reduxForm<Record<string, never>, RemovePermissionDialogStateSlice>({
   form: 'remove-permission-form',
-  onSubmit: (values: Record<string, never>, dispatch: Dispatch) => {
+  onSubmit: (_values: Record<string, never>, dispatch: Dispatch) => {
     dispatch(RemovePermission.start());
     dispatch(RemovePermission.closeDialog());
   },

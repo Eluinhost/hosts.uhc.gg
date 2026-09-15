@@ -1,7 +1,7 @@
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { CREATE_MODIFIER, DELETE_MODIFIER, FETCH_MODIFIERS } from './actions';
-import { Modifier } from './Modifier';
+import type { Modifier } from './Modifier';
 import { CreateModifierError, DeleteModifierError, FetchModifiersError } from './sagas';
 
 export type CreateModifierState = {
@@ -33,7 +33,7 @@ const createModifierReducer = createReducer<CreateModifierState>({
   error: null,
   arguments: null,
 })
-  .handleAction(CREATE_MODIFIER.STARTED, (state, action) => ({
+  .handleAction(CREATE_MODIFIER.STARTED, (_state, action) => ({
     isFetching: true,
     error: null,
     arguments: action.payload.name,
@@ -45,7 +45,7 @@ const createModifierReducer = createReducer<CreateModifierState>({
       error: null,
       arguments: null,
     }),
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: action.payload as CreateModifierError,
       arguments: (action.payload as CreateModifierError).modifier,
@@ -57,7 +57,7 @@ const deleteModifierReducer = createReducer<DeleteModifierState>({
   error: null,
   arguments: null,
 })
-  .handleAction(DELETE_MODIFIER.STARTED, (state, action) => ({
+  .handleAction(DELETE_MODIFIER.STARTED, (_state, action) => ({
     isFetching: true,
     error: null,
     arguments: action.payload.id,
@@ -69,7 +69,7 @@ const deleteModifierReducer = createReducer<DeleteModifierState>({
       error: null,
       arguments: null,
     }),
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: action.payload as DeleteModifierError,
       arguments: (action.payload as DeleteModifierError).id,
@@ -88,12 +88,12 @@ const listModifiersReducer = createReducer<ListModifiersState>({
   }))
   .handleAction(
     FETCH_MODIFIERS.COMPLETED,
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: null,
       data: action.payload.available,
     }),
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: action.payload as FetchModifiersError,
       data: [],

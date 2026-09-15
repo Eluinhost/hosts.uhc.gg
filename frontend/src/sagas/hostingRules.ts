@@ -1,12 +1,12 @@
 import { Intent } from '@blueprintjs/core';
 import moment from 'moment-timezone';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { call, put, select, all, takeLatest } from 'redux-saga/effects';
 
 import { GetHostingRules, SetHostingRules } from '../actions';
 import { ApiErrors, HostingRulesApi } from '../api';
 import { showToast } from '../services/AppToaster';
-import { HostingRules } from '../state/HostingRulesState';
+import type { HostingRules } from '../state/HostingRulesState';
 import { getAccessToken, getUsername } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
 

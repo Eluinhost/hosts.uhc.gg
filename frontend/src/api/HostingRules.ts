@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { HostingRules } from '../state/HostingRulesState';
+import type { HostingRules } from '../state/HostingRulesState';
 
 import { authHeaders, callApi, fetchObject } from './util';
 

@@ -3,7 +3,7 @@ import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Match } from '../../models/Match';
+import type { Match } from '../../models/Match';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, removedAt } }) => {

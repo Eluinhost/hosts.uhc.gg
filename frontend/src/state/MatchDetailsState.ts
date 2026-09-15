@@ -1,10 +1,10 @@
 import moment from 'moment-timezone';
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../actions';
 import { ApiErrors } from '../api';
-import { Match } from '../models/Match';
+import type { Match } from '../models/Match';
 
 export type MatchDetailsState = {
   readonly match: Match | null;
@@ -33,13 +33,13 @@ export const reducer: Reducer<MatchDetailsState> = createReducer<MatchDetailsSta
     match: null,
     updated: state.updated,
   }))
-  .handleAction(FetchMatchDetails.success, (state, action) => ({
+  .handleAction(FetchMatchDetails.success, (_state, action) => ({
     fetching: false,
     error: null,
     match: action.payload.result,
     updated: moment.utc(),
   }))
-  .handleAction(FetchMatchDetails.failure, (state, action) => ({
+  .handleAction(FetchMatchDetails.failure, (_state, action) => ({
     fetching: false,
     error: displayError(action.payload.error),
     match: null,

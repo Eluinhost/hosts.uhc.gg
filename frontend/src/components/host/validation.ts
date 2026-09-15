@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 import { both, flip, gte, lte } from 'ramda';
 
-import { CreateMatchData } from '../../models/CreateMatchData';
+import type { CreateMatchData } from '../../models/CreateMatchData';
 import { TeamStyles } from '../../models/TeamStyles';
 import { Validator } from '../../services/Validator';
 

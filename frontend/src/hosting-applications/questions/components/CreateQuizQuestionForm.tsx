@@ -2,7 +2,7 @@ import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } fr
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
+import type { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
 import { QuizQuestions } from '../actions';
 import { getCreateQuizQuestionApiState } from '../selectors';
 

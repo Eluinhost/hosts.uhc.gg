@@ -1,10 +1,10 @@
 import moment from 'moment-timezone';
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
 import { ApiErrors } from '../api';
-import { Match } from '../models/Match';
+import type { Match } from '../models/Match';
 
 export type UpcomingState = {
   readonly matches: Match[];
@@ -33,7 +33,7 @@ export const reducer: Reducer<UpcomingState> = createReducer<UpcomingState>({
     matches: state.matches,
     updated: state.updated,
   }))
-  .handleAction(UpdateUpcoming.success, (state, action) => ({
+  .handleAction(UpdateUpcoming.success, (_state, action) => ({
     fetching: false,
     matches: action.payload.result,
     error: null,

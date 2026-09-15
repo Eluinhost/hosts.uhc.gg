@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 import { createSelector } from 'reselect';
 
-import { Authentication, LoginPayload } from '../actions';
+import { Authentication, type LoginPayload } from '../actions';
 import { isLoggedIn } from '../state/Selectors';
 
 const InvalidToken: React.FunctionComponent = () => <NonIdealState title="Invalid login token" icon="warning-sign" />;

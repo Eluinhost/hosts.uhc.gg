@@ -6,8 +6,8 @@ import { Link } from 'react-router';
 import { createSelector } from 'reselect';
 
 import { ApproveMatch, RemoveMatch } from '../../actions';
-import { Match } from '../../models/Match';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { Match } from '../../models/Match';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { HostStatus } from '../host-status';
 import { HoverSwap } from '../HoverSwap';

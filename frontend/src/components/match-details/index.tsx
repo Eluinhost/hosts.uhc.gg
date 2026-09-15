@@ -5,8 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
-import { MatchDetailsState } from '../../state/MatchDetailsState';
+import type { ApplicationState } from '../../state/ApplicationState';
+import type { MatchDetailsState } from '../../state/MatchDetailsState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { ApproveMatch } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { isDarkMode } from '../../state/Selectors';
 
 const approvalModalSelector = createSelector(

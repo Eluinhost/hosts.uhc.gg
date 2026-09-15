@@ -1,4 +1,4 @@
-import { Button, IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
+import { Button, type IconName, NavbarGroup, NavbarHeading, Navbar as BpNavbar } from '@blueprintjs/core';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router';

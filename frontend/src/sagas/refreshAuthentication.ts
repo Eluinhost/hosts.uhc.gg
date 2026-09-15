@@ -1,10 +1,10 @@
 import moment from 'moment-timezone';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { select, put, takeEvery, call } from 'redux-saga/effects';
 
-import { Authentication, LoginPayload } from '../actions';
+import { Authentication, type LoginPayload } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';
-import { ApplicationState } from '../state/ApplicationState';
+import type { ApplicationState } from '../state/ApplicationState';
 import { getAccessTokenClaims, getRefreshTokenClaims, isLoggedIn } from '../state/Selectors';
 
 function* attemptRefresh(): SagaIterator {

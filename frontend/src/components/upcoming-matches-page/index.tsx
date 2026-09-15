@@ -1,10 +1,10 @@
 import { H1 } from '@blueprintjs/core';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { UpdateUpcoming } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
 import { Title } from '../Title';
 

@@ -1,7 +1,7 @@
 import { Intent, TagInput } from '@blueprintjs/core';
 import { uniqBy, toLower, union } from 'ramda';
-import React, { PropsWithChildren } from 'react';
-import { BaseFieldProps, Field, WrappedFieldInputProps, WrappedFieldProps } from 'redux-form';
+import React, { type PropsWithChildren } from 'react';
+import { type BaseFieldProps, Field, type WrappedFieldInputProps, type WrappedFieldProps } from 'redux-form';
 
 import { FieldWrapper } from './FieldWrapper';
 

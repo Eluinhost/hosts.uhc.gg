@@ -1,4 +1,4 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
 
 import { getAccessToken } from '../state/Selectors';
@@ -6,7 +6,7 @@ import { GenericError } from '../utils/GenericError';
 
 import { CREATE_MODIFIER, DELETE_MODIFIER, FETCH_MODIFIERS } from './actions';
 import { getAllModifiers, deleteModifier, createModifier } from './api';
-import { Modifier } from './Modifier';
+import type { Modifier } from './Modifier';
 
 export class FetchModifiersError extends GenericError {
   constructor(public cause: unknown) {

@@ -1,7 +1,7 @@
 import { identity } from 'ramda';
 import { createSelector } from 'reselect';
 
-import { ApplicationState } from '../state/ApplicationState';
+import type { ApplicationState } from '../state/ApplicationState';
 
 export const getModifiersState = createSelector((state: ApplicationState) => state.modifiers, identity);
 

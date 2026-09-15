@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { GetHostingRules, SetHostingRules } from '../../actions';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { Markdown } from '../Markdown';
 import { WithPermission } from '../WithPermission';
 

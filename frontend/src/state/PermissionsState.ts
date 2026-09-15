@@ -1,7 +1,7 @@
-import { Classes, TreeNodeInfo, Spinner } from '@blueprintjs/core';
+import { Classes, type TreeNodeInfo, Spinner } from '@blueprintjs/core';
 import { toPairs } from 'ramda';
 import React, { createElement } from 'react';
-import { Reducer } from 'redux';
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import {

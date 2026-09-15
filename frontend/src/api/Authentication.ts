@@ -1,4 +1,4 @@
-import { LoginPayload } from '../actions';
+import type { LoginPayload } from '../actions';
 
 import { authHeaders, fetchObject } from './util';
 

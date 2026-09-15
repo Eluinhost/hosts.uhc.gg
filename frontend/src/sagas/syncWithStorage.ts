@@ -1,10 +1,10 @@
 import localForage from 'localforage';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
-import { ActionCreator } from 'typesafe-redux-helpers';
+import type { ActionCreator } from 'typesafe-redux-helpers';
 
 import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
-import { CreateMatchData } from '../models/CreateMatchData';
+import type { CreateMatchData } from '../models/CreateMatchData';
 import { wrapError } from '../utils/wrapError';
 
 export const storage: LocalForage = localForage.createInstance({
@@ -17,22 +17,23 @@ export const storage: LocalForage = localForage.createInstance({
 const baseKey = `settings`;
 
 // TODO does this only work with strings?
-function* saveAndListen<Data>(setAction: ActionCreator<Data, Data, string>, storageKey: string): SagaIterator {
-  const key = `${baseKey}.${storageKey}`;
+const saveAndListen = <Data>(setAction: ActionCreator<Data, Data, string>, storageKey: string) =>
+  function* (): SagaIterator {
+    const key = `${baseKey}.${storageKey}`;
 
-  const stored: Data = yield call(storage.getItem.bind(storage), key);
+    const stored: Data = yield call(storage.getItem.bind(storage), key);
 
-  if (stored !== null) {
-    yield put(setAction(stored));
-  }
+    if (stored !== null) {
+      yield put(setAction(stored));
+    }
 
-  // start a separate task to listen for changes to save them
-  yield spawn(function* (): SagaIterator {
-    yield takeLatest(setAction, function* (action): SagaIterator {
-      yield call(storage.setItem.bind(storage), key, action.payload);
+    // start a separate task to listen for changes to save them
+    yield spawn(function* (): SagaIterator {
+      yield takeLatest(setAction, function* (action): SagaIterator {
+        yield call(storage.setItem.bind(storage), key, action.payload);
+      });
     });
-  });
-}
+  };
 
 function* watchLogout(): SagaIterator {
   yield takeEvery(Authentication.logout, function* (): SagaIterator {
@@ -85,9 +86,7 @@ function* syncHostFormData(): SagaIterator {
 }
 
 function* authentication(): SagaIterator {
-  saveAndListen(Authentication.login, 'authentication');
-
-  yield call(saveAndListen, Authentication.login, 'authentication');
+  yield call(saveAndListen(Authentication.login, 'authentication'));
   // check every minute if we need to refresh our authentication tokens
   yield spawn(function* (): SagaIterator {
     // safe to loop as we have a delay and intended to run infinite
@@ -102,12 +101,12 @@ function* authentication(): SagaIterator {
 // This saga needs to complete, once it is done the first render will happen
 export function* syncWithStorage(): SagaIterator {
   yield all([
-    call(saveAndListen, Settings.setDarkMode, 'isDarkMode'),
-    call(saveAndListen, Settings.setIs12h, 'is12h'),
-    call(saveAndListen, Settings.setHideRemoved, 'hideRemoved'),
-    call(saveAndListen, Settings.setShowOwnRemoved, 'showOwnRemoved'),
-    call(saveAndListen, Settings.setTimezone, 'timezone'),
-    call(saveAndListen, Presets.save, 'presets'),
+    call(saveAndListen(Settings.setDarkMode, 'isDarkMode')),
+    call(saveAndListen(Settings.setIs12h, 'is12h')),
+    call(saveAndListen(Settings.setHideRemoved, 'hideRemoved')),
+    call(saveAndListen(Settings.setShowOwnRemoved, 'showOwnRemoved')),
+    call(saveAndListen(Settings.setTimezone, 'timezone')),
+    call(saveAndListen(Presets.save, 'presets')),
     call(authentication),
     call(syncHostFormData),
     spawn(watchLogout), // start separately

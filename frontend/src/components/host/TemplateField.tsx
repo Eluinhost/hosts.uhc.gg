@@ -3,15 +3,15 @@ import * as Mark from 'markup-js';
 import moment from 'moment-timezone';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
+import { type BaseFieldProps, Field, type WrappedFieldProps } from 'redux-form';
 
 import { Presets } from '../../actions';
-import { CreateMatchData } from '../../models/CreateMatchData';
+import type { CreateMatchData } from '../../models/CreateMatchData';
 import { getLocalPresets } from '../../state/Selectors';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
 import { Markdown } from '../Markdown';
 
-import { Preset, presets } from './presets';
+import { type Preset, presets } from './presets';
 
 export type TemplateContext = CreateMatchData & { teamStyle: string; author: string };
 

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Match } from '../../models/Match';
+import type { Match } from '../../models/Match';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 export const RemovedReason: React.FC<{ match: Match }> = ({ match: { removedBy, removedAt, removedReason } }) => {

@@ -1,6 +1,6 @@
 import { Classes, FormGroup, Intent, Label } from '@blueprintjs/core';
-import React, { PropsWithChildren } from 'react';
-import { WrappedFieldMetaProps } from 'redux-form';
+import React, { type PropsWithChildren } from 'react';
+import type { WrappedFieldMetaProps } from 'redux-form';
 
 export type FieldWrapperProps = {
   readonly label?: string | React.ReactElement;

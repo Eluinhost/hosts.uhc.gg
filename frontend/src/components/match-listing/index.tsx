@@ -1,13 +1,13 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import moment from 'moment-timezone';
-import React, { ChangeEvent, FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, Selector } from 'reselect';
+import { createSelector, type Selector } from 'reselect';
 
 import { Settings } from '../../actions';
-import { Match } from '../../models/Match';
+import type { Match } from '../../models/Match';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
-import { ApplicationState } from '../../state/ApplicationState';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
 import { ApprovalModal } from '../approval-modal';
 import { MatchRow } from '../match-row';

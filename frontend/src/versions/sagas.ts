@@ -1,4 +1,4 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call } from 'redux-saga/effects';
 
 import { FETCH_VERSIONS } from './actions';

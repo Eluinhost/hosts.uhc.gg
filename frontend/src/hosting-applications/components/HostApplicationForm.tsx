@@ -2,7 +2,7 @@ import { Button, Classes, H5, Intent, Radio, RadioGroup, TextArea } from '@bluep
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { QuizQuestion } from '../../models/QuizQuestion';
+import type { QuizQuestion } from '../../models/QuizQuestion';
 import { HostApplications } from '../actions';
 import { getHostApplicationsReviewingState } from '../selectors';
 
