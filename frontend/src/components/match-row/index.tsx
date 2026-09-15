@@ -1,5 +1,13 @@
 import { Button, Classes, H4, Intent, Tag } from '@blueprintjs/core';
-import { CubeIcon, PeopleIcon, TagIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
+import {
+  ConfirmIcon,
+  CubeIcon,
+  PeopleIcon,
+  TagIcon,
+  TickIcon,
+  TimelineBarChartIcon,
+  TrashIcon,
+} from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router';
@@ -130,15 +138,15 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         <div className="match-moderation-actions">
           <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.VERTICAL} ${Classes.LARGE}`}>
             {!disableApproval && canApprove && !match.approvedBy && (
-              <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={onApprovePress} />
+              <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={onApprovePress} />
             )}
 
             {!!match.approvedBy && (
-              <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon="tick" />
+              <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon={<TickIcon />} />
             )}
 
             {!disableRemoval && canRemove && (
-              <Button intent={Intent.DANGER} icon="trash" onClick={onRemovePress} title="Remove" />
+              <Button intent={Intent.DANGER} icon={<TrashIcon />} onClick={onRemovePress} title="Remove" />
             )}
           </div>
         </div>

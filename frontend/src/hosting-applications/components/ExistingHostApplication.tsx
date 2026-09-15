@@ -1,4 +1,5 @@
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
+import { ChevronDownIcon, ChevronUpIcon, CrossIcon, TickIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -108,7 +109,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button variant="minimal" icon={isExpanded ? 'chevron-up' : 'chevron-down'} onClick={toggleExpanded}>
+        <Button variant="minimal" icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />} onClick={toggleExpanded}>
           {isExpanded ? 'Hide answers' : 'View answers'}
         </Button>
       </div>
@@ -148,10 +149,10 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
 
       {canReview && application.status === 'pending' && (
         <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
-          <Button intent={Intent.SUCCESS} icon="tick" loading={isReviewing} onClick={handleApprove}>
+          <Button intent={Intent.SUCCESS} icon={<TickIcon />} loading={isReviewing} onClick={handleApprove}>
             Approve
           </Button>
-          <Button intent={Intent.DANGER} icon="cross" loading={isReviewing} onClick={openDeclineDialog}>
+          <Button intent={Intent.DANGER} icon={<CrossIcon />} loading={isReviewing} onClick={openDeclineDialog}>
             Decline
           </Button>
         </div>

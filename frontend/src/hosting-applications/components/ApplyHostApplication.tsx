@@ -1,4 +1,5 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { BanCircleIcon, HelpIcon, TickCircleIcon, TickIcon } from '@blueprintjs/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
@@ -27,7 +28,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (isBanned) {
     return (
       <NonIdealState
-        icon="ban-circle"
+        icon={<BanCircleIcon />}
         title="You cannot apply"
         description="You are banned from hosting and cannot submit an application."
         action={
@@ -42,7 +43,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (!canApply) {
     return (
       <NonIdealState
-        icon="tick-circle"
+        icon={<TickCircleIcon />}
         title="You don't need to apply"
         description="You're already a host, or you're not logged in."
         action={
@@ -57,7 +58,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (hasSubmittedHostApplicationSuccessfully) {
     return (
       <NonIdealState
-        icon="tick"
+        icon={<TickIcon />}
         title="Application submitted"
         description="Head back to Host Applications to check on its status."
         action={
@@ -78,7 +79,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
       {isFetching ? (
         <Spinner />
       ) : data.length === 0 ? (
-        <NonIdealState icon="help" title="No quiz questions have been configured yet" />
+        <NonIdealState icon={<HelpIcon />} title="No quiz questions have been configured yet" />
       ) : (
         <HostApplicationForm questions={data} />
       )}

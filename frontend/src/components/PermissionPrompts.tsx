@@ -1,4 +1,5 @@
 import { Button, NonIdealState } from '@blueprintjs/core';
+import { AddIcon, NewPersonIcon, WarningSignIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { Link } from 'react-router';
 
@@ -11,7 +12,7 @@ export const PromptToLogin: React.FunctionComponent = () => (
   <NonIdealState
     title="Forbidden"
     description="You do not have permission to use this. You may attempt to login with an authorised account below"
-    icon="warning-sign"
+    icon={<WarningSignIcon />}
     action={<LoginButton />}
   />
 );
@@ -24,10 +25,10 @@ export const PromptToApplyForHost: React.FunctionComponent = () => (
   <NonIdealState
     title="No Host Rank"
     description="You are logged in but do not have a hosting rank yet. Apply for trial host below."
-    icon="new-person"
+    icon={<NewPersonIcon />}
     action={
       <Link to="/host-applications/apply">
-        <Button intent="primary" icon="add">
+        <Button intent="primary" icon={<AddIcon />}>
           Apply for Trial Host
         </Button>
       </Link>
@@ -40,5 +41,9 @@ export const PromptToApplyForHost: React.FunctionComponent = () => (
  * 'trial host'/'host', so applying for host wouldn't help.
  */
 export const NotAllowed: React.FunctionComponent = () => (
-  <NonIdealState title="Forbidden" description="You do not have permission to view this page." icon="warning-sign" />
+  <NonIdealState
+    title="Forbidden"
+    description="You do not have permission to view this page."
+    icon={<WarningSignIcon />}
+  />
 );

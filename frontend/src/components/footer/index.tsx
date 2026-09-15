@@ -1,4 +1,5 @@
 import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
+import { BuildIcon, CommentIcon, GitRepoIcon, IssueIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -15,7 +16,7 @@ export const Footer: React.FC = () => {
         <AnchorButton
           href="https://uhc.gg/discord"
           intent={intent}
-          icon="comment"
+          icon={<CommentIcon />}
           variant="minimal"
           target="_blank"
           rel="noopener noreferrer"
@@ -24,18 +25,23 @@ export const Footer: React.FC = () => {
         </AnchorButton>
       </div>
       <div className={`${Classes.MINIMAL} ${Classes.BUTTON_GROUP} application-footer-right`}>
-        <AnchorButton href="https://github.com/Eluinhost/hosts.uhc.gg" intent={intent} icon="git-repo" target="_blank">
+        <AnchorButton
+          href="https://github.com/Eluinhost/hosts.uhc.gg"
+          intent={intent}
+          icon={<GitRepoIcon />}
+          target="_blank"
+        >
           Source
         </AnchorButton>
         <AnchorButton
           href="https://github.com/Eluinhost/hosts.uhc.gg/issues"
           intent={intent}
-          icon="issue"
+          icon={<IssueIcon />}
           target="_blank"
         >
           Issues
         </AnchorButton>
-        <AnchorButton href="/api/docs/" intent={intent} icon="build" target="_blank">
+        <AnchorButton href="/api/docs/" intent={intent} icon={<BuildIcon />} target="_blank">
           API
         </AnchorButton>
       </div>

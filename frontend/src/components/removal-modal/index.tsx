@@ -1,4 +1,5 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
+import { ArrowLeftIcon, DeleteIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';
@@ -45,7 +46,7 @@ const RemovalModalComponent: React.FunctionComponent<
 
   return (
     <Dialog
-      icon="delete"
+      icon={<DeleteIcon />}
       isOpen={id !== null}
       onClose={onClose}
       title="Remove match"
@@ -61,10 +62,10 @@ const RemovalModalComponent: React.FunctionComponent<
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={invalid || submitting} icon="delete">
+          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={invalid || submitting} icon={<DeleteIcon />}>
             Confirm Removal
           </Button>
         </div>

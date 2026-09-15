@@ -1,4 +1,5 @@
 import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
+import { FloppyDiskIcon, TrashIcon } from '@blueprintjs/icons';
 import * as Mark from 'markup-js';
 import moment from 'moment-timezone';
 import React, { useCallback, useState } from 'react';
@@ -118,7 +119,7 @@ const PresetsTab: React.FunctionComponent<{
   <Callout intent={Intent.PRIMARY}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
       <H5 style={{ margin: 0 }}>Built-in presets</H5>
-      <Button variant="minimal" icon="floppy-disk" onClick={onSaveCurrentAsPreset}>
+      <Button variant="minimal" icon={<FloppyDiskIcon />} onClick={onSaveCurrentAsPreset}>
         Save current template as preset
       </Button>
     </div>
@@ -139,7 +140,7 @@ const PresetsTab: React.FunctionComponent<{
             <PresetButton onClick={onPresetClick(preset)} id={preset.name} />
             <Button
               variant="minimal"
-              icon="trash"
+              icon={<TrashIcon />}
               intent={Intent.DANGER}
               onClick={() => {
                 onDeleteLocalPreset(preset.name);

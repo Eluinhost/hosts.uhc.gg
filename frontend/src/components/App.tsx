@@ -1,4 +1,5 @@
 import { Classes, NonIdealState } from '@blueprintjs/core';
+import { GeosearchIcon } from '@blueprintjs/icons';
 import React, { type PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
 import ReactHelmet from 'react-helmet';
@@ -28,7 +29,7 @@ import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
 
-const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon="geosearch" />;
+const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon={<GeosearchIcon />} />;
 
 const requiresHostPermission = (permission: string | string[]): boolean =>
   (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));

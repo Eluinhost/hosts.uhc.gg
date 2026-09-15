@@ -1,4 +1,5 @@
 import { Button, Intent, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -33,7 +34,7 @@ export const ProfilePage: React.FC = () => {
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Error"
         action={<Button onClick={refreshApiKey}>Click here to reload</Button>}
       />

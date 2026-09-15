@@ -1,4 +1,5 @@
 import { NonIdealState, Spinner } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -9,9 +10,9 @@ export const PotentialConflicts: React.FC = () => {
 
   if (fetching) return <NonIdealState icon={<Spinner />} title="Checking..." />;
 
-  if (error) return <NonIdealState icon="warning-sign" title="Failed to check for potential conflicts" />;
+  if (error) return <NonIdealState icon={<WarningSignIcon />} title="Failed to check for potential conflicts" />;
 
-  if (!conflicts.length) return <NonIdealState icon="tick" title="No conflicts found" />;
+  if (!conflicts.length) return <NonIdealState icon={<TickIcon />} title="No conflicts found" />;
 
   return (
     <div>

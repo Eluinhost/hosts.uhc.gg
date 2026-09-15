@@ -1,4 +1,6 @@
 import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
 import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
 import type { SagaIterator } from 'redux-saga';
 import { put, call, select, takeEvery } from 'redux-saga/effects';
@@ -34,7 +36,7 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
 
     yield call(showToast, {
       intent: Intent.SUCCESS,
-      icon: 'tick',
+      icon: createElement(TickIcon),
       message: `Removed match #${parameters.id}`,
     });
   } catch (error) {
@@ -50,7 +52,7 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
 
     yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to remove match #${parameters.id}`,
     });
   }

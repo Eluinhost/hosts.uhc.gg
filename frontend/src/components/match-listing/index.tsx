@@ -1,4 +1,5 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
+import { CrossIcon, GeosearchIcon, RefreshIcon, SearchIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -121,7 +122,7 @@ export const MatchListing: FC<MatchListingProps> = ({
   const noMatches = useMemo(
     () =>
       !loading && (
-        <NonIdealState title="Nothing to see!" icon="geosearch" description="There are currently no matches" />
+        <NonIdealState title="Nothing to see!" icon={<GeosearchIcon />} description="There are currently no matches" />
       ),
     [loading],
   );
@@ -160,7 +161,7 @@ export const MatchListing: FC<MatchListingProps> = ({
       return (
         <>
           Showing {showing} of {outOf}.
-          <Button variant="minimal" icon="cross" onClick={clearSearch} />
+          <Button variant="minimal" icon={<CrossIcon />} onClick={clearSearch} />
         </>
       );
     },
@@ -193,7 +194,7 @@ export const MatchListing: FC<MatchListingProps> = ({
 
       <div className="match-listing__search">
         <InputGroup
-          leftIcon="search"
+          leftIcon={<SearchIcon />}
           fill
           value={search}
           onChange={handleSearchChange}
@@ -219,7 +220,7 @@ export const MatchListing: FC<MatchListingProps> = ({
             loading={loading}
             disabled={loading}
             onClick={loadMore}
-            icon="refresh"
+            icon={<RefreshIcon />}
             intent={Intent.SUCCESS}
             text="Load more"
           />

@@ -1,4 +1,5 @@
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
+import { ArrowLeftIcon, TickIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -26,7 +27,7 @@ export const ApprovalModal: React.FC = () => {
 
   return (
     <Dialog
-      icon="tick"
+      icon={<TickIcon />}
       isOpen={id !== null}
       onClose={onClose}
       title="Approve match"
@@ -37,8 +38,8 @@ export const ApprovalModal: React.FC = () => {
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left" text="Cancel" />
-          <Button intent={Intent.SUCCESS} onClick={onConfirm} icon="tick" text="Confirm Approval" />
+          <Button onClick={onClose} icon={<ArrowLeftIcon />} text="Cancel" />
+          <Button intent={Intent.SUCCESS} onClick={onConfirm} icon={<TickIcon />} text="Confirm Approval" />
         </div>
       </div>
     </Dialog>

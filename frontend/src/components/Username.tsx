@@ -1,4 +1,5 @@
 import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
+import { CogIcon, LogOutIcon, UserIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router';
@@ -12,9 +13,9 @@ import { LoginButton } from './LoginButton';
 const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ logout }) => (
   <Menu>
     <Link to="/profile">
-      <MenuItem icon="cog" text="Profile" />
+      <MenuItem icon={<CogIcon />} text="Profile" />
     </Link>
-    <MenuItem icon="log-out" onClick={logout} text="Logout" />
+    <MenuItem icon={<LogOutIcon />} onClick={logout} text="Logout" />
   </Menu>
 );
 
@@ -39,7 +40,7 @@ export const Username: React.FC = () => {
         content={<UserMenu logout={logout} />}
         placement="bottom-end"
         renderTarget={triggerProps => (
-          <Button {...triggerProps} variant="minimal" icon="user">
+          <Button {...triggerProps} variant="minimal" icon={<UserIcon />}>
             {username}
           </Button>
         )}

@@ -1,4 +1,5 @@
 import { Button, H2, Intent, NonIdealState, Spinner, Tree, type TreeEventHandler } from '@blueprintjs/core';
+import { RefreshIcon } from '@blueprintjs/icons';
 import { flatten, map } from 'ramda';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -143,7 +144,7 @@ export const MembersPage = () => {
           onNodeExpand={expandNode}
           onNodeClick={onNodeClick}
         />
-        <Button disabled={isFetching} onClick={fetchPermissionList} icon="refresh" intent={Intent.SUCCESS}>
+        <Button disabled={isFetching} onClick={fetchPermissionList} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
           Refresh
         </Button>
       </div>

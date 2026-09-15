@@ -1,4 +1,5 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
+import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';
@@ -32,7 +33,7 @@ const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<Ad
 
   return (
     <Dialog
-      icon="add"
+      icon={<AddIcon />}
       isOpen={!!state}
       onClose={onClose}
       title={`Add '${state ? state.permission : 'NOT OPEN'}' role`}
@@ -45,10 +46,10 @@ const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<Ad
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
+          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon={<AddIcon />}>
             Add Permission
           </Button>
         </div>

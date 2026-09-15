@@ -1,4 +1,5 @@
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
+import { CloudUploadIcon, WarningSignIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
 import { find } from 'ramda';
 import React, { useCallback, useEffect } from 'react';
@@ -198,7 +199,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
             use12Hours: is12h,
           }}
         />
-        <Callout intent={Intent.WARNING} icon="warning-sign">
+        <Callout intent={Intent.WARNING} icon={<WarningSignIcon />}>
           <H5>
             <span> All times must be entered as </span>
             <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
@@ -404,7 +405,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
         <Button
           type="submit"
           disabled={disabledAsync || !valid}
-          icon="cloud-upload"
+          icon={<CloudUploadIcon />}
           loading={submitting}
           intent={valid ? Intent.SUCCESS : Intent.WARNING}
         >

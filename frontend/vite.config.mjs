@@ -4,6 +4,14 @@ import { caddyTemplateBlocks } from './vite/caddyTemplateBlocks.mjs';
 
 export default defineConfig({
   plugins: [caddyTemplateBlocks(), react()],
+  resolve: {
+    alias: [
+      {
+        find: /^@blueprintjs\/icons$/,
+        replacement: new URL('./vite/blueprintIconsShim.mjs', import.meta.url).pathname,
+      },
+    ],
+  },
   server: {
     port: 3000,
     proxy: {

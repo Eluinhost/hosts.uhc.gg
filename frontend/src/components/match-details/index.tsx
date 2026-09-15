@@ -1,5 +1,16 @@
 import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
-import { CubeIcon, GlobeIcon, PeopleIcon, TagIcon, TickIcon, TimelineBarChartIcon } from '@blueprintjs/icons';
+import {
+  ConfirmIcon,
+  CubeIcon,
+  GeosearchIcon,
+  GlobeIcon,
+  PeopleIcon,
+  TagIcon,
+  TickIcon,
+  TimelineBarChartIcon,
+  TrashIcon,
+  WarningSignIcon,
+} from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -87,9 +98,9 @@ export const MatchDetails: React.FC<OwnProps> = props => {
 
   if (details.fetching) return <Spinner />;
 
-  if (details.error) return <NonIdealState icon="warning-sign" title="Error loading data" />;
+  if (details.error) return <NonIdealState icon={<WarningSignIcon />} title="Error loading data" />;
 
-  if (details.match == null) return <NonIdealState icon="geosearch" title="Not found" />;
+  if (details.match == null) return <NonIdealState icon={<GeosearchIcon />} title="Not found" />;
 
   const {
     opens,
@@ -205,8 +216,10 @@ export const MatchDetails: React.FC<OwnProps> = props => {
 
         {(canApprove || canRemove) && (
           <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
-            {canApprove && <Button intent={Intent.SUCCESS} icon="confirm" title="Approve Match" onClick={approve} />}
-            {canRemove && <Button intent={Intent.DANGER} icon="trash" onClick={remove} title="Remove" />}
+            {canApprove && (
+              <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={approve} />
+            )}
+            {canRemove && <Button intent={Intent.DANGER} icon={<TrashIcon />} onClick={remove} title="Remove" />}
           </div>
         )}
         <Markdown markdown={content} />

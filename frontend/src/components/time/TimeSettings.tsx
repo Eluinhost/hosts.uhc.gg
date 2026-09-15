@@ -1,4 +1,5 @@
 import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
+import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
 import moment from 'moment-timezone';
 import { toLower, filter as rFilter, always, includes } from 'ramda';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -89,7 +90,13 @@ export const TimeSettings: React.FC = () => {
       </Button>
       <div className="time-settings-popout">
         {open && (
-          <Button text={is12h ? '12h' : '24h'} icon="time" variant="minimal" size="large" onClick={toggleTimeFormat} />
+          <Button
+            text={is12h ? '12h' : '24h'}
+            icon={<TimeIcon />}
+            variant="minimal"
+            size="large"
+            onClick={toggleTimeFormat}
+          />
         )}
         {open && (
           <PopoverNext
@@ -118,7 +125,13 @@ export const TimeSettings: React.FC = () => {
               </div>
             }
             renderTarget={targetProps => (
-              <Button {...targetProps} variant="minimal" size="large" text={timezone} endIcon="double-caret-vertical" />
+              <Button
+                {...targetProps}
+                variant="minimal"
+                size="large"
+                text={timezone}
+                endIcon={<DoubleCaretVerticalIcon />}
+              />
             )}
           ></PopoverNext>
         )}
@@ -126,7 +139,7 @@ export const TimeSettings: React.FC = () => {
           size="large"
           variant="minimal"
           className="toggle-time-settings"
-          icon={open ? 'chevron-right' : 'cog'}
+          icon={open ? <ChevronRightIcon /> : <CogIcon />}
           onClick={toggleOpen}
         />
       </div>

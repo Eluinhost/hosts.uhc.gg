@@ -1,4 +1,5 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -29,7 +30,7 @@ export const MainVersionField: React.FC<MainVersionFieldProps> = (props: MainVer
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Failed to load versions list"
         action={<Button onClick={updateVersionList}>Try Again</Button>}
       />

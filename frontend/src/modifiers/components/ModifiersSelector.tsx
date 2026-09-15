@@ -1,4 +1,5 @@
 import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -50,7 +51,7 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: Modifi
   if (error) {
     return (
       <NonIdealState
-        icon="warning-sign"
+        icon={<WarningSignIcon />}
         title="Failed to lookup modifiers"
         action={
           <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
