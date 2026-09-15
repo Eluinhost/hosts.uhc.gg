@@ -1,7 +1,8 @@
-import { PermissionsApi } from '../api';
 import { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest, select } from 'redux-saga/effects';
+
 import { RefreshPermissionModerationLog } from '../actions';
+import { PermissionsApi } from '../api';
 import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { getAccessToken } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';

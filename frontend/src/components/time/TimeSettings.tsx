@@ -1,12 +1,14 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { createSelector } from 'reselect';
-import { useSelector, useDispatch } from 'react-redux';
-import { Settings } from '../../actions';
-import moment from 'moment-timezone';
 import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
+import moment from 'moment-timezone';
 import { toLower, filter as rFilter, always, includes } from 'ramda';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { List, ListRowProps } from 'react-virtualized';
+import { createSelector } from 'reselect';
+
+import { Settings } from '../../actions';
 import { getTimezone, is12hFormat } from '../../state/Selectors';
+
 import { CurrentTime } from './CurrentTime';
 
 const tzs = moment.tz.names();
@@ -27,7 +29,13 @@ type TimezoneItemProps = {
 };
 
 const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onSelect }) => (
-  <MenuItem key={timezone} text={timezone} onClick={() => onSelect(timezone)} />
+  <MenuItem
+    key={timezone}
+    text={timezone}
+    onClick={() => {
+      onSelect(timezone);
+    }}
+  />
 );
 
 const stateSelector = createSelector(getTimezone, is12hFormat, (timezone, is12h) => ({
@@ -42,11 +50,15 @@ export const TimeSettings: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [open, setOpen] = useState(false);
 
-  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.target.value), []);
+  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+  }, []);
 
   const noRows = useCallback(() => <MenuItem text="No items found." />, []);
 
-  const toggleOpen = () => setOpen(prev => !prev);
+  const toggleOpen = () => {
+    setOpen(prev => !prev);
+  };
 
   const changeTimezone = useCallback((newTimezone: string) => dispatch(Settings.setTimezone(newTimezone)), [dispatch]);
 
@@ -76,7 +88,9 @@ export const TimeSettings: React.FC = () => {
         <CurrentTime />
       </Button>
       <div className="time-settings-popout">
-        {open && <Button text={is12h ? '12h' : '24h'} icon="time" minimal large onClick={toggleTimeFormat} />}
+        {open && (
+          <Button text={is12h ? '12h' : '24h'} icon="time" variant="minimal" size="large" onClick={toggleTimeFormat} />
+        )}
         {open && (
           <PopoverNext
             canEscapeKeyClose

@@ -1,5 +1,5 @@
-import { createReducer } from 'typesafe-redux-helpers';
 import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
 import { SyncTime } from '../actions';
 

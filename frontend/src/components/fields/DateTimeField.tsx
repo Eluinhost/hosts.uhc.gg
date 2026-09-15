@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
-import Picker, { PickerProps } from 'rc-picker';
-import enGB from 'rc-picker/lib/locale/en_GB';
-import generateMomentConfig from 'rc-picker/lib/generate/moment';
-import moment from 'moment-timezone';
 import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
+import moment from 'moment-timezone';
+import Picker, { PickerProps } from 'rc-picker';
+import generateMomentConfig from 'rc-picker/lib/generate/moment';
+import enGB from 'rc-picker/lib/locale/en_GB';
+import React, { useCallback, useState } from 'react';
 import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } from 'react-dates';
+import { BaseFieldProps, Field, WrappedFieldMetaProps, WrappedFieldProps } from 'redux-form';
 
 import { FieldWrapper } from './FieldWrapper';
 import './DateTimeField.sass';
@@ -19,7 +19,7 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly minDate?: moment.Moment;
   readonly maxDate?: moment.Moment;
   readonly timePicker?: Pick<PickerProps, 'minuteStep' | 'use12Hours' | 'className'>;
-  readonly renderClearButton?: React.ComponentType<{ value: any; onClear: () => void }>;
+  readonly renderClearButton?: React.ComponentType<{ value: unknown; onClear: () => void }>;
 }
 
 export const Errors: React.FC<WrappedFieldMetaProps> = ({ error, warning }) => {
@@ -30,13 +30,13 @@ export const Errors: React.FC<WrappedFieldMetaProps> = ({ error, warning }) => {
   return null;
 };
 
-const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props => {
+const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props => {
   const {
     meta,
     label,
     required,
     datePickerProps,
-    input: { value, onChange, onBlur },
+    input,
     disabled,
     renderClearButton: ClearButton,
     className,
@@ -44,6 +44,8 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
     maxDate,
     timePicker,
   } = props;
+  const { onChange, onBlur } = input;
+  const value = input.value as moment.Moment | undefined;
 
   const [isFocused, setIsFocused] = useState(false);
 
@@ -60,7 +62,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
   const handleDateChange = useCallback(
     (date: moment.Moment | null): void => {
       // react-dates set the hours/minutes to be 12:00 so we ignore them
-      let newDate = date?.utc().clone();
+      const newDate = date?.utc().clone();
 
       if (value && newDate) {
         newDate.set('hours', value.get('hours'));
@@ -86,9 +88,13 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
     [value, triggerChange],
   );
 
-  const handleClear = useCallback(() => handleDateChange(null), [handleDateChange]);
+  const handleClear = useCallback(() => {
+    handleDateChange(null);
+  }, [handleDateChange]);
 
-  const handleFocusChange = useCallback((arg: { focused: boolean | null }) => setIsFocused(arg.focused || false), []);
+  const handleFocusChange = useCallback((arg: { focused: boolean | null }) => {
+    setIsFocused(arg.focused || false);
+  }, []);
 
   const isDayBlocked = useCallback(
     (day: moment.Moment) => {
@@ -117,7 +123,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
           disabled={disabled}
           value={value}
           onPickerValueChange={handleTimeChange}
-          className={`date-time-field-time-picker ${timePicker?.className || ''}`}
+          className={`date-time-field-time-picker ${timePicker.className || ''}`}
           showSecond={false}
           {...timePicker}
         />
@@ -138,7 +144,7 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
         <DayPickerSingleDateController
           hideKeyboardShortcutsPanel
           isDayBlocked={isDayBlocked}
-          initialVisibleMonth={value}
+          initialVisibleMonth={value ? () => value : null}
           // if we make the function below part of the class body the timepicker sometimes
           // doesn't rerender properly, presumably due to daypickersingledatecontroller's
           // shouldComponentUpdate. We're passing a new function each render just to make
@@ -165,8 +171,6 @@ const DateTimePicker = React.memo<WrappedFieldProps & DateTimeFieldProps>(props 
       </Overlay2>
     </FieldWrapper>
   );
-});
+};
 
-export const DateTimeField: React.FC<DateTimeFieldProps> = React.memo(props => (
-  <Field {...props} component={DateTimePicker} />
-));
+export const DateTimeField: React.FC<DateTimeFieldProps> = props => <Field {...props} component={DateTimePicker} />;

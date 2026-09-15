@@ -1,16 +1,18 @@
+import { Intent } from '@blueprintjs/core';
 import { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call, select, takeEvery } from 'redux-saga/effects';
 
-import { fetchQuizQuestions, createQuizQuestion, deleteQuizQuestion, fetchQuizQuestionsForManagement } from './api';
 import { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
-import { getAccessToken } from '../../state/Selectors';
 import { showToast } from '../../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
-import { QuizQuestions } from './actions';
+import { getAccessToken } from '../../state/Selectors';
+import { GenericError } from '../../utils/GenericError';
 
-export class FetchQuizQuestionsError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to lookup quiz questions, caused by:\n ${cause?.message ?? cause}`);
+import { QuizQuestions } from './actions';
+import { fetchQuizQuestions, createQuizQuestion, deleteQuizQuestion, fetchQuizQuestionsForManagement } from './api';
+
+export class FetchQuizQuestionsError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to lookup quiz questions`, cause);
   }
 }
 
@@ -28,9 +30,9 @@ function* fetchQuizQuestionsSaga(): SagaIterator {
   }
 }
 
-export class CreateQuizQuestionError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to create quiz question, caused by:\n ${cause?.message ?? cause}`);
+export class CreateQuizQuestionError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to create quiz question`, cause);
   }
 }
 
@@ -40,8 +42,8 @@ function* createQuizQuestionSaga({
   yield put(QuizQuestions.create.started(data));
 
   try {
-    const accessToken = yield select(getAccessToken);
-    const result: { id: number } = yield call(createQuizQuestion, data, accessToken);
+    const accessToken: string | null = yield select(getAccessToken);
+    const result: { id: number } = yield call(createQuizQuestion, data, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(QuizQuestions.create.completed(result));
     yield call(showToast, { message: 'Created new question', intent: Intent.SUCCESS });
@@ -55,9 +57,9 @@ function* createQuizQuestionSaga({
   }
 }
 
-export class DeleteQuizQuestionError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to delete quiz question, caused by:\n ${cause?.message ?? cause}`);
+export class DeleteQuizQuestionError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to delete quiz question`, cause);
   }
 }
 
@@ -65,8 +67,8 @@ function* deleteQuizQuestionSaga({ payload: { id } }: ReturnType<typeof QuizQues
   yield put(QuizQuestions.delete.started(id));
 
   try {
-    const accessToken = yield select(getAccessToken);
-    yield call(deleteQuizQuestion, id, accessToken);
+    const accessToken: string | null = yield select(getAccessToken);
+    yield call(deleteQuizQuestion, id, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(QuizQuestions.delete.completed(id));
     yield call(showToast, { message: 'Question deleted', intent: Intent.SUCCESS });
@@ -79,9 +81,9 @@ function* deleteQuizQuestionSaga({ payload: { id } }: ReturnType<typeof QuizQues
   }
 }
 
-export class FetchQuizQuestionsForManagementError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to fetch quiz questions for management, caused by:\n ${cause?.message ?? cause}`);
+export class FetchQuizQuestionsForManagementError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to fetch quiz questions for management`, cause);
   }
 }
 
@@ -89,8 +91,11 @@ function* fetchQuizQuestionsForManagementSaga(): SagaIterator {
   yield put(QuizQuestions.fetchForManagement.started());
 
   try {
-    const accessToken = yield select(getAccessToken);
-    const result: Array<ManageQuizQuestion> = yield call(fetchQuizQuestionsForManagement, accessToken);
+    const accessToken: string | null = yield select(getAccessToken);
+    const result: Array<ManageQuizQuestion> = yield call(
+      fetchQuizQuestionsForManagement,
+      accessToken ?? 'NO ACCESS TOKEN',
+    );
 
     yield put(QuizQuestions.fetchForManagement.completed(result));
   } catch (err) {

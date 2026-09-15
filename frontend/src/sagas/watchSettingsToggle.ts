@@ -1,13 +1,14 @@
 import { SagaIterator } from 'redux-saga';
 import { select, takeLatest, put, all, fork } from 'redux-saga/effects';
-import { Settings } from '../actions';
-import * as Selectors from '../state/Selectors';
-import { ApplicationState } from '../state/ApplicationState';
 import { ActionCreator } from 'typesafe-redux-helpers';
 
+import { Settings } from '../actions';
+import { ApplicationState } from '../state/ApplicationState';
+import * as Selectors from '../state/Selectors';
+
 const genericToggle = (
-  listen: ActionCreator<void, any, any>,
-  setter: ActionCreator<boolean, boolean, any>,
+  listen: ActionCreator<void, unknown, string>,
+  setter: ActionCreator<boolean, boolean, string>,
   selector: (state: ApplicationState) => boolean,
 ) =>
   function* (): SagaIterator {

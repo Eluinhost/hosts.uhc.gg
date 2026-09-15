@@ -1,13 +1,14 @@
+import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 
-import { getModifiersState } from '../selectors';
 import { FETCH_MODIFIERS } from '../actions';
+import { getModifiersState } from '../selectors';
+
+import { CreateModifierForm } from './CreateModifierForm';
 import { ModifierEditorRow } from './ModifiersEditorRow';
 
 import './ModifiersEditor.scss';
-import { CreateModifierForm } from './CreateModifierForm';
 
 export const ModifiersEditor: React.FC = () => {
   const { list } = useSelector(getModifiersState);

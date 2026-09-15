@@ -1,10 +1,10 @@
-import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
 import moment from 'moment-timezone';
+import { Reducer } from 'redux';
+import { createReducer } from 'typesafe-redux-helpers';
 
-import { Match } from '../models/Match';
-import { ApiErrors } from '../api';
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../actions';
+import { ApiErrors } from '../api';
+import { Match } from '../models/Match';
 
 export type MatchDetailsState = {
   readonly match: Match | null;

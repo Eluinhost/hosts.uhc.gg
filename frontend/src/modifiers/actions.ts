@@ -1,4 +1,5 @@
 import { createAction } from 'typesafe-redux-helpers';
+
 import { Modifier } from './Modifier';
 
 export const FETCH_MODIFIERS = {

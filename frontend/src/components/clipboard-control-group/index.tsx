@@ -1,5 +1,6 @@
-import React, { useCallback, useRef } from 'react';
 import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
+import React, { useCallback, useRef } from 'react';
+
 import { showToast } from '../../services/AppToaster';
 
 type Props = {
@@ -11,11 +12,12 @@ export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
 
   const triggerCopy = useCallback(() => {
     try {
-      inputRef.current!.select();
+      inputRef.current?.select();
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       document.execCommand('copy');
       void showToast({
         intent: Intent.SUCCESS,
-        message: `Added \`${inputRef.current!.value}\` to clipboard`,
+        message: `Added \`${inputRef.current?.value}\` to clipboard`,
       });
     } catch (e) {
       console.error(e);
@@ -30,7 +32,7 @@ export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
   return (
     <ControlGroup fill>
       <input type="text" className={`${Classes.INPUT} ${Classes.LARGE}`} value={value} readOnly ref={inputRef} />
-      <Button large minimal icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
+      <Button size="large" variant="minimal" icon="clipboard" className={Classes.FIXED} onClick={triggerCopy} />
     </ControlGroup>
   );
 };

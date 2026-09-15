@@ -1,6 +1,8 @@
-import { PermissionsApi, ApiErrors } from '../api';
+import { Intent } from '@blueprintjs/core';
 import { SagaIterator } from 'redux-saga';
 import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { createSelector } from 'reselect';
+
 import {
   AddPermission,
   FetchUserCountPerPermission,
@@ -13,13 +15,12 @@ import {
   RefreshPermissionModerationLog,
   RemovePermission,
 } from '../actions';
-import { createSelector } from 'reselect';
+import { PermissionsApi, ApiErrors } from '../api';
+import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { showToast } from '../services/AppToaster';
 import { ApplicationState } from '../state/ApplicationState';
 import { RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
-import { showToast } from '../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 import { wrapError } from '../utils/wrapError';
 
 function* fetchPermissionsSaga(): SagaIterator {
@@ -129,7 +130,7 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
-          : `Failed to add permission to /u/${parameters!.username}`,
+          : `Failed to add permission to /u/${parameters.username}`,
     });
   }
 }
@@ -162,7 +163,7 @@ function* removePermission(): SagaIterator {
   } catch (error) {
     console.error(error, 'Failed to remove permission');
 
-    yield put(RemovePermission.failure({ error: wrapError(error), parameters: parameters! }));
+    yield put(RemovePermission.failure({ error: wrapError(error), parameters: parameters }));
     yield put(RemovePermission.closeDialog());
 
     yield call(showToast, {
@@ -171,7 +172,7 @@ function* removePermission(): SagaIterator {
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
-          : `Failed to remove permission from /u/${parameters!.username}`,
+          : `Failed to remove permission from /u/${parameters?.username}`,
     });
   }
 }

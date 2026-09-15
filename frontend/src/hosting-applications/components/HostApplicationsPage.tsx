@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
-import { ExistingHostApplication } from './ExistingHostApplication';
+
 import { HostApplications } from '../actions';
 import { getHostApplicationPermissions, getHostApplicationsListState } from '../selectors';
 
-export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
+import { ExistingHostApplication } from './ExistingHostApplication';
+
+export const HostApplicationsPage = () => {
   const { canApply, isBanned, canReview, username } = useSelector(getHostApplicationPermissions);
   const { data, error, isFetching } = useSelector(getHostApplicationsListState);
   const dispatch = useDispatch();
@@ -65,4 +67,4 @@ export const HostApplicationsPage = React.memo(function HostApplicationsPage() {
       )}
     </div>
   );
-});
+};

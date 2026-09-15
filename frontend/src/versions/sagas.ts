@@ -5,8 +5,8 @@ import { FETCH_VERSIONS } from './actions';
 import { getAllVersions } from './api';
 
 export class FetchVersionsError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to lookup versions, caused by:\n ${cause?.message ?? cause}`);
+  constructor(public cause: unknown) {
+    super(`Failed to lookup versions, caused by:\n ${cause instanceof Error ? cause.message : String(cause)}`);
   }
 }
 

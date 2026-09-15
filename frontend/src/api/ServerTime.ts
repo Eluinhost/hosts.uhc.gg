@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+
 import { fetchObject } from './util';
 
 export const fetchServerTime = (): Promise<moment.Moment> =>

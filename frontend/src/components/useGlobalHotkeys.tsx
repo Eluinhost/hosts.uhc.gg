@@ -1,6 +1,6 @@
+import { useHotkeys } from '@blueprintjs/core';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { useHotkeys } from '@blueprintjs/core';
 
 export const useGlobalHotkeys = () => {
   const navigate = useNavigate();

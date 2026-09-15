@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
 import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { QuizQuestions } from '../actions';
+import { getFetchQuizQuestionsForManagementApiState, getQuizQuestionsForManagement } from '../selectors';
+
 import { CreateQuizQuestionForm } from './CreateQuizQuestionForm';
 import { ExistingQuizQuestion } from './ExistingQuizQuestion';
-import { getFetchQuizQuestionsForManagementApiState, getQuizQuestionsForManagement } from '../selectors';
-import { QuizQuestions } from '../actions';
 
-export const ShowQuizQuestions = React.memo(function ShowQuizQuestionsComponent() {
+export const ShowQuizQuestions = () => {
   const { isFetching, error } = useSelector(getFetchQuizQuestionsForManagementApiState);
   const questions = useSelector(getQuizQuestionsForManagement);
   const dispatch = useDispatch();
@@ -44,4 +46,4 @@ export const ShowQuizQuestions = React.memo(function ShowQuizQuestionsComponent(
       <CreateQuizQuestionForm />
     </div>
   );
-});
+};

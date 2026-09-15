@@ -1,10 +1,11 @@
 import { createAction } from 'typesafe-redux-helpers';
-import { Match } from '../models/Match';
-import { HostingRules } from '../state/HostingRulesState';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import { CreateMatchData } from '../models/CreateMatchData';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+
 import { Preset } from '../components/host/presets';
+import { CreateMatchData } from '../models/CreateMatchData';
+import { Match } from '../models/Match';
+import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { HostingRules } from '../state/HostingRulesState';
 
 export type WithResult<Result> = {
   readonly result: Result;
@@ -280,7 +281,7 @@ export const RemovePermission = {
   success: createAction('REMOVE_PERMISSION_SUCCESS', (payload: WithParameters<PermissionParameters>) => payload),
   failure: createAction(
     'REMOVE_PERMISSION_FAILURE',
-    (payload: WithParameters<PermissionParameters> & WithError) => payload,
+    (payload: WithParameters<PermissionParameters | null> & WithError) => payload,
   ),
 };
 

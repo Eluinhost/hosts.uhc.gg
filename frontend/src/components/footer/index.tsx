@@ -1,6 +1,7 @@
-import React from 'react';
 import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
+import React from 'react';
 import { useSelector } from 'react-redux';
+
 import { isDarkMode } from '../../state/Selectors';
 
 export const Footer: React.FC = () => {
@@ -15,7 +16,7 @@ export const Footer: React.FC = () => {
           href="https://uhc.gg/discord"
           intent={intent}
           icon="comment"
-          minimal
+          variant="minimal"
           target="_blank"
           rel="noopener noreferrer"
         >

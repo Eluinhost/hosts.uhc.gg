@@ -1,14 +1,16 @@
-import React, { useEffect } from 'react';
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
-import { HostApplicationForm } from './HostApplicationForm';
-import { getFetchQuizQuestionsApiState } from '../questions/selectors';
-import { QuizQuestions } from '../questions/actions';
+
 import { HostApplications } from '../actions';
+import { QuizQuestions } from '../questions/actions';
+import { getFetchQuizQuestionsApiState } from '../questions/selectors';
 import { getHasSubmittedHostApplicationSuccessfully, getHostApplicationPermissions } from '../selectors';
 
-export const ApplyHostApplicationPage = React.memo(function ApplyHostApplicationPage() {
+import { HostApplicationForm } from './HostApplicationForm';
+
+export const ApplyHostApplicationPage: React.FC = () => {
   const dispatch = useDispatch();
   const { error, data, isFetching } = useSelector(getFetchQuizQuestionsApiState);
   const { canApply, isBanned } = useSelector(getHostApplicationPermissions);
@@ -82,4 +84,4 @@ export const ApplyHostApplicationPage = React.memo(function ApplyHostApplication
       )}
     </div>
   );
-});
+};

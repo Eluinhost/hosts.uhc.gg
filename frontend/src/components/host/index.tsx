@@ -1,17 +1,19 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { ApplicationState } from '../../state/ApplicationState';
-import { useNavigate } from 'react-router';
-import { CreateMatchForm } from './CreateMatchForm';
 import { useSelector, useDispatch } from 'react-redux';
-import { nextAvailableSlot } from './nextAvailableSlot';
-import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
-import { MatchesApi, ApiErrors } from '../../api';
+import { useNavigate } from 'react-router';
 import { change, getFormValues, SubmissionError } from 'redux-form';
-import { renderToMarkdown } from './TemplateField';
-import { getAccessToken, getUsername, isDarkMode, is12hFormat, getPermissions } from '../../state/Selectors';
 import { createSelector, Selector } from 'reselect';
-import { CreateMatchData } from '../../models/CreateMatchData';
+
 import { SetSavedHostFormData } from '../../actions';
+import { MatchesApi, ApiErrors } from '../../api';
+import { CreateMatchData } from '../../models/CreateMatchData';
+import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
+import { ApplicationState } from '../../state/ApplicationState';
+import { getAccessToken, getUsername, isDarkMode, is12hFormat, getPermissions } from '../../state/Selectors';
+
+import { CreateMatchForm } from './CreateMatchForm';
+import { nextAvailableSlot } from './nextAvailableSlot';
+import { renderToMarkdown, TemplateContext } from './TemplateField';
 
 export const formKey: string = 'create-match-form';
 
@@ -27,7 +29,7 @@ const stateSelector = createSelector(
   getAccessToken,
   isDarkMode,
   is12hFormat,
-  state => state.hostFormSavedData,
+  (state: ApplicationState) => state.hostFormSavedData,
   (username, permissions, formValues, accessToken, isDarkMode, is12h, savedData) => ({
     formValues,
     is12h,
@@ -81,7 +83,7 @@ export const HostingPage: React.FC = () => {
   }, [onUnload, updateOpeningTime]);
 
   const createTemplateContext = useCallback(
-    (data: CreateMatchData): any => {
+    (data: CreateMatchData): TemplateContext => {
       const teams = TeamStyles.find(it => it.value === data.teams) || TeamStyles[0];
 
       return {
@@ -104,7 +106,7 @@ export const HostingPage: React.FC = () => {
       };
 
       // Remove the team size if it isn't required to avoid potential non-ints being sent and rejected at decoding
-      if (!TeamStyles.find(it => it.value === values.teams)!.requiresTeamSize) {
+      if (!TeamStyles.find(it => it.value === values.teams)?.requiresTeamSize) {
         withRenderedTemplate.size = null;
       }
 
@@ -113,7 +115,7 @@ export const HostingPage: React.FC = () => {
         await MatchesApi.create(withRenderedTemplate, accessToken);
 
         // if success send them to the matches page to view it
-        navigate('/matches');
+        void navigate('/matches');
       } catch (err) {
         if (err instanceof ApiErrors.BadDataError) throw new SubmissionError({ _error: `Bad data: ${err.message}` });
 
@@ -134,6 +136,7 @@ export const HostingPage: React.FC = () => {
   );
 
   // Base data, use the current form value or the stored data if it doesn't exist (first-render I think)
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const data: CreateMatchData = formValues || savedData;
 
   const context = createTemplateContext(data);

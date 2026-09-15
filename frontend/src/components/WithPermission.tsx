@@ -1,8 +1,9 @@
+import { memoizeWith, toString } from 'ramda';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { matchesPermissions } from '../state/Selectors';
 import { createSelector } from 'reselect';
-import { memoizeWith, toString } from 'ramda';
+
+import { matchesPermissions } from '../state/Selectors';
 
 export type WithPermissionProps = {
   readonly permission: string | string[];
@@ -21,7 +22,7 @@ export const WithPermission: React.FC<WithPermissionProps> = (props: WithPermiss
   const { show } = useSelector(state => memoizedStateSelector(permission)(state));
 
   if (show) {
-    return <>{children}</> || null;
+    return <>{children}</>;
   }
 
   if (alternative) {

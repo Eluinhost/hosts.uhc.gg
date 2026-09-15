@@ -1,8 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router';
+
 import { ApprovalModal } from '../approval-modal';
-import { RemovalModal } from '../removal-modal';
 import { MatchDetails } from '../match-details';
+import { RemovalModal } from '../removal-modal';
 
 type Params = {
   readonly id?: string;
