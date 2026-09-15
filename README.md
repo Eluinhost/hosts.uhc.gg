@@ -23,7 +23,7 @@ pnpm build
 
 #### Build dev 
 
-Builds development bundles and listens for changes for recompilation. Runs on port 5174
+Builds development bundles and listens for changes for recompilation. Runs on port 3000
 
 ```bash
 pnpm start
