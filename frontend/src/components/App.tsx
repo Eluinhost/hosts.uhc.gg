@@ -1,33 +1,46 @@
-import { Classes, NonIdealState } from '@blueprintjs/core';
+import { Classes, NonIdealState, Spinner } from '@blueprintjs/core';
 import { GeosearchIcon } from '@blueprintjs/icons';
-import React, { type PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
 import ReactHelmet from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router';
 
-import { ApplyHostApplicationPage } from '../hosting-applications/components/ApplyHostApplication';
-import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
-import { QuizManagementPage } from '../hosting-applications/questions/components/QuizManagementPage';
-import { ModifiersPage } from '../modifiers/components/ModifiersPage';
 import { isDarkMode, isLoggedIn } from '../state/Selectors';
 
 import { Footer } from './footer';
-import { HomePage } from './HomePage';
-import { HostingPage } from './host';
-import { HistoryPage } from './host-history-page';
-import { LoginPage } from './LoginPage';
-import { MatchDetailsPage } from './match-details-page';
-import { MembersPage } from './members';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { ProfilePage } from './profile';
 import { TimeSettings } from './time/TimeSettings';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
 import { useGlobalHotkeys } from './useGlobalHotkeys';
 import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
+
+const HostingPage = lazy(() => import('./host').then(m => ({ default: m.HostingPage })));
+const MatchDetailsPage = lazy(() => import('./match-details-page').then(m => ({ default: m.MatchDetailsPage })));
+const HistoryPage = lazy(() => import('./host-history-page').then(m => ({ default: m.HistoryPage })));
+const ApplyHostApplicationPage = lazy(() =>
+  import('../hosting-applications/components/ApplyHostApplication').then(m => ({
+    default: m.ApplyHostApplicationPage,
+  })),
+);
+const HostApplicationsPage = lazy(() =>
+  import('../hosting-applications/components/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
+);
+const MembersPage = lazy(() => import('./members').then(m => ({ default: m.MembersPage })));
+const LoginPage = lazy(() => import('./LoginPage').then(m => ({ default: m.LoginPage })));
+const ProfilePage = lazy(() => import('./profile').then(m => ({ default: m.ProfilePage })));
+const ModifiersPage = lazy(() =>
+  import('../modifiers/components/ModifiersPage').then(m => ({ default: m.ModifiersPage })),
+);
+const QuizManagementPage = lazy(() =>
+  import('../hosting-applications/questions/components/QuizManagementPage').then(m => ({
+    default: m.QuizManagementPage,
+  })),
+);
+const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePage })));
 
 const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon={<GeosearchIcon />} />;
 
@@ -65,49 +78,51 @@ const AppRoutes: React.FC = () => {
   }, [pathname, search]);
 
   return (
-    <Routes>
-      <Route
-        path="/host"
-        element={
-          <AuthenticatedRoute permission={HOST_PERMISSIONS}>
-            <HostingPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/m/:id" Component={MatchDetailsPage} />
-      <Route path="/matches/:host" Component={HistoryPage} />
-      <Route path="/matches" Component={UpcomingMatchesPage} />
-      <Route path="/host-applications/apply" Component={ApplyHostApplicationPage} />
-      <Route path="/host-applications" Component={HostApplicationsPage} />
-      <Route path="/members" Component={MembersPage} />
-      <Route path="/login" Component={LoginPage} />
-      <Route
-        path="/profile"
-        element={
-          <AuthenticatedRoute permission={NO_PERMISSIONS}>
-            <ProfilePage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/modifiers"
-        element={
-          <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
-            <ModifiersPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/quiz"
-        element={
-          <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
-            <QuizManagementPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/" index Component={HomePage} />
-      <Route path="*" Component={NotFoundPage} />
-    </Routes>
+    <Suspense fallback={<Spinner style={{ display: 'block', margin: '100px auto 0' }} />}>
+      <Routes>
+        <Route
+          path="/host"
+          element={
+            <AuthenticatedRoute permission={HOST_PERMISSIONS}>
+              <HostingPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/m/:id" element={<MatchDetailsPage />} />
+        <Route path="/matches/:host" element={<HistoryPage />} />
+        <Route path="/matches" element={<UpcomingMatchesPage />} />
+        <Route path="/host-applications/apply" element={<ApplyHostApplicationPage />} />
+        <Route path="/host-applications" element={<HostApplicationsPage />} />
+        <Route path="/members" element={<MembersPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/profile"
+          element={
+            <AuthenticatedRoute permission={NO_PERMISSIONS}>
+              <ProfilePage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/modifiers"
+          element={
+            <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
+              <ModifiersPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
+              <QuizManagementPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/" index element={<HomePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 };
 
