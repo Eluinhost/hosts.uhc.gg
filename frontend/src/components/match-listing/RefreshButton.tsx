@@ -1,14 +1,14 @@
 import { Classes, Intent, Button } from '@blueprintjs/core';
 import { RefreshIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
+import type { Dayjs } from '../../dayjs';
 import { getTimeFormat, getTimezone } from '../../state/Selectors';
 
 type OwnProps = {
-  readonly lastUpdated: moment.Moment | null;
+  readonly lastUpdated: Dayjs | null;
   readonly onClick: () => void;
   readonly loading: boolean;
 };
@@ -24,7 +24,7 @@ export const RefreshButton: React.FC<OwnProps> = ({ lastUpdated, onClick, loadin
   const buttonContent = loading
     ? 'Refreshing...'
     : lastUpdated
-      ? `Refreshed @ ${lastUpdated.clone().tz(timezone).format(format)}`
+      ? `Refreshed @ ${lastUpdated.tz(timezone).format(format)}`
       : `Refresh`;
 
   return (

@@ -1,6 +1,5 @@
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
 import { CloudUploadIcon, WarningSignIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import { find } from 'ramda';
 import React, { useCallback, useEffect } from 'react';
 import { SubmissionError, type InjectedFormProps, reduxForm } from 'redux-form';
@@ -8,6 +7,7 @@ import type { SagaIterator } from 'redux-saga';
 import { all, put, race, take } from 'redux-saga/effects';
 
 import { HostFormConflicts } from '../../actions';
+import dayjs from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
 import type { Match } from '../../models/Match';
 import { Regions } from '../../models/Regions';
@@ -172,7 +172,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
     removedBy: null,
     removedReason: null,
     approvedBy: null,
-    created: moment.utc(),
+    created: dayjs.utc(),
     version: currentValues.version || currentValues.mainVersion,
     roles,
   };
@@ -189,8 +189,8 @@ const CreateMatchFormComponent: React.FunctionComponent<
           name="opens"
           required
           disabled={disabledAsync}
-          minDate={nextAvailableSlot().set('hours', 0)} // midnight so the boundary day is still selectable
-          maxDate={moment.utc().add(30, 'd').set('hours', 23)}
+          minDate={nextAvailableSlot().hour(0)} // midnight so the boundary day is still selectable
+          maxDate={dayjs.utc().add(30, 'days').hour(23)}
           timePicker={{
             minuteStep: 15,
             use12Hours: is12h,

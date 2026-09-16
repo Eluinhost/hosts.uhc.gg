@@ -1,16 +1,16 @@
-import moment from 'moment-timezone';
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../actions';
 import { ApiErrors } from '../api';
+import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
 
 export type MatchDetailsState = {
   readonly match: Match | null;
   readonly fetching: boolean;
   readonly error: string | null;
-  readonly updated: moment.Moment | null;
+  readonly updated: Dayjs | null;
 };
 
 const displayError = (err: Error) => {
@@ -37,13 +37,13 @@ export const reducer: Reducer<MatchDetailsState> = createReducer<MatchDetailsSta
     fetching: false,
     error: null,
     match: action.payload.result,
-    updated: moment.utc(),
+    updated: dayjs.utc(),
   }))
   .handleAction(FetchMatchDetails.failure, (_state, action) => ({
     fetching: false,
     error: displayError(action.payload.error),
     match: null,
-    updated: moment.utc(),
+    updated: dayjs.utc(),
   }))
   .handleAction(FetchMatchDetails.clear, state => ({
     match: null,

@@ -1,8 +1,8 @@
-import moment from 'moment-timezone';
+import dayjs, { type Dayjs } from '../dayjs';
 
 import { fetchObject } from './util';
 
-export const fetchServerTime = (): Promise<moment.Moment> =>
+export const fetchServerTime = (): Promise<Dayjs> =>
   fetchObject<string>({
     url: `/api/sync`,
-  }).then(response => moment.utc(response));
+  }).then(response => dayjs.utc(response));

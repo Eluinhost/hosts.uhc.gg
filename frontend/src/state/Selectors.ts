@@ -1,7 +1,8 @@
 import { jwtDecode } from 'jwt-decode';
-import moment from 'moment-timezone';
 import { intersection, isEmpty, memoizeWith, toString, identity } from 'ramda';
 import { createSelector } from 'reselect';
+
+import dayjs from '../dayjs';
 
 import type { ApplicationState } from './ApplicationState';
 
@@ -42,7 +43,7 @@ export const getAccessTokenClaims = createSelector(getAccessToken, token => {
     return {
       username: decoded.username,
       permissions: decoded.permissions,
-      expires: moment(decoded.exp, 'X'),
+      expires: dayjs.unix(decoded.exp),
     };
   } catch {
     return null;
@@ -74,7 +75,7 @@ export const getRefreshTokenClaims = createSelector(getRefreshToken, token => {
 
     return {
       username: decoded.username,
-      expires: moment(decoded.exp, 'X'),
+      expires: dayjs.unix(decoded.exp),
     };
   } catch {
     return null;

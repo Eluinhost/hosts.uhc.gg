@@ -1,4 +1,4 @@
-import moment from 'moment-timezone';
+import type { Dayjs } from '../dayjs';
 
 export type AlertRule = {
   id: number;
@@ -6,7 +6,7 @@ export type AlertRule = {
   alertOn: string;
   exact: boolean;
   createdBy: string;
-  created: moment.Moment;
+  created: Dayjs;
 };
 
 export type AlertRuleField = 'ip' | 'address' | 'hosting name' | 'content' | 'tags';

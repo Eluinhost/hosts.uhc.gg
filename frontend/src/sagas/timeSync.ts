@@ -1,18 +1,18 @@
-import moment from 'moment-timezone';
 import type { SagaIterator } from 'redux-saga';
 import { delay, put, call, take, fork, takeLatest, race } from 'redux-saga/effects';
 
 import { SyncTime } from '../actions';
 import { ServerTimeApi } from '../api';
+import dayjs, { type Dayjs } from '../dayjs';
 import { wrapError } from '../utils/wrapError';
 
 function* fetchServerTimeSaga(): SagaIterator {
   try {
     yield put(SyncTime.started());
 
-    const serverTime: moment.Moment = yield call(ServerTimeApi.fetchServerTime);
+    const serverTime: Dayjs = yield call(ServerTimeApi.fetchServerTime);
 
-    const diff = serverTime.diff(moment.utc());
+    const diff = serverTime.diff(dayjs.utc());
 
     yield put(SyncTime.success({ result: diff }));
   } catch (error) {

@@ -1,10 +1,10 @@
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
 import { ChevronDownIcon, ChevronUpIcon, CrossIcon, TickIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
+import dayjs from '../../dayjs';
 import type { HostApplication } from '../../models/HostApplication';
 import type { ApplicationState } from '../../state/ApplicationState';
 import { HostApplications } from '../actions';
@@ -95,11 +95,11 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
         /u/{application.username} <Tag intent={intent}>{application.status}</Tag>{' '}
         {isOwn && <Tag intent={Intent.PRIMARY}>Your application</Tag>}
       </H4>
-      <small>{moment.utc(application.created).format('MMM Do YYYY, HH:mm z')}</small>
+      <small>{dayjs.utc(application.created).format('MMM Do YYYY, HH:mm z')}</small>
       {application.reviewedBy && (
         <p>
           Reviewed by /u/{application.reviewedBy}
-          {application.reviewedAt && ` on ${moment.utc(application.reviewedAt).format('MMM Do YYYY, HH:mm z')}`}
+          {application.reviewedAt && ` on ${dayjs.utc(application.reviewedAt).format('MMM Do YYYY, HH:mm z')}`}
         </p>
       )}
       {application.status === 'declined' && application.reviewReason && (

@@ -1,11 +1,11 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { CrossIcon, GeosearchIcon, RefreshIcon, SearchIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector, type Selector } from 'reselect';
 
 import { Settings } from '../../actions';
+import dayjs, { type Dayjs } from '../../dayjs';
 import type { Match } from '../../models/Match';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
 import type { ApplicationState } from '../../state/ApplicationState';
@@ -24,7 +24,7 @@ type MatchListingProps = {
   readonly error: string | null;
   readonly refetch: () => void;
   readonly loadMore: () => void;
-  readonly lastUpdated: moment.Moment | null;
+  readonly lastUpdated: Dayjs | null;
   readonly autoRefreshSeconds?: number;
   readonly hasMore: boolean;
   readonly disableRemove?: boolean;
@@ -93,7 +93,7 @@ export const MatchListing: FC<MatchListingProps> = ({
       // data is stale if it has never been updated or the last update was before the refresh timer allows
       const isDataStale: boolean =
         lastUpdated === null ||
-        (autoRefreshSeconds !== undefined && moment.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
+        (autoRefreshSeconds !== undefined && dayjs.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
 
       if (isDataStale) {
         refetch();

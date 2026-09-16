@@ -1,12 +1,12 @@
 import { Button, Callout, Classes, H5, HTMLTable, Intent, Tab, Tabs, TextArea } from '@blueprintjs/core';
 import { FloppyDiskIcon, TrashIcon } from '@blueprintjs/icons';
 import * as Mark from 'markup-js';
-import moment from 'moment-timezone';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { type BaseFieldProps, Field, type WrappedFieldProps } from 'redux-form';
 
 import { Presets } from '../../actions';
+import type { Dayjs } from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
 import { getLocalPresets } from '../../state/Selectors';
 import { FieldWrapper, RenderErrors, RenderLabel } from '../fields/FieldWrapper';
@@ -28,7 +28,7 @@ export type TemplateFieldProps = BaseFieldProps & {
 export const renderToMarkdown = (template: string, context: TemplateContext): string =>
   Mark.up(template, context, {
     pipes: {
-      moment: (date: moment.Moment, format: string): string => date.clone().utc().format(format),
+      moment: (date: Dayjs, format: string): string => date.utc().format(format),
     },
   });
 

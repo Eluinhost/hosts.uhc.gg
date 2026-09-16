@@ -1,9 +1,9 @@
-import moment from 'moment-timezone';
 import type { SagaIterator } from 'redux-saga';
 import { select, put, takeEvery, call } from 'redux-saga/effects';
 
 import { Authentication, type LoginPayload } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';
+import dayjs from '../dayjs';
 import type { ApplicationState } from '../state/ApplicationState';
 import { getAccessTokenClaims, getRefreshTokenClaims, isLoggedIn } from '../state/Selectors';
 
@@ -17,7 +17,7 @@ function* attemptRefresh(): SagaIterator {
     return;
   }
 
-  const now = moment();
+  const now = dayjs.utc();
 
   // If the access token still has time left do nothing
   if (getAccessTokenClaims(state)?.expires.isAfter(now.add(5, 'minutes'))) {
