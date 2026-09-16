@@ -1,10 +1,10 @@
-import moment from 'moment-timezone';
 import { concat } from 'ramda';
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
 import { ApiErrors } from '../api';
+import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
 
 export type HostHistoryState = {
@@ -13,7 +13,7 @@ export type HostHistoryState = {
   readonly matches: Match[];
   readonly host: string | null;
   readonly hasMorePages: boolean;
-  readonly updated: moment.Moment | null;
+  readonly updated: Dayjs | null;
 };
 
 const displayError = (err: Error) => {
@@ -54,7 +54,7 @@ export const reducer: Reducer<HostHistoryState> = createReducer<HostHistoryState
     matches: concat(state.matches, action.payload.result),
     host: state.host,
     hasMorePages: action.payload.result.length > 0,
-    updated: moment.utc(),
+    updated: dayjs.utc(),
   }))
   .handleAction(LoadHostHistory.failure, (state, action) => ({
     fetching: false,

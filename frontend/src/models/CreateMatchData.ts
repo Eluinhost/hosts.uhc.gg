@@ -1,7 +1,7 @@
-import moment from 'moment-timezone';
+import type { Dayjs } from '../dayjs';
 
 export type CreateMatchData = {
-  opens: moment.Moment;
+  opens: Dayjs;
   address: string | null;
   ip: string;
   modifiers: string[];

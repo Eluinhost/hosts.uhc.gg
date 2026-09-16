@@ -9,7 +9,7 @@ export const RemovedReason: React.FC<{ match: Match }> = ({ match: { removedBy, 
   const timezone = useSelector(getTimezone);
 
   const removedAtFormatted = useMemo(
-    () => removedAt && removedAt.clone().tz(timezone).format(format),
+    () => removedAt && removedAt.tz(timezone).format(format),
     [format, removedAt, timezone],
   );
 

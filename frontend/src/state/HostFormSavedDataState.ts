@@ -35,5 +35,5 @@ export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSa
 }).handleAction(SetSavedHostFormData.started, (state, action) => ({
   ...state,
   ...action.payload.parameters,
-  opens: state.opens, // always use whatever was there first, storage really doesn't like moment
+  opens: state.opens, // always use whatever was there first, storage really doesn't like date objects
 }));

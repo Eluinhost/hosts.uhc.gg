@@ -13,7 +13,7 @@ export const RemovedInfo: React.FC<{ match: Match }> = ({
   const timezone = useSelector(getTimezone);
 
   const removedAtFormatted = useMemo(
-    () => removedAt && removedAt.clone().tz(timezone).format(format),
+    () => removedAt && removedAt.tz(timezone).format(format),
     [format, removedAt, timezone],
   );
 

@@ -1,14 +1,14 @@
 import { Intent, Tag } from '@blueprintjs/core';
-import moment from 'moment-timezone';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
+import type { Dayjs } from '../../dayjs';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 type Props = {
-  readonly opens: moment.Moment;
-  readonly created: moment.Moment;
+  readonly opens: Dayjs;
+  readonly created: Dayjs;
 };
 
 const stateSelector = createSelector(getTagDateTimeFormat, getTimezone, (format, timezone) => ({
@@ -24,9 +24,9 @@ export const MatchOpensTag: React.FC<Props> = ({ opens, created }) => {
       intent={Intent.SUCCESS}
       size="large"
       className="match-opens"
-      title={`Created @ ${created.clone().tz(timezone).format(format)}`}
+      title={`Created @ ${created.tz(timezone).format(format)}`}
     >
-      {opens.clone().tz(timezone).format(format)}
+      {opens.tz(timezone).format(format)}
     </Tag>
   );
 };

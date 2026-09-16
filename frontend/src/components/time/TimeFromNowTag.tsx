@@ -1,14 +1,14 @@
 import { Intent, Tag, type TagProps } from '@blueprintjs/core';
 import { TimeIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
+import dayjs, { type Dayjs } from '../../dayjs';
 import type { ApplicationState } from '../../state/ApplicationState';
 
 type Props = {
-  readonly time: moment.Moment;
+  readonly time: Dayjs;
   readonly hideSuffix?: boolean;
 } & TagProps;
 
@@ -23,11 +23,11 @@ export const TimeFromNowTag: React.FC<Props> = props => {
   const { offset } = useSelector(stateSelector);
   const { time, hideSuffix } = props;
 
-  const [currentTime, setCurrentTime] = useState(moment.utc());
+  const [currentTime, setCurrentTime] = useState(dayjs.utc());
 
   useEffect(() => {
     const timerId = window.setInterval(() => {
-      setCurrentTime(moment.utc());
+      setCurrentTime(dayjs.utc());
     }, 2000);
     return () => {
       window.clearInterval(timerId);

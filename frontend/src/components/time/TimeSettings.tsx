@@ -1,6 +1,5 @@
 import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
 import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
-import moment from 'moment-timezone';
 import { toLower, filter as rFilter, always, includes } from 'ramda';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,7 +11,7 @@ import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 import { CurrentTime } from './CurrentTime';
 
-const tzs = moment.tz.names();
+const tzs = Intl.supportedValuesOf('timeZone');
 
 const searchFilter = (query: string): ((item: string) => boolean) => {
   if (!query) {

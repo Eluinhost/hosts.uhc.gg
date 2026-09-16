@@ -100,6 +100,10 @@ export default tseslint.config(
               importNames: ['memo'],
               message: 'Do not use React.memo — components are not memoized.',
             },
+            {
+              name: 'dayjs',
+              message: "Import the configured dayjs instance from 'src/dayjs' instead of 'dayjs'",
+            },
           ],
         },
       ],

@@ -1,6 +1,6 @@
-import moment from 'moment-timezone';
 import { both, flip, gte, lte } from 'ramda';
 
+import dayjs from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
 import { TeamStyles } from '../../models/TeamStyles';
 import { Validator } from '../../services/Validator';
@@ -14,9 +14,9 @@ export const validator: Validator<CreateMatchData> = new Validator<CreateMatchDa
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!opens) return 'Must provide an opening time';
 
-    if (opens.get('minute') % 15 !== 0) return 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
+    if (opens.minute() % 15 !== 0) return 'Must be on 15 minute intervals like xx:15, xx:30 e.t.c.';
 
-    if (opens.isBefore(moment.utc().add(30, 'minutes'))) return 'Must be at least 30 minutes in advance';
+    if (opens.isBefore(dayjs.utc().add(30, 'minutes'))) return 'Must be at least 30 minutes in advance';
 
     return undefined;
   })

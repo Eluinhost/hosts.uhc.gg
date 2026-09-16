@@ -1,10 +1,11 @@
 import { Callout, Intent, Overlay2 } from '@blueprintjs/core';
 import RcPicker, { PickerPanel, type PickerPanelProps, type PickerProps } from '@rc-component/picker';
-import generateMomentConfig from '@rc-component/picker/lib/generate/moment';
+import generateDayjsConfig from '@rc-component/picker/lib/generate/dayjs';
 import enGB from '@rc-component/picker/lib/locale/en_GB';
-import moment from 'moment-timezone';
 import React, { useCallback } from 'react';
 import { type BaseFieldProps, Field, type WrappedFieldMetaProps, type WrappedFieldProps } from 'redux-form';
+
+import type { Dayjs } from '../../dayjs';
 
 import { FieldWrapper } from './FieldWrapper';
 import './DateTimeField.sass';
@@ -15,8 +16,8 @@ export interface DateTimeFieldProps extends BaseFieldProps {
   readonly required?: boolean;
   readonly disabled?: boolean;
   readonly datePickerProps?: Partial<PickerPanelProps>;
-  readonly minDate?: moment.Moment;
-  readonly maxDate?: moment.Moment;
+  readonly minDate?: Dayjs;
+  readonly maxDate?: Dayjs;
   readonly timePicker?: Pick<PickerProps, 'minuteStep' | 'use12Hours' | 'className'>;
   readonly renderClearButton?: React.ComponentType<{ value: unknown; onClear: () => void }>;
 }
@@ -44,10 +45,10 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
     timePicker,
   } = props;
   const { onChange, onBlur } = input;
-  const value = input.value as moment.Moment | undefined;
+  const value = input.value as Dayjs | undefined;
 
   const triggerChange = useCallback(
-    (date: moment.Moment | null): void => {
+    (date: Dayjs | null): void => {
       if (disabled) return;
 
       onChange(date);
@@ -57,14 +58,18 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
   );
 
   const handleDateChange = useCallback(
-    (date: moment.Moment | null): void => {
-      const newDate = date?.utc().clone();
+    (date: Dayjs | null): void => {
+      const newDate = date?.utc();
 
       if (value && newDate) {
-        newDate.set('hours', value.get('hours'));
-        newDate.set('minutes', value.get('minutes'));
-        newDate.set('seconds', value.get('seconds'));
-        newDate.set('milliseconds', value.get('milliseconds'));
+        triggerChange(
+          newDate
+            .set('hour', value.hour())
+            .set('minute', value.minute())
+            .set('second', value.second())
+            .set('millisecond', value.millisecond()),
+        );
+        return;
       }
 
       triggerChange(newDate || null);
@@ -73,7 +78,7 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
   );
 
   const handleTimeChange = useCallback(
-    (date: moment.Moment): void => {
+    (date: Dayjs): void => {
       // if we don't have a date, don't do anything, shouldn't be triggered
       if (!value) {
         return;
@@ -89,7 +94,7 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
   }, [handleDateChange]);
 
   const isDayBlocked = useCallback(
-    (day: moment.Moment) => {
+    (day: Dayjs) => {
       if (minDate && minDate.isAfter(day)) {
         return true;
       }
@@ -119,10 +124,10 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
         <PickerPanel
           picker="date"
           locale={enGB}
-          generateConfig={generateMomentConfig}
+          generateConfig={generateDayjsConfig}
           value={value || null}
           onChange={date => {
-            handleDateChange(date as moment.Moment | null);
+            handleDateChange(date as Dayjs | null);
           }}
           disabledDate={isDayBlocked}
           {...datePickerProps}
@@ -132,7 +137,7 @@ const DateTimePicker: React.FC<WrappedFieldProps & DateTimeFieldProps> = props =
             picker="time"
             showTime
             locale={enGB}
-            generateConfig={generateMomentConfig}
+            generateConfig={generateDayjsConfig}
             getPopupContainer={getPopupContainer}
             allowClear={!!ClearButton}
             disabled={disabled}

@@ -1,9 +1,9 @@
-import moment from 'moment-timezone';
+import type { Dayjs } from '../dayjs';
 
 export type Match = {
   id: number;
   author: string;
-  opens: moment.Moment;
+  opens: Dayjs;
   address: string | null;
   ip: string | null;
   scenarios: string[];
@@ -15,10 +15,10 @@ export type Match = {
   content: string;
   region: string;
   removed: boolean;
-  removedAt: moment.Moment | null;
+  removedAt: Dayjs | null;
   removedBy: string | null;
   removedReason: string | null;
-  created: moment.Moment;
+  created: Dayjs;
   location: string;
   mainVersion: string;
   version: string;
