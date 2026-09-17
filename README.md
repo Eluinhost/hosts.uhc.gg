@@ -63,6 +63,8 @@ Alternatively use `re-start` and `re-stop` to manually start/stop the backend se
 
 # Docker
 
+Intended for use with docker compose + BuildKit
+
 Create application.conf in main folder using reference.conf if required, minimum should be:
 
 ```
@@ -81,4 +83,4 @@ By default `docker compose up` will spin up a Caddy server on port 80 without ho
 If frontend hot reloading is required, copy the relevant section from `docker-compose.override.examples.yml` to `docker-compose.override.yml`,
 this assumes you are running `pnpm start` in the frontend directory outside of docker.
 
-Database files are stored in the `data` directory
+Database files are stored in the `database/postgres` directory
