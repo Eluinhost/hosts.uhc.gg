@@ -5,5 +5,4 @@ frontend/build
 .git
 .idea
 .bsp
-caddy
 seed

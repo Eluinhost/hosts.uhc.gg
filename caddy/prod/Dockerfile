@@ -1,4 +1,4 @@
-FROM node:20-alpine AS frontend-build
+FROM node:24-alpine AS frontend-build
 WORKDIR /app
 
 RUN corepack enable
@@ -25,3 +25,6 @@ FROM caddy:2.11.4-alpine
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY --from=old-calendar /Match-Calendar/web /srv/old
 COPY --from=frontend-build /app/build /srv/hosts
+
+COPY caddy/prod/Caddyfile /etc/caddy/Caddyfile
+COPY caddy/common.conf /etc/caddy/common.conf

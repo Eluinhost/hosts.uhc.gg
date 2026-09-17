@@ -76,10 +76,9 @@ jwt {
 }
 ```
 
-docker-compose sets up a postgres database and builds the FE + BE and exposes it on port 80+443 via caddy. 
+By default `docker compose up` will spin up a Caddy server on port 80 without hot reloading.
+
+If frontend hot reloading is required, copy the relevant section from `docker-compose.override.examples.yml` to `docker-compose.override.yml`,
+this assumes you are running `pnpm start` in the frontend directory outside of docker.
 
 Database files are stored in the `data` directory
-
-Caddy uses `caddy/Caddyfile.dev` for local development. For production, create a `caddy/.env` from example `caddy/.env.example` to use `Caddyfile.prod`.
-
-`docker compose up --build`

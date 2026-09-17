@@ -1,0 +1,31 @@
+# Local dev environment with hot-reloading
+#
+# This assumes `pnpm start` is running in the frontend directory outside of docker
+# - points to vite Caddy Dockerfile
+# - adds extra_hosts to access host network (may need firewall access)
+# - exposes only HTTP port (HTTPS not enabled on localhost)
+# - exposes direct ports for datbase on 5432 + backend on 10000 (still available through caddy)
+services:
+  caddy:
+    build:
+      dockerfile: ./caddy/vite/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+  db:
+    ports:
+      - "5432:5432"
+  app:
+    ports:
+      - "10000:10000"
+
+# Prod environment
+#
+# Just swaps to prod Caddy Dockerfile, requires Porkbun API keys for HTTPS certs
+services:
+  caddy:
+    entrypoint: ["/bin/sh", "-c", "exec caddy run --config /etc/caddy/Caddyfile.prod --adapter caddyfile"]
+    environment:
+      PORKBUN_API_KEY: ...
+      PORKBUN_API_SECRET_KEY: ...
