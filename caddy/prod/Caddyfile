@@ -1,7 +1,8 @@
 import common.conf
 
 hosts.uhc.gg {
-	import frontend_app
+	import common
+	import frontend_built
 
 	header {
 		Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";

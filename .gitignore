@@ -6,4 +6,4 @@ target
 /.idea
 *.iml
 /database/postgres
-/caddy/.env
+/docker-compose.override.yml
