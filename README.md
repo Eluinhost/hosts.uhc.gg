@@ -29,7 +29,7 @@ Builds development bundles and listens for changes for recompilation. Runs on po
 pnpm start
 ```
 
-When running dev frontend make sure there is a server running on port 10000 (or modify src/setupProxy for actual port)
+When running dev frontend make sure there is a server running on port 10000 (or modify the `server.proxy` target in frontend/vite.config.mjs for actual port)
 
 ### Backend
 
@@ -63,6 +63,8 @@ Alternatively use `re-start` and `re-stop` to manually start/stop the backend se
 
 # Docker
 
+Intended for use with docker compose + BuildKit
+
 Create application.conf in main folder using reference.conf if required, minimum should be:
 
 ```
@@ -76,10 +78,9 @@ jwt {
 }
 ```
 
-docker-compose sets up a postgres database and builds the FE + BE and exposes it on port 80+443 via caddy. 
+By default `docker compose up` will spin up a Caddy server on port 80 without hot reloading.
 
-Database files are stored in the `data` directory
+If frontend hot reloading is required, copy the relevant section from `docker-compose.override.examples.yml` to `docker-compose.override.yml`,
+this assumes you are running `pnpm start` in the frontend directory outside of docker.
 
-Update Caddy env vars PORKBUN_API_KEY + PORKBUN_API_SECRET_KEY in caddy/.env to ensure letsencrypt certs valid
-
-`docker compose up --build`
+Database files are stored in the `database/postgres` directory

@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
 import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
+import { HelpIcon } from '@blueprintjs/icons';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { QuizQuestions } from '../actions';
+import { getFetchQuizQuestionsForManagementApiState, getQuizQuestionsForManagement } from '../selectors';
+
 import { CreateQuizQuestionForm } from './CreateQuizQuestionForm';
 import { ExistingQuizQuestion } from './ExistingQuizQuestion';
-import { getFetchQuizQuestionsForManagementApiState, getQuizQuestionsForManagement } from '../selectors';
-import { QuizQuestions } from '../actions';
 
-export const ShowQuizQuestions = React.memo(function ShowQuizQuestionsComponent() {
+export const ShowQuizQuestions = () => {
   const { isFetching, error } = useSelector(getFetchQuizQuestionsForManagementApiState);
   const questions = useSelector(getQuizQuestionsForManagement);
   const dispatch = useDispatch();
@@ -25,7 +28,7 @@ export const ShowQuizQuestions = React.memo(function ShowQuizQuestionsComponent(
   } else if (isFetching) {
     top = <NonIdealState icon={<Spinner />} title="Loading...." />;
   } else if (questions.length === 0) {
-    top = <NonIdealState icon="help" title="No questions setup" />;
+    top = <NonIdealState icon={<HelpIcon />} title="No questions setup" />;
   } else {
     top = (
       <div>
@@ -44,4 +47,4 @@ export const ShowQuizQuestions = React.memo(function ShowQuizQuestionsComponent(
       <CreateQuizQuestionForm />
     </div>
   );
-});
+};

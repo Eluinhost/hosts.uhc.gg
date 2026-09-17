@@ -1,12 +1,16 @@
-import { ApiErrors, MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
-import { put, call, select, takeEvery } from 'redux-saga/effects';
-import { RemoveMatch } from '../actions';
-import { getAccessToken, getUsername } from '../state/Selectors';
-import { ApplicationState } from '../state/ApplicationState';
-import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
-import { AppToaster } from '../services/AppToaster';
 import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
+import { startSubmit, stopSubmit, SubmissionError } from 'redux-form';
+import type { SagaIterator } from 'redux-saga';
+import { put, call, select, takeEvery } from 'redux-saga/effects';
+
+import { RemoveMatch } from '../actions';
+import { ApiErrors, MatchesApi } from '../api';
+import { showToast } from '../services/AppToaster';
+import type { ApplicationState } from '../state/ApplicationState';
+import { getAccessToken, getUsername } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIterator {
   const parameters = action.payload;
@@ -30,9 +34,9 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
     yield put(RemoveMatch.success({ parameters }));
     yield put(RemoveMatch.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
-      icon: 'tick',
+      icon: createElement(TickIcon),
       message: `Removed match #${parameters.id}`,
     });
   } catch (error) {
@@ -44,11 +48,11 @@ function* removeMatchSaga(action: ReturnType<typeof RemoveMatch.start>): SagaIte
       yield put(stopSubmit(RemoveMatch.formId, { _error: 'Unexpected error' }));
     }
 
-    yield put(RemoveMatch.failure({ parameters, error }));
+    yield put(RemoveMatch.failure({ parameters, error: wrapError(error) }));
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message: error instanceof ApiErrors.BadDataError ? error.message : `Failed to remove match #${parameters.id}`,
     });
   }

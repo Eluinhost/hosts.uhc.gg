@@ -1,5 +1,7 @@
-import { Position, Toaster } from '@blueprintjs/core';
+import { Position, OverlayToaster, type ToastProps } from '@blueprintjs/core';
 
-export const AppToaster = Toaster.create({
+const toaster = OverlayToaster.create({
   position: Position.TOP,
 });
+
+export const showToast = async (options: ToastProps) => (await toaster).show(options);

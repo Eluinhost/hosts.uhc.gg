@@ -1,5 +1,5 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
 
 import { SyncTime } from '../actions';
 
@@ -16,7 +16,7 @@ export const reducer: Reducer<TimeSyncState> = createReducer<TimeSyncState>({
     synced: false,
     offset: state.offset,
   }))
-  .handleAction(SyncTime.success, (state, action) => ({
+  .handleAction(SyncTime.success, (_state, action) => ({
     synced: true,
     offset: action.payload.result,
   }))

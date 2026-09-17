@@ -1,8 +1,8 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
-import moment from 'moment-timezone';
 
 import { Settings } from '../actions';
+import dayjs from '../dayjs';
 
 const storageKey = 'settings';
 // TODO remove storageKey out of store + move below to sagas
@@ -25,7 +25,7 @@ export const reducer: Reducer<SettingsState> = createReducer<SettingsState>({
   storageKey,
   isDarkMode: false,
   is12h: false,
-  timezone: moment.tz.guess(),
+  timezone: dayjs.tz.guess(),
   hideRemoved: true,
   showOwnRemoved: true,
 })

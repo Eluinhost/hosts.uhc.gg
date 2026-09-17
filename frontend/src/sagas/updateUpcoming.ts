@@ -1,8 +1,10 @@
-import { MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest } from 'redux-saga/effects';
+
 import { UpdateUpcoming } from '../actions';
-import { Match } from '../models/Match';
+import { MatchesApi } from '../api';
+import type { Match } from '../models/Match';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchUpcomingSaga(): SagaIterator {
   try {
@@ -13,7 +15,7 @@ function* fetchUpcomingSaga(): SagaIterator {
     yield put(UpdateUpcoming.success({ result }));
   } catch (error) {
     console.error(error, 'error updating upcoming');
-    yield put(UpdateUpcoming.failure({ error }));
+    yield put(UpdateUpcoming.failure({ error: wrapError(error) }));
   }
 }
 

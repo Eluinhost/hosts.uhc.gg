@@ -5,10 +5,8 @@ import com.softwaremill.macwire.wire
 import com.softwaremill.tagging.@@
 import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.assets.AssetsRoute
 import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
-import gg.uhc.hosts.endpoints.frontend.FrontendRoute
 import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
 import gg.uhc.hosts.endpoints.hostapplications.{
   CreateHostApplication,
@@ -42,6 +40,7 @@ trait EndpointsModule extends RedditModule {
   lazy val createMatchesEndpoint: CreateMatch                             = wire[CreateMatch]
   lazy val removeMatchesEndpoint: RemoveMatch                             = wire[RemoveMatch]
   lazy val showMatchEndpoint: ShowMatch                                   = wire[ShowMatch]
+  lazy val showMatchMeta: ShowMatchMeta                                   = wire[ShowMatchMeta]
   lazy val authEndpoint: Authenticate                                     = wire[Authenticate]
   lazy val authCallbackEndpoint: AuthenticateCallback                     = wire[AuthenticateCallback]
   lazy val authRefreshEndpoint: AuthenticateRefresh                       = wire[AuthenticateRefresh]
@@ -74,10 +73,8 @@ trait EndpointsModule extends RedditModule {
   lazy val deleteModifier: DeleteModifier       = wire[DeleteModifier]
 
   lazy val basicCache: BasicCache                   = wire[BasicCache]
-  lazy val assetsRoute: AssetsRoute                 = wire[AssetsRoute]
   lazy val authenticationRoute: AuthenticationRoute = wire[AuthenticationRoute]
   lazy val docsRoute: DocsRoute                     = wire[DocsRoute]
-  lazy val frontendRoute: FrontendRoute             = wire[FrontendRoute]
   lazy val keyRoute: KeyRoute                       = wire[KeyRoute]
   lazy val matchesRoute: MatchesRoute               = wire[MatchesRoute]
   lazy val permissionsRoute: PermissionsRoute       = wire[PermissionsRoute]

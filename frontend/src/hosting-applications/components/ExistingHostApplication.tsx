@@ -1,13 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import moment from 'moment-timezone';
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
-import { HostApplication } from '../../models/HostApplication';
+import { ChevronDownIcon, ChevronUpIcon, CrossIcon, TickIcon } from '@blueprintjs/icons';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { HostApplications } from '../actions';
 import { createSelector } from 'reselect';
+
+import dayjs from '../../dayjs';
+import type { HostApplication } from '../../models/HostApplication';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { HostApplications } from '../actions';
+import type { HostApplicationDetailsState } from '../reducer';
 import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
-import { HostApplicationDetailsState } from '../reducer';
-import { ApplicationState } from '../../state/ApplicationState';
 
 interface ExistingHostApplicationProps {
   application: HostApplication;
@@ -21,11 +23,7 @@ const selector = createSelector(
   details => details,
 );
 
-export const ExistingHostApplication = React.memo(function ExistingHostApplication({
-  application,
-  canReview,
-  isOwn,
-}: ExistingHostApplicationProps) {
+export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = ({ application, canReview, isOwn }) => {
   const dispatch = useDispatch();
   const detailsState = useSelector(state => selector(state, application.id));
   const { isFetching: isReviewing } = useSelector(getHostApplicationsReviewingState);
@@ -69,17 +67,18 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
     [application.id, declineReason, handleReviewed, dispatch],
   );
 
-  const handleDeclineReasonChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => setDeclineReason(evt.target.value),
-    [],
-  );
+  const handleDeclineReasonChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDeclineReason(evt.target.value);
+  }, []);
 
   const openDeclineDialog = useCallback(() => {
     setDeclineReason('');
     setIsDeclineDialogOpen(true);
   }, []);
 
-  const closeDeclineDialog = useCallback(() => setIsDeclineDialogOpen(false), []);
+  const closeDeclineDialog = useCallback(() => {
+    setIsDeclineDialogOpen(false);
+  }, []);
 
   const intent = useMemo((): Intent => {
     if (application.status === 'approved') return Intent.SUCCESS;
@@ -96,11 +95,11 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
         /u/{application.username} <Tag intent={intent}>{application.status}</Tag>{' '}
         {isOwn && <Tag intent={Intent.PRIMARY}>Your application</Tag>}
       </H4>
-      <small>{moment.utc(application.created).format('MMM Do YYYY, HH:mm z')}</small>
+      <small>{dayjs.utc(application.created).format('MMM Do YYYY, HH:mm z')}</small>
       {application.reviewedBy && (
         <p>
           Reviewed by /u/{application.reviewedBy}
-          {application.reviewedAt && ` on ${moment.utc(application.reviewedAt).format('MMM Do YYYY, HH:mm z')}`}
+          {application.reviewedAt && ` on ${dayjs.utc(application.reviewedAt).format('MMM Do YYYY, HH:mm z')}`}
         </p>
       )}
       {application.status === 'declined' && application.reviewReason && (
@@ -110,7 +109,7 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button minimal icon={isExpanded ? 'chevron-up' : 'chevron-down'} onClick={toggleExpanded}>
+        <Button variant="minimal" icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />} onClick={toggleExpanded}>
           {isExpanded ? 'Hide answers' : 'View answers'}
         </Button>
       </div>
@@ -150,10 +149,10 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
 
       {canReview && application.status === 'pending' && (
         <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
-          <Button intent={Intent.SUCCESS} icon="tick" loading={isReviewing} onClick={handleApprove}>
+          <Button intent={Intent.SUCCESS} icon={<TickIcon />} loading={isReviewing} onClick={handleApprove}>
             Approve
           </Button>
-          <Button intent={Intent.DANGER} icon="cross" loading={isReviewing} onClick={openDeclineDialog}>
+          <Button intent={Intent.DANGER} icon={<CrossIcon />} loading={isReviewing} onClick={openDeclineDialog}>
             Decline
           </Button>
         </div>
@@ -164,7 +163,6 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
           <p>Please provide a reason for declining this application. This will be visible to the applicant.</p>
           <TextArea
             fill
-            growVertically
             value={declineReason}
             onChange={handleDeclineReasonChange}
             placeholder="Reason for declining"
@@ -186,4 +184,4 @@ export const ExistingHostApplication = React.memo(function ExistingHostApplicati
       </Dialog>
     </div>
   );
-});
+};

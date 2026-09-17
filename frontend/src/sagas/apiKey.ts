@@ -1,8 +1,10 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, select, all, takeLatest } from 'redux-saga/effects';
-import { getAccessToken } from '../state/Selectors';
+
 import { FetchApiKey, RegenerateApiKey } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';
+import { getAccessToken } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchApiKeySaga(): SagaIterator {
   const accessToken: string | null = yield select(getAccessToken);
@@ -17,7 +19,7 @@ function* fetchApiKeySaga(): SagaIterator {
     yield put(FetchApiKey.success({ result }));
   } catch (error) {
     console.error('Failed to get api key');
-    yield put(FetchApiKey.failure({ error }));
+    yield put(FetchApiKey.failure({ error: wrapError(error) }));
   }
 }
 
@@ -34,7 +36,7 @@ function* regenerateApiKeySaga(): SagaIterator {
     yield put(RegenerateApiKey.success({ result }));
   } catch (error) {
     console.error('Failed to regenerate api key');
-    yield put(RegenerateApiKey.failure({ error }));
+    yield put(RegenerateApiKey.failure({ error: wrapError(error) }));
   }
 }
 

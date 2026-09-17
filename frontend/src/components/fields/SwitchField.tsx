@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper } from './FieldWrapper';
 import { Switch } from '@blueprintjs/core';
+import React, { useCallback } from 'react';
+import { type BaseFieldProps, Field, type WrappedFieldProps } from 'redux-form';
+
+import { FieldWrapper } from './FieldWrapper';
 
 export interface SwitchFieldProps extends BaseFieldProps {
   readonly label: string;
@@ -10,24 +11,25 @@ export interface SwitchFieldProps extends BaseFieldProps {
 }
 
 const Switcher: React.FC<WrappedFieldProps & SwitchFieldProps> = props => {
-  const {
-    input: { value, onChange, onBlur },
-    disabled,
-    className,
-    label,
-    meta,
-  } = props;
+  const { input, disabled, className, label, meta } = props;
+  const { onBlur, onChange } = input;
 
   const handleChange = useCallback((): void => {
     if (disabled) return;
 
-    onChange(!value);
-    onBlur(!value);
-  }, [disabled, onChange, onBlur, value]);
+    onChange(!(input.value as boolean));
+    onBlur(!(input.value as boolean));
+  }, [disabled, onChange, onBlur, input.value]);
 
   return (
     <FieldWrapper meta={meta} label={label} required>
-      <Switch checked={!!value} className={className || ''} disabled={disabled} label={label} onChange={handleChange} />
+      <Switch
+        checked={!!input.value}
+        className={className || ''}
+        disabled={disabled}
+        label={label}
+        onChange={handleChange}
+      />
     </FieldWrapper>
   );
 };

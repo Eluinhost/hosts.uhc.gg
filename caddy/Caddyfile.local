@@ -1,0 +1,6 @@
+import common.conf
+
+http://localhost, http://127.0.0.1 {
+    import common
+	import frontend_built
+}

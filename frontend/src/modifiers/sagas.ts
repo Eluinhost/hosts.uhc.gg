@@ -1,26 +1,34 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call, select } from 'redux-saga/effects';
+
+import { getAccessToken } from '../state/Selectors';
+import { GenericError } from '../utils/GenericError';
 
 import { CREATE_MODIFIER, DELETE_MODIFIER, FETCH_MODIFIERS } from './actions';
 import { getAllModifiers, deleteModifier, createModifier } from './api';
-import { Modifier } from './Modifier';
-import { getAccessToken } from '../state/Selectors';
+import type { Modifier } from './Modifier';
 
-export class FetchModifiersError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to lookup modifiers, caused by:\n ${cause?.message ?? cause}`);
+export class FetchModifiersError extends GenericError {
+  constructor(public cause: unknown) {
+    super('Failed to lookup modifiers', cause);
   }
 }
 
-export class DeleteModifierError extends Error {
-  constructor(public id: number, public cause: any) {
-    super(`Failed to delete modifier '${id}', caused by:\n ${cause?.message ?? cause}`);
+export class DeleteModifierError extends GenericError {
+  constructor(
+    public id: number,
+    public cause: unknown,
+  ) {
+    super(`Failed to delete modifier '${id}'`, cause);
   }
 }
 
-export class CreateModifierError extends Error {
-  constructor(public modifier: string, public cause: any) {
-    super(`Failed to create modifier: ${modifier}, caused by:\n ${cause?.message ?? cause}`);
+export class CreateModifierError extends GenericError {
+  constructor(
+    public modifier: string,
+    public cause: unknown,
+  ) {
+    super(`Failed to create modifier: ${modifier}`, cause);
   }
 }
 
@@ -42,7 +50,7 @@ function* deleteModifierSaga(action: ReturnType<typeof DELETE_MODIFIER.TRIGGER>)
   yield put(DELETE_MODIFIER.STARTED(action.payload.id));
 
   try {
-    const token = yield select(getAccessToken) || 'NO ACCESS TOKEN IN STATE';
+    const token: string = (yield select(getAccessToken)) || 'NO ACCESS TOKEN IN STATE';
 
     yield call(deleteModifier, action.payload.id, token);
 
@@ -61,7 +69,7 @@ function* createModifierSaga(action: ReturnType<typeof CREATE_MODIFIER.TRIGGER>)
   yield put(CREATE_MODIFIER.STARTED(action.payload.name));
 
   try {
-    const token = yield select(getAccessToken) || 'NO ACCESS TOKEN IN STATE';
+    const token: string = (yield select(getAccessToken)) || 'NO ACCESS TOKEN IN STATE';
 
     const modifier: Modifier = yield call(createModifier, action.payload.name, token);
 

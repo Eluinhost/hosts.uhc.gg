@@ -16,15 +16,9 @@ interface VersionMinMax {
   max: PrismarineJSVersion;
 }
 
-interface VersionMap {
-  netty: Record<number, VersionMinMax>;
-  prenetty: Record<number, VersionMinMax>;
-}
-
 export const getAllVersions = async (): Promise<Array<string>> => {
   const versions = await fetchArray<PrismarineJSVersion>({
-    url:
-      'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
+    url: 'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
     status: 200,
   });
 
@@ -34,29 +28,21 @@ export const getAllVersions = async (): Promise<Array<string>> => {
       (acc, item) => {
         const key = item.usesNetty ? 'netty' : 'prenetty';
 
-        return {
-          ...acc,
-          [key]: {
-            ...acc[key],
-            [item.version]: {
-              min:
-                !acc[key][item.version]?.min || acc[key][item.version].min.dataVersion > item.dataVersion
-                  ? item
-                  : acc[key][item.version].min,
-              max:
-                !acc[key][item.version]?.max || acc[key][item.version].max.dataVersion < item.dataVersion
-                  ? item
-                  : acc[key][item.version].max,
-            },
-          },
-        };
+        const existing = acc[key].get(item.version);
+
+        acc[key].set(item.version, {
+          min: !existing || existing.min.dataVersion > item.dataVersion ? item : existing.min,
+          max: !existing || existing.max.dataVersion < item.dataVersion ? item : existing.max,
+        });
+
+        return acc;
       },
-      { netty: {}, prenetty: {} } as VersionMap,
+      { netty: new Map<number, VersionMinMax>(), prenetty: new Map<number, VersionMinMax>() },
     );
 
   const combined = [
-    ...Object.values(map.netty).sort(compareVersion),
-    ...Object.values(map.prenetty).sort(compareVersion),
+    ...Array.from(map.netty.values()).sort(compareVersion),
+    ...Array.from(map.prenetty.values()).sort(compareVersion),
   ];
 
   return [

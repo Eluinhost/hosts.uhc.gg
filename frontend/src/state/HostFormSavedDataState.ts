@@ -1,12 +1,12 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
 
 import { SetSavedHostFormData } from '../actions';
-import { CreateMatchData } from '../models/CreateMatchData';
 import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
-import { TeamStyles } from '../models/TeamStyles';
-import { Regions } from '../models/Regions';
 import { presets } from '../components/host/presets';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import { Regions } from '../models/Regions';
+import { TeamStyles } from '../models/TeamStyles';
 
 export type HostFormSavedDataState = CreateMatchData;
 
@@ -35,5 +35,5 @@ export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSa
 }).handleAction(SetSavedHostFormData.started, (state, action) => ({
   ...state,
   ...action.payload.parameters,
-  opens: state.opens, // always use whatever was there first, storage really doesn't like moment
+  opens: state.opens, // always use whatever was there first, storage really doesn't like date objects
 }));

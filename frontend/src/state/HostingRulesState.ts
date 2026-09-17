@@ -1,13 +1,13 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import { Reducer } from 'redux';
-import moment from 'moment-timezone';
 
-import { ApiErrors } from '../api';
 import { GetHostingRules, SetHostingRules } from '../actions';
+import { ApiErrors } from '../api';
+import type { Dayjs } from '../dayjs';
 
 export type HostingRules = {
   readonly content: string;
-  readonly modified: moment.Moment;
+  readonly modified: Dayjs;
   readonly author: string;
 };
 

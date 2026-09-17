@@ -1,7 +1,7 @@
 export const renderTeamStyle = (style: TeamStyle, size: number | null, custom: string | null): string => {
-  if (style.value === 'custom') return custom!;
+  if (style.value === 'custom') return custom ?? '';
 
-  if (style.requiresTeamSize) return `${style.display} To${+size! || 'X'}`;
+  if (style.requiresTeamSize) return `${style.display} To${size ? size.toString(10) : 'X'}`;
 
   return style.display;
 };

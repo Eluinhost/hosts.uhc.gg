@@ -1,9 +1,10 @@
-import { Match } from '../models/Match';
-import moment from 'moment-timezone';
-import { stringify } from 'query-string';
+import qs from 'query-string';
+
+import dayjs, { type Dayjs } from '../dayjs';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import type { Match } from '../models/Match';
 
 import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
-import { CreateMatchData } from '../models/CreateMatchData';
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({
@@ -11,9 +12,9 @@ export const fetchUpcomingMatches = (): Promise<Match[]> =>
   }).then(matches =>
     matches.map(match => ({
       ...match,
-      opens: moment.utc(match.opens),
-      created: moment.utc(match.created),
-      removedAt: match.removedAt && moment.utc(match.removedAt),
+      opens: dayjs.utc(match.opens),
+      created: dayjs.utc(match.created),
+      removedAt: match.removedAt && dayjs.utc(match.removedAt),
     })),
   );
 
@@ -24,9 +25,9 @@ export const fetchSingle = (id: number): Promise<Match | null> =>
     match =>
       match && {
         ...match,
-        opens: moment.utc(match.opens),
-        created: moment.utc(match.created),
-        removedAt: match.removedAt && moment.utc(match.removedAt),
+        opens: dayjs.utc(match.opens),
+        created: dayjs.utc(match.created),
+        removedAt: match.removedAt && dayjs.utc(match.removedAt),
       },
   );
 
@@ -57,7 +58,7 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
   const body: Partial<Match> = {
     ...data,
     version: data.version || data.mainVersion, // use the main version if no range was provided
-    opens: data.opens.clone().utc(),
+    opens: data.opens.utc(),
     // convert the modifiers into scenarios
     scenarios: [...data.modifiers, ...data.scenarios],
   };
@@ -76,16 +77,16 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
   });
 };
 
-export const fetchPotentialConflicts = (region: string, time: moment.Moment, version: string): Promise<Match[]> =>
+export const fetchPotentialConflicts = (region: string, time: Dayjs, version: string): Promise<Match[]> =>
   fetchArray<Match>({
-    url: `/api/matches/conflicts?${stringify({ region, opens: time.toISOString(), version })}`,
+    url: `/api/matches/conflicts?${qs.stringify({ region, opens: time.toISOString(), version })}`,
     status: 200,
   }).then(matches =>
     matches.map(match => ({
       ...match,
-      opens: moment.utc(match.opens),
-      created: moment.utc(match.created),
-      removedAt: match.removedAt && moment.utc(match.removedAt),
+      opens: dayjs.utc(match.opens),
+      created: dayjs.utc(match.created),
+      removedAt: match.removedAt && dayjs.utc(match.removedAt),
     })),
   );
 
@@ -95,8 +96,8 @@ export const fetchHistoryForHost = (host: string, before?: number): Promise<Matc
   }).then(matches =>
     matches.map(match => ({
       ...match,
-      opens: moment.utc(match.opens),
-      created: moment.utc(match.created),
-      removedAt: match.removedAt && moment.utc(match.removedAt),
+      opens: dayjs.utc(match.opens),
+      created: dayjs.utc(match.created),
+      removedAt: match.removedAt && dayjs.utc(match.removedAt),
     })),
   );

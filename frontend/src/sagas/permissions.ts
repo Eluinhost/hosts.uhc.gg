@@ -1,25 +1,29 @@
-import { PermissionsApi, ApiErrors } from '../api';
-import { SagaIterator } from 'redux-saga';
+import { Intent } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
+import { createElement } from 'react';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, all, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { createSelector } from 'reselect';
+
 import {
   AddPermission,
   FetchUserCountPerPermission,
   FetchUsersInPermission,
   FetchUsersInPermissionWithLetter,
-  FetchUsersInPermissionWithLetterParameters,
+  type FetchUsersInPermissionWithLetterParameters,
   PermissionLetterNode,
   PermissionNode,
-  PermissionParameters,
+  type PermissionParameters,
   RefreshPermissionModerationLog,
   RemovePermission,
 } from '../actions';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
-import { AddPermissionDialogState, RemovePermissionDialogState } from '../state/PermissionsState';
+import { PermissionsApi, ApiErrors } from '../api';
+import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { showToast } from '../services/AppToaster';
+import type { ApplicationState } from '../state/ApplicationState';
+import type { RemovePermissionDialogState } from '../state/PermissionsState';
 import { getAccessToken } from '../state/Selectors';
-import { AppToaster } from '../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchPermissionsSaga(): SagaIterator {
   try {
@@ -30,8 +34,8 @@ function* fetchPermissionsSaga(): SagaIterator {
     yield put(FetchUserCountPerPermission.success({ result }));
   } catch (error) {
     console.error(error, 'error fetching permissions');
-    yield put(FetchUserCountPerPermission.failure({ error }));
-    AppToaster.show({
+    yield put(FetchUserCountPerPermission.failure({ error: wrapError(error) }));
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission list`,
     });
@@ -51,8 +55,8 @@ function* fetchUsersInPermissionSaga(
     yield put(FetchUsersInPermission.success({ parameters, result }));
   } catch (error) {
     console.error(error, 'error fetching permission content');
-    yield put(FetchUsersInPermission.failure({ parameters, error }));
-    AppToaster.show({
+    yield put(FetchUsersInPermission.failure({ parameters, error: wrapError(error) }));
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
     });
@@ -76,16 +80,16 @@ function* fetchUsersInPermissionWithLetterSaga(
     yield put(FetchUsersInPermissionWithLetter.success({ parameters, result }));
   } catch (error) {
     console.error(error, 'error fetching permission with letter content');
-    yield put(FetchUsersInPermissionWithLetter.failure({ parameters, error }));
-    AppToaster.show({
+    yield put(FetchUsersInPermissionWithLetter.failure({ parameters, error: wrapError(error) }));
+    yield call(showToast, {
       intent: Intent.DANGER,
       message: `Failed to lookup permission members`,
     });
   }
 }
 
-const getAddPermission = createSelector<ApplicationState, AddPermissionDialogState | null, string | null>(
-  state => state.permissions.addDialog,
+const getAddPermission = createSelector(
+  (state: ApplicationState) => state.permissions.addDialog,
   dialogState => (dialogState ? dialogState.permission : null),
 );
 
@@ -112,33 +116,29 @@ function* addPermission(action: ReturnType<typeof AddPermission.start>): SagaIte
     yield put(FetchUserCountPerPermission.start());
     yield put(RefreshPermissionModerationLog.start());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       message: `Added permission '${permission}' to /u/${username}`,
     });
   } catch (error) {
     console.error(error, 'Failed to add permission');
 
-    yield put(AddPermission.failure({ parameters, error }));
+    yield put(AddPermission.failure({ parameters, error: wrapError(error) }));
     yield put(AddPermission.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
-          : `Failed to add permission to /u/${parameters!.username}`,
+          : `Failed to add permission to /u/${parameters.username}`,
     });
   }
 }
 
-const getRemovePermissionState = createSelector<
-  ApplicationState,
-  RemovePermissionDialogState | null,
-  RemovePermissionDialogState | null
->(
-  state => state.permissions.removeDialog,
+const getRemovePermissionState = createSelector(
+  (state: ApplicationState) => state.permissions.removeDialog,
   dialogState => dialogState,
 );
 
@@ -158,23 +158,23 @@ function* removePermission(): SagaIterator {
     yield put(FetchUserCountPerPermission.start());
     yield put(RefreshPermissionModerationLog.start());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.SUCCESS,
       message: `Removed permission '${parameters.permission}' from /u/${parameters.username}`,
     });
   } catch (error) {
     console.error(error, 'Failed to remove permission');
 
-    yield put(RemovePermission.failure({ error, parameters: parameters! }));
+    yield put(RemovePermission.failure({ error: wrapError(error), parameters: parameters }));
     yield put(RemovePermission.closeDialog());
 
-    AppToaster.show({
+    yield call(showToast, {
       intent: Intent.DANGER,
-      icon: 'warning-sign',
+      icon: createElement(WarningSignIcon),
       message:
         error instanceof ApiErrors.BadDataError
           ? error.message
-          : `Failed to remove permission from /u/${parameters!.username}`,
+          : `Failed to remove permission from /u/${parameters?.username}`,
     });
   }
 }

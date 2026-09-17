@@ -1,12 +1,12 @@
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call } from 'redux-saga/effects';
 
 import { FETCH_VERSIONS } from './actions';
 import { getAllVersions } from './api';
 
 export class FetchVersionsError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to lookup versions, caused by:\n ${cause?.message ?? cause}`);
+  constructor(public cause: unknown) {
+    super(`Failed to lookup versions, caused by:\n ${cause instanceof Error ? cause.message : String(cause)}`);
   }
 }
 

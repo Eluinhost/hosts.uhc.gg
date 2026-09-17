@@ -1,131 +1,163 @@
-import React, { ComponentType, useCallback, useEffect, useState } from 'react';
-import { HostingPage } from './host';
-import { Classes, NonIdealState } from '@blueprintjs/core';
-import { Route, RouteComponentProps, RouteProps, Switch, useHistory } from 'react-router';
-import { LoginPage } from './LoginPage';
-import { HomePage } from './HomePage';
-import { UpcomingMatchesPage } from './upcoming-matches-page';
-import { Navbar } from './Navbar';
-import { MembersPage } from './members';
-import { ProfilePage } from './profile';
-import { WithPermission } from './WithPermission';
-import { HistoryPage } from './host-history-page';
-import { useSelector } from 'react-redux';
-import { isDarkMode, isLoggedIn } from '../state/Selectors';
-import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { GlobalHotkeys } from './GlobalHotkeys';
-import { MatchDetailsPage } from './match-details-page';
+import { Classes, NonIdealState, Spinner } from '@blueprintjs/core';
+import { GeosearchIcon } from '@blueprintjs/icons';
+import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
-import { Location } from 'history';
-import { TimeSettings } from './time/TimeSettings';
+import ReactHelmet from 'react-helmet';
+import { useSelector } from 'react-redux';
+import { Route, Routes, useLocation } from 'react-router';
+
+import { isDarkMode, isLoggedIn } from '../state/Selectors';
+
 import { Footer } from './footer';
-import Helmet from 'react-helmet';
-import { ModifiersPage } from '../modifiers/components/ModifiersPage';
-import { HostApplicationsPage } from '../hosting-applications/components/HostApplicationsPage';
-import { ApplyHostApplicationPage } from '../hosting-applications/components/ApplyHostApplication';
-import { QuizManagementPage } from '../hosting-applications/questions/components/QuizManagementPage';
+import { Navbar } from './Navbar';
+import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
+import { TimeSettings } from './time/TimeSettings';
+import { UpcomingMatchesPage } from './upcoming-matches-page';
+import { useGlobalHotkeys } from './useGlobalHotkeys';
+import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
 
-const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon="geosearch" />;
+const HostingPage = lazy(() => import('./host').then(m => ({ default: m.HostingPage })));
+const MatchDetailsPage = lazy(() => import('./match-details-page').then(m => ({ default: m.MatchDetailsPage })));
+const HistoryPage = lazy(() => import('./host-history-page').then(m => ({ default: m.HistoryPage })));
+const ApplyHostApplicationPage = lazy(() =>
+  import('../hosting-applications/components/ApplyHostApplication').then(m => ({
+    default: m.ApplyHostApplicationPage,
+  })),
+);
+const HostApplicationsPage = lazy(() =>
+  import('../hosting-applications/components/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
+);
+const MembersPage = lazy(() => import('./members').then(m => ({ default: m.MembersPage })));
+const LoginPage = lazy(() => import('./LoginPage').then(m => ({ default: m.LoginPage })));
+const ProfilePage = lazy(() => import('./profile').then(m => ({ default: m.ProfilePage })));
+const ModifiersPage = lazy(() =>
+  import('../modifiers/components/ModifiersPage').then(m => ({ default: m.ModifiersPage })),
+);
+const QuizManagementPage = lazy(() =>
+  import('../hosting-applications/questions/components/QuizManagementPage').then(m => ({
+    default: m.QuizManagementPage,
+  })),
+);
+const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePage })));
+
+const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon={<GeosearchIcon />} />;
 
 const requiresHostPermission = (permission: string | string[]): boolean =>
   (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));
 
-type AuthenticatedRouteProps = {
-  readonly permission: string | string[];
-} & RouteProps;
-
 const HOST_PERMISSIONS: string[] = ['host', 'trial host'];
 const NO_PERMISSIONS: string[] = [];
-const ADVISOR_PERMISSION: string = 'hosting advisor';
+const ADVISOR_PERMISSIONS: string[] = ['hosting advisor'];
 
-const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ permission, component, ...routeProps }) => {
-  const Component: React.ComponentType<RouteComponentProps<any>> = component!;
+const AuthenticatedRoute: React.FC<PropsWithChildren<{ permission: Array<string> }>> = ({ permission, children }) => {
   const authenticated = useSelector(isLoggedIn);
 
   const alternative = !authenticated
     ? PromptToLogin
     : requiresHostPermission(permission)
-    ? PromptToApplyForHost
-    : NotAllowed;
+      ? PromptToApplyForHost
+      : NotAllowed;
 
   return (
-    <Route
-      {...routeProps}
-      render={props => (
-        <WithPermission permission={permission} alternative={alternative}>
-          <Component {...props} />
-        </WithPermission>
-      )}
-    />
+    <WithPermission permission={permission} alternative={alternative}>
+      {children}
+    </WithPermission>
   );
 };
 
-const Routes: React.FC = () => {
-  const history = useHistory();
+const AppRoutes: React.FC = () => {
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
-    const send = (location: Location) => {
-      const path = location.pathname + location.search;
+    const path = pathname + search;
 
-      reactGa.set({ page: path });
-      reactGa.pageview(path);
-    };
-
-    const unsubscribe = history.listen(send);
-    send(history.location);
-
-    return unsubscribe;
-  }, [history]);
+    reactGa.set({ page: path });
+    reactGa.pageview(path);
+  }, [pathname, search]);
 
   return (
-    <Switch>
-      <AuthenticatedRoute path="/host" component={HostingPage} permission={HOST_PERMISSIONS} />
-      <Route path="/m/:id" component={MatchDetailsPage} />
-      <Route path="/matches/:host" component={HistoryPage} />
-      <Route path="/matches" component={UpcomingMatchesPage} />
-      <Route path="/host-applications/apply" component={ApplyHostApplicationPage} />
-      <Route path="/host-applications" component={HostApplicationsPage} />
-      <Route path="/members" component={MembersPage} />
-      <Route path="/login" component={LoginPage} />
-      <AuthenticatedRoute path="/profile" component={ProfilePage} permission={NO_PERMISSIONS} />
-      <AuthenticatedRoute path="/modifiers" component={ModifiersPage} permission={ADVISOR_PERMISSION} />
-      <AuthenticatedRoute path="/quiz" component={QuizManagementPage} permission={ADVISOR_PERMISSION} />
-      <Route path="/" exact component={HomePage} />
-      <Route component={NotFoundPage} />
-    </Switch>
+    <Suspense fallback={<Spinner style={{ display: 'block', margin: '100px auto 0' }} />}>
+      <Routes>
+        <Route
+          path="/host"
+          element={
+            <AuthenticatedRoute permission={HOST_PERMISSIONS}>
+              <HostingPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/m/:id" element={<MatchDetailsPage />} />
+        <Route path="/matches/:host" element={<HistoryPage />} />
+        <Route path="/matches" element={<UpcomingMatchesPage />} />
+        <Route path="/host-applications/apply" element={<ApplyHostApplicationPage />} />
+        <Route path="/host-applications" element={<HostApplicationsPage />} />
+        <Route path="/members" element={<MembersPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/profile"
+          element={
+            <AuthenticatedRoute permission={NO_PERMISSIONS}>
+              <ProfilePage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/modifiers"
+          element={
+            <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
+              <ModifiersPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <AuthenticatedRoute permission={ADVISOR_PERMISSIONS}>
+              <QuizManagementPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/" index element={<HomePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 };
 
-export const App: ComponentType = () => {
+export const App: React.FC = () => {
+  useGlobalHotkeys();
+
   const darkModeEnabled = useSelector(isDarkMode);
   const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
-  const onScroll = useCallback(() => setNavbarSticky(window.scrollY > 50), []);
+  const onScroll = useCallback(() => {
+    setNavbarSticky(window.scrollY > 50);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('scroll', onScroll);
-    return () => document.removeEventListener('scroll', onScroll);
+    return () => {
+      document.removeEventListener('scroll', onScroll);
+    };
   }, [onScroll]);
 
-  let classes = ['full-page'];
+  const classes = ['full-page'];
 
   if (darkModeEnabled) classes.push(Classes.DARK);
   if (navbarSticky) classes.push('navbar-sticky');
 
   return (
-    <GlobalHotkeys>
-      <div className={classes.join(' ')}>
-        <div style={{ flexGrow: 0 }}>
-          <Navbar />
-          <TimeSettings />
-        </div>
-        <div className="app-container">
-          <Helmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
-          <Routes />
-        </div>
-        <Footer />
+    <div className={classes.join(' ')}>
+      <div style={{ flexGrow: 0 }}>
+        <Navbar />
+        <TimeSettings />
       </div>
-    </GlobalHotkeys>
+      <div className="app-container">
+        <ReactHelmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
+        <AppRoutes />
+      </div>
+      <Footer />
+    </div>
   );
 };

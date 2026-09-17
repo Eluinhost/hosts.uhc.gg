@@ -1,28 +1,16 @@
-import { createSelector, Selector } from 'reselect';
-import { ApplicationState } from '../state/ApplicationState';
-import { CreateModifierState, DeleteModifierState, ListModifiersState, ModifiersState } from './reducer';
 import { identity } from 'ramda';
+import { createSelector } from 'reselect';
 
-export const getModifiersState: Selector<ApplicationState, ModifiersState> = createSelector(
-  state => state.modifiers,
-  identity,
-);
+import type { ApplicationState } from '../state/ApplicationState';
 
-export const getListModifiersState: Selector<ApplicationState, ListModifiersState> = createSelector(
-  getModifiersState,
-  modifiers => modifiers.list,
-);
+export const getModifiersState = createSelector((state: ApplicationState) => state.modifiers, identity);
 
-export const getCreateModifiersState: Selector<ApplicationState, CreateModifierState> = createSelector(
-  getModifiersState,
-  modifiers => modifiers.create,
-);
+export const getListModifiersState = createSelector(getModifiersState, modifiers => modifiers.list);
 
-export const getDeleteModifersState: Selector<ApplicationState, DeleteModifierState> = createSelector(
-  getModifiersState,
-  modifiers => modifiers.delete,
-);
+export const getCreateModifiersState = createSelector(getModifiersState, modifiers => modifiers.create);
 
-export const getAllModifierNames: Selector<ApplicationState, string[]> = createSelector(getListModifiersState, state =>
+export const getDeleteModifersState = createSelector(getModifiersState, modifiers => modifiers.delete);
+
+export const getAllModifierNames = createSelector(getListModifiersState, state =>
   state.data.map(modifier => modifier.displayName),
 );

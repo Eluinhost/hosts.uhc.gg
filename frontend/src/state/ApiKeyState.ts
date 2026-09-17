@@ -1,6 +1,7 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
+
 import { FetchApiKey, RegenerateApiKey } from '../actions';
-import { Reducer } from 'redux';
 
 export type ApiKeyState = {
   readonly fetching: boolean;
@@ -18,7 +19,7 @@ export const reducer: Reducer<ApiKeyState> = createReducer<ApiKeyState>({
     error: null,
     key: state.key,
   }))
-  .handleAction(FetchApiKey.success, (state, action) => ({
+  .handleAction(FetchApiKey.success, (_state, action) => ({
     fetching: false,
     error: null,
     key: action.payload.result,
@@ -33,7 +34,7 @@ export const reducer: Reducer<ApiKeyState> = createReducer<ApiKeyState>({
     error: null,
     key: state.key,
   }))
-  .handleAction(RegenerateApiKey.success, (state, action) => ({
+  .handleAction(RegenerateApiKey.success, (_state, action) => ({
     fetching: false,
     error: null,
     key: action.payload.result,

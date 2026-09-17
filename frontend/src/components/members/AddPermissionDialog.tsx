@@ -1,39 +1,39 @@
-import React, { useCallback } from 'react';
-import { InjectedFormProps, reduxForm, SubmissionError } from 'redux-form';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { TextField } from '../fields/TextField';
-import { AddPermissionDialogState } from '../../state/PermissionsState';
+import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { Dispatch } from 'redux';
+import { type InjectedFormProps, reduxForm } from 'redux-form';
+import { createSelector } from 'reselect';
+
 import { AddPermission } from '../../actions';
 import { Validator } from '../../services/Validator';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { TextField } from '../fields/TextField';
 
 type AddPermissionDialogData = {
   username: string;
 };
 
-type AddPermissionDialogStateSlice = {
-  readonly state: AddPermissionDialogState | null;
-  readonly isDarkMode: boolean;
-};
-
 const addPermissionSelector = createSelector(
   (state: ApplicationState) => state.permissions.addDialog,
-  state => state.settings.isDarkMode,
+  (state: ApplicationState) => state.settings.isDarkMode,
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
-const AddPermissionDialogComponent: React.FunctionComponent<
-  AddPermissionDialogStateSlice & InjectedFormProps<AddPermissionDialogData, AddPermissionDialogStateSlice>
-> = ({ handleSubmit, submitting, invalid, state, isDarkMode }) => {
+const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<AddPermissionDialogData>> = ({
+  handleSubmit,
+  submitting,
+  invalid,
+}) => {
   const dispatch = useDispatch();
+  const { state, isDarkMode } = useSelector(addPermissionSelector);
 
   const onClose = useCallback(() => dispatch(AddPermission.closeDialog()), [dispatch]);
 
   return (
     <Dialog
-      icon="add"
+      icon={<AddIcon />}
       isOpen={!!state}
       onClose={onClose}
       title={`Add '${state ? state.permission : 'NOT OPEN'}' role`}
@@ -46,10 +46,10 @@ const AddPermissionDialogComponent: React.FunctionComponent<
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon="arrow-left">
+          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon="add">
+          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon={<AddIcon />}>
             Add Permission
           </Button>
         </div>
@@ -68,23 +68,11 @@ const validator = new Validator<AddPermissionDialogData>().withValidationFunctio
   return undefined;
 });
 
-const AddPermissionDialogForm: React.ComponentType<AddPermissionDialogStateSlice> = reduxForm<
-  AddPermissionDialogData,
-  AddPermissionDialogStateSlice
->({
+export const AddPermissionDialog = reduxForm<AddPermissionDialogData>({
   form: 'add-permission-form',
   validate: validator.validate,
-  onSubmit: async (values, dispatch): Promise<void> => {
-    try {
-      await dispatch(AddPermission.start(values.username));
-      dispatch(AddPermission.closeDialog());
-    } catch (err) {
-      throw new SubmissionError({ reason: 'Unexpected response from the server' });
-    }
+  onSubmit: (values: AddPermissionDialogData, dispatch: Dispatch) => {
+    dispatch(AddPermission.start(values.username));
+    dispatch(AddPermission.closeDialog());
   },
 })(AddPermissionDialogComponent);
-
-export const AddPermissionDialog: React.ComponentType = () => {
-  const state = useSelector(addPermissionSelector);
-  return <AddPermissionDialogForm {...state} />;
-};

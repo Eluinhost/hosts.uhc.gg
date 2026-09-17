@@ -1,9 +1,11 @@
-import { PermissionsApi } from '../api';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest, select } from 'redux-saga/effects';
+
 import { RefreshPermissionModerationLog } from '../actions';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import { PermissionsApi } from '../api';
+import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
 import { getAccessToken } from '../state/Selectors';
+import { wrapError } from '../utils/wrapError';
 
 function* fetchPermissionModerationLogSaga(): SagaIterator {
   try {
@@ -15,7 +17,7 @@ function* fetchPermissionModerationLogSaga(): SagaIterator {
     yield put(RefreshPermissionModerationLog.success({ result }));
   } catch (error) {
     console.error(error, 'error fetching mod log');
-    yield put(RefreshPermissionModerationLog.failure({ error }));
+    yield put(RefreshPermissionModerationLog.failure({ error: wrapError(error) }));
   }
 }
 

@@ -1,7 +1,8 @@
-import React from 'react';
-import { BaseFieldProps, Field, WrappedFieldProps } from 'redux-form';
-import { FieldWrapper } from './FieldWrapper';
 import { Classes } from '@blueprintjs/core';
+import React from 'react';
+import { type BaseFieldProps, Field, type WrappedFieldProps } from 'redux-form';
+
+import { FieldWrapper } from './FieldWrapper';
 
 export interface SelectFieldProps extends BaseFieldProps {
   readonly options: {

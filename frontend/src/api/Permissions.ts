@@ -1,8 +1,8 @@
-import moment from 'moment-timezone';
+import dayjs from '../dayjs';
+import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
+import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
 import { authHeaders, callApi, fetchArray, fetchObject } from './util';
-import { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 
 export const fetchUserCountPerPermission = (): Promise<UserCountPerPermission> =>
   fetchObject<UserCountPerPermission>({
@@ -23,7 +23,7 @@ export const fetchPermissionModerationLog = (accessToken: string | null): Promis
   fetchArray<PermissionModerationLogEntry>({
     url: `/api/permissions/log`,
     config: accessToken ? { headers: authHeaders(accessToken) } : undefined,
-  }).then(responses => responses.map(response => ({ ...response, at: moment.utc(response.at) })));
+  }).then(responses => responses.map(response => ({ ...response, at: dayjs.utc(response.at) })));
 
 export const callAddPermission = (permission: string, username: string, accessToken: string): Promise<void> =>
   callApi({

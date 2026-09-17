@@ -25,12 +25,12 @@ const listVersionsReducer = createReducer<ListVersionsState>({
   }))
   .handleAction(
     FETCH_VERSIONS.COMPLETED,
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: null,
       data: action.payload.available,
     }),
-    (state, action) => ({
+    (_state, action) => ({
       isFetching: false,
       error: action.payload as FetchVersionsError,
       data: [],

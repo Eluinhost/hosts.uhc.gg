@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect } from 'react';
+import { H1 } from '@blueprintjs/core';
+import { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
+import { createSelector } from 'reselect';
+
+import { LoadHostHistory } from '../../actions';
+import type { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
 import { Title } from '../Title';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import { LoadHostHistory } from '../../actions';
-import { H1 } from '@blueprintjs/core';
 
 type RouteParams = {
   readonly host: string;
@@ -17,15 +18,23 @@ const hostHistorySelector = createSelector(
   hostHistory => hostHistory,
 );
 
-export const HistoryPage = React.memo(() => {
+export const HistoryPage = () => {
   const { matches, error, fetching, hasMorePages, updated } = useSelector(hostHistorySelector);
   const dispatch = useDispatch();
 
   const { host } = useParams<RouteParams>();
 
-  const reload = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: true })), [dispatch, host]);
+  const reload = useCallback(() => {
+    if (host) {
+      dispatch(LoadHostHistory.start({ host, refresh: true }));
+    }
+  }, [dispatch, host]);
 
-  const next = useCallback(() => dispatch(LoadHostHistory.start({ host, refresh: false })), [dispatch, host]);
+  const next = useCallback(() => {
+    if (host) {
+      dispatch(LoadHostHistory.start({ host, refresh: false }));
+    }
+  }, [dispatch, host]);
 
   useEffect(() => {
     return () => {
@@ -53,4 +62,4 @@ export const HistoryPage = React.memo(() => {
       />
     </div>
   );
-});
+};

@@ -1,12 +1,13 @@
+import { Tooltip, Position } from '@blueprintjs/core';
+import { memoizeWith, toString } from 'ramda';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import moment from 'moment-timezone';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
-import { memoizeWith, toString } from 'ramda';
-import { Tooltip, Position } from '@blueprintjs/core';
-import { getTimezone, is12hFormat } from '../../state/Selectors';
+
 import { SyncTime } from '../../actions';
+import dayjs from '../../dayjs';
+import type { ApplicationState } from '../../state/ApplicationState';
+import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -53,17 +54,21 @@ const stateSelector = createSelector(
   }),
 );
 
-export const CurrentTime = React.memo(() => {
+export const CurrentTime: React.FC = () => {
   const { timeSync, timezone, timeFormat } = useSelector(stateSelector);
   const dispatch = useDispatch();
 
-  const [time, setTime] = useState(moment.utc());
+  const [time, setTime] = useState(() => dayjs.utc());
 
   const resync = useCallback(() => dispatch(SyncTime.start()), [dispatch]);
 
   useEffect(() => {
-    const timerId = window.setInterval(() => setTime(moment.utc()), 1000);
-    return () => window.clearInterval(timerId);
+    const timerId = window.setInterval(() => {
+      setTime(dayjs.utc());
+    }, 1000);
+    return () => {
+      window.clearInterval(timerId);
+    };
   }, []);
 
   const tooltipText = useMemo(
@@ -74,12 +79,10 @@ export const CurrentTime = React.memo(() => {
     [timeSync],
   );
 
-  const timeText = useMemo(() => time.add(timeSync.offset, 'milliseconds').clone().tz(timezone).format(timeFormat), [
-    time,
-    timeSync.offset,
-    timezone,
-    timeFormat,
-  ]);
+  const timeText = useMemo(
+    () => time.add(timeSync.offset, 'milliseconds').tz(timezone).format(timeFormat),
+    [time, timeSync.offset, timezone, timeFormat],
+  );
 
   return (
     <Tooltip content={tooltipText} position={Position.BOTTOM}>
@@ -88,4 +91,4 @@ export const CurrentTime = React.memo(() => {
       </span>
     </Tooltip>
   );
-});
+};

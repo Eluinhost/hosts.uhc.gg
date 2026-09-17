@@ -1,37 +1,38 @@
-import { ConfigProps, SubmissionError, InjectedFormProps, reduxForm } from 'redux-form';
-import React, { useCallback, useEffect } from 'react';
-import moment from 'moment-timezone';
 import { Button, Callout, Classes, FormGroup, H5, Intent } from '@blueprintjs/core';
-import { Dispatch } from 'redux';
-import { SagaIterator } from 'redux-saga';
-import { all, put, race, take } from 'redux-saga/effects';
+import { CloudUploadIcon, WarningSignIcon } from '@blueprintjs/icons';
 import { find } from 'ramda';
+import React, { useCallback, useEffect } from 'react';
+import { SubmissionError, type InjectedFormProps, reduxForm } from 'redux-form';
+import type { SagaIterator } from 'redux-saga';
+import { all, put, race, take } from 'redux-saga/effects';
 
+import { HostFormConflicts } from '../../actions';
+import dayjs from '../../dayjs';
+import type { CreateMatchData } from '../../models/CreateMatchData';
+import type { Match } from '../../models/Match';
+import { Regions } from '../../models/Regions';
+import { TeamStyles } from '../../models/TeamStyles';
+import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
+import { sagaMiddleware } from '../../state/ApplicationState';
+import { MainVersionField } from '../../versions/components/MainVersionField';
 import { DateTimeField } from '../fields/DateTimeField';
 import { NumberField } from '../fields/NumberField';
-import { TextField } from '../fields/TextField';
-import { nextAvailableSlot } from './nextAvailableSlot';
-import { TagsField } from '../fields/TagsField';
 import { SelectField } from '../fields/SelectField';
-import { TeamStyles } from '../../models/TeamStyles';
-import { Regions } from '../../models/Regions';
-import { TemplateField } from './TemplateField';
-import { MatchRow } from '../match-row';
-import { Match } from '../../models/Match';
-import { validator } from './validation';
-import { HostingRules } from '../hosting-rules';
-import { PotentialConflicts } from './PotentialConflicts';
 import { SwitchField } from '../fields/SwitchField';
+import { TagsField } from '../fields/TagsField';
+import { TextField } from '../fields/TextField';
+import { HostingRules } from '../hosting-rules';
+import { MatchRow } from '../match-row';
 import { Title } from '../Title';
-import { CreateMatchData } from '../../models/CreateMatchData';
-import { HostFormConflicts } from '../../actions';
-import { sagaMiddleware } from '../../state/ApplicationState';
-import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
-import { MainVersionField } from '../../versions/components/MainVersionField';
+
+import { nextAvailableSlot } from './nextAvailableSlot';
+import { PotentialConflicts } from './PotentialConflicts';
+import { type TemplateContext, TemplateField } from './TemplateField';
+import { validator } from './validation';
 
 export type CreateMatchFormProps = {
   readonly currentValues: CreateMatchData;
-  readonly templateContext: any;
+  readonly templateContext: TemplateContext;
   readonly username: string;
   readonly is12h: boolean;
   readonly changeTemplate: (newTemplate: string) => void;
@@ -39,7 +40,7 @@ export type CreateMatchFormProps = {
   readonly roles: Array<string>;
 };
 
-const stopEnterSubmit: React.KeyboardEventHandler<any> = (e: React.KeyboardEvent<any>): void => {
+const stopEnterSubmit: React.KeyboardEventHandler = (e: React.KeyboardEvent): void => {
   if (e.key === 'Enter') {
     e.preventDefault();
     e.stopPropagation();
@@ -63,6 +64,7 @@ const CustomStyleField: React.FunctionComponent<{ readonly disabled?: boolean }>
 );
 
 function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const {
     result: { success, failure },
   } = yield all({
@@ -82,6 +84,7 @@ function* checkForConflicts(values: CreateMatchData): SagaIterator<void> {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const payload: NonNullable<ReturnType<typeof HostFormConflicts.success>['payload']> = success.payload;
 
   let confirmedConflicts = payload.result.filter(conflict => conflict.opens.isSame(payload.parameters.data.opens));
@@ -122,7 +125,10 @@ const CreateMatchFormComponent: React.FunctionComponent<
     error,
     asyncValidating,
     roles,
+    // both coming from reduxForm, no way to change types and considered safe access
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     change,
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     asyncValidate,
     is12h,
   } = props;
@@ -166,12 +172,13 @@ const CreateMatchFormComponent: React.FunctionComponent<
     removedBy: null,
     removedReason: null,
     approvedBy: null,
-    created: moment.utc(),
+    created: dayjs.utc(),
     version: currentValues.version || currentValues.mainVersion,
     roles,
   };
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     <form className="host-form" onSubmit={handleSubmit(createMatch)}>
       <Title>Create a match</Title>
       <HostingRules />
@@ -182,17 +189,14 @@ const CreateMatchFormComponent: React.FunctionComponent<
           name="opens"
           required
           disabled={disabledAsync}
-          minDate={nextAvailableSlot().set('hours', 0)} // required so react-dates minDate works (it looks at midday)
-          maxDate={moment.utc().add(30, 'd').set('hours', 23)}
-          datePickerProps={{
-            numberOfMonths: 2,
-          }}
+          minDate={nextAvailableSlot().hour(0)} // midnight so the boundary day is still selectable
+          maxDate={dayjs.utc().add(30, 'days').hour(23)}
           timePicker={{
             minuteStep: 15,
             use12Hours: is12h,
           }}
         />
-        <Callout intent={Intent.WARNING} icon="warning-sign">
+        <Callout intent={Intent.WARNING} icon={<WarningSignIcon />}>
           <H5>
             <span> All times must be entered as </span>
             <a href="https://time.is/compare/UTC" target="_blank" rel="noopener noreferrer">
@@ -274,7 +278,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
 
       <fieldset>
         <legend>Scenarios + Teams</legend>
-        <div className="host-form-row" onKeyPress={stopEnterSubmit}>
+        <div className="host-form-row" onKeyDown={stopEnterSubmit}>
           <TagsField name="scenarios" label="Scenarios" required disabled={submitting}>
             <div>
               <em>* Press Enter after each scenario to add it to the list</em>
@@ -349,7 +353,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
             required
             min={2}
           />
-          <div onKeyPress={stopEnterSubmit}>
+          <div onKeyDown={stopEnterSubmit}>
             <TagsField name="tags" label="Tags" required={false} disabled={submitting}>
               <em>* Press Enter after each tag to add it to the list</em>
             </TagsField>
@@ -398,7 +402,7 @@ const CreateMatchFormComponent: React.FunctionComponent<
         <Button
           type="submit"
           disabled={disabledAsync || !valid}
-          icon="cloud-upload"
+          icon={<CloudUploadIcon />}
           loading={submitting}
           intent={valid ? Intent.SUCCESS : Intent.WARNING}
         >
@@ -409,24 +413,21 @@ const CreateMatchFormComponent: React.FunctionComponent<
   );
 };
 
-export const CreateMatchForm: React.ComponentType<
-  CreateMatchFormProps & ConfigProps<CreateMatchData, CreateMatchFormProps>
-> = reduxForm<CreateMatchData, CreateMatchFormProps>({
+export const CreateMatchForm = reduxForm<CreateMatchData, CreateMatchFormProps>({
   validate: validator.validate,
-  asyncValidate: async (
-    values: CreateMatchData,
-    dispatch: Dispatch<any>,
-    props: CreateMatchFormProps & InjectedFormProps<CreateMatchData, CreateMatchFormProps>,
-  ): Promise<void> => {
+  asyncValidate: async (values, _dispatch, props): Promise<void> => {
     try {
       // a quick check for when we don't have any initial values then fallback to the ones provided in
       // props, kinda weird and janky but gets around the componentDidMount asyncvalidate race condition
       // we should be relying on `values` as it is the most up to date over props
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const haveValues = Object.keys(values || {}).length > 0;
 
-      return await sagaMiddleware.run(checkForConflicts, haveValues ? values : props.currentValues).toPromise();
+      await sagaMiddleware.run(checkForConflicts, haveValues ? values : props.currentValues).toPromise();
+      return;
     } catch (err) {
       if (err instanceof SubmissionError) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw err.errors; // redux-form doesn't like the SubmissionError instance and wants the errors object
       }
 

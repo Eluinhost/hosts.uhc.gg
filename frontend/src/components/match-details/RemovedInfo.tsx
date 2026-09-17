@@ -1,35 +1,35 @@
-import { Classes, H5, Icon } from '@blueprintjs/core';
-import React from 'react';
+import { Classes, H5 } from '@blueprintjs/core';
+import { WarningSignIcon } from '@blueprintjs/icons';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
+import type { Match } from '../../models/Match';
 import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
-import { Match } from '../../models/Match';
 
-export const RemovedInfo = React.memo(
-  ({ match: { removed, removedAt, removedBy, removedReason } }: { match: Match }) => {
-    const format = useSelector(getTagDateTimeFormat);
-    const timezone = useSelector(getTimezone);
+export const RemovedInfo: React.FC<{ match: Match }> = ({
+  match: { removed, removedAt, removedBy, removedReason },
+}) => {
+  const format = useSelector(getTagDateTimeFormat);
+  const timezone = useSelector(getTimezone);
 
-    const removedAtFormatted = React.useMemo(() => removedAt && removedAt.clone().tz(timezone).format(format), [
-      format,
-      removedAt,
-      timezone,
-    ]);
+  const removedAtFormatted = useMemo(
+    () => removedAt && removedAt.tz(timezone).format(format),
+    [format, removedAt, timezone],
+  );
 
-    if (!removed) {
-      return null;
-    }
+  if (!removed) {
+    return null;
+  }
 
-    return (
-      <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-        <H5>
-          <Icon icon="warning-sign" /> REMOVED
-        </H5>
-        <p>This game is no longer on the calendar:</p>
-        <p>
-          {removedReason} - /u/{removedBy} {removedAtFormatted && `@ ${removedAtFormatted}`}
-        </p>
-      </div>
-    );
-  },
-);
+  return (
+    <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
+      <H5>
+        <WarningSignIcon /> REMOVED
+      </H5>
+      <p>This game is no longer on the calendar:</p>
+      <p>
+        {removedReason} - /u/{removedBy} {removedAtFormatted && `@ ${removedAtFormatted}`}
+      </p>
+    </div>
+  );
+};

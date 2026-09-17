@@ -1,5 +1,11 @@
-import { SagaIterator } from 'redux-saga';
+import { Intent } from '@blueprintjs/core';
+import type { SagaIterator } from 'redux-saga';
 import { takeLatest, put, call, select, fork, takeEvery } from 'redux-saga/effects';
+
+import type { HostApplication, HostApplicationDetails } from '../models/HostApplication';
+import { showToast } from '../services/AppToaster';
+import { getAccessToken } from '../state/Selectors';
+import { GenericError } from '../utils/GenericError';
 
 import { HostApplications } from './actions';
 import {
@@ -8,15 +14,11 @@ import {
   reviewHostApplication,
   createHostApplication,
 } from './api';
-import { getAccessToken } from '../state/Selectors';
-import { HostApplication, HostApplicationDetails } from '../models/HostApplication';
 import { listenForQuizQuestionsSagas } from './questions/sagas';
-import { AppToaster } from '../services/AppToaster';
-import { Intent } from '@blueprintjs/core';
 
-export class FetchHostingApplicationsError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to fetch host applications, caused by:\n ${cause?.message ?? cause}`);
+export class FetchHostingApplicationsError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to fetch host applications`, cause);
   }
 }
 
@@ -34,9 +36,12 @@ function* fetchHostingApplicationsSaga(): SagaIterator {
   }
 }
 
-export class FetchHostingApplicationError extends Error {
-  constructor(public id: number, public cause: any) {
-    super(`Failed to fetch host application '${id}', caused by:\n ${cause?.message ?? cause}`);
+export class FetchHostingApplicationError extends GenericError {
+  constructor(
+    public id: number,
+    public cause: unknown,
+  ) {
+    super(`Failed to fetch host application '${id}'`, cause);
   }
 }
 
@@ -46,8 +51,12 @@ function* fetchHostingApplicationDetailsSaga({
   yield put(HostApplications.fetch.individual.started(id));
 
   try {
-    const accessToken = yield select(getAccessToken);
-    const result: HostApplicationDetails = yield call(fetchHostApplicationDetails, id, accessToken);
+    const accessToken: string | null = yield select(getAccessToken);
+    const result: HostApplicationDetails = yield call(
+      fetchHostApplicationDetails,
+      id,
+      accessToken ?? 'NO ACCESS TOKEN',
+    );
 
     yield put(HostApplications.fetch.individual.completed(result));
   } catch (err) {
@@ -57,9 +66,12 @@ function* fetchHostingApplicationDetailsSaga({
   }
 }
 
-export class ReviewHostingApplicationError extends Error {
-  constructor(public id: number, public cause: any) {
-    super(`Failed to review host application '${id}', caused by:\n ${cause?.message ?? cause}`);
+export class ReviewHostingApplicationError extends GenericError {
+  constructor(
+    public id: number,
+    public cause: unknown,
+  ) {
+    super(`Failed to review host application '${id}'`, cause);
   }
 }
 
@@ -69,8 +81,8 @@ function* reviewHostingApplicationDetailsSaga({
   yield put(HostApplications.respond.started({ id, status, rejectReason }));
 
   try {
-    const accessToken = yield select(getAccessToken);
-    yield call(reviewHostApplication, id, status, accessToken, rejectReason);
+    const accessToken: string | null = yield select(getAccessToken);
+    yield call(reviewHostApplication, id, status, accessToken ?? 'NO ACCESS TOKEN', rejectReason);
 
     yield put(HostApplications.respond.completed({ id, status, rejectReason }));
     // refresh list to have the response show up immediately
@@ -80,13 +92,13 @@ function* reviewHostingApplicationDetailsSaga({
     const error = new ReviewHostingApplicationError(id, err);
     console.error(error);
     yield put(HostApplications.respond.completed.failed(error));
-    yield call([AppToaster, 'show'], { message: 'Error responding to application', intent: Intent.DANGER });
+    yield call(showToast, { message: 'Error responding to application', intent: Intent.DANGER });
   }
 }
 
-export class CreateHostingApplicationError extends Error {
-  constructor(public cause: any) {
-    super(`Failed to create host application, caused by:\n ${cause?.message ?? cause}`);
+export class CreateHostingApplicationError extends GenericError {
+  constructor(public cause: unknown) {
+    super(`Failed to create host application`, cause);
   }
 }
 
@@ -96,8 +108,8 @@ function* createHostingApplicationSaga({
   yield put(HostApplications.create.started(data));
 
   try {
-    const accessToken = yield select(getAccessToken);
-    yield call(createHostApplication, data, accessToken);
+    const accessToken: string | null = yield select(getAccessToken);
+    yield call(createHostApplication, data, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(HostApplications.create.completed(data));
   } catch (err) {

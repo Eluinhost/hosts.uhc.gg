@@ -1,12 +1,12 @@
-import moment from 'moment-timezone';
+import dayjs from '../dayjs';
+import type { HostingRules } from '../state/HostingRulesState';
 
-import { HostingRules } from '../state/HostingRulesState';
 import { authHeaders, callApi, fetchObject } from './util';
 
 export const fetchHostingRules = (): Promise<HostingRules> =>
   fetchObject<HostingRules>({
     url: `/api/rules`,
-  }).then(response => ({ ...response, modified: moment.utc(response.modified) }));
+  }).then(response => ({ ...response, modified: dayjs.utc(response.modified) }));
 
 export const callSetHostingRules = (content: string, accessToken: string): Promise<void> =>
   callApi({

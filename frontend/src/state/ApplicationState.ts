@@ -1,25 +1,27 @@
-import { FormStateMap, reducer as formReducer } from 'redux-form';
-import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore, type Store } from 'redux';
+import { type FormStateMap, reducer as formReducer } from 'redux-form';
 import createSagaMiddleware from 'redux-saga';
-import { reducer as Authentication, AuthenticationState } from './AuthenticationState';
-import { reducer as Upcoming, UpcomingState } from './UpcomingState';
-import { reducer as MatchModeration, MatchModerationState } from './MatchModerationState';
-import { reducer as HostHistory, HostHistoryState } from './HostHistoryState';
-import { reducer as MatchDetails, MatchDetailsState } from './MatchDetailsState';
-import { reducer as Permissions, PermissionsState } from './PermissionsState';
-import { reducer as PermissionModerationLog, PermissionModerationLogState } from './PermissionModerationLogState';
-import { reducer as ApiKey, ApiKeyState } from './ApiKeyState';
-import { reducer as HostingRules, HostingRulesState } from './HostingRulesState';
-import { reducer as HostFormConflicts, HostFormConflictsState } from './HostFormConflictsState';
-import { reducer as Settings, SettingsState } from './SettingsState';
-import { reducer as TimeSync, TimeSyncState } from './TimeSyncState';
-import { reducer as HostFormSavedData, HostFormSavedDataState } from './HostFormSavedDataState';
-import { reducer as Presets, PresetsState } from './PresetsState';
-import { reducer as modifiers, ModifiersState } from '../modifiers/reducer';
-import { reducer as versions, VersionsState } from '../versions/reducer';
+
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
+import { reducer as modifiers, type ModifiersState } from '../modifiers/reducer';
 import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
+import { reducer as versions, type VersionsState } from '../versions/reducer';
+
+import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
+import { reducer as Authentication, type AuthenticationState } from './AuthenticationState';
+import { reducer as HostFormConflicts, type HostFormConflictsState } from './HostFormConflictsState';
+import { reducer as HostFormSavedData, type HostFormSavedDataState } from './HostFormSavedDataState';
+import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
+import { reducer as HostingRules, type HostingRulesState } from './HostingRulesState';
+import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
+import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
+import { reducer as PermissionModerationLog, type PermissionModerationLogState } from './PermissionModerationLogState';
+import { reducer as Permissions, type PermissionsState } from './PermissionsState';
+import { reducer as Presets, type PresetsState } from './PresetsState';
+import { reducer as Settings, type SettingsState } from './SettingsState';
+import { reducer as TimeSync, type TimeSyncState } from './TimeSyncState';
+import { reducer as Upcoming, type UpcomingState } from './UpcomingState';
 
 export type ApplicationState = {
   readonly authentication: AuthenticationState;
@@ -42,14 +44,14 @@ export type ApplicationState = {
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
-const composeEnhancers: any = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const sagaMiddleware = createSagaMiddleware();
 
 export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const store = createStore(
     combineReducers<ApplicationState>({
-      form: (state, action) => formReducer(state!, action),
+      form: (state, action) => formReducer(state, action),
       authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,

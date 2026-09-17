@@ -1,17 +1,18 @@
+import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
+import { UploadIcon } from '@blueprintjs/icons';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
 
-import { getAllModifierNames, getCreateModifiersState } from '../selectors';
 import { CREATE_MODIFIER } from '../actions';
+import { getAllModifierNames, getCreateModifiersState } from '../selectors';
 
 const mapStateToProps = createSelector(getCreateModifiersState, getAllModifierNames, (state, names) => ({
   ...state,
   taken: names.map(name => name.toLowerCase()),
 }));
 
-export const CreateModifierForm: React.FC = React.memo(() => {
+export const CreateModifierForm: React.FC = () => {
   const { isFetching, error, taken } = useSelector(mapStateToProps);
   const dispatch = useDispatch();
 
@@ -19,17 +20,16 @@ export const CreateModifierForm: React.FC = React.memo(() => {
 
   const createModifier = useCallback((name: string) => dispatch(CREATE_MODIFIER.TRIGGER(name)), [dispatch]);
   const handleSubmit = useCallback(
-    (event: React.FormEvent): void => {
+    (event: React.SubmitEvent): void => {
       event.preventDefault();
 
       createModifier(modifier);
     },
     [createModifier, modifier],
   );
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>): void => setModifier(event.target.value),
-    [],
-  );
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
+    setModifier(event.target.value);
+  }, []);
 
   const alreadyExists = taken.includes(modifier.toLowerCase());
   const valid = !alreadyExists && modifier.length > 0;
@@ -38,12 +38,19 @@ export const CreateModifierForm: React.FC = React.memo(() => {
     <form onSubmit={handleSubmit}>
       <FormGroup label="Create new modifier:">
         <ControlGroup>
-          <InputGroup large type="string" value={modifier} onChange={handleChange} disabled={isFetching} required />
+          <InputGroup
+            size="large"
+            type="string"
+            value={modifier}
+            onChange={handleChange}
+            disabled={isFetching}
+            required
+          />
           <Button
             intent={alreadyExists ? Intent.DANGER : valid ? Intent.SUCCESS : Intent.NONE}
             type="submit"
-            icon="upload"
-            large
+            icon={<UploadIcon />}
+            size="large"
             disabled={!valid}
           />
         </ControlGroup>
@@ -54,4 +61,4 @@ export const CreateModifierForm: React.FC = React.memo(() => {
       </FormGroup>
     </form>
   );
-});
+};

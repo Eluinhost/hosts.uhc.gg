@@ -1,29 +1,20 @@
 import React from 'react';
-import moment from 'moment-timezone';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { ApplicationState } from '../../state/ApplicationState';
+
+import type { Dayjs } from '../../dayjs';
 import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 type Props = {
-  readonly time: moment.Moment;
+  readonly time: Dayjs;
 };
 
-type StateSlice = {
-  readonly format: string;
-  readonly timezone: string;
-};
+const stateSelector = createSelector(getDetailsDateTimeFormat, getTimezone, (format, timezone) => ({
+  format,
+  timezone,
+}));
 
-const stateSelector = createSelector<ApplicationState, string, string, StateSlice>(
-  getDetailsDateTimeFormat,
-  getTimezone,
-  (format, timezone) => ({
-    format,
-    timezone,
-  }),
-);
-
-export const MatchOpens: React.ComponentType<Props> = React.memo(({ time }: Props) => {
+export const MatchOpens: React.FC<Props> = ({ time }) => {
   const { format, timezone } = useSelector(stateSelector);
-  return <span className="match-time">{time.clone().tz(timezone).format(format)}</span>;
-});
+  return <span className="match-time">{time.tz(timezone).format(format)}</span>;
+};

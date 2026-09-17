@@ -1,8 +1,10 @@
-import { MatchesApi } from '../api';
-import { SagaIterator } from 'redux-saga';
+import type { SagaIterator } from 'redux-saga';
 import { put, call, takeLatest } from 'redux-saga/effects';
+
 import { HostFormConflicts } from '../actions';
-import { Match } from '../models/Match';
+import { MatchesApi } from '../api';
+import type { Match } from '../models/Match';
+import { wrapError } from '../utils/wrapError';
 
 function* checkHostFormConflictsSaga(action: ReturnType<typeof HostFormConflicts.start>): SagaIterator {
   try {
@@ -18,7 +20,7 @@ function* checkHostFormConflictsSaga(action: ReturnType<typeof HostFormConflicts
     yield put(HostFormConflicts.success({ parameters: action.payload, result: potentialConflicts }));
   } catch (error) {
     console.error(error, 'error checking conflicts');
-    yield put(HostFormConflicts.failure({ parameters: action.payload, error }));
+    yield put(HostFormConflicts.failure({ parameters: action.payload, error: wrapError(error) }));
   }
 }
 

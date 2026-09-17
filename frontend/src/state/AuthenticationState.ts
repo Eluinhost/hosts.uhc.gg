@@ -1,8 +1,8 @@
+import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
-import moment from 'moment-timezone';
-import { Reducer } from 'redux';
 
 import { Authentication } from '../actions';
+import type { Dayjs } from '../dayjs';
 
 // TODO move key to saga and out of state
 const storageKey = 'authentication';
@@ -15,12 +15,12 @@ export type AuthenticationState = {
 
 // The 'parsed' versions with actual objects
 export type AccessTokenClaims = {
-  readonly expires: moment.Moment;
+  readonly expires: Dayjs;
   readonly username: string;
   readonly permissions: string[];
 };
 export type RefreshTokenClaims = {
-  readonly expires: moment.Moment;
+  readonly expires: Dayjs;
   readonly username: string;
 };
 

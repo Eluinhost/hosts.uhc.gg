@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <meta name="og:type" content="website" />
+    <meta name="og:image" content="https://hosts.uhc.gg/logo.png" />
+
+    <!-- caddy-template:dev:start -->
+    <title>uhc.gg</title>
+    <meta name="og:title" content="uhc.gg" />
+    <meta name="og:description" content="uhc.gg" />
+    <!-- caddy-template:dev:end -->
+
+    <!-- caddy-template:start -->
+    {{# $path := ph "http.request.orig_uri.path" #}}
+    {{# $title := "uhc.gg" #}}
+    {{# $desc := "uhc.gg" #}}
+    {{# if and (hasPrefix "/m/" $path) (regexMatch `^\d+/?$` (trimPrefix "/m/" $path)) #}}
+    {{# $id := trimSuffix "/" (trimPrefix "/m/" $path) #}}
+    {{# $meta := httpInclude (printf "/api/matches/%s/meta" $id) #}}
+    {{# if $meta #}}
+    {{# $title = $meta | replace "&" "&amp;" | replace "\u003c" "&lt;" | replace "\u003e" "&gt;" #}}
+    {{# $desc = "Match Post" #}}
+    {{# end #}}
+    {{# end #}}
+    <title>{{# $title #}}</title>
+    <meta name="og:title" content="{{# $title #}}" />
+    <meta name="og:description" content="{{# $desc #}}" />
+    <!-- caddy-template:end -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Share+Tech" rel="stylesheet" />
+
+    <script type="module" src="/src/main.tsx"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
