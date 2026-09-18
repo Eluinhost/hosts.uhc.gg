@@ -83,4 +83,4 @@ By default `docker compose up` will spin up a Caddy server on port 80 without ho
 If frontend hot reloading is required, copy the relevant section from `docker-compose.override.examples.yml` to `docker-compose.override.yml`,
 this assumes you are running `pnpm start` in the frontend directory outside of docker.
 
-Database files are stored in the `database/postgres` directory
+Database files are stored in the `database` directory
