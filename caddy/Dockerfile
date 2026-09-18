@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1
 FROM node:24-alpine AS frontend-build
 WORKDIR /app
 
@@ -5,7 +6,9 @@ RUN corepack enable
 
 COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store-12,target=/root/.local/share/pnpm/store \
+    --mount=type=cache,id=node_modules-12,target=/app/node_modules \
+    pnpm install --frozen-lockfile
 
 COPY frontend/ .
 

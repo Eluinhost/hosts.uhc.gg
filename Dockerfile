@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1
 FROM eclipse-temurin:17-jdk AS backend-build
 WORKDIR /app
 
@@ -15,7 +16,10 @@ RUN apt-get update && apt-get install apt-transport-https curl gnupg -yqq && \
 COPY src/ ./src/
 COPY apidocs/ ./apidocs/
 
-RUN sbt universal:stage
+RUN --mount=type=cache,id=sbt-1.12.1,target=/root/.sbt \
+    --mount=type=cache,id=coursier,target=/root/.cache/coursier \
+    --mount=type=cache,id=ivy,target=/root/.ivy2 \
+    sbt universal:stage
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
