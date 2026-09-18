@@ -1,4 +1,4 @@
-database
+/database
 target
 frontend/node_modules
 frontend/build
@@ -6,3 +6,5 @@ frontend/build
 .idea
 .bsp
 seed
+Dockerfile
+npm-debug.log
