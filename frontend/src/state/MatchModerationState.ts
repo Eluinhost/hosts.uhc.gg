@@ -1,30 +1,22 @@
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { ApproveMatch, RemoveMatch } from '../actions';
+import { ApproveMatch } from '../actions';
 
 export type MatchModerationState = {
-  readonly removalModalId: number | null;
   readonly approvalModalId: number | null;
+  readonly removalPending: boolean;
 };
 
 export const reducer: Reducer<MatchModerationState> = createReducer<MatchModerationState>({
-  removalModalId: null,
   approvalModalId: null,
+  removalPending: false,
 })
-  .handleAction(RemoveMatch.openDialog, (_state, action) => ({
-    removalModalId: action.payload,
-    approvalModalId: null,
-  }))
-  .handleAction(RemoveMatch.closeDialog, state => ({
-    removalModalId: null,
-    approvalModalId: state.approvalModalId,
-  }))
-  .handleAction(ApproveMatch.openDialog, (_state, action) => ({
+  .handleAction(ApproveMatch.openDialog, (state, action) => ({
+    ...state,
     approvalModalId: action.payload,
-    removalModalId: null,
   }))
   .handleAction(ApproveMatch.closeDialog, state => ({
+    ...state,
     approvalModalId: null,
-    removalModalId: state.removalModalId,
   }));

@@ -1,12 +1,10 @@
 import { applyMiddleware, combineReducers, compose, createStore, type Store } from 'redux';
-import { type FormStateMap, reducer as formReducer } from 'redux-form';
 import createSagaMiddleware from 'redux-saga';
 
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
 import { reducer as modifiers, type ModifiersState } from '../modifiers/reducer';
 import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
-import { reducer as versions, type VersionsState } from '../versions/reducer';
 
 import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
 import { reducer as Authentication, type AuthenticationState } from './AuthenticationState';
@@ -25,7 +23,6 @@ import { reducer as Upcoming, type UpcomingState } from './UpcomingState';
 
 export type ApplicationState = {
   readonly authentication: AuthenticationState;
-  readonly form: FormStateMap;
   readonly upcoming: UpcomingState;
   readonly matchModeration: MatchModerationState;
   readonly matchDetails: MatchDetailsState;
@@ -40,18 +37,16 @@ export type ApplicationState = {
   readonly hostFormSavedData: HostFormSavedDataState;
   readonly presets: PresetsState;
   readonly modifiers: ModifiersState;
-  readonly versions: VersionsState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware();
 
 export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const store = createStore(
     combineReducers<ApplicationState>({
-      form: (state, action) => formReducer(state, action),
       authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,
@@ -67,7 +62,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       hostFormSavedData: HostFormSavedData,
       presets: Presets,
       modifiers,
-      versions,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),

@@ -1,0 +1,153 @@
+.date-time-field
+  --dtf-accent: var(--bp-intent-primary-rest)
+  --dtf-accent-hover: var(--bp-intent-primary-hover)
+  --dtf-accent-active: var(--bp-intent-primary-active)
+  --dtf-accent-soft: rgba(45, 114, 210, 0.25)
+  --dtf-border: var(--bp-palette-light-gray-4)
+  --dtf-text: var(--bp-palette-dark-gray-1)
+  --dtf-selected-text: var(--bp-palette-light-gray-5)
+  --dtf-text-muted: var(--bp-palette-light-gray-1)
+  --dtf-hover: rgba(0, 0, 0, 0.06)
+  --dtf-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
+
+.bp6-dark .date-time-field
+  --dtf-accent: #DB3737
+  --dtf-accent-hover: #C42B2B
+  --dtf-accent-active: #A52424
+  --dtf-accent-soft: rgba(219, 55, 55, 0.35)
+  --dtf-border: rgba(255, 255, 255, 0.2)
+  --dtf-text: var(--bp-palette-light-gray-1)
+  --dtf-selected-text: var(--bp-palette-light-gray-1)
+  --dtf-text-muted: var(--bp-palette-dark-gray-4)
+  --dtf-hover: rgba(255, 255, 255, 0.1)
+  --dtf-shadow: 0 2px 10px rgba(0, 0, 0, 0.5)
+
+.date-time-field
+  margin-bottom: 16px
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: stretch
+  background: var(--bp-surface-background-color-default-rest)
+
+  .bp6-callout
+    border-radius: 0
+    margin-top: 12px
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: center
+    gap: 8px
+
+  .date-time-field-preview
+    font-size: 20px
+    border-bottom: 1px solid var(--dtf-border)
+    padding: 12px
+    margin-bottom: 12px
+    width: 100%
+    text-align: center
+
+  .rc-picker-panel
+    background: transparent
+    border: none
+    padding: 8px
+
+  .rc-picker-header
+    height: 48px
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 12px
+    border-bottom: 1px solid var(--dtf-border)
+    font-size: 20px
+
+    button
+      background: transparent
+      border: none
+      padding: 0 16px
+      cursor: pointer
+
+      &:hover
+        color: var(--dtf-accent)
+
+  .rc-picker-datetime-panel
+    width: 100%
+    display: flex
+    justify-content: center
+    align-items: flex-start
+    gap: 16px
+    height: 380px
+
+  .rc-picker-time-panel
+    height: 100%
+    padding-left: 16px
+    border-left: 1px solid var(--dtf-border)
+
+    .rc-picker-header
+      flex-shrink: 0
+      flex-grow: 0
+
+    .rc-picker-content
+      max-height: initial
+      flex-grow: 1
+      overflow: scroll
+
+    .rc-picker-time-panel-column
+      padding: 0
+
+    .rc-picker-time-panel-cell
+      font-size: 20px
+      height: 32px
+      display: flex
+      justify-content: center
+      align-items: center
+
+      &:hover
+        background: var(--dtf-hover)
+        .rc-picker-time-panel-cell-inner
+          color: var(--dtf-accent)
+
+      .rc-picker-time-panel-cell-inner
+        color: var(--dtf-text)
+
+      &.rc-picker-time-panel-cell-selected
+        background: var(--dtf-accent-active)
+        .rc-picker-time-panel-cell-inner
+          color: var(--dtf-selected-text)
+
+  .rc-picker-date-panel .rc-picker-cell
+    .rc-picker-cell-inner
+      font-size: 20px
+      width: 48px
+      height: 48px
+      display: flex
+      justify-content: center
+      align-items: center
+
+      &:hover
+        background: var(--dtf-hover)
+
+    &.rc-picker-cell-in-view
+      .rc-picker-cell-inner
+        cursor: pointer
+        color: var(--dtf-text)
+        &:hover
+          color: var(--dtf-accent)
+
+    &.rc-picker-cell-selected
+      .rc-picker-cell-inner
+        color: var(--dtf-selected-text)
+        background: var(--dtf-accent-active)
+        &:hover
+          color: var(--dtf-selected-text)
+
+    &.rc-picker-cell-today
+      .rc-picker-cell-inner
+        border: 1px solid var(--dtf-accent-active)
+
+
+    &.rc-picker-cell-disabled
+      .rc-picker-cell-inner
+        color: var(--dtf-text-muted)
+        cursor: not-allowed

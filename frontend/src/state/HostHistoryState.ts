@@ -2,7 +2,7 @@ import { concat } from 'ramda';
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { LoadHostHistory, ApproveMatch, RemoveMatch } from '../actions';
+import { LoadHostHistory, ApproveMatch } from '../actions';
 import { ApiErrors } from '../api';
 import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
@@ -63,32 +63,6 @@ export const reducer: Reducer<HostHistoryState> = createReducer<HostHistoryState
     host: state.host,
     hasMorePages: state.hasMorePages,
     updated: state.updated,
-  }))
-  .handleAction(RemoveMatch.started, (state, action) => ({
-    ...state,
-    matches: state.matches.map(match => {
-      if (match.id !== action.payload.parameters.id) return match;
-
-      return {
-        ...match,
-        removed: true,
-        removedBy: action.payload.result.username,
-        remvoedReason: action.payload.parameters.reason,
-      };
-    }),
-  }))
-  .handleAction(RemoveMatch.failure, (state, action) => ({
-    ...state,
-    matches: state.matches.map(match => {
-      if (match.id !== action.payload.parameters.id) return match;
-
-      return {
-        ...match,
-        removed: false,
-        removedBy: null,
-        remvoedReason: null,
-      };
-    }),
   }))
   .handleAction(ApproveMatch.started, (state, action) => ({
     ...state,

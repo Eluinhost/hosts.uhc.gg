@@ -51,6 +51,5 @@ export const getAllVersions = async (): Promise<Array<string>> => {
         ? min.minecraftVersion
         : `${min.minecraftVersion} - ${max.minecraftVersion}`,
     ),
-    'Other (specify in range)',
   ];
 };

@@ -2,19 +2,15 @@ import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon, TakeActionIcon } from '@blueprintjs/icons';
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import type { Dispatch } from 'redux';
-import { type InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
+import { create, enforce, test } from 'vest';
 
 import { SetHostingRules } from '../../actions';
-import { Validator } from '../../services/Validator';
+import { FormLabel } from '../../forms/FormLabel';
+import { useAppForm } from '../../forms/useAppForm';
 import type { ApplicationState } from '../../state/ApplicationState';
 
 import { RulesField } from './RulesField';
-
-type SetRulesDialogData = {
-  rules: string;
-};
 
 type SetRulesDialogState = {
   readonly isOpen: boolean;
@@ -33,28 +29,42 @@ const setRulesSelector = createSelector(
   }),
 );
 
-const validator = new Validator<SetRulesDialogData>().withValidation(
-  'rules',
-  rules => !rules || rules.length < 3,
-  'Must be at least 3 characters long',
-);
+const schema = enforce.shape({
+  rules: enforce.isString(),
+});
 
-const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> = ({
-  handleSubmit,
-  submitting,
-  invalid,
-  // coming from 3rd party, safe
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  change,
-}) => {
+export const suite = create(data => {
+  test('rules', 'This field is required', () => {
+    enforce(data.rules).isString().isNotEmpty();
+  });
+  test('rules', 'Must be at least 3 characters long', () => {
+    enforce(data.rules).isString().min(3);
+  });
+}, schema);
+
+export const SetRulesDialog: React.FC = () => {
   const dispatch = useDispatch();
   const { currentRules, isDarkMode, isOpen } = useSelector(setRulesSelector);
 
+  const form = useAppForm({
+    defaultValues: { rules: '' },
+    validators: [
+      {
+        run: suite,
+        triggers: ['change'],
+      },
+    ],
+    onSubmit: state => {
+      dispatch(SetHostingRules.start(state.value.rules));
+      dispatch(SetHostingRules.closeEditor());
+    },
+  });
+
   useEffect(() => {
     if (isOpen) {
-      change('rules', currentRules || '');
+      form.setFieldValue('rules', currentRules || '');
     }
-  }, [isOpen, currentRules, change]);
+  }, [isOpen, currentRules, form]);
 
   const onClose = useCallback(() => dispatch(SetHostingRules.closeEditor()), [dispatch]);
 
@@ -67,8 +77,19 @@ const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> =
       className={isDarkMode ? Classes.DARK : ''}
     >
       <div className={Classes.DIALOG_BODY}>
-        <form onSubmit={handleSubmit}>
-          <RulesField name="rules" label="Rules" required disabled={submitting} className={Classes.FILL} />
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            void form.handleSubmit();
+          }}
+        >
+          <form.Field name="rules">
+            {field => (
+              <FormLabel field={field} showRequiredStar label="Rules">
+                <RulesField field={field} className={Classes.FILL} />
+              </FormLabel>
+            )}
+          </form.Field>
         </form>
       </div>
       <div className={Classes.DIALOG_FOOTER}>
@@ -76,20 +97,20 @@ const SetRulesDialogComponent: React.FC<InjectedFormProps<SetRulesDialogData>> =
           <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon={<AddIcon />}>
-            Update Rules
-          </Button>
+          <form.Subscribe selector={state => state.canSubmit}>
+            {canSubmit => (
+              <Button
+                intent={Intent.SUCCESS}
+                onClick={() => void form.handleSubmit()}
+                disabled={!canSubmit}
+                icon={<AddIcon />}
+              >
+                Update Rules
+              </Button>
+            )}
+          </form.Subscribe>
         </div>
       </div>
     </Dialog>
   );
 };
-
-export const SetRulesDialog = reduxForm<SetRulesDialogData>({
-  form: 'set-rules-form',
-  validate: validator.validate,
-  onSubmit: (values: SetRulesDialogData, dispatch: Dispatch) => {
-    dispatch(SetHostingRules.start(values.rules));
-    dispatch(SetHostingRules.closeEditor());
-  },
-})(SetRulesDialogComponent);

@@ -1,7 +1,7 @@
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
-import { ApproveMatch, RemoveMatch, UpdateUpcoming } from '../actions';
+import { ApproveMatch, UpdateUpcoming } from '../actions';
 import { ApiErrors } from '../api';
 import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
@@ -44,32 +44,6 @@ export const reducer: Reducer<UpcomingState> = createReducer<UpcomingState>({
     error: displayError(action.payload.error),
     matches: state.matches,
     updated: state.updated,
-  }))
-  .handleAction(RemoveMatch.started, (state, action) => ({
-    ...state,
-    matches: state.matches.map(match => {
-      if (match.id !== action.payload.parameters.id) return match;
-
-      return {
-        ...match,
-        removed: true,
-        removedBy: action.payload.result.username,
-        removedReason: action.payload.parameters.reason,
-      };
-    }),
-  }))
-  .handleAction(RemoveMatch.failure, (state, action) => ({
-    ...state,
-    matches: state.matches.map(match => {
-      if (match.id !== action.payload.parameters.id) return match;
-
-      return {
-        ...match,
-        removed: false,
-        removedBy: null,
-        removedReason: null,
-      };
-    }),
   }))
   .handleAction(ApproveMatch.started, (state, action) => ({
     ...state,

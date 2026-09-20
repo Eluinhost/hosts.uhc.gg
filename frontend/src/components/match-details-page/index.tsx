@@ -3,7 +3,6 @@ import { useParams } from 'react-router';
 
 import { ApprovalModal } from '../approval-modal';
 import { MatchDetails } from '../match-details';
-import { RemovalModal } from '../removal-modal';
 
 type Params = {
   readonly id?: string;
@@ -16,7 +15,6 @@ export const MatchDetailsPage: React.FC = () => {
     <div>
       <MatchDetails id={Number(params.id)} />
       <ApprovalModal />
-      <RemovalModal />
     </div>
   );
 };

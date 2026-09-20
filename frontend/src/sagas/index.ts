@@ -1,10 +1,8 @@
 import type { SagaIterator } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
-import { fixHostFormVersionOnVersionsUpdate, removeVanillaPlusWhenOtherScenarioAdded } from '../components/host/saga';
 import { listenForHostingApplicationSagas } from '../hosting-applications/sagas';
 import { listenForModifierActions } from '../modifiers/sagas';
-import { listenForVersionActions } from '../versions/sagas';
 
 import { watchApiKey } from './apiKey';
 import { watchApproveMatch } from './approveMatch';
@@ -15,7 +13,6 @@ import { watchLoadHostHistory } from './loadHostHistory';
 import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
 import { watchPermissions } from './permissions';
 import { refreshAuthentication } from './refreshAuthentication';
-import { watchRemoveMatch } from './removeMatch';
 import { watchSyncTime } from './timeSync';
 import { watchUpcomingMatches } from './updateUpcoming';
 import { watchSettingsToggle } from './watchSettingsToggle';
@@ -25,7 +22,6 @@ import { watchSettingsToggle } from './watchSettingsToggle';
 
 export default function* rootSaga(): SagaIterator {
   yield fork(watchUpcomingMatches);
-  yield fork(watchRemoveMatch);
   yield fork(watchApproveMatch);
   yield fork(watchLoadHostHistory);
   yield fork(watchFetchMatchDetails);
@@ -38,8 +34,5 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchRefreshPermissionModerationLog);
   yield fork(watchApiKey);
   yield fork(listenForModifierActions);
-  yield fork(listenForVersionActions);
-  yield fork(fixHostFormVersionOnVersionsUpdate);
-  yield fork(removeVanillaPlusWhenOtherScenarioAdded);
   yield fork(listenForHostingApplicationSagas);
 }

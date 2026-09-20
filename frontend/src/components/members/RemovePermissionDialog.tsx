@@ -1,9 +1,7 @@
-import { Button, Callout, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
+import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, RemoveIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import type { Dispatch } from 'redux';
-import { type InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
 
 import { RemovePermission } from '../../actions';
@@ -21,12 +19,15 @@ const removePermissionSelector = createSelector(
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
-const RemovePermissionDialogComponent: React.FunctionComponent<
-  RemovePermissionDialogStateSlice & InjectedFormProps<Record<string, never>, RemovePermissionDialogStateSlice>
-> = ({ state, submitting, invalid, handleSubmit, error, isDarkMode }) => {
+const RemovePermissionDialogComponent: React.FC<RemovePermissionDialogStateSlice> = ({ state, isDarkMode }) => {
   const dispatch = useDispatch();
 
   const onClose = useCallback(() => dispatch(RemovePermission.closeDialog()), [dispatch]);
+
+  const onRemove = useCallback(() => {
+    dispatch(RemovePermission.start());
+    dispatch(RemovePermission.closeDialog());
+  }, [dispatch]);
 
   return (
     <Dialog
@@ -41,14 +42,13 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
           Are you sure you want to remove &#39;{state ? state.permission : '...'}&#39; from /u/
           {state ? state.username : '...'}
         </H5>
-        {!!error && <Callout intent={Intent.DANGER}>{error}</Callout>}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.DANGER} onClick={handleSubmit} disabled={submitting || invalid} icon={<RemoveIcon />}>
+          <Button intent={Intent.DANGER} onClick={onRemove} icon={<RemoveIcon />}>
             Remove permission
           </Button>
         </div>
@@ -57,15 +57,7 @@ const RemovePermissionDialogComponent: React.FunctionComponent<
   );
 };
 
-const RemovePermissionDialogForm = reduxForm<Record<string, never>, RemovePermissionDialogStateSlice>({
-  form: 'remove-permission-form',
-  onSubmit: (_values: Record<string, never>, dispatch: Dispatch) => {
-    dispatch(RemovePermission.start());
-    dispatch(RemovePermission.closeDialog());
-  },
-})(RemovePermissionDialogComponent);
-
 export const RemovePermissionDialog: React.ComponentType = () => {
   const state = useSelector(removePermissionSelector);
-  return <RemovePermissionDialogForm {...state} />;
+  return <RemovePermissionDialogComponent {...state} />;
 };

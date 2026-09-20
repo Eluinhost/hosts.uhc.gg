@@ -2,18 +2,13 @@ import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import type { Dispatch } from 'redux';
-import { type InjectedFormProps, reduxForm } from 'redux-form';
 import { createSelector } from 'reselect';
+import { enforce, create, test } from 'vest';
 
 import { AddPermission } from '../../actions';
-import { Validator } from '../../services/Validator';
+import { FormLabel } from '../../forms/FormLabel';
+import { useAppForm } from '../../forms/useAppForm';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { TextField } from '../fields/TextField';
-
-type AddPermissionDialogData = {
-  username: string;
-};
 
 const addPermissionSelector = createSelector(
   (state: ApplicationState) => state.permissions.addDialog,
@@ -21,15 +16,37 @@ const addPermissionSelector = createSelector(
   (state, isDarkMode) => ({ state, isDarkMode }),
 );
 
-const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<AddPermissionDialogData>> = ({
-  handleSubmit,
-  submitting,
-  invalid,
-}) => {
+const schema = enforce.shape({
+  username: enforce.isString(),
+});
+
+export const suite = create(data => {
+  test('username', 'This field is required', () => {
+    enforce(data.username).isString().min(1);
+  });
+}, schema);
+
+export const AddPermissionDialog: React.FC = () => {
   const dispatch = useDispatch();
   const { state, isDarkMode } = useSelector(addPermissionSelector);
 
   const onClose = useCallback(() => dispatch(AddPermission.closeDialog()), [dispatch]);
+
+  const form = useAppForm({
+    defaultValues: {
+      username: '',
+    },
+    validators: [
+      {
+        run: suite,
+        triggers: ['change'],
+      },
+    ],
+    onSubmit: state => {
+      dispatch(AddPermission.start(state.value.username));
+      dispatch(AddPermission.closeDialog());
+    },
+  });
 
   return (
     <Dialog
@@ -40,8 +57,19 @@ const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<Ad
       className={isDarkMode ? Classes.DARK : ''}
     >
       <div className={`${Classes.DIALOG_BODY} add-permission-body`}>
-        <form onSubmit={handleSubmit}>
-          <TextField name="username" label="Username" required disabled={submitting} className={Classes.FILL} />
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            void form.handleSubmit();
+          }}
+        >
+          <form.Field name="username">
+            {field => (
+              <FormLabel field={field} label="Username" showRequiredStar fill>
+                <field.TextField field={field} fill />
+              </FormLabel>
+            )}
+          </form.Field>
         </form>
       </div>
       <div className={Classes.DIALOG_FOOTER}>
@@ -49,7 +77,15 @@ const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<Ad
           <Button onClick={onClose} icon={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button intent={Intent.SUCCESS} onClick={handleSubmit} disabled={invalid || submitting} icon={<AddIcon />}>
+          <Button
+            type="submit"
+            intent={Intent.SUCCESS}
+            onClick={() => {
+              void form.handleSubmit();
+            }}
+            disabled={!form.state.canSubmit}
+            icon={<AddIcon />}
+          >
             Add Permission
           </Button>
         </div>
@@ -57,22 +93,3 @@ const AddPermissionDialogComponent: React.FunctionComponent<InjectedFormProps<Ad
     </Dialog>
   );
 };
-
-const validator = new Validator<AddPermissionDialogData>().withValidationFunction('username', username => {
-  if (!username) return 'This field is required';
-
-  if (username.length < 3) return 'Must be at least 3 characters long';
-
-  if (username.length > 256) return 'Must be at most 256 characters long';
-
-  return undefined;
-});
-
-export const AddPermissionDialog = reduxForm<AddPermissionDialogData>({
-  form: 'add-permission-form',
-  validate: validator.validate,
-  onSubmit: (values: AddPermissionDialogData, dispatch: Dispatch) => {
-    dispatch(AddPermission.start(values.username));
-    dispatch(AddPermission.closeDialog());
-  },
-})(AddPermissionDialogComponent);
