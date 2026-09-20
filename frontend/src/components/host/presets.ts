@@ -1,13 +1,5 @@
-export type Preset = {
-  readonly name: string;
-  readonly template: string;
-};
-
-export const presets: Preset[] = [
-  {
-    name: 'Default',
-    template: `
-___
+export const presets: Record<string, string> = {
+  Default: `___
 [**Player FAQ**](http://www.reddit.com/r/ultrahardcore/wiki/playerfaq) || 
 [**Time.is**](http://time.is/UTC) || 
 [**UBL Guidelines**](https://www.reddit.com/r/uhccourtroom/wiki/banguidelines) 
@@ -34,7 +26,7 @@ ___
  
  | [](#I)
 ---|---
-**Opening Time** | {{opens|moment>MMM Do HH:mm}}
+**Opening Time** | {{opens|date>MMM Do HH:mm}} UTC
 **Starting Time** | 5 (FFA) or 10 (Teams) Minutes after the opening time
 |
 **PvP/iPvP** | {{pvpEnabledAt}} Minutes after start.
@@ -67,7 +59,5 @@ ___
 **Scenario 1**|Scenario 1 description here
 **Scenario 2**|Scenario 2 description here
 &nbsp;
-___
-    `,
-  },
-];
+___`,
+};

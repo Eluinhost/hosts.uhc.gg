@@ -1,9 +1,16 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
 import { caddyTemplateBlocks } from './vite/caddyTemplateBlocks.mjs';
 
 export default defineConfig({
-  plugins: [caddyTemplateBlocks(), react()],
+  plugins: [
+    caddyTemplateBlocks(),
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
+    }),
+  ],
   resolve: {
     alias: [
       {

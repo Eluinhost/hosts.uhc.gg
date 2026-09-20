@@ -1,6 +1,5 @@
 import { createAction } from 'typesafe-redux-helpers';
 
-import type { Preset } from '../components/host/presets';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
@@ -15,30 +14,6 @@ export type WithParameters<Parameters> = {
 };
 export type WithError = {
   readonly error: Error;
-};
-
-export type RemoveMatchParameters = {
-  readonly id: number;
-  readonly reason: string;
-};
-export type RemoveMatchOptimisticData = {
-  readonly username: string;
-};
-
-export const RemoveMatch = {
-  formId: 'remove-match-form',
-  openDialog: createAction('OPEN_REMOVE_MATCH_DIALOG', (id: number) => id),
-  closeDialog: createAction('CLOSE_REMOVE_MATCH_DIALOG'),
-  start: createAction('REMOVE_MATCH_START', (payload: RemoveMatchParameters) => payload),
-  started: createAction(
-    'REMOVE_MATCH_STARTED',
-    (payload: WithParameters<RemoveMatchParameters> & WithResult<RemoveMatchOptimisticData>) => payload,
-  ),
-  success: createAction('REMOVE_MATCH_SUCCESS', (payload: WithParameters<RemoveMatchParameters>) => payload),
-  failure: createAction(
-    'REMOVE_MATCH_FAILURE',
-    (payload: WithParameters<RemoveMatchParameters> & WithError) => payload,
-  ),
 };
 
 export type ApproveMatchParameters = {
@@ -183,7 +158,7 @@ export const Settings = {
 };
 
 export const Presets = {
-  save: createAction('SAVE_PRESETS', (payload: Preset[]) => payload),
+  save: createAction('SAVE_PRESETS', (payload: Record<string, string>) => payload),
 };
 
 export const RefreshPermissionModerationLog = {

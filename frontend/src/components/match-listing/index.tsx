@@ -12,7 +12,6 @@ import type { ApplicationState } from '../../state/ApplicationState';
 import { getUsername } from '../../state/Selectors';
 import { ApprovalModal } from '../approval-modal';
 import { MatchRow } from '../match-row';
-import { RemovalModal } from '../removal-modal';
 
 import { RefreshButton } from './RefreshButton';
 
@@ -227,7 +226,6 @@ export const MatchListing: FC<MatchListingProps> = ({
         </div>
       )}
 
-      <RemovalModal />
       <ApprovalModal />
     </div>
   );

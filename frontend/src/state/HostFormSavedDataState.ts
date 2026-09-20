@@ -2,38 +2,35 @@ import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
 import { SetSavedHostFormData } from '../actions';
-import { nextAvailableSlot } from '../components/host/nextAvailableSlot';
 import { presets } from '../components/host/presets';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import { Regions } from '../models/Regions';
 import { TeamStyles } from '../models/TeamStyles';
 
-export type HostFormSavedDataState = CreateMatchData;
+export type HostFormSavedDataState = Omit<CreateMatchData, 'opens'>;
 
 export const reducer: Reducer<HostFormSavedDataState> = createReducer<HostFormSavedDataState>({
-  opens: nextAvailableSlot(),
   region: Regions[0].value,
   teams: TeamStyles[0].value,
   modifiers: [],
   scenarios: ['Vanilla+'],
   tags: [],
-  size: null,
+  size: 0,
   customStyle: '',
   address: '',
-  content: presets[0].template,
+  content: presets['Default'],
   ip: '',
   count: 1,
   location: '',
   length: 90,
   mainVersion: '',
-  version: null,
+  version: '',
   mapSize: 3000,
   pvpEnabledAt: 20,
   slots: 80,
-  hostingName: null,
+  hostingName: '',
   tournament: false,
 }).handleAction(SetSavedHostFormData.started, (state, action) => ({
   ...state,
   ...action.payload.parameters,
-  opens: state.opens, // always use whatever was there first, storage really doesn't like date objects
 }));

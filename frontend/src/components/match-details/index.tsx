@@ -11,17 +11,18 @@ import {
   TrashIcon,
   WarningSignIcon,
 } from '@blueprintjs/icons';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ApproveMatch, FetchMatchDetails, RemoveMatch } from '../../actions';
+import { ApproveMatch, FetchMatchDetails } from '../../actions';
 import type { ApplicationState } from '../../state/ApplicationState';
 import type { MatchDetailsState } from '../../state/MatchDetailsState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
 import { Markdown } from '../Markdown';
+import { RemovalModal } from '../removal-modal';
 import { TeamStyle } from '../team-style';
 import { MatchOpens } from '../time/MatchOpens';
 import { TimeFromNowTag } from '../time/TimeFromNowTag';
@@ -58,14 +59,13 @@ export const MatchDetails: React.FC<OwnProps> = props => {
   const { id } = props;
   const { details, canApprove, canRemove } = useSelector(stateSelector);
   const dispatch = useDispatch();
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const clear = useCallback(() => dispatch(FetchMatchDetails.clear()), [dispatch]);
 
   const load = useCallback((matchId: number) => dispatch(FetchMatchDetails.start({ id: matchId })), [dispatch]);
 
   const approve = useCallback(() => dispatch(ApproveMatch.openDialog(id)), [id, dispatch]);
-
-  const remove = useCallback(() => dispatch(RemoveMatch.openDialog(id)), [id, dispatch]);
 
   useEffect(() => {
     clear();
@@ -219,10 +219,27 @@ export const MatchDetails: React.FC<OwnProps> = props => {
             {canApprove && (
               <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={approve} />
             )}
-            {canRemove && <Button intent={Intent.DANGER} icon={<TrashIcon />} onClick={remove} title="Remove" />}
+            {canRemove && (
+              <Button
+                intent={Intent.DANGER}
+                icon={<TrashIcon />}
+                onClick={() => {
+                  setIsRemoving(true);
+                }}
+                title="Remove"
+              />
+            )}
           </div>
         )}
         <Markdown markdown={content} />
+        {isRemoving && (
+          <RemovalModal
+            id={details.match.id}
+            onClose={() => {
+              setIsRemoving(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );

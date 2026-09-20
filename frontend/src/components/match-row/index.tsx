@@ -8,17 +8,18 @@ import {
   TimelineBarChartIcon,
   TrashIcon,
 } from '@blueprintjs/icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router';
 import { createSelector } from 'reselect';
 
-import { ApproveMatch, RemoveMatch } from '../../actions';
+import { ApproveMatch } from '../../actions';
 import type { Match } from '../../models/Match';
 import type { ApplicationState } from '../../state/ApplicationState';
 import { getUsername, matchesPermissions } from '../../state/Selectors';
 import { HostStatus } from '../host-status';
 import { HoverSwap } from '../HoverSwap';
+import { RemovalModal } from '../removal-modal';
 import { TagList } from '../tag-list';
 import { TeamStyle } from '../team-style';
 import { MatchOpensTag } from '../time/MatchOpensTag';
@@ -50,9 +51,9 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
   const { canRemove, canApprove } = useSelector(state => stateSelector(state, props));
   const dispatch = useDispatch();
 
-  const openApprovalModal = useCallback((id: number) => dispatch(ApproveMatch.openDialog(id)), [dispatch]);
+  const [isRemoving, setIsRemoving] = useState(false);
 
-  const openRemovalModal = useCallback((id: number) => dispatch(RemoveMatch.openDialog(id)), [dispatch]);
+  const openApprovalModal = useCallback((id: number) => dispatch(ApproveMatch.openDialog(id)), [dispatch]);
 
   const onApprovePress = useCallback(
     (event: React.MouseEvent<HTMLElement>): void => {
@@ -64,15 +65,11 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
     [openApprovalModal, match.id],
   );
 
-  const onRemovePress = useCallback(
-    (event: React.MouseEvent<HTMLElement>): void => {
-      event.stopPropagation();
-      event.preventDefault();
-
-      openRemovalModal(match.id);
-    },
-    [openRemovalModal, match.id],
-  );
+  const onRemovePress = useCallback((event: React.MouseEvent<HTMLElement>): void => {
+    event.stopPropagation();
+    event.preventDefault();
+    setIsRemoving(true);
+  }, []);
 
   const authorElement = (m: Match): React.ReactElement => {
     if (m.hostingName) return <small>/u/{m.author}</small>;
@@ -154,11 +151,29 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
     </div>
   );
 
-  if (disableLink) return card;
+  const removal = isRemoving && (
+    <RemovalModal
+      id={match.id}
+      onClose={() => {
+        setIsRemoving(false);
+      }}
+    />
+  );
+
+  if (disableLink)
+    return (
+      <>
+        {card}
+        {removal}
+      </>
+    );
 
   return (
-    <Link to={`/m/${match.id}`} className="match-row-link">
-      {card}
-    </Link>
+    <>
+      <Link to={`/m/${match.id}`} className="match-row-link">
+        {card}
+      </Link>
+      {removal}
+    </>
   );
 };
