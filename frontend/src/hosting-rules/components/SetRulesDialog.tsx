@@ -1,33 +1,14 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon, TakeActionIcon } from '@blueprintjs/icons';
-import React, { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useSelector } from 'react-redux';
 import { create, enforce, test } from 'vest';
 
-import { SetHostingRules } from '../../actions';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
-import type { ApplicationState } from '../../state/ApplicationState';
+import { isDarkMode } from '../../state/Selectors';
+import { HostingRulesData } from '../api';
 
 import { RulesField } from './RulesField';
-
-type SetRulesDialogState = {
-  readonly isOpen: boolean;
-  readonly isDarkMode: boolean;
-  readonly currentRules: string;
-};
-
-const setRulesSelector = createSelector(
-  (state: ApplicationState) => state.rules.editing,
-  (state: ApplicationState) => state.rules.data,
-  (state: ApplicationState) => state.settings.isDarkMode,
-  (isOpen, data, isDarkMode): SetRulesDialogState => ({
-    isOpen,
-    currentRules: data ? data.content : '',
-    isDarkMode,
-  }),
-);
 
 const schema = enforce.shape({
   rules: enforce.isString(),
@@ -42,39 +23,31 @@ export const suite = create(data => {
   });
 }, schema);
 
-export const SetRulesDialog: React.FC = () => {
-  const dispatch = useDispatch();
-  const { currentRules, isDarkMode, isOpen } = useSelector(setRulesSelector);
+export const SetRulesDialog = ({ current, onClose }: { current: string; onClose: () => void }) => {
+  const { mutateAsync } = HostingRulesData.mutations.useSetHostingRules();
+  const darkMode = useSelector(isDarkMode);
 
   const form = useAppForm({
-    defaultValues: { rules: '' },
+    defaultValues: { rules: current },
     validators: [
       {
         run: suite,
         triggers: ['change'],
       },
     ],
-    onSubmit: state => {
-      dispatch(SetHostingRules.start(state.value.rules));
-      dispatch(SetHostingRules.closeEditor());
+    onSubmit: async state => {
+      await mutateAsync(state.value.rules);
+      onClose();
     },
   });
-
-  useEffect(() => {
-    if (isOpen) {
-      form.setFieldValue('rules', currentRules || '');
-    }
-  }, [isOpen, currentRules, form]);
-
-  const onClose = useCallback(() => dispatch(SetHostingRules.closeEditor()), [dispatch]);
 
   return (
     <Dialog
       icon={<TakeActionIcon />}
-      isOpen={isOpen}
+      isOpen
       onClose={onClose}
       title="Modify Rules"
-      className={isDarkMode ? Classes.DARK : ''}
+      className={darkMode ? Classes.DARK : ''}
     >
       <div className={Classes.DIALOG_BODY}>
         <form

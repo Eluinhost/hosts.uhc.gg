@@ -2,7 +2,6 @@ import { createAction } from 'typesafe-redux-helpers';
 
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
-import type { HostingRules } from '../state/HostingRulesState';
 
 export type WithResult<Result> = {
   readonly result: Result;
@@ -112,28 +111,6 @@ export const HostFormConflicts = {
     'HOST_FORM_CONFLICTS_FAILURE',
     (payload: WithParameters<HostFormConflictsParameters> & WithError) => payload,
   ),
-};
-
-export const GetHostingRules = {
-  start: createAction('GET_HOSTING_RULES_START'),
-  started: createAction('GET_HOSTING_RULES_STARTED'),
-  success: createAction('GET_HOSTING_RULES_SUCCESS', (payload: WithResult<HostingRules>) => payload),
-  failure: createAction('GET_HOSTING_RULES_FAILURE', (payload: WithError) => payload),
-};
-
-export const SetHostingRules = {
-  start: createAction('SET_HOSTING_RULES_START', (payload: string) => payload),
-  started: createAction(
-    'SET_HOSTING_RULES_STARTED',
-    (payload: WithParameters<string> & WithResult<HostingRules>) => payload,
-  ),
-  success: createAction(
-    'SET_HOSTING_RULES_SUCCESS',
-    (payload: WithParameters<string> & WithResult<HostingRules>) => payload,
-  ),
-  failure: createAction('SET_HOSTING_RULES_FAILURE', (payload: WithParameters<string> & WithError) => payload),
-  openEditor: createAction('OPEN_HOSTING_RULES_EDITOR'),
-  closeEditor: createAction('CLOSE_HOSTING_RULES_EDITOR'),
 };
 
 export const SyncTime = {
