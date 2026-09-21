@@ -1,4 +1,4 @@
-import { applyMiddleware, combineReducers, compose, createStore, type Store } from 'redux';
+import { applyMiddleware, combineReducers, compose, legacy_createStore, type Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
@@ -39,8 +39,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const sagaMiddleware = createSagaMiddleware();
 
 export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
-  const store = createStore(
-    combineReducers<ApplicationState>({
+  const store = legacy_createStore(
+    combineReducers({
       authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,
