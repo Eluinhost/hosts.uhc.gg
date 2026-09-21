@@ -132,6 +132,7 @@ export const HostingPage: React.FC = () => {
       }}
       className="host-form"
     >
+      <title>uhc.gg | Create Match</title>
       <fieldset className="host-form-preview">
         <legend>Game preview</legend>
 

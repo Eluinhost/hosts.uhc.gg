@@ -6,7 +6,6 @@ import { createSelector } from 'reselect';
 
 import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { Title } from '../Title';
 
 const stateSelector = createSelector(
   (state: ApplicationState) => state.apiKey,
@@ -43,7 +42,7 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div>
-      <Title>Profile</Title>
+      <title>uhc.gg | Profile</title>
       <Button onClick={refreshApiKey}>Refresh</Button>
       <Button onClick={regenerateApiKey}>Regenerate</Button>
       <Pre>

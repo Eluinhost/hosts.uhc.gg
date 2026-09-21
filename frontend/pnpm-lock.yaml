@@ -229,9 +229,6 @@ importers:
       react-ga:
         specifier: 3.3.1
         version: 3.3.1(prop-types@15.8.1)(react@19.3.0)
-      react-helmet:
-        specifier: 6.1.0
-        version: 6.1.0(react@19.3.0)
       react-redux:
         specifier: 9.3.0
         version: 9.3.0(@types/react@19.3.0)(react@19.3.0)(redux@4.0.5)
@@ -284,9 +281,6 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/react-helmet':
-        specifier: 6.1.11
-        version: 6.1.11
       '@types/react-virtualized':
         specifier: 9.22.3
         version: 9.22.3
@@ -1119,9 +1113,6 @@ packages:
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
     peerDependencies:
       '@types/react': ^19.3.0
-
-  '@types/react-helmet@6.1.11':
-    resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
 
   '@types/react-virtualized@9.22.3':
     resolution: {integrity: sha512-UKRWeBIrECaKhE4O//TSFhlgwntMwyiEIOA7WZoVkr52Jahv0dH6YIOorqc358N2V3oKFclsq5XxPmx2PiYB5A==}
@@ -2612,11 +2603,6 @@ packages:
       prop-types: ^15.6.0
       react: ^15.6.2 || ^16.0 || ^17 || ^18
 
-  react-helmet@6.1.0:
-    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
-    peerDependencies:
-      react: '>=16.3.0'
-
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -2654,11 +2640,6 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
-
-  react-side-effect@2.1.2:
-    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
-    peerDependencies:
-      react: ^16.3.0 || ^17.0.0 || ^18.0.0
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
@@ -4022,10 +4003,6 @@ snapshots:
       types-ramda: 0.32.0
 
   '@types/react-dom@19.3.0(@types/react@19.3.0)':
-    dependencies:
-      '@types/react': 19.3.0
-
-  '@types/react-helmet@6.1.11':
     dependencies:
       '@types/react': 19.3.0
 
@@ -5973,14 +5950,6 @@ snapshots:
       prop-types: 15.8.1
       react: 19.3.0
 
-  react-helmet@6.1.0(react@19.3.0):
-    dependencies:
-      object-assign: 4.1.1
-      prop-types: 15.8.1
-      react: 19.3.0
-      react-fast-compare: 3.2.2
-      react-side-effect: 2.1.2(react@19.3.0)
-
   react-is@16.13.1: {}
 
   react-is@19.3.0: {}
@@ -6010,10 +5979,6 @@ snapshots:
       react: 19.3.0
     optionalDependencies:
       react-dom: 19.3.0(react@19.3.0)
-
-  react-side-effect@2.1.2(react@19.3.0):
-    dependencies:
-      react: 19.3.0
 
   react-transition-group@4.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:

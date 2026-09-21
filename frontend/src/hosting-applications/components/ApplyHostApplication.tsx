@@ -72,6 +72,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
 
   return (
     <div>
+      <title>uhc.gg | Apply to Host</title>
       <H1>Apply to Host</H1>
 
       {error && <Callout intent={Intent.DANGER}>{error}</Callout>}

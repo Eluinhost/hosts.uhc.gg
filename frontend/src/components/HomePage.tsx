@@ -6,6 +6,7 @@ import { HostingRules } from './hosting-rules';
 
 export const HomePage: React.FC = () => (
   <div className="home-page">
+    <title>uhc.gg | Home</title>
     <HostingRules />
 
     <Link to="/host">
