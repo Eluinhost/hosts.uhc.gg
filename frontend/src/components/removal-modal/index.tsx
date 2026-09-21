@@ -94,7 +94,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
             {field => (
               <ControlGroup fill>
                 <FormLabel field={field} label="Reason" showRequiredStar>
-                  <field.TextField field={field} disabled={form.state.isSubmitting} />
+                  <field.TextField field={field} />
                 </FormLabel>
               </ControlGroup>
             )}
