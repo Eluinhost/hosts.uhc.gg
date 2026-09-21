@@ -1,6 +1,5 @@
 import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
 import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
-import { toLower, filter as rFilter, always, includes } from 'ramda';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { List, type ListRowProps } from 'react-virtualized';
@@ -15,12 +14,12 @@ const tzs = Intl.supportedValuesOf('timeZone');
 
 const searchFilter = (query: string): ((item: string) => boolean) => {
   if (!query) {
-    return always(true);
+    return () => true;
   }
 
-  const loweredQuery = toLower(query);
+  const loweredQuery = query.toLowerCase();
 
-  return (item: string) => includes(loweredQuery, toLower(item));
+  return (item: string) => item.toLowerCase().includes(loweredQuery);
 };
 
 type TimezoneItemProps = {
@@ -66,7 +65,7 @@ export const TimeSettings: React.FC = () => {
 
   const onSelect = useCallback((newTimezone: string) => changeTimezone(newTimezone), [changeTimezone]);
 
-  const filtered = useMemo(() => rFilter(searchFilter(filter), tzs), [filter]);
+  const filtered = useMemo(() => tzs.filter(searchFilter(filter)), [filter]);
 
   const renderRow = useCallback(
     (props: ListRowProps) => (

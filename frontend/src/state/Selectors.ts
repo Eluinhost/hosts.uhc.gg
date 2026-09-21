@@ -1,31 +1,45 @@
 import { jwtDecode } from 'jwt-decode';
-import { intersection, isEmpty, memoizeWith, toString, identity } from 'ramda';
 import { createSelector } from 'reselect';
 
 import dayjs from '../dayjs';
 
 import type { ApplicationState } from './ApplicationState';
 
-export const isDarkMode = createSelector((state: ApplicationState) => state.settings.isDarkMode, identity);
+export const isDarkMode = createSelector(
+  (state: ApplicationState) => state.settings.isDarkMode,
+  x => x,
+);
 
-export const getTimezone = createSelector((state: ApplicationState) => state.settings.timezone, identity);
+export const getTimezone = createSelector(
+  (state: ApplicationState) => state.settings.timezone,
+  x => x,
+);
 
-export const is12hFormat = createSelector((state: ApplicationState) => state.settings.is12h, identity);
+export const is12hFormat = createSelector(
+  (state: ApplicationState) => state.settings.is12h,
+  x => x,
+);
 
 export const getTimeFormat = createSelector(is12hFormat, is12h => (is12h ? 'h:mm A' : 'HH:mm'));
 
-export const shouldHideRemoved = createSelector((state: ApplicationState) => state.settings.hideRemoved, identity);
+export const shouldHideRemoved = createSelector(
+  (state: ApplicationState) => state.settings.hideRemoved,
+  x => x,
+);
 
 export const shouldShowOwnRemoved = createSelector(
   (state: ApplicationState) => state.settings.showOwnRemoved,
-  identity,
+  x => x,
 );
 
 export const getTagDateTimeFormat = createSelector(getTimeFormat, timeFormat => `MMM Do ${timeFormat} z`);
 
 export const getDetailsDateTimeFormat = createSelector(getTimeFormat, timeFormat => `MMM Do YYYY - ${timeFormat} z`);
 
-export const getAccessToken = createSelector((state: ApplicationState) => state.authentication.accessToken, identity);
+export const getAccessToken = createSelector(
+  (state: ApplicationState) => state.authentication.accessToken,
+  x => x,
+);
 
 export const getAccessTokenClaims = createSelector(getAccessToken, token => {
   if (!token) {
@@ -59,7 +73,10 @@ export const getHostingHistoryCursor = createSelector(
   },
 );
 
-export const getRefreshToken = createSelector((state: ApplicationState) => state.authentication.refreshToken, identity);
+export const getRefreshToken = createSelector(
+  (state: ApplicationState) => state.authentication.refreshToken,
+  x => x,
+);
 
 export const getRefreshTokenClaims = createSelector(getRefreshToken, token => {
   if (!token) {
@@ -88,26 +105,17 @@ export const getUsername = createSelector(getAccessTokenClaims, claims => (claim
 
 export const getPermissions = createSelector(getAccessTokenClaims, claims => (claims ? claims.permissions : []));
 
-const toArray = <T>(a: T | T[]): T[] => (Array.isArray(a) ? a : [a]);
-const containsAny =
-  <T>(required: T[]) =>
-  (toCheck: T[]): boolean =>
-    intersection(required, toCheck).length > 0;
-
-/**
- * Check if the user has any of the permissions, empty array/string
- * means every user passes as long as they are logged in
- */
-export const matchesPermissions = memoizeWith(toString, (required: string | string[]) =>
-  createSelector(isLoggedIn, getPermissions, (logged, perms): boolean => {
-    if (!logged) return false;
-
-    return isEmpty(required) || containsAny(toArray(required))(perms);
-  }),
+export const getLocalPresets = createSelector(
+  (state: ApplicationState) => state.presets,
+  x => x,
 );
 
-export const getLocalPresets = createSelector((state: ApplicationState) => state.presets, identity);
+export const getUpcomingMatches = createSelector(
+  (state: ApplicationState) => state.upcoming.matches,
+  x => x,
+);
 
-export const getUpcomingMatches = createSelector((state: ApplicationState) => state.upcoming.matches, identity);
-
-export const getUpcomingLastUpdated = createSelector((state: ApplicationState) => state.upcoming.updated, identity);
+export const getUpcomingLastUpdated = createSelector(
+  (state: ApplicationState) => state.upcoming.updated,
+  x => x,
+);

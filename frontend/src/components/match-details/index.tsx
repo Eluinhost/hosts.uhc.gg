@@ -13,12 +13,10 @@ import {
 } from '@blueprintjs/icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
 
 import { ApproveMatch, FetchMatchDetails } from '../../actions';
 import type { ApplicationState } from '../../state/ApplicationState';
-import type { MatchDetailsState } from '../../state/MatchDetailsState';
-import { getUsername, matchesPermissions } from '../../state/Selectors';
+import { getPermissions, getUsername } from '../../state/Selectors';
 import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
 import { Markdown } from '../Markdown';
@@ -31,35 +29,22 @@ import { UsernameLink } from '../UsernameLink';
 import { RemovedInfo } from './RemovedInfo';
 import { RemovedTag } from './RemovedTag';
 
-type StateProps = {
-  readonly details: MatchDetailsState;
-  readonly canApprove: boolean;
-  readonly canRemove: boolean;
-};
+export interface MatchDetailsProps {
+  id: number;
+}
 
-type OwnProps = {
-  readonly id: number;
-};
-
-const stateSelector = createSelector(
-  (state: ApplicationState) => state.matchDetails,
-  matchesPermissions('hosting advisor'),
-  getUsername,
-  (details, isHostingAdvisor, username): StateProps => ({
-    details,
-    canApprove: details.match !== null && !details.match.removed && !details.match.approvedBy && isHostingAdvisor,
-    canRemove:
-      details.match !== null &&
-      !details.match.removed &&
-      (isHostingAdvisor || (username != null && username === details.match.author)),
-  }),
-);
-
-export const MatchDetails: React.FC<OwnProps> = props => {
-  const { id } = props;
-  const { details, canApprove, canRemove } = useSelector(stateSelector);
+export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
   const dispatch = useDispatch();
   const [isRemoving, setIsRemoving] = useState(false);
+  const username = useSelector(getUsername);
+  const permissions = useSelector(getPermissions);
+  const details = useSelector((state: ApplicationState) => state.matchDetails);
+
+  const canModify = details.match !== null && !details.match.removed && !details.match.approvedBy;
+
+  const canApprove = canModify && permissions.includes('hosting advisor');
+  const canRemove =
+    canModify && (permissions.includes('hosting advisor') || (username != null && username === details.match.author));
 
   const clear = useCallback(() => dispatch(FetchMatchDetails.clear()), [dispatch]);
 

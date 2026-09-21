@@ -1,4 +1,3 @@
-import { find } from 'ramda';
 import type { SagaIterator } from 'redux-saga';
 import { put, select, call, takeLatest } from 'redux-saga/effects';
 
@@ -21,7 +20,7 @@ function* fetchMatchDetailsSaga(action: ReturnType<typeof FetchMatchDetails.star
     if (lastUpdated && lastUpdated.isAfter(dayjs.utc().subtract(10, 'minutes'))) {
       const upcoming: Match[] = yield select(getUpcomingMatches);
 
-      match = find<Match>(m => m.id === action.payload.id, upcoming);
+      match = upcoming.find(m => m.id === action.payload.id);
     }
 
     if (!match) {

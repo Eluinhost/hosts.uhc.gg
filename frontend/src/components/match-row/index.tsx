@@ -11,12 +11,10 @@ import {
 import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router';
-import { createSelector } from 'reselect';
 
 import { ApproveMatch } from '../../actions';
 import type { Match } from '../../models/Match';
-import type { ApplicationState } from '../../state/ApplicationState';
-import { getUsername, matchesPermissions } from '../../state/Selectors';
+import { getUsername, getPermissions } from '../../state/Selectors';
 import { HostStatus } from '../host-status';
 import { HoverSwap } from '../HoverSwap';
 import { RemovalModal } from '../removal-modal';
@@ -36,19 +34,14 @@ type MatchRowProps = {
   readonly disableApproval?: boolean;
 };
 
-const stateSelector = createSelector(
-  matchesPermissions('hosting advisor'),
-  getUsername,
-  (_: ApplicationState, props: MatchRowProps | undefined) => props?.match.author,
-  (isHostingAdvisor, username, author) => ({
-    canApprove: isHostingAdvisor,
-    canRemove: isHostingAdvisor || (username != null && username === author),
-  }),
-);
-
 export const MatchRow: React.FC<MatchRowProps> = props => {
   const { match, disableLink, disableRemoval, disableApproval } = props;
-  const { canRemove, canApprove } = useSelector(state => stateSelector(state, props));
+  const permissions = useSelector(getPermissions);
+  const username = useSelector(getUsername);
+
+  const canApprove = permissions.includes('hosting advisor');
+  const canRemove = canApprove || (username != null && username === match.author);
+
   const dispatch = useDispatch();
 
   const [isRemoving, setIsRemoving] = useState(false);

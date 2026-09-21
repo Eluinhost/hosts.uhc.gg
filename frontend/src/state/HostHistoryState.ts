@@ -1,4 +1,3 @@
-import { concat } from 'ramda';
 import type { Reducer } from 'redux';
 import { createReducer } from 'typesafe-redux-helpers';
 
@@ -51,7 +50,7 @@ export const reducer: Reducer<HostHistoryState> = createReducer<HostHistoryState
   .handleAction(LoadHostHistory.success, (state, action) => ({
     fetching: false,
     error: null,
-    matches: concat(state.matches, action.payload.result),
+    matches: [...state.matches, ...action.payload.result],
     host: state.host,
     hasMorePages: action.payload.result.length > 0,
     updated: dayjs.utc(),
