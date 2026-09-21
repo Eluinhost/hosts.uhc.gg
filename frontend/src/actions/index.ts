@@ -2,8 +2,6 @@ import { createAction } from 'typesafe-redux-helpers';
 
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
-import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
 import type { HostingRules } from '../state/HostingRulesState';
 
 export type WithResult<Result> = {
@@ -159,105 +157,6 @@ export const Settings = {
 
 export const Presets = {
   save: createAction('SAVE_PRESETS', (payload: Record<string, string>) => payload),
-};
-
-export const RefreshPermissionModerationLog = {
-  start: createAction('REFRESH_PERMISSION_MODERATION_LOG_START'),
-  started: createAction('REFRESH_PERMISSION_MODERATION_LOG_STARTED'),
-  success: createAction(
-    'REFRESH_PERMISSION_MODERATION_LOG_SUCCESS',
-    (payload: WithResult<PermissionModerationLogEntry[]>) => payload,
-  ),
-  failure: createAction('REFRESH_PERMISSION_MODERATION_LOG_FAILURE', (payload: WithError) => payload),
-};
-
-export const FetchUserCountPerPermission = {
-  start: createAction('FETCH_USER_COUNT_PER_PERMISSION_START'),
-  started: createAction('FETCH_USER_COUNT_PER_PERMISSION_STARTED'),
-  success: createAction(
-    'FETCH_USER_COUNT_PER_PERMISSION_SUCCESS',
-    (payload: WithResult<UserCountPerPermission>) => payload,
-  ),
-  failure: createAction('FETCH_USER_COUNT_PER_PERMISSION_FAILURE', (payload: WithError) => payload),
-};
-
-export const PermissionNode = {
-  open: createAction('OPEN_PERMISSION_NODE', (payload: string) => payload),
-  close: createAction('CLOSE_PERMISSION_NODE', (payload: string) => payload),
-};
-
-export type ExpandPermissionLetterNodeParameters = {
-  readonly permission: string;
-  readonly letter: string;
-};
-
-export const PermissionLetterNode = {
-  open: createAction('OPEN_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
-  close: createAction('CLOSE_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
-  toggle: createAction('TOGGLE_PERMISSION_LETTER_NODE', (payload: ExpandPermissionLetterNodeParameters) => payload),
-};
-
-export const FetchUsersInPermission = {
-  start: createAction('FETCH_USERS_IN_PERMISSION_START', (payload: string) => payload),
-  started: createAction('FETCH_USERS_IN_PERMISSION_STARTED', (payload: WithParameters<string>) => payload),
-  success: createAction(
-    'FETCH_USERS_IN_PERMISSION_SUCCESS',
-    (payload: WithParameters<string> & WithResult<UsersInPermission>) => payload,
-  ),
-  failure: createAction('FETCH_USERS_IN_PERMISSION_FAILURE', (payload: WithParameters<string> & WithError) => payload),
-};
-
-export type FetchUsersInPermissionWithLetterParameters = {
-  readonly permission: string;
-  readonly letter: string;
-};
-
-export const FetchUsersInPermissionWithLetter = {
-  start: createAction(
-    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_START',
-    (payload: FetchUsersInPermissionWithLetterParameters) => payload,
-  ),
-  started: createAction(
-    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_STARTED',
-    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters>) => payload,
-  ),
-  success: createAction(
-    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_SUCCESS',
-    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters> & WithResult<string[]>) => payload,
-  ),
-  failure: createAction(
-    'FETCH_USERS_IN_PERMISSION_WITH_LETTER_FAILURE',
-    (payload: WithParameters<FetchUsersInPermissionWithLetterParameters> & WithError) => payload,
-  ),
-};
-
-export type PermissionParameters = {
-  readonly permission: string;
-  readonly username: string;
-};
-
-export const AddPermission = {
-  openDialog: createAction('OPEN_ADD_PERMISSION_DIALOG', (payload: string) => payload),
-  closeDialog: createAction('CLOSE_ADD_PERMISSION_DIALOG'),
-  start: createAction('ADD_PERMISSION_START', (payload: string) => payload),
-  started: createAction('ADD_PERMISSION_STARTED', (payload: WithParameters<PermissionParameters>) => payload),
-  success: createAction('ADD_PERMISSION_SUCCESS', (payload: WithParameters<PermissionParameters>) => payload),
-  failure: createAction(
-    'ADD_PERMISSION_FAILURE',
-    (payload: WithParameters<PermissionParameters> & WithError) => payload,
-  ),
-};
-
-export const RemovePermission = {
-  openDialog: createAction('OPEN_REMOVE_PERMISSION_DIALOG', (payload: PermissionParameters) => payload),
-  closeDialog: createAction('CLOSE_REMOVE_PERMISSION_DIALOG'),
-  start: createAction('REMOVE_PERMISSION_START'),
-  started: createAction('REMOVE_PERMISSION_STARTED', (payload: WithParameters<PermissionParameters>) => payload),
-  success: createAction('REMOVE_PERMISSION_SUCCESS', (payload: WithParameters<PermissionParameters>) => payload),
-  failure: createAction(
-    'REMOVE_PERMISSION_FAILURE',
-    (payload: WithParameters<PermissionParameters | null> & WithError) => payload,
-  ),
 };
 
 export const FetchApiKey = {

@@ -1,3 +1,5 @@
+import { queryOptions } from '@tanstack/react-query';
+
 import { fetchArray } from '../api/util';
 
 const compareVersion = (a: VersionMinMax, b: VersionMinMax): number => {
@@ -16,40 +18,45 @@ interface VersionMinMax {
   max: PrismarineJSVersion;
 }
 
-export const getAllVersions = async (): Promise<Array<string>> => {
-  const versions = await fetchArray<PrismarineJSVersion>({
-    url: 'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
-    status: 200,
-  });
+export const VersionsData = {
+  getAllVersions: queryOptions({
+    queryKey: ['versions'],
+    queryFn: async (): Promise<Array<string>> => {
+      const versions = await fetchArray<PrismarineJSVersion>({
+        url: 'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
+        status: 200,
+      });
 
-  const map = versions
-    .filter(({ minecraftVersion }) => /^[0-9.]+$/.test(minecraftVersion))
-    .reduce(
-      (acc, item) => {
-        const key = item.usesNetty ? 'netty' : 'prenetty';
+      const map = versions
+        .filter(({ minecraftVersion }) => /^[0-9.]+$/.test(minecraftVersion))
+        .reduce(
+          (acc, item) => {
+            const key = item.usesNetty ? 'netty' : 'prenetty';
 
-        const existing = acc[key].get(item.version);
+            const existing = acc[key].get(item.version);
 
-        acc[key].set(item.version, {
-          min: !existing || existing.min.dataVersion > item.dataVersion ? item : existing.min,
-          max: !existing || existing.max.dataVersion < item.dataVersion ? item : existing.max,
-        });
+            acc[key].set(item.version, {
+              min: !existing || existing.min.dataVersion > item.dataVersion ? item : existing.min,
+              max: !existing || existing.max.dataVersion < item.dataVersion ? item : existing.max,
+            });
 
-        return acc;
-      },
-      { netty: new Map<number, VersionMinMax>(), prenetty: new Map<number, VersionMinMax>() },
-    );
+            return acc;
+          },
+          { netty: new Map<number, VersionMinMax>(), prenetty: new Map<number, VersionMinMax>() },
+        );
 
-  const combined = [
-    ...Array.from(map.netty.values()).sort(compareVersion),
-    ...Array.from(map.prenetty.values()).sort(compareVersion),
-  ];
+      const combined = [
+        ...Array.from(map.netty.values()).sort(compareVersion),
+        ...Array.from(map.prenetty.values()).sort(compareVersion),
+      ];
 
-  return [
-    ...combined.map(({ min, max }) =>
-      min.minecraftVersion === max.minecraftVersion
-        ? min.minecraftVersion
-        : `${min.minecraftVersion} - ${max.minecraftVersion}`,
-    ),
-  ];
+      return [
+        ...combined.map(({ min, max }) =>
+          min.minecraftVersion === max.minecraftVersion
+            ? min.minecraftVersion
+            : `${min.minecraftVersion} - ${max.minecraftVersion}`,
+        ),
+      ];
+    },
+  }),
 };

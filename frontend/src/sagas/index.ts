@@ -10,8 +10,6 @@ import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
 import { watchFetchMatchDetails } from './fetchMatchDetails';
 import { watchHostingRules } from './hostingRules';
 import { watchLoadHostHistory } from './loadHostHistory';
-import { watchRefreshPermissionModerationLog } from './permissionModerationLog';
-import { watchPermissions } from './permissions';
 import { refreshAuthentication } from './refreshAuthentication';
 import { watchSyncTime } from './timeSync';
 import { watchUpcomingMatches } from './updateUpcoming';
@@ -30,8 +28,6 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchHostingRules);
   yield fork(watchSyncTime);
   yield fork(watchSettingsToggle);
-  yield fork(watchPermissions);
-  yield fork(watchRefreshPermissionModerationLog);
   yield fork(watchApiKey);
   yield fork(listenForModifierActions);
   yield fork(listenForHostingApplicationSagas);

@@ -4,17 +4,14 @@ import { type FieldWithValue } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { getAllVersions } from '../api';
+import { VersionsData } from '../api';
 
 export const VERSION_PICKER_OTHER = 'Other (specify in range)';
 
 export const VersionPicker: React.FC<
   Omit<HTMLSelectProps, 'options' | 'value' | 'onChange' | 'onBlur'> & { field: FieldWithValue<string> }
 > = ({ field, ...props }) => {
-  const { isPending, error, data, refetch } = useQuery({
-    queryKey: ['versions'],
-    queryFn: () => getAllVersions(),
-  });
+  const { isPending, error, data, refetch } = useQuery(VersionsData.getAllVersions);
 
   if (isPending) {
     return <Spinner />;

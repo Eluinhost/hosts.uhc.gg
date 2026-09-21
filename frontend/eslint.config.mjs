@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import query from '@tanstack/eslint-plugin-query';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
@@ -29,6 +30,7 @@ export default tseslint.config(
     },
   },
   reactHooks.configs.flat['recommended-latest'],
+  query.configs['flat/recommended-strict'],
   {
     ...a11yRecommended,
     plugins: { 'jsx-a11y': jsxA11y },

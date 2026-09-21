@@ -29,7 +29,7 @@ const ApplyHostApplicationPage = lazy(() =>
 const HostApplicationsPage = lazy(() =>
   import('../hosting-applications/components/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
 );
-const MembersPage = lazy(() => import('./members').then(m => ({ default: m.MembersPage })));
+const MembersPage = lazy(() => import('../members/components/MembersPage').then(m => ({ default: m.MembersPage })));
 const LoginPage = lazy(() => import('./LoginPage').then(m => ({ default: m.LoginPage })));
 const ProfilePage = lazy(() => import('./profile').then(m => ({ default: m.ProfilePage })));
 const ModifiersPage = lazy(() =>

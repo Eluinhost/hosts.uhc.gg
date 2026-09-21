@@ -3,3 +3,5 @@ allowBuilds:
   core-js: true
   core-js-pure: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@tanstack/eslint-plugin-query@5.103.2'
