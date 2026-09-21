@@ -2,7 +2,6 @@ import type { SagaIterator } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
 import { listenForHostingApplicationSagas } from '../hosting-applications/sagas';
-import { listenForModifierActions } from '../modifiers/sagas';
 
 import { watchApiKey } from './apiKey';
 import { watchApproveMatch } from './approveMatch';
@@ -29,6 +28,5 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchSyncTime);
   yield fork(watchSettingsToggle);
   yield fork(watchApiKey);
-  yield fork(listenForModifierActions);
   yield fork(listenForHostingApplicationSagas);
 }
