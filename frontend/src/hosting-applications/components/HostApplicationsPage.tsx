@@ -28,6 +28,7 @@ export const HostApplicationsPage = () => {
 
   return (
     <div>
+      <title>uhc.gg | Host Applications</title>
       <H1>Host Applications</H1>
 
       {error && <Callout intent={Intent.DANGER}>{error}</Callout>}

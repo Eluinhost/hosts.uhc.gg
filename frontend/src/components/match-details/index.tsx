@@ -131,6 +131,7 @@ export const MatchDetails: React.FC<OwnProps> = props => {
 
   return (
     <div className={`${Classes.CARD} match-details`}>
+      <title>{`uhc.gg | ${hostingName || author}'s #${count}`}</title>
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
           <TimeFromNowTag time={opens} className={Classes.LARGE} title="Opens" />

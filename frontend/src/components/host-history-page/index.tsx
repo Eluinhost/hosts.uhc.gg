@@ -7,7 +7,6 @@ import { createSelector } from 'reselect';
 import { LoadHostHistory } from '../../actions';
 import type { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
-import { Title } from '../Title';
 
 type RouteParams = {
   readonly host: string;
@@ -44,8 +43,8 @@ export const HistoryPage = () => {
 
   return (
     <div>
-      <Title>Hosting History - {host}</Title>
-      <H1>Hosting history for /u/${host}</H1>
+      <title>{`uhc.gg | Hosting History - ${host}`}</title>
+      <H1>Hosting history for /u/{host}</H1>
 
       <p>
         Matches are in reverse order by date they were <em>created.</em>

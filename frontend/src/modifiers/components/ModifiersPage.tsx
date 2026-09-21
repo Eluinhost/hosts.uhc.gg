@@ -1,13 +1,11 @@
 import { H1 } from '@blueprintjs/core';
 import React from 'react';
 
-import { Title } from '../../components/Title';
-
 import { ModifiersEditor } from './ModifiersEditor';
 
 export const ModifiersPage: React.FC = () => (
   <div>
-    <Title>Modifiers</Title>
+    <title>uhc.gg | Modifiers</title>
     <H1>Modifiers</H1>
 
     <p>

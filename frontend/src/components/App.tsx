@@ -2,7 +2,6 @@ import { Classes, NonIdealState, Spinner } from '@blueprintjs/core';
 import { GeosearchIcon } from '@blueprintjs/icons';
 import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
-import ReactHelmet from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router';
 
@@ -42,7 +41,12 @@ const QuizManagementPage = lazy(() =>
 );
 const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePage })));
 
-const NotFoundPage: React.FC = () => <NonIdealState title="Not Found" icon={<GeosearchIcon />} />;
+const NotFoundPage: React.FC = () => (
+  <>
+    <title>uhc.gg | Not Found</title>
+    <NonIdealState title="Not Found" icon={<GeosearchIcon />} />
+  </>
+);
 
 const requiresHostPermission = (permission: string | string[]): boolean =>
   (Array.isArray(permission) ? permission : [permission]).some(p => ['host', 'trial host'].includes(p));
@@ -154,7 +158,6 @@ export const App: React.FC = () => {
         <TimeSettings />
       </div>
       <div className="app-container">
-        <ReactHelmet titleTemplate="uhc.gg - %s" defaultTitle="uhc.gg" />
         <AppRoutes />
       </div>
       <Footer />

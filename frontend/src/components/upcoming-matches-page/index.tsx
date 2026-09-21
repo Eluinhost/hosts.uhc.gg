@@ -6,7 +6,6 @@ import { createSelector } from 'reselect';
 import { UpdateUpcoming } from '../../actions';
 import type { ApplicationState } from '../../state/ApplicationState';
 import { MatchListing } from '../match-listing';
-import { Title } from '../Title';
 
 const dontLoadMore = () => {
   throw new Error('Should not be called');
@@ -25,7 +24,7 @@ export const UpcomingMatchesPage = () => {
 
   return (
     <div>
-      <Title>Upcoming Matches</Title>
+      <title>uhc.gg | Upcoming Matches</title>
       <H1>Upcoming Matches</H1>
       <MatchListing
         matches={matches}
