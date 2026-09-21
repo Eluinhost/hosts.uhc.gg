@@ -106,6 +106,7 @@ export const TimeSettings: React.FC = () => {
             content={
               <div>
                 <input
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus
                   type="text"
                   className={`${Classes.INPUT} ${Classes.FILL}`}
