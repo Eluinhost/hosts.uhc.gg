@@ -1,37 +1,34 @@
 import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { WarningSignIcon } from '@blueprintjs/icons';
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { FETCH_MODIFIERS } from '../actions';
-import { getModifiersState } from '../selectors';
+import { ModifiersData } from '../api';
 
 import { CreateModifierForm } from './CreateModifierForm';
 import { ModifierEditorRow } from './ModifiersEditorRow';
 
-import './ModifiersEditor.scss';
+import './ModifiersEditor.sass';
 
 export const ModifiersEditor: React.FC = () => {
-  const { list } = useSelector(getModifiersState);
-  const dispatch = useDispatch();
+  const { data, isFetching, error, refetch } = useQuery(ModifiersData.getAllModifiers);
 
-  const updateModifiers = useCallback(() => dispatch(FETCH_MODIFIERS.TRIGGER()), [dispatch]);
-
-  useEffect(() => {
-    updateModifiers();
-  }, [updateModifiers]);
-
-  if (list.isFetching) {
+  if (isFetching) {
     return <Spinner />;
   }
 
-  if (list.error) {
+  if (error) {
     return (
       <NonIdealState
         icon={<WarningSignIcon />}
         title="Failed to lookup modifiers"
         action={
-          <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
+          <Button
+            intent={Intent.PRIMARY}
+            onClick={() => {
+              void refetch();
+            }}
+          >
             Try Again
           </Button>
         }
@@ -39,16 +36,20 @@ export const ModifiersEditor: React.FC = () => {
     );
   }
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <div>
       <ul className={`${Classes.LIST_UNSTYLED} modifiers-editor_list`}>
-        {list.data.map(modifier => (
+        {data.map(modifier => (
           <li key={modifier.id}>
             <ModifierEditorRow modifier={modifier} />
           </li>
         ))}
       </ul>
-      <CreateModifierForm />
+      <CreateModifierForm existing={data.map(x => x.displayName.toLowerCase())} />
     </div>
   );
 };

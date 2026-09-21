@@ -1,64 +1,81 @@
-import { Button, Callout, Classes, ControlGroup, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
+import { Button, ControlGroup, Intent } from '@blueprintjs/core';
 import { UploadIcon } from '@blueprintjs/icons';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { create, enforce, test } from 'vest';
 
-import { CREATE_MODIFIER } from '../actions';
-import { getAllModifierNames, getCreateModifiersState } from '../selectors';
+import { FormLabel } from '../../forms/FormLabel';
+import { useAppForm } from '../../forms/useAppForm';
+import { ModifiersData } from '../api';
 
-const mapStateToProps = createSelector(getCreateModifiersState, getAllModifierNames, (state, names) => ({
-  ...state,
-  taken: names.map(name => name.toLowerCase()),
-}));
+const schema = enforce.shape({
+  modifier: enforce.isString(),
+});
 
-export const CreateModifierForm: React.FC = () => {
-  const { isFetching, error, taken } = useSelector(mapStateToProps);
-  const dispatch = useDispatch();
+const suite = create(data => {
+  test('modifier', 'This field is required', () => {
+    enforce(data.modifier).isString().isNotEmpty();
+  });
+}, schema);
 
-  const [modifier, setModifier] = useState('');
+export const CreateModifierForm = ({ existing }: { existing: Array<string> }) => {
+  const { mutateAsync } = ModifiersData.mutations.useCreateModifier();
 
-  const createModifier = useCallback((name: string) => dispatch(CREATE_MODIFIER.TRIGGER(name)), [dispatch]);
-  const handleSubmit = useCallback(
-    (event: React.SubmitEvent): void => {
-      event.preventDefault();
-
-      createModifier(modifier);
+  const form = useAppForm({
+    defaultValues: {
+      modifier: '',
     },
-    [createModifier, modifier],
-  );
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
-    setModifier(event.target.value);
-  }, []);
-
-  const alreadyExists = taken.includes(modifier.toLowerCase());
-  const valid = !alreadyExists && modifier.length > 0;
+    validators: [
+      {
+        run: suite,
+        triggers: ['change'],
+      },
+      {
+        run: ctx => {
+          if (existing.includes(ctx.value.modifier.toLowerCase())) {
+            return ctx.createErrorMap({
+              fields: {
+                modifier: 'Modifier already exists',
+              },
+            });
+          }
+        },
+        triggers: ['change'],
+      },
+    ],
+    onSubmit: async state => {
+      await mutateAsync(state.value.modifier);
+    },
+  });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <FormGroup label="Create new modifier:">
-        <ControlGroup>
-          <InputGroup
-            size="large"
-            type="string"
-            value={modifier}
-            onChange={handleChange}
-            disabled={isFetching}
-            required
-          />
-          <Button
-            intent={alreadyExists ? Intent.DANGER : valid ? Intent.SUCCESS : Intent.NONE}
-            type="submit"
-            icon={<UploadIcon />}
-            size="large"
-            disabled={!valid}
-          />
-        </ControlGroup>
-        {alreadyExists && (
-          <div className={`${Classes.FORM_HELPER_TEXT} ${Classes.INTENT_DANGER}`}>This modifier already exists</div>
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
+      <form.Field name="modifier">
+        {field => (
+          <FormLabel field={field} label="Create new modifier" showRequiredStar>
+            <ControlGroup>
+              <field.TextField field={field} size="large" />
+              <form.Subscribe selector={state => state.isValid}>
+                {valid => (
+                  <Button
+                    intent={valid ? Intent.SUCCESS : Intent.DANGER}
+                    type="submit"
+                    onClick={() => {
+                      void form.handleSubmit();
+                    }}
+                    icon={<UploadIcon />}
+                    size="large"
+                    disabled={!valid}
+                  />
+                )}
+              </form.Subscribe>
+            </ControlGroup>
+          </FormLabel>
         )}
-        {error && <Callout intent={Intent.DANGER}>Failed to create new modifier</Callout>}
-      </FormGroup>
+      </form.Field>
     </form>
   );
 };

@@ -1,31 +1,17 @@
-import { Classes, Intent, type MaybeElement, Tag } from '@blueprintjs/core';
-import { type IconName, RefreshIcon } from '@blueprintjs/icons';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { Classes, Intent, Tag } from '@blueprintjs/core';
+import { RefreshIcon, TrashIcon } from '@blueprintjs/icons';
+import React, { type ReactNode, useCallback, useState } from 'react';
 
-import type { ApplicationState } from '../../state/ApplicationState';
-import { DELETE_MODIFIER } from '../actions';
+import { ModifiersData } from '../api';
 import type { Modifier } from '../Modifier';
-import { getDeleteModifersState } from '../selectors';
 
 export type ModifiersEditorRowProps = {
   modifier: Modifier;
 };
 
-const mapStateToProps = createSelector(
-  getDeleteModifersState,
-  (_state: ApplicationState, props: ModifiersEditorRowProps) => props.modifier.id,
-  (state, id) => ({
-    isDeleting: state.arguments === id,
-    hasDeleteError: !!state.error,
-  }),
-);
-
 export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: ModifiersEditorRowProps) => {
   const { modifier } = props;
-  const { isDeleting } = useSelector(state => mapStateToProps(state, { modifier }));
-  const dispatch = useDispatch();
+  const { mutate, isPending } = ModifiersData.mutations.useDeleteModifier();
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -36,14 +22,12 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
     setIsHovered(false);
   }, []);
 
-  const onDelete = useCallback(() => dispatch(DELETE_MODIFIER.TRIGGER(modifier.id)), [dispatch, modifier.id]);
+  let icon: ReactNode | null = null;
 
-  let icon: IconName | MaybeElement = undefined;
-
-  if (isDeleting) {
+  if (isPending) {
     icon = <RefreshIcon className={Classes.SPINNER_ANIMATION} />;
   } else if (isHovered) {
-    icon = 'trash';
+    icon = <TrashIcon />;
   }
 
   return (
@@ -52,7 +36,9 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
       <Tag
         interactive
         title="Delete modifier"
-        onClick={onDelete}
+        onClick={() => {
+          mutate(modifier.id);
+        }}
         size="large"
         endIcon={icon}
         intent={isHovered ? Intent.DANGER : Intent.NONE}

@@ -1,10 +1,9 @@
 import { Button, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { WarningSignIcon } from '@blueprintjs/icons';
-import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { FETCH_MODIFIERS } from '../actions';
-import { getListModifiersState } from '../selectors';
+import { ModifiersData } from '../api';
 
 export type ModifiersSelectorProps = {
   onAdded: (selected: string) => void;
@@ -35,14 +34,7 @@ const ModifierSwitch: React.FC<ModifiersSelectorProps & { displayName: string; i
 
 export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: ModifiersSelectorProps) => {
   const { onAdded, onRemoved, selected } = props;
-  const { isFetching, error, data } = useSelector(getListModifiersState);
-  const dispatch = useDispatch();
-
-  const updateModifiers = useCallback(() => dispatch(FETCH_MODIFIERS.TRIGGER()), [dispatch]);
-
-  useEffect(() => {
-    updateModifiers();
-  }, [updateModifiers]);
+  const { data, isFetching, error, refetch } = useQuery(ModifiersData.getAllModifiers);
 
   if (isFetching) {
     return <Spinner />;
@@ -54,7 +46,12 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: Modifi
         icon={<WarningSignIcon />}
         title="Failed to lookup modifiers"
         action={
-          <Button intent={Intent.PRIMARY} onClick={updateModifiers}>
+          <Button
+            intent={Intent.PRIMARY}
+            onClick={() => {
+              void refetch();
+            }}
+          >
             Try Again
           </Button>
         }
@@ -64,7 +61,7 @@ export const ModifierSelector: React.FC<ModifiersSelectorProps> = (props: Modifi
 
   return (
     <div>
-      {data.map(modifier => (
+      {(data ?? []).map(modifier => (
         <ModifierSwitch
           onAdded={onAdded}
           onRemoved={onRemoved}

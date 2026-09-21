@@ -2,7 +2,6 @@ import { applyMiddleware, combineReducers, compose, createStore, type Store } fr
 import createSagaMiddleware from 'redux-saga';
 
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
-import { reducer as modifiers, type ModifiersState } from '../modifiers/reducer';
 import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
@@ -32,7 +31,6 @@ export type ApplicationState = {
   readonly timeSync: TimeSyncState;
   readonly hostFormSavedData: HostFormSavedDataState;
   readonly presets: PresetsState;
-  readonly modifiers: ModifiersState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
@@ -55,7 +53,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
       presets: Presets,
-      modifiers,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),
