@@ -7,7 +7,6 @@ import { watchApiKey } from './apiKey';
 import { watchApproveMatch } from './approveMatch';
 import { watchCheckHostFormConflicts } from './checkPotentialConflicts';
 import { watchFetchMatchDetails } from './fetchMatchDetails';
-import { watchHostingRules } from './hostingRules';
 import { watchLoadHostHistory } from './loadHostHistory';
 import { refreshAuthentication } from './refreshAuthentication';
 import { watchSyncTime } from './timeSync';
@@ -24,7 +23,6 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchFetchMatchDetails);
   yield fork(refreshAuthentication);
   yield fork(watchCheckHostFormConflicts);
-  yield fork(watchHostingRules);
   yield fork(watchSyncTime);
   yield fork(watchSettingsToggle);
   yield fork(watchApiKey);

@@ -10,7 +10,6 @@ import { reducer as Authentication, type AuthenticationState } from './Authentic
 import { reducer as HostFormConflicts, type HostFormConflictsState } from './HostFormConflictsState';
 import { reducer as HostFormSavedData, type HostFormSavedDataState } from './HostFormSavedDataState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
-import { reducer as HostingRules, type HostingRulesState } from './HostingRulesState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
 import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
 import { reducer as Presets, type PresetsState } from './PresetsState';
@@ -25,7 +24,6 @@ export type ApplicationState = {
   readonly matchDetails: MatchDetailsState;
   readonly hostHistory: HostHistoryState;
   readonly apiKey: ApiKeyState;
-  readonly rules: HostingRulesState;
   readonly hostFormConflicts: HostFormConflictsState;
   readonly settings: SettingsState;
   readonly timeSync: TimeSyncState;
@@ -47,7 +45,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       hostHistory: HostHistory,
       matchDetails: MatchDetails,
       apiKey: ApiKey,
-      rules: HostingRules,
       hostFormConflicts: HostFormConflicts,
       settings: Settings,
       timeSync: TimeSync,
