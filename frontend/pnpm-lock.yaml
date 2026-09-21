@@ -217,9 +217,6 @@ importers:
       query-string:
         specifier: 9.5.1
         version: 9.5.1
-      ramda:
-        specifier: 0.32.0
-        version: 0.32.0
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -2588,9 +2585,6 @@ packages:
   query-string@9.5.1:
     resolution: {integrity: sha512-/zO3RwuRCMTIcEgq6YMv4OrtEE1XzBG7w5N6zc6ydYnkWYOWsnLI/5894hYEzfESfMOT4cHCsRTIdxsSl1KjGg==}
     engines: {node: '>=18'}
-
-  ramda@0.32.0:
-    resolution: {integrity: sha512-GQWAHhxhxWBWA8oIBr1XahFVjQ9Fic6MK9ikijfd4TZHfE2+urfk+irVlR5VOn48uwMgM+loRRBJd6Yjsbc0zQ==}
 
   react-dom@19.3.0:
     resolution: {integrity: sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==}
@@ -5936,8 +5930,6 @@ snapshots:
       decode-uri-component: 0.5.0
       filter-obj: 5.1.0
       split-on-first: 3.0.0
-
-  ramda@0.32.0: {}
 
   react-dom@19.3.0(react@19.3.0):
     dependencies:

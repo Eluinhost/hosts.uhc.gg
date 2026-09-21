@@ -1,11 +1,9 @@
-import { includes, always } from 'ramda';
-
 import { BadDataError, ForbiddenError, NotAuthenticatedError, NotFoundError, UnexpectedResponseError } from './Errors';
 
 export const verifyStatus =
   (expected: number[] | number = 200) =>
   async (response: Response): Promise<Response> => {
-    if (includes(response.status, Array.isArray(expected) ? expected : [expected])) return response;
+    if ((Array.isArray(expected) ? expected : [expected]).includes(response.status)) return response;
 
     switch (response.status) {
       case 400: {
@@ -53,4 +51,6 @@ export const fetchArray = <T>(options: ApiCallParams): Promise<T[]> =>
   fetch(options.url, options.config).then(verifyStatus(options.status)).then(toJson<T[]>());
 
 export const callApi = (options: ApiCallParams): Promise<void> =>
-  fetch(options.url, options.config).then(verifyStatus(options.status)).then(always(undefined));
+  fetch(options.url, options.config)
+    .then(verifyStatus(options.status))
+    .then(() => undefined);

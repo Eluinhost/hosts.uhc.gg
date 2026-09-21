@@ -1,11 +1,10 @@
-import { identity } from 'ramda';
 import { createSelector } from 'reselect';
 
 import type { ApplicationState } from '../../state/ApplicationState';
 
 export const getQuizQuestionsState = createSelector(
   (state: ApplicationState) => state.hostingApplications.quizQuestions,
-  identity,
+  x => x,
 );
 
 export const getQuizQuestionsForManagement = createSelector(

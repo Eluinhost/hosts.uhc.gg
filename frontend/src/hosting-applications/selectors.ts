@@ -1,4 +1,3 @@
-import { identity } from 'ramda';
 import { createSelector } from 'reselect';
 
 import type { ApplicationState } from '../state/ApplicationState';
@@ -6,22 +5,22 @@ import { getPermissions, getUsername } from '../state/Selectors';
 
 export const getHostApplicationsListState = createSelector(
   (state: ApplicationState) => state.hostingApplications.applications.list,
-  identity,
+  x => x,
 );
 
 export const getHostApplicationsDetailsState = createSelector(
   (state: ApplicationState) => state.hostingApplications.applications.details,
-  identity,
+  x => x,
 );
 
 export const getHostApplicationsReviewingState = createSelector(
   (state: ApplicationState) => state.hostingApplications.applications.reviewing,
-  identity,
+  x => x,
 );
 
 export const getHostApplicationsCreatingState = createSelector(
   (state: ApplicationState) => state.hostingApplications.applications.creating,
-  identity,
+  x => x,
 );
 
 export const getHasSubmittedHostApplicationSuccessfully = createSelector(

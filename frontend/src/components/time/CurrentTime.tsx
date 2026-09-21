@@ -1,8 +1,7 @@
 import { Tooltip, Position } from '@blueprintjs/core';
-import { memoizeWith, toString } from 'ramda';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
+import { createSelector, lruMemoize } from 'reselect';
 
 import { SyncTime } from '../../actions';
 import dayjs from '../../dayjs';
@@ -15,33 +14,36 @@ const MILLIS_PER_MINUTE = MILLIS_PER_SECOND * SECONDS_PER_MINUTE;
 const MINUTES_PER_HOUR = 60;
 const MILLIS_PER_HOUR = MILLIS_PER_MINUTE * MINUTES_PER_HOUR;
 
-const formatOffset = memoizeWith(toString, (offset: number): string => {
-  let o = offset;
-  const negative = o < 0;
+const formatOffset = lruMemoize(
+  (offset: number): string => {
+    let o = offset;
+    const negative = o < 0;
 
-  let output = '';
+    let output = '';
 
-  if (negative) {
-    output = '-';
-    o *= -1;
-  }
+    if (negative) {
+      output = '-';
+      o *= -1;
+    }
 
-  if (o > MILLIS_PER_HOUR) {
-    output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
-    o %= MILLIS_PER_HOUR;
-  }
+    if (o > MILLIS_PER_HOUR) {
+      output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
+      o %= MILLIS_PER_HOUR;
+    }
 
-  if (o > MILLIS_PER_MINUTE) {
-    output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
-    o %= MILLIS_PER_MINUTE;
-  }
+    if (o > MILLIS_PER_MINUTE) {
+      output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
+      o %= MILLIS_PER_MINUTE;
+    }
 
-  const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
+    const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
 
-  output += `${display}s `;
+    output += `${display}s `;
 
-  return output.trim();
-});
+    return output.trim();
+  },
+  { maxSize: 1 },
+);
 
 const stateSelector = createSelector(
   (state: ApplicationState) => state.timeSync,
