@@ -86,7 +86,17 @@ export const CurrentTime: React.FC = () => {
 
   return (
     <Tooltip content={tooltipText} position={Position.BOTTOM}>
-      <span className={`current-time ${timeSync.synced ? '' : 'current-time-unsynced'}`} onClick={resync}>
+      <span
+        role="button"
+        tabIndex={0}
+        className={`current-time ${timeSync.synced ? '' : 'current-time-unsynced'}`}
+        onClick={resync}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            resync();
+          }
+        }}
+      >
         {timeText}
       </span>
     </Tooltip>
