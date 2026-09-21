@@ -2,11 +2,13 @@ import { HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
 
+import { SyncApiToken } from './apiClient';
 import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 
@@ -28,6 +30,7 @@ void createReduxStore().then(store => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
+          <SyncApiToken />
           <OverlaysProvider>
             <HotkeysProvider>
               <BrowserRouter>
@@ -36,6 +39,7 @@ void createReduxStore().then(store => {
             </HotkeysProvider>
           </OverlaysProvider>
         </Provider>
+        <ReactQueryDevtools />
         <TanStackDevtools plugins={[formDevTools]} />
       </QueryClientProvider>
     </React.StrictMode>,

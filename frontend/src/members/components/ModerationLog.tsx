@@ -1,13 +1,11 @@
 import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { AddIcon, RefreshIcon, RemoveIcon } from '@blueprintjs/icons';
-import React, { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { RefreshPermissionModerationLog } from '../../actions';
+import { MatchOpens } from '../../components/time/MatchOpens';
 import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
-import type { ApplicationState } from '../../state/ApplicationState';
-import { MatchOpens } from '../time/MatchOpens';
+import { MembersData } from '../api';
 
 const renderRow = (row: PermissionModerationLogEntry) => (
   <Callout
@@ -21,33 +19,21 @@ const renderRow = (row: PermissionModerationLogEntry) => (
   </Callout>
 );
 
-const stateSelector = createSelector(
-  (state: ApplicationState) => state.permissionModerationLog,
-  it => it,
-);
-
 export const ModerationLog: React.FC = () => {
-  const { fetching, log, error } = useSelector(stateSelector);
-  const dispatch = useDispatch();
+  const { data, isFetching, error, refetch } = useQuery(MembersData.fetchPermissionModerationLog);
 
-  const refresh = useCallback(() => dispatch(RefreshPermissionModerationLog.start()), [dispatch]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  if (fetching) return <NonIdealState icon={<Spinner />} title="Loading..." />;
+  if (isFetching) return <NonIdealState icon={<Spinner />} title="Loading..." />;
 
   return (
     <div className="moderation-log">
       <H2>Moderation Log</H2>
-      {log.map(renderRow)}
+      {data?.map(renderRow)}
       {!!error && (
         <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-          <H5>{error}</H5>
+          <H5>{error.message}</H5>
         </div>
       )}
-      <Button disabled={fetching} onClick={refresh} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
+      <Button disabled={isFetching} onClick={() => void refetch()} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
         Refresh
       </Button>
     </div>

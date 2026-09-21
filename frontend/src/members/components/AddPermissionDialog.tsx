@@ -1,20 +1,13 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
-import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
+import { clsx } from 'clsx';
+import { useSelector } from 'react-redux';
 import { enforce, create, test } from 'vest';
 
-import { AddPermission } from '../../actions';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
-import type { ApplicationState } from '../../state/ApplicationState';
-
-const addPermissionSelector = createSelector(
-  (state: ApplicationState) => state.permissions.addDialog,
-  (state: ApplicationState) => state.settings.isDarkMode,
-  (state, isDarkMode) => ({ state, isDarkMode }),
-);
+import { isDarkMode } from '../../state/Selectors';
+import { MembersData } from '../api';
 
 const schema = enforce.shape({
   username: enforce.isString(),
@@ -26,11 +19,14 @@ export const suite = create(data => {
   });
 }, schema);
 
-export const AddPermissionDialog: React.FC = () => {
-  const dispatch = useDispatch();
-  const { state, isDarkMode } = useSelector(addPermissionSelector);
+export interface AddPermissionDialogProps {
+  permission: string;
+  onClose: () => void;
+}
 
-  const onClose = useCallback(() => dispatch(AddPermission.closeDialog()), [dispatch]);
+export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialogProps) => {
+  const { mutateAsync } = MembersData.mutations.useAddPermission();
+  const darkMode = useSelector(isDarkMode);
 
   const form = useAppForm({
     defaultValues: {
@@ -42,21 +38,24 @@ export const AddPermissionDialog: React.FC = () => {
         triggers: ['change'],
       },
     ],
-    onSubmit: state => {
-      dispatch(AddPermission.start(state.value.username));
-      dispatch(AddPermission.closeDialog());
+    onSubmit: async state => {
+      await mutateAsync({
+        permission: permission,
+        username: state.value.username,
+      });
+      onClose();
     },
   });
 
   return (
     <Dialog
       icon={<AddIcon />}
-      isOpen={!!state}
+      isOpen
       onClose={onClose}
-      title={`Add '${state ? state.permission : 'NOT OPEN'}' role`}
-      className={isDarkMode ? Classes.DARK : ''}
+      title={`Add '${permission}' role`}
+      className={clsx({ [Classes.DARK]: darkMode })}
     >
-      <div className={`${Classes.DIALOG_BODY} add-permission-body`}>
+      <div className={clsx(Classes.DIALOG_BODY, 'add-permission-body')}>
         <form
           onSubmit={e => {
             e.preventDefault();
