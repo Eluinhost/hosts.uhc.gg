@@ -1,6 +1,5 @@
 import { createAction } from 'typesafe-redux-helpers';
 
-import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 
 export type WithResult<Result> = {
@@ -108,14 +107,4 @@ export const ClearStorage = {
   started: createAction('CLEAR_STORAGE_STARTED'),
   success: createAction('CLEAR_STORAGE_SUCCESS'),
   failure: createAction('CLEAR_STORAGE_FAILURE', (payload: WithError) => payload),
-};
-
-export const SetSavedHostFormData = {
-  start: createAction('SET_SAVED_HOST_FORM_DATA_START', (payload: CreateMatchData) => payload),
-  started: createAction('SET_SAVED_HOST_FORM_DATA_STARTED', (payload: WithParameters<CreateMatchData>) => payload),
-  success: createAction('SET_SAVED_HOST_FORM_DATA_SUCCESS', (payload: WithParameters<CreateMatchData>) => payload),
-  failure: createAction(
-    'SET_SAVED_HOST_FORM_DATA_FAILURE',
-    (payload: WithParameters<CreateMatchData> & WithError) => payload,
-  ),
 };

@@ -1,13 +1,12 @@
 import { Button, Intent, NonIdealState } from '@blueprintjs/core';
 import { CloudUploadIcon, ErrorIcon } from '@blueprintjs/icons';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useStore } from 'react-redux';
 import { useNavigate } from 'react-router';
 
-import { SetSavedHostFormData } from '../../actions';
 import { MatchesApi } from '../../api';
 import { accessTokenAtom, permissionsAtom, usernameAtom } from '../../atoms/authentication';
+import { hostFormDataAtom } from '../../atoms/hostFormData';
 import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import { FormLabel } from '../../forms/FormLabel';
@@ -24,7 +23,6 @@ import { PotentialConflicts } from './PotentialConflicts';
 import { applyScenarioRules } from './scenarioRules';
 import { suite } from './schema';
 import { renderToMarkdown, type TemplateContext } from './TemplateField';
-import { usePersistence } from './usePersistence';
 
 import './index.sass';
 
@@ -44,11 +42,11 @@ export const HostingPage: React.FC = () => {
   const roles = useAtomValue(permissionsAtom) ?? [];
   const accessToken = useAtomValue(accessTokenAtom);
   const timezone = useAtomValue(timezoneAtom);
-  const store = useStore();
+  const [savedValues, setSavedValues] = useAtom(hostFormDataAtom);
   const navigate = useNavigate();
 
   const [defaultValues] = useState<CreateMatchData>(() => ({
-    ...store.getState().hostFormSavedData,
+    ...savedValues,
     opens: nextAvailableSlot().tz(timezone),
   }));
 
@@ -80,7 +78,9 @@ export const HostingPage: React.FC = () => {
     },
   });
 
-  usePersistence(form.atom, SetSavedHostFormData.start);
+  useFormSelector(form.atom, ({ values }) => {
+    setSavedValues(values);
+  });
 
   // updates visible TZ of opening time when global tz changes
   useEffect(() => {

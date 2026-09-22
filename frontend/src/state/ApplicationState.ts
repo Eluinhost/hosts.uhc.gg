@@ -6,7 +6,6 @@ import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
 import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
-import { reducer as HostFormSavedData, type HostFormSavedDataState } from './HostFormSavedDataState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
 import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
@@ -20,7 +19,6 @@ export type ApplicationState = {
   readonly hostHistory: HostHistoryState;
   readonly apiKey: ApiKeyState;
   readonly timeSync: TimeSyncState;
-  readonly hostFormSavedData: HostFormSavedDataState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
@@ -37,7 +35,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       matchDetails: MatchDetails,
       apiKey: ApiKey,
       timeSync: TimeSync,
-      hostFormSavedData: HostFormSavedData,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),
