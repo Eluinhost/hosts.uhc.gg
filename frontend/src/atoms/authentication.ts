@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import dayjs from '../dayjs';
 
 export const authenticationAtom = atomWithStorage<{ accessToken: string; refreshToken: string } | null>(
-  'authentication',
+  'uhcgg.settings.authentication',
   null,
   undefined,
   { getOnInit: true },
@@ -72,23 +72,3 @@ export const isHostingBannedAtom = atom(get => get(permissionsAtom)?.includes('h
 export const isHostingAdvisorAtom = atom(get => get(permissionsAtom)?.includes('hosting advisor') ?? false);
 export const isHostAtom = atom(get => get(permissionsAtom)?.includes('host') ?? false);
 export const isTrialHostAtom = atom(get => get(permissionsAtom)?.includes('trial host') ?? false);
-
-// TODO migration
-// const db = window.indexedDB.open('hosts-uhcgg-data');
-//
-// db.onsuccess = event => {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-//   const database = (event.target as any)?.result as IDBDatabase | undefined;
-//
-//   if (!database) {
-//     return;
-//   }
-//
-//   const store = database.transaction(['hosts-uhcgg-data'], 'readonly').objectStore('hosts-uhcgg-data');
-//
-//   store.get('settings.authentication').onsuccess = evt => {
-//     console.log('db opened', evt.target?.result);
-//
-//     getDefaultStore().set(authenticationAtom, evt.target.result);
-//   };
-// };

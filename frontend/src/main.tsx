@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
 
+import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
 import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 
@@ -27,21 +28,29 @@ if (!root) {
   throw new Error('Could not find root element');
 }
 
-createRoot(root).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <OverlaysProvider>
-          <HotkeysProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </HotkeysProvider>
-        </OverlaysProvider>
-      </Provider>
-      <ReactQueryDevtools />
-      <TanStackDevtools plugins={[formDevTools]} />
-      <JotaiDevTools />
-    </QueryClientProvider>
-  </React.StrictMode>,
-);
+void (async () => {
+  try {
+    await migrateOldIndexDb();
+  } catch (error) {
+    console.error('Failed to migrate legacy IndexedDB settings, continuing anyway...', error);
+  }
+
+  createRoot(root).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <OverlaysProvider>
+            <HotkeysProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </HotkeysProvider>
+          </OverlaysProvider>
+        </Provider>
+        <ReactQueryDevtools />
+        <TanStackDevtools plugins={[formDevTools]} />
+        <JotaiDevTools />
+      </QueryClientProvider>
+    </React.StrictMode>,
+  );
+})();
