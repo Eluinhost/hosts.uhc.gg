@@ -22,7 +22,6 @@ export const accessTokenClaimsAtom = atom(get => {
   }
 
   try {
-    console.log('decoded again');
     const decoded = jwtDecode<{
       readonly iat: number;
       readonly exp: number;
