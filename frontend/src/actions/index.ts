@@ -97,22 +97,6 @@ export type HostFormConflictsParameters = {
   readonly data: CreateMatchData;
 };
 
-export const HostFormConflicts = {
-  start: createAction('HOST_FORM_CONFLICTS_START', (payload: HostFormConflictsParameters) => payload),
-  started: createAction(
-    'HOST_FORM_CONFLICTS_STARTED',
-    (payload: WithParameters<HostFormConflictsParameters>) => payload,
-  ),
-  success: createAction(
-    'HOST_FORM_CONFLICTS_SUCCESS',
-    (payload: WithParameters<HostFormConflictsParameters> & WithResult<Match[]>) => payload,
-  ),
-  failure: createAction(
-    'HOST_FORM_CONFLICTS_FAILURE',
-    (payload: WithParameters<HostFormConflictsParameters> & WithError) => payload,
-  ),
-};
-
 export const SyncTime = {
   start: createAction('TIME_SYNC_START'),
   started: createAction('TIME_SYNC_STARTED'),

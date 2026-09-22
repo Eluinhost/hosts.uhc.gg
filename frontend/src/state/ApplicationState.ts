@@ -7,7 +7,6 @@ import { syncWithStorage } from '../sagas/syncWithStorage';
 
 import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
 import { reducer as Authentication, type AuthenticationState } from './AuthenticationState';
-import { reducer as HostFormConflicts, type HostFormConflictsState } from './HostFormConflictsState';
 import { reducer as HostFormSavedData, type HostFormSavedDataState } from './HostFormSavedDataState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
@@ -24,7 +23,6 @@ export type ApplicationState = {
   readonly matchDetails: MatchDetailsState;
   readonly hostHistory: HostHistoryState;
   readonly apiKey: ApiKeyState;
-  readonly hostFormConflicts: HostFormConflictsState;
   readonly settings: SettingsState;
   readonly timeSync: TimeSyncState;
   readonly hostFormSavedData: HostFormSavedDataState;
@@ -45,7 +43,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       hostHistory: HostHistory,
       matchDetails: MatchDetails,
       apiKey: ApiKey,
-      hostFormConflicts: HostFormConflicts,
       settings: Settings,
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
