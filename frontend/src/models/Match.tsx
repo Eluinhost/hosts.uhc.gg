@@ -20,7 +20,6 @@ export type Match = {
   removedReason: string | null;
   created: Dayjs;
   location: string;
-  mainVersion: string;
   version: string;
   slots: number;
   length: number;

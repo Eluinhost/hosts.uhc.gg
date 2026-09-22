@@ -110,7 +110,6 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
     length,
     version,
     approvedBy,
-    mainVersion,
     roles,
   } = details.match;
 
@@ -147,7 +146,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
             <Tag intent={Intent.DANGER} title="Team style" className={Classes.LARGE}>
               <PeopleIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
             </Tag>
-            <Tag intent={Intent.PRIMARY} title={`Server version: ${mainVersion}`} size="large">
+            <Tag intent={Intent.PRIMARY} title={`Server version: ${version}`} size="large">
               <CubeIcon /> {version}
             </Tag>
             {renderTags(tags)}

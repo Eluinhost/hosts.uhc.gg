@@ -15,7 +15,6 @@ import { Regions } from '../../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
 import { getUsername, getPermissions, getTimezone, getAccessToken } from '../../state/Selectors';
-import { VERSION_PICKER_OTHER, VersionPicker } from '../../versions/components/VersionPicker';
 import { MatchRow } from '../match-row';
 
 import { nextAvailableSlot } from './nextAvailableSlot';
@@ -109,14 +108,6 @@ export const HostingPage: React.FC = () => {
     }
   }, [form, scenarios]);
 
-  // forces version to match main version when not using custom
-  const mainVersion = useFormSelector(form.atom, state => state.values.mainVersion);
-  useEffect(() => {
-    if (mainVersion !== VERSION_PICKER_OTHER) {
-      form.setFieldValue('version', mainVersion);
-    }
-  }, [mainVersion, form]);
-
   // preview Markdown modifications
   const templateContext = useFormSelector(form.atom, state => createTemplateContext(state.values, username));
 
@@ -149,7 +140,7 @@ export const HostingPage: React.FC = () => {
                 removedReason: null,
                 approvedBy: null,
                 created: dayjs.utc(),
-                version: state.version || state.mainVersion,
+                version: state.version,
                 roles,
               };
 
@@ -359,26 +350,13 @@ export const HostingPage: React.FC = () => {
         </div>
 
         <div className="host-form-row">
-          <form.Field name="mainVersion">
+          <form.Field name="version">
             {field => (
-              <FormLabel field={field} label="Main Version" showRequiredStar>
-                <VersionPicker field={field} fill />
+              <FormLabel field={field} label="Version" showRequiredStar>
+                <field.VersionField field={field} />
               </FormLabel>
             )}
           </form.Field>
-          <form.Subscribe selector={state => state.values.mainVersion}>
-            {mainVersion =>
-              mainVersion === VERSION_PICKER_OTHER ? (
-                <form.Field name="version">
-                  {field => (
-                    <FormLabel field={field} label="Version Range" showRequiredStar>
-                      <field.TextField field={field} />
-                    </FormLabel>
-                  )}
-                </form.Field>
-              ) : null
-            }
-          </form.Subscribe>
         </div>
       </fieldset>
 

@@ -9,6 +9,7 @@ import { SelectField } from './fields/SelectField';
 import { SwitchField } from './fields/SwitchField';
 import { TagsField } from './fields/TagsField';
 import { TextField } from './fields/TextField';
+import { VersionField } from './fields/VersionField';
 
 export const { useAppForm, useFormContext, appFormOptions, defineAppFieldGroup } = createFormHook({
   fieldComponents: {
@@ -20,6 +21,7 @@ export const { useAppForm, useFormContext, appFormOptions, defineAppFieldGroup }
     DateTimeField,
     SegmentedField,
     TemplateField,
+    VersionField,
   },
   formComponents: {},
 });

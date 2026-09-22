@@ -14,7 +14,6 @@ export type CreateMatchData = {
   content: string;
   region: string;
   location: string;
-  mainVersion: string;
   version: string;
   slots: number;
   length: number;

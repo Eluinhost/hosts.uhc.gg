@@ -104,9 +104,9 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
           <span> #{match.count}</span>
         </H4>
         <div className="match-tags">
-          <Tag intent={Intent.PRIMARY} size="large" title={`Server version: ${match.mainVersion}`}>
+          <Tag intent={Intent.PRIMARY} size="large" title={`Server version: ${match.version}`}>
             <CubeIcon />
-            &nbsp;&nbsp;<b>{match.version || match.mainVersion}</b>
+            &nbsp;&nbsp;<b>{match.version}</b>
           </Tag>
           <Tag intent={Intent.DANGER} size="large">
             <PeopleIcon /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />

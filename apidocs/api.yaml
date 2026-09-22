@@ -72,7 +72,6 @@ components:
         - created
         - roles
         - location
-        - mainVersion
         - version
         - slots
         - length
@@ -162,12 +161,9 @@ components:
         location:
           type: string
           description: The free-text location of the server
-        mainVersion:
-          type: string
-          description: The servers 'main' version
         version:
           type: string
-          description: The version/range of versions of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts, used for overhost conflict detection
         slots:
           type: number
           description: How many slots are available on the server
@@ -213,7 +209,6 @@ components:
           - hosting advisor
           - trial host
         location: test
-        mainVersion: "1.8"
         version: "1.8 - 1.9"
         slots: 80
         length: 90
@@ -234,7 +229,6 @@ components:
         - content
         - region
         - location
-        - mainVersion
         - version
         - slots
         - length
@@ -298,12 +292,9 @@ components:
         location:
           type: string
           description: The free-text location of the server
-        mainVersion:
-          type: string
-          description: The servers 'main' version
         version:
           type: string
-          description: The version/range of versions of Minecraft the server accepts
+          description: The version/range of versions of Minecraft the server accepts, used for overhost conflict detection
         slots:
           type: number
           description: How many slots are available on the server
@@ -337,7 +328,6 @@ components:
         content: test content
         region: NA
         location: test
-        mainVersion: "1.8"
         version: "1.8 - 1.9"
         slots: 80
         length: 90
@@ -808,7 +798,7 @@ paths:
         - in: query
           name: version
           required: true
-          description: The main version of the match
+          description: The server version/range used for overhost conflict detection
           schema:
             type: string
           example: 1.8

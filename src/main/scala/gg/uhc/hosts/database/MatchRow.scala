@@ -25,7 +25,6 @@ case class MatchRow(
     removedReason: Option[String],
     created: Instant,
     location: String,
-    mainVersion: String,
     version: String,
     slots: Int,
     length: Int,

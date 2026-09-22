@@ -133,7 +133,6 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
-        mainVersion,
         version,
         slots,
         length,
@@ -170,7 +169,6 @@ class Queries(logger: LogHandler) {
           removedReason,
           created,
           location,
-          mainVersion,
           version,
           slots,
           length,
@@ -210,7 +208,6 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
-        mainVersion,
         version,
         slots,
         length,
@@ -245,7 +242,6 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
-        mainVersion,
         version,
         slots,
         length,
@@ -278,7 +274,6 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
-        mainVersion,
         version,
         slots,
         length,
@@ -306,7 +301,6 @@ class Queries(logger: LogHandler) {
         ${m.removedReason},
         ${m.created},
         ${m.location},
-        ${m.mainVersion},
         ${m.version},
         ${m.slots},
         ${m.length},
@@ -447,7 +441,6 @@ class Queries(logger: LogHandler) {
         removedReason,
         created,
         location,
-        mainVersion,
         version,
         slots,
         length,
@@ -462,7 +455,7 @@ class Queries(logger: LogHandler) {
         AND
         opens BETWEEN $start AND $end
         AND
-        mainVersion = $version
+        version = $version
         AND
         removed = false
       """.query[MatchRow]

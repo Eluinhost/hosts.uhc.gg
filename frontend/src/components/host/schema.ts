@@ -20,7 +20,6 @@ const shape = enforce.shape({
   content: enforce.isString(),
   region: enforce.isString(),
   location: enforce.isString(),
-  mainVersion: enforce.isString(),
   version: enforce.isString(),
   slots: enforce.isNumber(),
   length: enforce.isNumber(),
@@ -79,28 +78,8 @@ export const suite = create(data => {
     enforce(data.content).isNotEmpty();
   });
 
-  group('versions', () => {
-    include('version').when('mainVersion');
-
-    test('mainVersion', 'Must supply a main version', () => {
-      enforce(data.mainVersion).isNotEmpty();
-    });
-    // TODO later remove mainVersion fallback
-    test('version', 'Must supply a version', () => {
-      enforce(data).anyOf(
-        enforce.loose({ version: enforce.isNotEmpty() }),
-        enforce.loose({ mainVersion: enforce.isNotEmpty() }),
-      );
-    });
-
-    skipWhen(
-      () => data.mainVersion !== 'Other (specify in range)',
-      () => {
-        test('version', 'Must provide a version if "Other (specify in range)" is selected', () => {
-          enforce(data.version).isNotEmpty();
-        });
-      },
-    );
+  test('version', 'Must supply a version', () => {
+    enforce(data.version).isNotEmpty();
   });
 
   test('slots', 'Slots must be at least 2', () => {

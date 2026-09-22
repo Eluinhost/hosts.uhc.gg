@@ -34,7 +34,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       content: String,
       region: String,
       location: String,
-      mainVersion: String,
       version: String,
       slots: Int,
       length: Int,
@@ -62,7 +61,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       teams = payload.teams,
       size = if (TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle])) payload.size else None, // remove size if not required
       location = payload.location,
-      mainVersion = payload.mainVersion,
       version = payload.version,
       slots = payload.slots,
       length = payload.length,
@@ -108,7 +106,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first
         val best = conflicts.find(!_.tournament).getOrElse(conflicts.head)
 
-        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.mainVersion}"))
+        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.version}"))
     }
 
   private def optionalValidate[T](data: Option[T], message: String)(p: T => Boolean) =
@@ -158,7 +156,6 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       ) &
       ipChecks(row) &
       validate(row.location.nonEmpty, "Must supply a location") &
-      validate(row.mainVersion.nonEmpty, "Must supply a main version") &
       validate(row.version.nonEmpty, "Must supply a version") &
       validate(row.slots >= 2, "Slots must be at least 2") &
       validate(row.length >= 30, "Matches must be at least 30 minutes") &
