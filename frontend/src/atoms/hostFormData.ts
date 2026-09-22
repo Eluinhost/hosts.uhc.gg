@@ -5,7 +5,7 @@ import type { CreateMatchData } from '../models/CreateMatchData';
 import { Regions } from '../models/Regions';
 import { TeamStyles } from '../models/TeamStyles';
 
-export const hostFormDataAtom = atomWithStorage<Omit<CreateMatchData, 'opens'>>(
+export const hostFormDataAtom = atomWithStorage<Omit<CreateMatchData, 'opens'> & { opens?: never }>(
   'uhcgg.settings.savedMatchData',
   {
     region: Regions[0].value,

@@ -96,6 +96,7 @@ export default tseslint.config(
     rules: {
       'local/no-string-icons': 'error',
       'local/require-atom-with-storage-getoninit': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

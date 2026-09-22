@@ -78,8 +78,8 @@ export const HostingPage: React.FC = () => {
     },
   });
 
-  useFormSelector(form.atom, ({ values }) => {
-    setSavedValues(values);
+  useFormSelector(form.atom, ({ values: { opens: _opens, ...others } }) => {
+    setSavedValues(others);
   });
 
   // updates visible TZ of opening time when global tz changes

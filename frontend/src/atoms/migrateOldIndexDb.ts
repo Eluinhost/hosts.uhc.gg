@@ -76,7 +76,7 @@ export const migrateOldIndexDb = async (): Promise<void> => {
 
   const [authentication, hostFormData, isDarkMode, is12h, timezone, hideRemoved, showOwnRemoved] = await Promise.all([
     getObjectValue<ExtractAtomValue<typeof authenticationAtom>>(store, 'settings.authentication'),
-    getObjectValue<Omit<CreateMatchData, 'opens'> & { opens?: unknown }>(store, 'settings.host-form-data'),
+    getObjectValue<CreateMatchData>(store, 'settings.host-form-data'),
     getObjectValue<ExtractAtomValue<typeof isDarkModeAtom>>(store, 'settings.isDarkMode'),
     getObjectValue<ExtractAtomValue<typeof is12hAtom>>(store, 'settings.is12h'),
     getObjectValue<ExtractAtomValue<typeof timezoneAtom>>(store, 'settings.timezone'),
@@ -95,8 +95,7 @@ export const migrateOldIndexDb = async (): Promise<void> => {
   }
 
   if (hostFormData !== undefined) {
-    const hostData = { ...hostFormData };
-    delete hostData.opens; // just in-case
+    const { opens: _opens, ...hostData } = hostFormData;
 
     jotaiStore.set(hostFormDataAtom, hostData);
   }
