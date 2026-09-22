@@ -18,13 +18,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ApproveMatch, FetchMatchDetails } from '../../actions';
 import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
 import type { ApplicationState } from '../../state/ApplicationState';
+import { MatchOpens } from '../../time/components/MatchOpens';
+import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
 import { Markdown } from '../Markdown';
 import { RemovalModal } from '../removal-modal';
 import { TeamStyle } from '../team-style';
-import { MatchOpens } from '../time/MatchOpens';
-import { TimeFromNowTag } from '../time/TimeFromNowTag';
 import { UsernameLink } from '../UsernameLink';
 
 import { RemovedInfo } from './RemovedInfo';

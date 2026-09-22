@@ -16,13 +16,13 @@ import { Link } from 'react-router';
 import { ApproveMatch } from '../../actions';
 import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
 import type { Match } from '../../models/Match';
+import { MatchOpensTag } from '../../time/components/MatchOpensTag';
+import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 import { HostStatus } from '../host-status';
 import { HoverSwap } from '../HoverSwap';
 import { RemovalModal } from '../removal-modal';
 import { TagList } from '../tag-list';
 import { TeamStyle } from '../team-style';
-import { MatchOpensTag } from '../time/MatchOpensTag';
-import { TimeFromNowTag } from '../time/TimeFromNowTag';
 import { UsernameLink } from '../UsernameLink';
 
 import { RemovedReason } from './RemovedReason';

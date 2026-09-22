@@ -3,8 +3,8 @@ import { AddIcon, RefreshIcon, RemoveIcon } from '@blueprintjs/icons';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { MatchOpens } from '../../components/time/MatchOpens';
 import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
+import { MatchOpens } from '../../time/components/MatchOpens';
 import { MembersData } from '../api';
 
 const renderRow = (row: PermissionModerationLogEntry) => (

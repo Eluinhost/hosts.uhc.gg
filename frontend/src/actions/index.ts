@@ -81,13 +81,6 @@ export const FetchMatchDetails = {
   clear: createAction('CLEAR_MATCH_DETAILS'),
 };
 
-export const SyncTime = {
-  start: createAction('TIME_SYNC_START'),
-  started: createAction('TIME_SYNC_STARTED'),
-  success: createAction('TIME_SYNC_SUCCESS', (payload: WithResult<number>) => payload),
-  failure: createAction('TIME_SYNC_FAILURE', (payload: WithError) => payload),
-};
-
 export const FetchApiKey = {
   start: createAction('FETCH_API_KEY_START'),
   started: createAction('FETCH_API_KEY_STARTED'),

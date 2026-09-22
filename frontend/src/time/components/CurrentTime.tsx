@@ -1,14 +1,13 @@
 import { Tooltip, Position } from '@blueprintjs/core';
+import { useQuery } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
 import { lruMemoize } from 'reselect';
 
-import { SyncTime } from '../../actions';
 import { is12hAtom } from '../../atoms/timeFormatting';
 import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
-import type { ApplicationState } from '../../state/ApplicationState';
+import { TimeData } from '../api';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -50,14 +49,11 @@ const formatOffset = lruMemoize(
 export const currentTimeFormatAtom = atom(get => (get(is12hAtom) ? 'hh:mm:ss A z' : 'HH:mm:ss z'));
 
 export const CurrentTime: React.FC = () => {
-  const timeSync = useSelector((state: ApplicationState) => state.timeSync);
+  const { data: offset, refetch: resync, isPending: unsynced } = useQuery(TimeData.serverOffset);
   const timezone = useAtomValue(timezoneAtom);
   const format = useAtomValue(currentTimeFormatAtom);
-  const dispatch = useDispatch();
 
   const [time, setTime] = useState(() => dayjs.utc());
-
-  const resync = useCallback(() => dispatch(SyncTime.start()), [dispatch]);
 
   useEffect(() => {
     const timerId = window.setInterval(() => {
@@ -70,15 +66,19 @@ export const CurrentTime: React.FC = () => {
 
   const tooltipText = useMemo(
     () =>
-      timeSync.synced
-        ? `Synced with the server with ${formatOffset(timeSync.offset)} offset. Click to resync`
-        : 'Not synced with the server',
-    [timeSync],
+      unsynced
+        ? 'Not synced with the server'
+        : `Synced with the server with ${formatOffset(offset ?? 0)} offset. Click to resync`,
+    [offset, unsynced],
   );
 
   const timeText = useMemo(
-    () => time.add(timeSync.offset, 'milliseconds').tz(timezone).format(format),
-    [time, timeSync.offset, timezone, format],
+    () =>
+      time
+        .add(offset ?? 0, 'milliseconds')
+        .tz(timezone)
+        .format(format),
+    [time, offset, timezone, format],
   );
 
   return (
@@ -86,11 +86,13 @@ export const CurrentTime: React.FC = () => {
       <span
         role="button"
         tabIndex={0}
-        className={`current-time ${timeSync.synced ? '' : 'current-time-unsynced'}`}
-        onClick={resync}
+        className={`current-time ${offset ? '' : 'current-time-unsynced'}`}
+        onClick={() => {
+          void resync();
+        }}
         onKeyDown={e => {
           if (e.key === 'Enter') {
-            resync();
+            void resync();
           }
         }}
       >

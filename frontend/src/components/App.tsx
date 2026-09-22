@@ -7,11 +7,11 @@ import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '../atoms/authentication';
 import { isDarkModeAtom } from '../atoms/isDarkMode';
+import { TimeSettings } from '../time/components/TimeSettings';
 
 import { Footer } from './footer';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { TimeSettings } from './time/TimeSettings';
 import { UpcomingMatchesPage } from './upcoming-matches-page';
 import { useGlobalHotkeys } from './useGlobalHotkeys';
 import { WithPermission } from './WithPermission';
