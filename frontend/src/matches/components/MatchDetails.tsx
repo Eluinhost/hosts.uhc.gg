@@ -19,16 +19,16 @@ import { useDispatch } from 'react-redux';
 
 import { ApproveMatch } from '../../actions';
 import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
+import { ClipboardControlGroup } from '../../components/clipboard-control-group';
+import { HostStatus } from '../../components/host-status';
+import { Markdown } from '../../components/Markdown';
+import { TeamStyle } from '../../components/team-style';
+import { UsernameLink } from '../../components/UsernameLink';
 import { MatchesData } from '../../matches/api';
 import { MatchOpens } from '../../time/components/MatchOpens';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
-import { ClipboardControlGroup } from '../clipboard-control-group';
-import { HostStatus } from '../host-status';
-import { Markdown } from '../Markdown';
-import { RemovalModal } from '../removal-modal';
-import { TeamStyle } from '../team-style';
-import { UsernameLink } from '../UsernameLink';
 
+import { RemovalModal } from './RemovalModal';
 import { RemovedInfo } from './RemovedInfo';
 import { RemovedTag } from './RemovedTag';
 

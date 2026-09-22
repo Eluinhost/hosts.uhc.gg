@@ -5,8 +5,8 @@ import { useParams } from 'react-router';
 import { createSelector } from 'reselect';
 
 import { LoadHostHistory } from '../../actions';
+import { MatchListing } from '../../matches/components/MatchListing';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { MatchListing } from '../match-listing';
 
 type RouteParams = {
   readonly host: string;

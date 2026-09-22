@@ -1,6 +1,4 @@
-import qs from 'query-string';
-
-import dayjs, { type Dayjs } from '../dayjs';
+import dayjs from '../dayjs';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 
@@ -62,19 +60,6 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
     },
   });
 };
-
-export const fetchPotentialConflicts = (region: string, time: Dayjs, version: string): Promise<Match[]> =>
-  fetchArray<Match>({
-    url: `/api/matches/conflicts?${qs.stringify({ region, opens: time.toISOString(), version })}`,
-    status: 200,
-  }).then(matches =>
-    matches.map(match => ({
-      ...match,
-      opens: dayjs.utc(match.opens),
-      created: dayjs.utc(match.created),
-      removedAt: match.removedAt && dayjs.utc(match.removedAt),
-    })),
-  );
 
 export const fetchHistoryForHost = (host: string, before?: number): Promise<Match[]> =>
   fetchArray<Match>({

@@ -1,5 +1,5 @@
-import { Button, Intent, NonIdealState } from '@blueprintjs/core';
-import { CloudUploadIcon, ErrorIcon } from '@blueprintjs/icons';
+import { Button, Intent } from '@blueprintjs/core';
+import { CloudUploadIcon } from '@blueprintjs/icons';
 import { useAtom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -11,15 +11,15 @@ import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm, useFormSelector } from '../../forms/useAppForm';
+import { MatchRow } from '../../matches/components/MatchRow';
+import { PotentialConflicts } from '../../matches/components/PotentialConflicts';
 import type { CreateMatchData } from '../../models/CreateMatchData';
 import type { Match } from '../../models/Match';
 import { Regions } from '../../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
-import { MatchRow } from '../match-row';
 
 import { nextAvailableSlot } from './nextAvailableSlot';
-import { PotentialConflicts } from './PotentialConflicts';
 import { applyScenarioRules } from './scenarioRules';
 import { suite } from './schema';
 import { renderToMarkdown, type TemplateContext } from './TemplateField';
@@ -387,14 +387,7 @@ export const HostingPage: React.FC = () => {
               removed
             </p>
             <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-              {props.isInvalid ? (
-                <NonIdealState
-                  icon={<ErrorIcon />}
-                  title="Cannot search for conflicts until opens/region/version fields are valid"
-                />
-              ) : (
-                <PotentialConflicts {...props} />
-              )}
+              <PotentialConflicts {...props} />
             </div>
           </fieldset>
         )}

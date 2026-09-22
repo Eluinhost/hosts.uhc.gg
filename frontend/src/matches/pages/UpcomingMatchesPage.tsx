@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { UpdateUpcoming } from '../../actions';
+import { MatchListing } from '../../matches/components/MatchListing';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { MatchListing } from '../match-listing';
 
 const dontLoadMore = () => {
   throw new Error('Should not be called');

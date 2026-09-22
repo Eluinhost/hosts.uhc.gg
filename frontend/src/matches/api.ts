@@ -3,7 +3,7 @@ import { HTTPError } from 'ky';
 import { enforce } from 'vest';
 
 import { apiClient } from '../apiClient';
-import dayjs from '../dayjs';
+import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
 
 const singleMatchSchema = enforce.shape({
@@ -58,6 +58,28 @@ export const MatchesData = {
           opens: dayjs.utc(data.opens),
           removedAt: data.removedAt ? dayjs.utc(data.removedAt) : null,
         };
+      },
+    }),
+  getPotentialConflicts: (region: string, time: Dayjs, version: string) =>
+    queryOptions({
+      queryKey: ['potentialConflicts', { region, time, version }],
+      queryFn: async (): Promise<Match[]> => {
+        const result = await apiClient
+          .get('/api/matches/conflicts', {
+            searchParams: {
+              region,
+              opens: time.toISOString(),
+              version,
+            },
+          })
+          .json(enforce.isArrayOf(singleMatchSchema));
+
+        return result.map(match => ({
+          ...match,
+          opens: dayjs.utc(match.opens),
+          created: dayjs.utc(match.created),
+          removedAt: match.removedAt ? dayjs.utc(match.removedAt) : null,
+        }));
       },
     }),
 };

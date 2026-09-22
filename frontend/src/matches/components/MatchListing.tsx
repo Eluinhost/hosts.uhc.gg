@@ -6,14 +6,14 @@ import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, u
 import { usernameAtom } from '../../atoms/authentication';
 import { hideRemovedAtom, showOwnRemovedAtom } from '../../atoms/removedMatches';
 import dayjs, { type Dayjs } from '../../dayjs';
+import { ApprovalModal } from '../../matches/components/ApprovalModal';
+import { MatchRow } from '../../matches/components/MatchRow';
 import type { Match } from '../../models/Match';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
-import { ApprovalModal } from '../approval-modal';
-import { MatchRow } from '../match-row';
 
 import { RefreshButton } from './RefreshButton';
 
-import './match-listing.sass';
+import './MatchListing.sass';
 
 type MatchListingProps = {
   readonly matches: Match[];

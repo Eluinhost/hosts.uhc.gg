@@ -7,19 +7,21 @@ import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '../atoms/authentication';
 import { isDarkModeAtom } from '../atoms/isDarkMode';
+import { UpcomingMatchesPage } from '../matches/pages/UpcomingMatchesPage';
 import { TimeSettings } from '../time/components/TimeSettings';
 
 import { Footer } from './footer';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { UpcomingMatchesPage } from './upcoming-matches-page';
 import { useGlobalHotkeys } from './useGlobalHotkeys';
 import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
 
 const HostingPage = lazy(() => import('./host').then(m => ({ default: m.HostingPage })));
-const MatchDetailsPage = lazy(() => import('./match-details-page').then(m => ({ default: m.MatchDetailsPage })));
+const MatchDetailsPage = lazy(() =>
+  import('../matches/pages/MatchDetailsPage').then(m => ({ default: m.MatchDetailsPage })),
+);
 const HistoryPage = lazy(() => import('./host-history-page').then(m => ({ default: m.HistoryPage })));
 const ApplyHostApplicationPage = lazy(() =>
   import('../hosting-applications/components/ApplyHostApplication').then(m => ({

@@ -15,16 +15,16 @@ import { Link } from 'react-router';
 
 import { ApproveMatch } from '../../actions';
 import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
+import { HostStatus } from '../../components/host-status';
+import { HoverSwap } from '../../components/HoverSwap';
+import { TagList } from '../../components/tag-list';
+import { TeamStyle } from '../../components/team-style';
+import { UsernameLink } from '../../components/UsernameLink';
 import type { Match } from '../../models/Match';
 import { MatchOpensTag } from '../../time/components/MatchOpensTag';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
-import { HostStatus } from '../host-status';
-import { HoverSwap } from '../HoverSwap';
-import { RemovalModal } from '../removal-modal';
-import { TagList } from '../tag-list';
-import { TeamStyle } from '../team-style';
-import { UsernameLink } from '../UsernameLink';
 
+import { RemovalModal } from './RemovalModal';
 import { RemovedReason } from './RemovedReason';
 import { ServerTag } from './ServerTag';
 
