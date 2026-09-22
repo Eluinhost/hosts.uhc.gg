@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { permissionsAtom } from '../atoms/authentication';
+import { isLoggedInAtom, permissionsAtom } from '../atoms/authentication';
 
 export type WithPermissionProps = {
   readonly permission: string | string[];
@@ -13,8 +13,12 @@ export const WithPermission: React.FC<WithPermissionProps> = (props: WithPermiss
   const { permission, alternative, children } = props;
   const toCheck = Array.isArray(permission) ? permission : [permission];
   const permissions = useAtomValue(permissionsAtom) ?? [];
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
 
-  const show = toCheck.some(p => permissions.includes(p));
+  // empty array = check logged in, .some will require at least 1 to match
+  const basicLoggedInCheck = permission.length === 0 && isLoggedIn;
+
+  const show = basicLoggedInCheck || toCheck.some(p => permissions.includes(p));
 
   if (show) {
     return <>{children}</>;
