@@ -59,24 +59,3 @@ export const LoadHostHistory = {
   ),
   clear: createAction('CLEAR_HOST_HISTORY'),
 };
-
-export type FetchMatchDetailsParameters = {
-  readonly id: number;
-};
-
-export const FetchMatchDetails = {
-  start: createAction('FETCH_MATCH_DETAILS_START', (payload: FetchMatchDetailsParameters) => payload),
-  started: createAction(
-    'FETCH_MATCH_DETAILS_STARTED',
-    (payload: WithParameters<FetchMatchDetailsParameters>) => payload,
-  ),
-  success: createAction(
-    'FETCH_MATCH_DETAILS_SUCCESS',
-    (payload: WithParameters<FetchMatchDetailsParameters> & WithResult<Match | null>) => payload,
-  ),
-  failure: createAction(
-    'FETCH_MATCH_DETAILS_FAILURE',
-    (payload: WithParameters<FetchMatchDetailsParameters> & WithError) => payload,
-  ),
-  clear: createAction('CLEAR_MATCH_DETAILS'),
-};

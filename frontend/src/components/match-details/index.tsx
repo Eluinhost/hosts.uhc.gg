@@ -11,13 +11,15 @@ import {
   TrashIcon,
   WarningSignIcon,
 } from '@blueprintjs/icons';
+import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { HTTPError } from 'ky';
+import React, { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { ApproveMatch, FetchMatchDetails } from '../../actions';
+import { ApproveMatch } from '../../actions';
 import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
-import type { ApplicationState } from '../../state/ApplicationState';
+import { MatchesData } from '../../matches/api';
 import { MatchOpens } from '../../time/components/MatchOpens';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 import { ClipboardControlGroup } from '../clipboard-control-group';
@@ -40,27 +42,14 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
   const username = useAtomValue(usernameAtom);
   const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
 
-  const details = useSelector((state: ApplicationState) => state.matchDetails);
+  const { data, isFetching, error } = useQuery(MatchesData.getById(id));
 
-  const canModify = details.match !== null && !details.match.removed && !details.match.approvedBy;
+  const canModify = data && !data.removed && !data.approvedBy;
 
   const canApprove = canModify && isHostingAdvisor;
-  const canRemove = canModify && (isHostingAdvisor || (username != null && username === details.match.author));
-
-  const clear = useCallback(() => dispatch(FetchMatchDetails.clear()), [dispatch]);
-
-  const load = useCallback((matchId: number) => dispatch(FetchMatchDetails.start({ id: matchId })), [dispatch]);
+  const canRemove = canModify && (isHostingAdvisor || (username != null && username === data.author));
 
   const approve = useCallback(() => dispatch(ApproveMatch.openDialog(id)), [id, dispatch]);
-
-  useEffect(() => {
-    clear();
-    load(id);
-
-    return () => {
-      clear();
-    };
-  }, [id, clear, load]);
 
   const renderTags = useCallback(
     (tags: string[]): React.ReactElement[] =>
@@ -82,11 +71,19 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
     [],
   );
 
-  if (details.fetching) return <Spinner />;
+  if (isFetching) return <Spinner />;
 
-  if (details.error) return <NonIdealState icon={<WarningSignIcon />} title="Error loading data" />;
+  if (error) {
+    if (error instanceof HTTPError && error.response.status === 404) {
+      return <NonIdealState icon={<GeosearchIcon />} title="Not found" />;
+    }
 
-  if (details.match == null) return <NonIdealState icon={<GeosearchIcon />} title="Not found" />;
+    return <NonIdealState icon={<WarningSignIcon />} title="Error loading data" />;
+  }
+
+  if (!data) {
+    return null;
+  }
 
   const {
     opens,
@@ -112,7 +109,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
     version,
     approvedBy,
     roles,
-  } = details.match;
+  } = data;
 
   return (
     <div className={`${Classes.CARD} match-details`}>
@@ -129,7 +126,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
               <TimelineBarChartIcon /> Tournament
             </Tag>
           )}
-          <RemovedTag match={details.match} />
+          <RemovedTag match={data} />
         </div>
 
         <div className="match-details__header__content">
@@ -191,7 +188,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
         </label>
       </div>
       <div className="match-details__content">
-        <RemovedInfo match={details.match} />
+        <RemovedInfo match={data} />
         {!removed && !!approvedBy && (
           <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
             <H5>
@@ -220,7 +217,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
         <Markdown markdown={content} />
         {isRemoving && (
           <RemovalModal
-            id={details.match.id}
+            id={data.id}
             onClose={() => {
               setIsRemoving(false);
             }}

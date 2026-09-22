@@ -5,7 +5,6 @@ import { listenForHostingApplicationSagas } from '../hosting-applications/sagas'
 
 import { watchApproveMatch } from './approveMatch';
 import { authentication } from './authentication';
-import { watchFetchMatchDetails } from './fetchMatchDetails';
 import { watchLoadHostHistory } from './loadHostHistory';
 import { watchUpcomingMatches } from './updateUpcoming';
 
@@ -16,7 +15,6 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchUpcomingMatches);
   yield fork(watchApproveMatch);
   yield fork(watchLoadHostHistory);
-  yield fork(watchFetchMatchDetails);
   yield fork(authentication);
   yield fork(listenForHostingApplicationSagas);
 }

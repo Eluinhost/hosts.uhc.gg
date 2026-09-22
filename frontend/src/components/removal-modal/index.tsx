@@ -1,17 +1,18 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, DeleteIcon, TickIcon, WarningSignIcon } from '@blueprintjs/icons';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { enforce, test, create } from 'vest';
 
-import { FetchMatchDetails, UpdateUpcoming } from '../../actions';
+import { UpdateUpcoming } from '../../actions';
 import { ApiErrors, MatchesApi } from '../../api';
 import { accessTokenAtom } from '../../atoms/authentication';
 import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
+import { MatchesData } from '../../matches/api';
 import { showToast } from '../../services/AppToaster';
 
 const schema = enforce.shape({
@@ -34,6 +35,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
   const isDarkMode = useAtomValue(isDarkModeAtom);
   const accessToken = useAtomValue(accessTokenAtom);
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const { mutateAsync } = useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
@@ -62,7 +64,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
 
         // TODO replace later with tanstack query cache invalidation when they're not longer in redux + sagas
         dispatch(UpdateUpcoming.start());
-        dispatch(FetchMatchDetails.start({ id }));
+        void queryClient.invalidateQueries(MatchesData.getById(id));
       } catch (err) {
         const message = err instanceof ApiErrors.BadDataError ? err.message : `Failed to remove match #${id}`;
 

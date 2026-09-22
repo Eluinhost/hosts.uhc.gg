@@ -4,7 +4,7 @@ import dayjs, { type Dayjs } from '../dayjs';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 
-import { authHeaders, callApi, fetchArray, maybeFetchObject } from './util';
+import { authHeaders, callApi, fetchArray } from './util';
 
 export const fetchUpcomingMatches = (): Promise<Match[]> =>
   fetchArray<Match>({
@@ -16,19 +16,6 @@ export const fetchUpcomingMatches = (): Promise<Match[]> =>
       created: dayjs.utc(match.created),
       removedAt: match.removedAt && dayjs.utc(match.removedAt),
     })),
-  );
-
-export const fetchSingle = (id: number): Promise<Match | null> =>
-  maybeFetchObject<Match>({
-    url: `/api/matches/${id}`,
-  }).then(
-    match =>
-      match && {
-        ...match,
-        opens: dayjs.utc(match.opens),
-        created: dayjs.utc(match.created),
-        removedAt: match.removedAt && dayjs.utc(match.removedAt),
-      },
   );
 
 export const callRemove = (id: number, reason: string, accessToken: string): Promise<void> =>
