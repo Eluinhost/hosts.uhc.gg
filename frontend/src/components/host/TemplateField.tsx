@@ -28,14 +28,13 @@ import {
   InfoSignIcon,
 } from '@blueprintjs/icons';
 import type { FieldWithValue } from '@tanstack/react-form';
+import { useAtom } from 'jotai';
 import * as Mark from 'markup-js';
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { Presets } from '../../actions';
+import { presetsAtom } from '../../atoms/presets';
 import type { Dayjs } from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
-import { getLocalPresets } from '../../state/Selectors';
 import { Markdown } from '../Markdown';
 
 import { presets } from './presets';
@@ -119,8 +118,7 @@ const HelpTab: React.FC<{ context: TemplateContext }> = ({ context }) => (
 );
 
 export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ disabled, context, field }) => {
-  const localPresets = useSelector(getLocalPresets);
-  const dispatch = useDispatch();
+  const [localPresets, setLocalPresets] = useAtom(presetsAtom);
   const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
   const [isShowingImportPopover, setIsShowingImportPopover] = useState(false);
   const [isShowingHelpPopover, setIsShowingHelpPopover] = useState(false);
@@ -130,15 +128,13 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
   const overwrite = useCallback(
     (name: string) => {
       if (window.confirm(`Overwrite existing preset "${name}"?`)) {
-        const nextLocalPresets = {
-          ...localPresets,
+        setLocalPresets(prev => ({
+          ...prev,
           [name]: field.value,
-        };
-
-        dispatch(Presets.save(nextLocalPresets));
+        }));
       }
     },
-    [dispatch, field.value, localPresets],
+    [field.value, setLocalPresets],
   );
 
   const onSaveCurrentAsPreset = useCallback((): void => {
@@ -152,13 +148,11 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
 
     if (trimmed in localPresets && !window.confirm(`Preset "${trimmed}" already exists. Overwrite it?`)) return;
 
-    const nextLocalPresets = {
-      ...localPresets,
+    setLocalPresets(prev => ({
+      ...prev,
       [trimmed]: field.value,
-    };
-
-    dispatch(Presets.save(nextLocalPresets));
-  }, [dispatch, field, localPresets]);
+    }));
+  }, [field, setLocalPresets, localPresets]);
 
   const onDeleteLocalPreset = useCallback(
     (presetName: string): void => {
@@ -166,11 +160,9 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
 
       if (!window.confirm(`Remove preset "${presetName}"?`)) return;
 
-      const nextLocalPresets = Object.fromEntries(Object.entries(localPresets).filter(([key]) => key !== presetName));
-
-      dispatch(Presets.save(nextLocalPresets));
+      setLocalPresets(prev => Object.fromEntries(Object.entries(prev).filter(([key]) => key !== presetName)));
     },
-    [dispatch, localPresets],
+    [setLocalPresets],
   );
 
   return (
@@ -336,12 +328,10 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
             ) {
               window.alert('Invalid import data format');
             } else {
-              dispatch(
-                Presets.save({
-                  ...localPresets,
-                  ...values,
-                }),
-              );
+              setLocalPresets({
+                ...localPresets,
+                ...values,
+              });
               setIsShowingImportPopover(false);
               setIsPresetMenuOpen(true);
             }

@@ -89,10 +89,6 @@ export const SyncTime = {
   failure: createAction('TIME_SYNC_FAILURE', (payload: WithError) => payload),
 };
 
-export const Presets = {
-  save: createAction('SAVE_PRESETS', (payload: Record<string, string>) => payload),
-};
-
 export const FetchApiKey = {
   start: createAction('FETCH_API_KEY_START'),
   started: createAction('FETCH_API_KEY_STARTED'),

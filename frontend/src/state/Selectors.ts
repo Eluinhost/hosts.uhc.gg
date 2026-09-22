@@ -11,11 +11,6 @@ export const getHostingHistoryCursor = createSelector(
   },
 );
 
-export const getLocalPresets = createSelector(
-  (state: ApplicationState) => state.presets,
-  x => x,
-);
-
 export const getUpcomingMatches = createSelector(
   (state: ApplicationState) => state.upcoming.matches,
   x => x,

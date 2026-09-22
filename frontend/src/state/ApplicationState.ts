@@ -10,7 +10,6 @@ import { reducer as HostFormSavedData, type HostFormSavedDataState } from './Hos
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
 import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
-import { reducer as Presets, type PresetsState } from './PresetsState';
 import { reducer as TimeSync, type TimeSyncState } from './TimeSyncState';
 import { reducer as Upcoming, type UpcomingState } from './UpcomingState';
 
@@ -22,7 +21,6 @@ export type ApplicationState = {
   readonly apiKey: ApiKeyState;
   readonly timeSync: TimeSyncState;
   readonly hostFormSavedData: HostFormSavedDataState;
-  readonly presets: PresetsState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
@@ -40,7 +38,6 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
       apiKey: ApiKey,
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
-      presets: Presets,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),

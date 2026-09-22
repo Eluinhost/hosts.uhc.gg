@@ -1,9 +1,8 @@
 import localForage from 'localforage';
 import type { SagaIterator } from 'redux-saga';
 import { put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
-import type { ActionCreator } from 'typesafe-redux-helpers';
 
-import { ClearStorage, Presets, SetSavedHostFormData } from '../actions';
+import { ClearStorage, SetSavedHostFormData } from '../actions';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import { wrapError } from '../utils/wrapError';
 
@@ -15,25 +14,6 @@ export const storage: LocalForage = localForage.createInstance({
 });
 
 const baseKey = `settings`;
-
-// TODO does this only work with strings?
-const saveAndListen = <Data>(setAction: ActionCreator<Data, Data, string>, storageKey: string) =>
-  function* (): SagaIterator {
-    const key = `${baseKey}.${storageKey}`;
-
-    const stored: Data = yield call(storage.getItem.bind(storage), key);
-
-    if (stored !== null) {
-      yield put(setAction(stored));
-    }
-
-    // start a separate task to listen for changes to save them
-    yield spawn(function* (): SagaIterator {
-      yield takeLatest(setAction, function* (action): SagaIterator {
-        yield call(storage.setItem.bind(storage), key, action.payload);
-      });
-    });
-  };
 
 function* watchClearStorage(): SagaIterator {
   yield takeEvery(ClearStorage.start, function* (): SagaIterator {
@@ -81,5 +61,5 @@ function* syncHostFormData(): SagaIterator {
 
 // This saga needs to complete, once it is done the first render will happen
 export function* syncWithStorage(): SagaIterator {
-  yield all([call(saveAndListen(Presets.save, 'presets')), call(syncHostFormData), spawn(watchClearStorage)]);
+  yield all([call(syncHostFormData), spawn(watchClearStorage)]);
 }
