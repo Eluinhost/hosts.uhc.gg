@@ -1,16 +1,18 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, DeleteIcon, TickIcon, WarningSignIcon } from '@blueprintjs/icons';
 import { useMutation } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { enforce, test, create } from 'vest';
 
 import { FetchMatchDetails, UpdateUpcoming } from '../../actions';
 import { ApiErrors, MatchesApi } from '../../api';
+import { accessTokenAtom } from '../../atoms/authentication';
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
 import { showToast } from '../../services/AppToaster';
-import { getAccessToken, isDarkMode } from '../../state/Selectors';
 
 const schema = enforce.shape({
   reason: enforce.isString(),
@@ -29,8 +31,8 @@ export const suite = create(data => {
 }, schema);
 
 export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
-  const darkMode = useSelector(isDarkMode);
-  const accessToken = useSelector(getAccessToken);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
   const dispatch = useDispatch();
 
   const { mutateAsync } = useMutation({
@@ -81,7 +83,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
       isOpen
       onClose={onClose}
       title="Remove match"
-      className={darkMode ? Classes.DARK : ''}
+      className={isDarkMode ? Classes.DARK : ''}
     >
       <div className={`${Classes.DIALOG_BODY} remove-modal-body`}>
         <form

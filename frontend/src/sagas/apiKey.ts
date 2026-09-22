@@ -1,13 +1,16 @@
+import { getDefaultStore } from 'jotai';
 import type { SagaIterator } from 'redux-saga';
-import { put, call, select, all, takeLatest } from 'redux-saga/effects';
+import { put, call, all, takeLatest } from 'redux-saga/effects';
 
 import { FetchApiKey, RegenerateApiKey } from '../actions';
 import { ApiErrors, AuthenticationApi } from '../api';
-import { getAccessToken } from '../state/Selectors';
+import { accessTokenAtom } from '../atoms/authentication';
 import { wrapError } from '../utils/wrapError';
 
+const store = getDefaultStore();
+
 function* fetchApiKeySaga(): SagaIterator {
-  const accessToken: string | null = yield select(getAccessToken);
+  const accessToken = store.get(accessTokenAtom);
 
   yield put(FetchApiKey.started());
 
@@ -24,7 +27,7 @@ function* fetchApiKeySaga(): SagaIterator {
 }
 
 function* regenerateApiKeySaga(): SagaIterator {
-  const accessToken: string | null = yield select(getAccessToken);
+  const accessToken = store.get(accessTokenAtom);
 
   yield put(RegenerateApiKey.started());
 

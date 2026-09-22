@@ -1,12 +1,10 @@
 import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
 import { CogIcon, LogOutIcon, UserIcon } from '@blueprintjs/icons';
+import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router';
-import { createSelector } from 'reselect';
 
-import { Authentication } from '../actions';
-import { getUsername, isLoggedIn } from '../state/Selectors';
+import { authenticationAtom, isLoggedInAtom, usernameAtom } from '../atoms/authentication';
 
 import { LoginButton } from './LoginButton';
 
@@ -19,20 +17,16 @@ const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ lo
   </Menu>
 );
 
-const stateSelector = createSelector(isLoggedIn, getUsername, (isLoggedIn, username) => ({
-  isLoggedIn,
-  username: username || 'ERROR NO USERNAME IN STORE',
-}));
-
 export const Username: React.FC = () => {
-  const { isLoggedIn, username } = useSelector(stateSelector);
-  const dispatch = useDispatch();
+  const setAuthentication = useSetAtom(authenticationAtom);
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const username = useAtomValue(usernameAtom);
   const navigate = useNavigate();
 
   const logout = useCallback(() => {
-    dispatch(Authentication.logout());
+    setAuthentication(null);
     void navigate('/');
-  }, [dispatch, navigate]);
+  }, [setAuthentication, navigate]);
 
   if (isLoggedIn) {
     return (

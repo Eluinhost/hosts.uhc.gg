@@ -1,9 +1,9 @@
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, RemoveIcon } from '@blueprintjs/icons';
 import { clsx } from 'clsx';
-import { useSelector } from 'react-redux';
+import { useAtomValue } from 'jotai';
 
-import { isDarkMode } from '../../state/Selectors';
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { MembersData } from '../api';
 
 export interface RemovePermissionDialogProps {
@@ -13,7 +13,7 @@ export interface RemovePermissionDialogProps {
 }
 
 export const RemovePermissionDialog = ({ permission, username, onClose }: RemovePermissionDialogProps) => {
-  const darkMode = useSelector(isDarkMode);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
   const { mutate, isPending } = MembersData.mutations.useRemovePermission();
 
   return (
@@ -22,7 +22,7 @@ export const RemovePermissionDialog = ({ permission, username, onClose }: Remove
       isOpen
       onClose={onClose}
       title="Remove role"
-      className={clsx({ [Classes.DARK]: darkMode })}
+      className={clsx({ [Classes.DARK]: isDarkMode })}
     >
       <div className={clsx(Classes.DIALOG_BODY, 'remove-permission-body')}>
         <H5>

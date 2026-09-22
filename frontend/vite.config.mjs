@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import jotaiBabel from 'jotai-babel/preset';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import babel from '@rolldown/plugin-babel';
 import { caddyTemplateBlocks } from './vite/caddyTemplateBlocks.mjs';
@@ -8,7 +9,7 @@ export default defineConfig({
     caddyTemplateBlocks(),
     react(),
     babel({
-      presets: [reactCompilerPreset()],
+      presets: [reactCompilerPreset(), jotaiBabel],
     }),
   ],
   resolve: {

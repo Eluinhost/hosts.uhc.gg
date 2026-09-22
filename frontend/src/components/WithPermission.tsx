@@ -1,7 +1,7 @@
+import { useAtomValue } from 'jotai';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { getPermissions } from '../state/Selectors';
+import { permissionsAtom } from '../atoms/authentication';
 
 export type WithPermissionProps = {
   readonly permission: string | string[];
@@ -12,7 +12,7 @@ export type WithPermissionProps = {
 export const WithPermission: React.FC<WithPermissionProps> = (props: WithPermissionProps) => {
   const { permission, alternative, children } = props;
   const toCheck = Array.isArray(permission) ? permission : [permission];
-  const permissions = useSelector(getPermissions);
+  const permissions = useAtomValue(permissionsAtom) ?? [];
 
   const show = toCheck.some(p => permissions.includes(p));
 

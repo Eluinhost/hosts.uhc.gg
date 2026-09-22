@@ -1,12 +1,12 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
 import { clsx } from 'clsx';
-import { useSelector } from 'react-redux';
+import { useAtomValue } from 'jotai';
 import { enforce, create, test } from 'vest';
 
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
-import { isDarkMode } from '../../state/Selectors';
 import { MembersData } from '../api';
 
 const schema = enforce.shape({
@@ -26,7 +26,7 @@ export interface AddPermissionDialogProps {
 
 export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialogProps) => {
   const { mutateAsync } = MembersData.mutations.useAddPermission();
-  const darkMode = useSelector(isDarkMode);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
 
   const form = useAppForm({
     defaultValues: {
@@ -53,7 +53,7 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
       isOpen
       onClose={onClose}
       title={`Add '${permission}' role`}
-      className={clsx({ [Classes.DARK]: darkMode })}
+      className={clsx({ [Classes.DARK]: isDarkMode })}
     >
       <div className={clsx(Classes.DIALOG_BODY, 'add-permission-body')}>
         <form

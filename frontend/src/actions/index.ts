@@ -82,38 +82,11 @@ export const FetchMatchDetails = {
   clear: createAction('CLEAR_MATCH_DETAILS'),
 };
 
-export type LoginPayload = {
-  readonly accessToken: string;
-  readonly refreshToken: string;
-};
-
-export const Authentication = {
-  login: createAction('LOGIN', (payload: LoginPayload) => payload),
-  logout: createAction('LOGOUT'),
-  attemptRefresh: createAction('ATTEMPT_AUTH_TOKEN_REFRESH'),
-};
-
-export type HostFormConflictsParameters = {
-  readonly data: CreateMatchData;
-};
-
 export const SyncTime = {
   start: createAction('TIME_SYNC_START'),
   started: createAction('TIME_SYNC_STARTED'),
   success: createAction('TIME_SYNC_SUCCESS', (payload: WithResult<number>) => payload),
   failure: createAction('TIME_SYNC_FAILURE', (payload: WithError) => payload),
-};
-
-export const Settings = {
-  setDarkMode: createAction('SET_DARK_MODE', (payload: boolean) => payload),
-  toggleDarkMode: createAction('TOGGLE_DARK_MODE'),
-  setIs12h: createAction('SET_IS_12_H_FORMAT', (payload: boolean) => payload),
-  toggleIs12h: createAction('TOGGLE_IS_12_H_FORMAT'),
-  setTimezone: createAction('SET_TIMEZONE', (payload: string) => payload),
-  setHideRemoved: createAction('SET_HIDE_REMOVED', (payload: boolean) => payload),
-  toggleHideRemoved: createAction('TOGGLE_HIDE_REMOVED'),
-  setShowOwnRemoved: createAction('SET_SHOW_OWN_REMOVED', (payload: boolean) => payload),
-  toggleShowOwnRemoved: createAction('TOGGLE_SHOW_OWN_REMOVED'),
 };
 
 export const Presets = {

@@ -1,16 +1,23 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { AddIcon, InboxIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
+import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../../atoms/authentication';
 import { HostApplications } from '../actions';
-import { getHostApplicationPermissions, getHostApplicationsListState } from '../selectors';
+import { canApplyToHostAtom } from '../atoms';
+import { getHostApplicationsListState } from '../selectors';
 
 import { ExistingHostApplication } from './ExistingHostApplication';
 
 export const HostApplicationsPage = () => {
-  const { canApply, isBanned, canReview, username } = useSelector(getHostApplicationPermissions);
+  const username = useAtomValue(usernameAtom);
+  const canApply = useAtomValue(canApplyToHostAtom);
+  const isBanned = useAtomValue(isHostingBannedAtom);
+  const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
+
   const { data, error, isFetching } = useSelector(getHostApplicationsListState);
   const dispatch = useDispatch();
 
@@ -62,7 +69,7 @@ export const HostApplicationsPage = () => {
           <ExistingHostApplication
             application={application}
             key={application.id}
-            canReview={canReview}
+            canReview={isHostingAdvisor}
             isOwn={application.username === username}
           />
         ))

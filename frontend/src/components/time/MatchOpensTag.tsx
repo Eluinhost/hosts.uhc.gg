@@ -1,23 +1,19 @@
 import { Intent, Tag } from '@blueprintjs/core';
+import { useAtomValue } from 'jotai';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
+import { tagDateTimeFormatAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 import type { Dayjs } from '../../dayjs';
-import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 type Props = {
   readonly opens: Dayjs;
   readonly created: Dayjs;
 };
 
-const stateSelector = createSelector(getTagDateTimeFormat, getTimezone, (format, timezone) => ({
-  format,
-  timezone,
-}));
-
 export const MatchOpensTag: React.FC<Props> = ({ opens, created }) => {
-  const { format, timezone } = useSelector(stateSelector);
+  const timezone = useAtomValue(timezoneAtom);
+  const format = useAtomValue(tagDateTimeFormatAtom);
 
   return (
     <Tag

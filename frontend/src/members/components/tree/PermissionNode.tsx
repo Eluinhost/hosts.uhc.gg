@@ -1,10 +1,10 @@
 import { Classes } from '@blueprintjs/core';
 import { AddIcon } from '@blueprintjs/icons';
 import { useQuery } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 import { type ReactNode, useState } from 'react';
-import { useSelector } from 'react-redux';
 
-import { getPermissions } from '../../../state/Selectors';
+import { permissionsAtom } from '../../../atoms/authentication';
 import { MembersData } from '../../api';
 import { isAbleToModify } from '../../isAbleToModify';
 import { AddPermissionDialog } from '../AddPermissionDialog';
@@ -26,8 +26,8 @@ export const PermissionNode = ({ permission, count }: PermissionNodeProps) => {
   });
   const [isAddingPermission, setIsAddingPermission] = useState(false);
 
-  const userPermissions = useSelector(getPermissions);
-  const canModify = isAbleToModify(userPermissions, permission);
+  const userPermissions = useAtomValue(permissionsAtom);
+  const canModify = isAbleToModify(userPermissions ?? [], permission);
 
   let content: ReactNode;
 

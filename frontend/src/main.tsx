@@ -3,15 +3,16 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { DevTools as JotaiDevTools } from 'jotai-devtools';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
 
-import { SyncApiToken } from './apiClient';
 import { App } from './components/App';
 import { createReduxStore } from './state/ApplicationState';
 
+import 'jotai-devtools/styles.css';
 import './main.sass';
 
 const queryClient = new QueryClient();
@@ -30,7 +31,6 @@ void createReduxStore().then(store => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
-          <SyncApiToken />
           <OverlaysProvider>
             <HotkeysProvider>
               <BrowserRouter>
@@ -41,6 +41,7 @@ void createReduxStore().then(store => {
         </Provider>
         <ReactQueryDevtools />
         <TanStackDevtools plugins={[formDevTools]} />
+        <JotaiDevTools />
       </QueryClientProvider>
     </React.StrictMode>,
   );

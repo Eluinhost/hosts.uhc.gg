@@ -1,21 +1,16 @@
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, TickIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
 import { ApproveMatch } from '../../actions';
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { isDarkMode } from '../../state/Selectors';
-
-const approvalModalSelector = createSelector(
-  (state: ApplicationState) => state.matchModeration.approvalModalId,
-  isDarkMode,
-  (id, isDarkMode) => ({ id, isDarkMode }),
-);
 
 export const ApprovalModal: React.FC = () => {
-  const { id, isDarkMode } = useSelector(approvalModalSelector);
+  const id = useSelector((state: ApplicationState) => state.matchModeration.approvalModalId);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
   const dispatch = useDispatch();
 
   const onClose = useCallback(() => dispatch(ApproveMatch.closeDialog()), [dispatch]);

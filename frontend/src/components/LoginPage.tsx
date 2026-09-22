@@ -1,13 +1,11 @@
 import { NonIdealState } from '@blueprintjs/core';
 import { WarningSignIcon } from '@blueprintjs/icons';
+import { useAtomValue, useSetAtom } from 'jotai';
 import qs from 'query-string';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { createSelector } from 'reselect';
 
-import { Authentication, type LoginPayload } from '../actions';
-import { isLoggedIn } from '../state/Selectors';
+import { authenticationAtom, isLoggedInAtom } from '../atoms/authentication';
 
 const InvalidToken: React.FunctionComponent = () => (
   <NonIdealState title="Invalid login token" icon={<WarningSignIcon />} />
@@ -16,18 +14,12 @@ const InvalidToken: React.FunctionComponent = () => (
 const zeroth = (t: string | (string | null)[] | null | undefined): string | null | undefined =>
   Array.isArray(t) ? t[0] : t;
 
-const stateSelector = createSelector(isLoggedIn, loggedIn => ({
-  loggedIn,
-}));
-
 export const LoginPage: React.FC = () => {
-  const { loggedIn } = useSelector(stateSelector);
-  const dispatch = useDispatch();
+  const loggedIn = useAtomValue(isLoggedInAtom);
+  const setAuthentication = useSetAtom(authenticationAtom);
   const location = useLocation();
   const navigate = useNavigate();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
-
-  const login = useCallback((data: LoginPayload) => dispatch(Authentication.login(data)), [dispatch]);
 
   useEffect(() => {
     if (loggedIn) {
@@ -43,7 +35,7 @@ export const LoginPage: React.FC = () => {
     const refreshToken = zeroth(refresh);
 
     if (redirectPath && accessToken && refreshToken && redirectPath.startsWith('/')) {
-      login({ accessToken, refreshToken });
+      setAuthentication({ accessToken, refreshToken });
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRedirectPath(redirectPath);
     } else {

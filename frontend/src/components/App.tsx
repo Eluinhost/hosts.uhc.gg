@@ -1,11 +1,12 @@
 import { Classes, NonIdealState, Spinner } from '@blueprintjs/core';
 import { GeosearchIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
-import { useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router';
 
-import { isDarkMode, isLoggedIn } from '../state/Selectors';
+import { isLoggedInAtom } from '../atoms/authentication';
+import { isDarkModeAtom } from '../atoms/isDarkMode';
 
 import { Footer } from './footer';
 import { Navbar } from './Navbar';
@@ -56,7 +57,7 @@ const NO_PERMISSIONS: string[] = [];
 const ADVISOR_PERMISSIONS: string[] = ['hosting advisor'];
 
 const AuthenticatedRoute: React.FC<PropsWithChildren<{ permission: Array<string> }>> = ({ permission, children }) => {
-  const authenticated = useSelector(isLoggedIn);
+  const authenticated = useAtomValue(isLoggedInAtom);
 
   const alternative = !authenticated
     ? PromptToLogin
@@ -133,7 +134,7 @@ const AppRoutes: React.FC = () => {
 export const App: React.FC = () => {
   useGlobalHotkeys();
 
-  const darkModeEnabled = useSelector(isDarkMode);
+  const darkModeEnabled = useAtomValue(isDarkModeAtom);
   const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
   const onScroll = useCallback(() => {
     setNavbarSticky(window.scrollY > 50);

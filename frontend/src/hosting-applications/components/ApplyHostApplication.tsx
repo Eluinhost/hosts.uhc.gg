@@ -1,20 +1,25 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { BanCircleIcon, HelpIcon, TickCircleIcon, TickIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
+import { isHostingBannedAtom } from '../../atoms/authentication';
 import { HostApplications } from '../actions';
+import { canApplyToHostAtom } from '../atoms';
 import { QuizQuestions } from '../questions/actions';
 import { getFetchQuizQuestionsApiState } from '../questions/selectors';
-import { getHasSubmittedHostApplicationSuccessfully, getHostApplicationPermissions } from '../selectors';
+import { getHasSubmittedHostApplicationSuccessfully } from '../selectors';
 
 import { HostApplicationForm } from './HostApplicationForm';
 
 export const ApplyHostApplicationPage: React.FC = () => {
   const dispatch = useDispatch();
   const { error, data, isFetching } = useSelector(getFetchQuizQuestionsApiState);
-  const { canApply, isBanned } = useSelector(getHostApplicationPermissions);
+  const canApply = useAtomValue(canApplyToHostAtom);
+  const isBanned = useAtomValue(isHostingBannedAtom);
+
   const hasSubmittedHostApplicationSuccessfully = useSelector(getHasSubmittedHostApplicationSuccessfully);
 
   useEffect(() => {

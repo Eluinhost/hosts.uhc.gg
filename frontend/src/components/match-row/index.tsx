@@ -8,13 +8,14 @@ import {
   TimelineBarChartIcon,
   TrashIcon,
 } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router';
 
 import { ApproveMatch } from '../../actions';
+import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
 import type { Match } from '../../models/Match';
-import { getUsername, getPermissions } from '../../state/Selectors';
 import { HostStatus } from '../host-status';
 import { HoverSwap } from '../HoverSwap';
 import { RemovalModal } from '../removal-modal';
@@ -36,10 +37,10 @@ type MatchRowProps = {
 
 export const MatchRow: React.FC<MatchRowProps> = props => {
   const { match, disableLink, disableRemoval, disableApproval } = props;
-  const permissions = useSelector(getPermissions);
-  const username = useSelector(getUsername);
+  const permissions = useAtomValue(permissionsAtom);
+  const username = useAtomValue(usernameAtom);
 
-  const canApprove = permissions.includes('hosting advisor');
+  const canApprove = (permissions ?? []).includes('hosting advisor');
   const canRemove = canApprove || (username != null && username === match.author);
 
   const dispatch = useDispatch();

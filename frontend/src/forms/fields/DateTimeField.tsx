@@ -4,11 +4,11 @@ import { PickerPanel, type PickerPanelProps } from '@rc-component/picker';
 import generateDayjsConfig from '@rc-component/picker/lib/generate/dayjs';
 import enGB from '@rc-component/picker/lib/locale/en_GB';
 import { type FieldWithValue } from '@tanstack/react-form';
+import { useAtomValue } from 'jotai';
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
+import { is12hAtom, timeFormatAtom } from '../../atoms/timeFormatting';
 import type { Dayjs } from '../../dayjs';
-import { getTimeFormat, is12hFormat } from '../../state/Selectors';
 
 import './DateTimeField.sass';
 
@@ -39,8 +39,8 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
   field,
   ...datePickerProps
 }) => {
-  const is12h = useSelector(is12hFormat);
-  const format = useSelector(getTimeFormat);
+  const is12h = useAtomValue(is12hAtom);
+  const format = useAtomValue(timeFormatAtom);
 
   const isDayBlocked = useCallback(
     (day: Dayjs) => {

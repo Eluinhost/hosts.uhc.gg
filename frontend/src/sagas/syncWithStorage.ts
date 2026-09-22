@@ -1,9 +1,9 @@
 import localForage from 'localforage';
 import type { SagaIterator } from 'redux-saga';
-import { delay, put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
+import { put, call, spawn, takeLatest, takeEvery, all } from 'redux-saga/effects';
 import type { ActionCreator } from 'typesafe-redux-helpers';
 
-import { Authentication, ClearStorage, Presets, SetSavedHostFormData, Settings } from '../actions';
+import { ClearStorage, Presets, SetSavedHostFormData } from '../actions';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import { wrapError } from '../utils/wrapError';
 
@@ -34,12 +34,6 @@ const saveAndListen = <Data>(setAction: ActionCreator<Data, Data, string>, stora
       });
     });
   };
-
-function* watchLogout(): SagaIterator {
-  yield takeEvery(Authentication.logout, function* (): SagaIterator {
-    yield call(storage.removeItem.bind(storage), `${baseKey}.authentication`);
-  });
-}
 
 function* watchClearStorage(): SagaIterator {
   yield takeEvery(ClearStorage.start, function* (): SagaIterator {
@@ -85,31 +79,7 @@ function* syncHostFormData(): SagaIterator {
   });
 }
 
-function* authentication(): SagaIterator {
-  yield call(saveAndListen(Authentication.login, 'authentication'));
-  // check every minute if we need to refresh our authentication tokens
-  yield spawn(function* (): SagaIterator {
-    // safe to loop as we have a delay and intended to run infinite
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    while (true) {
-      yield put(Authentication.attemptRefresh());
-      yield delay(60000);
-    }
-  });
-}
-
 // This saga needs to complete, once it is done the first render will happen
 export function* syncWithStorage(): SagaIterator {
-  yield all([
-    call(saveAndListen(Settings.setDarkMode, 'isDarkMode')),
-    call(saveAndListen(Settings.setIs12h, 'is12h')),
-    call(saveAndListen(Settings.setHideRemoved, 'hideRemoved')),
-    call(saveAndListen(Settings.setShowOwnRemoved, 'showOwnRemoved')),
-    call(saveAndListen(Settings.setTimezone, 'timezone')),
-    call(saveAndListen(Presets.save, 'presets')),
-    call(authentication),
-    call(syncHostFormData),
-    spawn(watchLogout), // start separately
-    spawn(watchClearStorage),
-  ]);
+  yield all([call(saveAndListen(Presets.save, 'presets')), call(syncHostFormData), spawn(watchClearStorage)]);
 }

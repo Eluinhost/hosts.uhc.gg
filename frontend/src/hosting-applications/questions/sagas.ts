@@ -1,14 +1,17 @@
 import { Intent } from '@blueprintjs/core';
+import { getDefaultStore } from 'jotai';
 import type { SagaIterator } from 'redux-saga';
-import { takeLatest, put, call, select, takeEvery } from 'redux-saga/effects';
+import { takeLatest, put, call, takeEvery } from 'redux-saga/effects';
 
+import { accessTokenAtom } from '../../atoms/authentication';
 import type { ManageQuizQuestion, QuizQuestion } from '../../models/QuizQuestion';
 import { showToast } from '../../services/AppToaster';
-import { getAccessToken } from '../../state/Selectors';
 import { GenericError } from '../../utils/GenericError';
 
 import { QuizQuestions } from './actions';
 import { fetchQuizQuestions, createQuizQuestion, deleteQuizQuestion, fetchQuizQuestionsForManagement } from './api';
+
+const store = getDefaultStore();
 
 export class FetchQuizQuestionsError extends GenericError {
   constructor(public cause: unknown) {
@@ -42,7 +45,7 @@ function* createQuizQuestionSaga({
   yield put(QuizQuestions.create.started(data));
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     const result: { id: number } = yield call(createQuizQuestion, data, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(QuizQuestions.create.completed(result));
@@ -67,7 +70,7 @@ function* deleteQuizQuestionSaga({ payload: { id } }: ReturnType<typeof QuizQues
   yield put(QuizQuestions.delete.started(id));
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     yield call(deleteQuizQuestion, id, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(QuizQuestions.delete.completed(id));
@@ -91,7 +94,7 @@ function* fetchQuizQuestionsForManagementSaga(): SagaIterator {
   yield put(QuizQuestions.fetchForManagement.started());
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     const result: Array<ManageQuizQuestion> = yield call(
       fetchQuizQuestionsForManagement,
       accessToken ?? 'NO ACCESS TOKEN',

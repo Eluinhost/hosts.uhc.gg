@@ -1,9 +1,9 @@
 import { Classes } from '@blueprintjs/core';
 import { TrashIcon, UserIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 
-import { getPermissions } from '../../../state/Selectors';
+import { permissionsAtom } from '../../../atoms/authentication';
 import { isAbleToModify } from '../../isAbleToModify';
 import { RemovePermissionDialog } from '../RemovePermissionDialog';
 
@@ -18,8 +18,8 @@ export interface UsernameNodeProps {
 export const UsernameNode = ({ username, permission, depth }: UsernameNodeProps) => {
   const [isRemoving, setIsRemoving] = useState(false);
 
-  const userPermissions = useSelector(getPermissions);
-  const canModify = isAbleToModify(userPermissions, permission);
+  const userPermissions = useAtomValue(permissionsAtom);
+  const canModify = isAbleToModify(userPermissions ?? [], permission);
 
   return (
     <>

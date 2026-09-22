@@ -16,13 +16,11 @@ import {
   UnresolveIcon,
   UserIcon,
 } from '@blueprintjs/icons';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAtom } from 'jotai';
+import React from 'react';
 import { useLocation, Link } from 'react-router';
-import { createSelector } from 'reselect';
 
-import { Settings } from '../actions';
-import { isDarkMode } from '../state/Selectors';
+import { isDarkModeAtom } from '../atoms/isDarkMode';
 
 import { Username } from './Username';
 import { WithPermission } from './WithPermission';
@@ -47,15 +45,8 @@ const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) 
 
 const NavbarButton: React.FC<NavBarButtonProps> = NavBarButtonComponent;
 
-const stateSelector = createSelector(isDarkMode, isDarkMode => ({
-  isDarkMode,
-}));
-
 export const Navbar: React.FC = () => {
-  const { isDarkMode } = useSelector(stateSelector);
-  const dispatch = useDispatch();
-
-  const toggleDarkMode = useCallback(() => dispatch(Settings.toggleDarkMode()), [dispatch]);
+  const [isDarkMode, setIsDarkMode] = useAtom(isDarkModeAtom);
 
   return (
     <BpNavbar>
@@ -81,7 +72,13 @@ export const Navbar: React.FC = () => {
       </NavbarGroup>
       <NavbarGroup>
         <Username />
-        <Button variant="minimal" icon={isDarkMode ? <MoonIcon /> : <FlashIcon />} onClick={toggleDarkMode} />
+        <Button
+          variant="minimal"
+          icon={isDarkMode ? <MoonIcon /> : <FlashIcon />}
+          onClick={() => {
+            setIsDarkMode(prev => !prev);
+          }}
+        />
       </NavbarGroup>
     </BpNavbar>
   );

@@ -1,11 +1,14 @@
 import { Button, Intent, NonIdealState } from '@blueprintjs/core';
 import { CloudUploadIcon, ErrorIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useStore } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 import { SetSavedHostFormData } from '../../actions';
 import { MatchesApi } from '../../api';
+import { accessTokenAtom, permissionsAtom, usernameAtom } from '../../atoms/authentication';
+import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm, useFormSelector } from '../../forms/useAppForm';
@@ -14,7 +17,6 @@ import type { Match } from '../../models/Match';
 import { Regions } from '../../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
-import { getUsername, getPermissions, getTimezone, getAccessToken } from '../../state/Selectors';
 import { MatchRow } from '../match-row';
 
 import { nextAvailableSlot } from './nextAvailableSlot';
@@ -38,10 +40,10 @@ const createTemplateContext = (values: CreateMatchData, author: string): Templat
 };
 
 export const HostingPage: React.FC = () => {
-  const username = useSelector(getUsername) ?? 'Unknown User';
-  const roles = useSelector(getPermissions);
-  const accessToken = useSelector(getAccessToken);
-  const timezone = useSelector(getTimezone);
+  const username = useAtomValue(usernameAtom) ?? 'Unknown User';
+  const roles = useAtomValue(permissionsAtom) ?? [];
+  const accessToken = useAtomValue(accessTokenAtom);
+  const timezone = useAtomValue(timezoneAtom);
   const store = useStore();
   const navigate = useNavigate();
 

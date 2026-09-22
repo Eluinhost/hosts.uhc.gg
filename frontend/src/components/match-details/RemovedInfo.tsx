@@ -1,16 +1,17 @@
 import { Classes, H5 } from '@blueprintjs/core';
 import { WarningSignIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
+import { timeFormatAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 import type { Match } from '../../models/Match';
-import { getTagDateTimeFormat, getTimezone } from '../../state/Selectors';
 
 export const RemovedInfo: React.FC<{ match: Match }> = ({
   match: { removed, removedAt, removedBy, removedReason },
 }) => {
-  const format = useSelector(getTagDateTimeFormat);
-  const timezone = useSelector(getTimezone);
+  const format = useAtomValue(timeFormatAtom);
+  const timezone = useAtomValue(timezoneAtom);
 
   const removedAtFormatted = useMemo(
     () => removedAt && removedAt.tz(timezone).format(format),

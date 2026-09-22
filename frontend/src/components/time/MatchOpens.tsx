@@ -1,20 +1,15 @@
+import { atom, useAtomValue } from 'jotai';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
+import { timeFormatAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 import type { Dayjs } from '../../dayjs';
-import { getDetailsDateTimeFormat, getTimezone } from '../../state/Selectors';
 
-type Props = {
-  readonly time: Dayjs;
-};
+export const detailsDateTimeFormatAtom = atom(get => `MMM Do YYYY - ${get(timeFormatAtom)} z`);
 
-const stateSelector = createSelector(getDetailsDateTimeFormat, getTimezone, (format, timezone) => ({
-  format,
-  timezone,
-}));
+export const MatchOpens: React.FC<{ time: Dayjs }> = ({ time }) => {
+  const timezone = useAtomValue(timezoneAtom);
+  const format = useAtomValue(detailsDateTimeFormatAtom);
 
-export const MatchOpens: React.FC<Props> = ({ time }) => {
-  const { format, timezone } = useSelector(stateSelector);
   return <span className="match-time">{time.tz(timezone).format(format)}</span>;
 };

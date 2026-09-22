@@ -1,12 +1,12 @@
 import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
 import { BuildIcon, CommentIcon, GitRepoIcon, IssueIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { isDarkMode } from '../../state/Selectors';
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 
 export const Footer: React.FC = () => {
-  const isDark = useSelector(isDarkMode);
+  const isDark = useAtomValue(isDarkModeAtom);
 
   const intent = isDark ? Intent.DANGER : Intent.PRIMARY;
 

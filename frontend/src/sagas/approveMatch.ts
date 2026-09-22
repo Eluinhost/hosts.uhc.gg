@@ -1,21 +1,22 @@
 import { Intent } from '@blueprintjs/core';
 import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { getDefaultStore } from 'jotai';
 import { createElement } from 'react';
 import type { SagaIterator } from 'redux-saga';
-import { select, put, call, takeEvery } from 'redux-saga/effects';
+import { put, call, takeEvery } from 'redux-saga/effects';
 
 import { ApproveMatch } from '../actions';
 import { MatchesApi, ApiErrors } from '../api';
+import { accessTokenAtom, usernameAtom } from '../atoms/authentication';
 import { showToast } from '../services/AppToaster';
-import type { ApplicationState } from '../state/ApplicationState';
-import { getAccessToken, getUsername } from '../state/Selectors';
 import { wrapError } from '../utils/wrapError';
+
+const store = getDefaultStore();
 
 function* approveMatchSaga(action: ReturnType<typeof ApproveMatch.start>): SagaIterator {
   try {
-    const state: ApplicationState = yield select();
-    const token = getAccessToken(state) || 'NO ACCESS TOKEN IN STATE';
-    const username = getUsername(state) || 'NO USERNAME IN STATE';
+    const token = store.get(accessTokenAtom) || 'NO ACCESS TOKEN IN STATE';
+    const username = store.get(usernameAtom) || 'NO USERNAME IN STATE';
 
     yield put(
       ApproveMatch.started({

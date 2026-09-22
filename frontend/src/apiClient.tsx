@@ -1,34 +1,16 @@
+import { getDefaultStore } from 'jotai';
 import ky from 'ky';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
-import { getAccessToken } from './state/Selectors';
+import { accessTokenAtom } from './atoms/authentication';
 
-let accessToken: string | null = null;
+const store = getDefaultStore();
 
 export const apiClient = ky.create({
   hooks: {
     beforeRequest: [
       ({ request }) => {
-        request.headers.set('Authorization', `Bearer ${accessToken}`);
+        request.headers.set('Authorization', `Bearer ${store.get(accessTokenAtom)}`);
       },
     ],
   },
 });
-
-export const setAccessToken = (token: string | null) => {
-  accessToken = token;
-};
-
-/**
- * Temp to keep the client access token in sync with Redux store
- */
-export const SyncApiToken = () => {
-  const storeToken = useSelector(getAccessToken);
-
-  useEffect(() => {
-    setAccessToken(storeToken);
-  }, [storeToken]);
-
-  return null;
-};

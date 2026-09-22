@@ -1,11 +1,11 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { AddIcon, ArrowLeftIcon, TakeActionIcon } from '@blueprintjs/icons';
-import { useSelector } from 'react-redux';
+import { useAtomValue } from 'jotai';
 import { create, enforce, test } from 'vest';
 
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
-import { isDarkMode } from '../../state/Selectors';
 import { HostingRulesData } from '../api';
 
 import { RulesField } from './RulesField';
@@ -25,7 +25,7 @@ export const suite = create(data => {
 
 export const SetRulesDialog = ({ current, onClose }: { current: string; onClose: () => void }) => {
   const { mutateAsync } = HostingRulesData.mutations.useSetHostingRules();
-  const darkMode = useSelector(isDarkMode);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
 
   const form = useAppForm({
     defaultValues: { rules: current },
@@ -47,7 +47,7 @@ export const SetRulesDialog = ({ current, onClose }: { current: string; onClose:
       isOpen
       onClose={onClose}
       title="Modify Rules"
-      className={darkMode ? Classes.DARK : ''}
+      className={isDarkMode ? Classes.DARK : ''}
     >
       <div className={Classes.DIALOG_BODY}>
         <form

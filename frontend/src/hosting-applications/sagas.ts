@@ -1,10 +1,11 @@
 import { Intent } from '@blueprintjs/core';
+import { getDefaultStore } from 'jotai';
 import type { SagaIterator } from 'redux-saga';
-import { takeLatest, put, call, select, fork, takeEvery } from 'redux-saga/effects';
+import { takeLatest, put, call, fork, takeEvery } from 'redux-saga/effects';
 
+import { accessTokenAtom } from '../atoms/authentication';
 import type { HostApplication, HostApplicationDetails } from '../models/HostApplication';
 import { showToast } from '../services/AppToaster';
-import { getAccessToken } from '../state/Selectors';
 import { GenericError } from '../utils/GenericError';
 
 import { HostApplications } from './actions';
@@ -15,6 +16,8 @@ import {
   createHostApplication,
 } from './api';
 import { listenForQuizQuestionsSagas } from './questions/sagas';
+
+const store = getDefaultStore();
 
 export class FetchHostingApplicationsError extends GenericError {
   constructor(public cause: unknown) {
@@ -51,7 +54,7 @@ function* fetchHostingApplicationDetailsSaga({
   yield put(HostApplications.fetch.individual.started(id));
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     const result: HostApplicationDetails = yield call(
       fetchHostApplicationDetails,
       id,
@@ -81,7 +84,7 @@ function* reviewHostingApplicationDetailsSaga({
   yield put(HostApplications.respond.started({ id, status, rejectReason }));
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     yield call(reviewHostApplication, id, status, accessToken ?? 'NO ACCESS TOKEN', rejectReason);
 
     yield put(HostApplications.respond.completed({ id, status, rejectReason }));
@@ -108,7 +111,7 @@ function* createHostingApplicationSaga({
   yield put(HostApplications.create.started(data));
 
   try {
-    const accessToken: string | null = yield select(getAccessToken);
+    const accessToken = store.get(accessTokenAtom);
     yield call(createHostApplication, data, accessToken ?? 'NO ACCESS TOKEN');
 
     yield put(HostApplications.create.completed(data));

@@ -1,12 +1,14 @@
 import { Tooltip, Position } from '@blueprintjs/core';
+import { atom, useAtomValue } from 'jotai';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, lruMemoize } from 'reselect';
+import { lruMemoize } from 'reselect';
 
 import { SyncTime } from '../../actions';
+import { is12hAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { getTimezone, is12hFormat } from '../../state/Selectors';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -45,19 +47,12 @@ const formatOffset = lruMemoize(
   { maxSize: 1 },
 );
 
-const stateSelector = createSelector(
-  (state: ApplicationState) => state.timeSync,
-  is12hFormat,
-  getTimezone,
-  (timeSync, is12h, timezone) => ({
-    timeSync,
-    timezone,
-    timeFormat: is12h ? 'hh:mm:ss A z' : 'HH:mm:ss z',
-  }),
-);
+export const currentTimeFormatAtom = atom(get => (get(is12hAtom) ? 'hh:mm:ss A z' : 'HH:mm:ss z'));
 
 export const CurrentTime: React.FC = () => {
-  const { timeSync, timezone, timeFormat } = useSelector(stateSelector);
+  const timeSync = useSelector((state: ApplicationState) => state.timeSync);
+  const timezone = useAtomValue(timezoneAtom);
+  const format = useAtomValue(currentTimeFormatAtom);
   const dispatch = useDispatch();
 
   const [time, setTime] = useState(() => dayjs.utc());
@@ -82,8 +77,8 @@ export const CurrentTime: React.FC = () => {
   );
 
   const timeText = useMemo(
-    () => time.add(timeSync.offset, 'milliseconds').tz(timezone).format(timeFormat),
-    [time, timeSync.offset, timezone, timeFormat],
+    () => time.add(timeSync.offset, 'milliseconds').tz(timezone).format(format),
+    [time, timeSync.offset, timezone, format],
   );
 
   return (

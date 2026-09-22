@@ -6,24 +6,20 @@ import sagas from '../sagas';
 import { syncWithStorage } from '../sagas/syncWithStorage';
 
 import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
-import { reducer as Authentication, type AuthenticationState } from './AuthenticationState';
 import { reducer as HostFormSavedData, type HostFormSavedDataState } from './HostFormSavedDataState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
 import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
 import { reducer as Presets, type PresetsState } from './PresetsState';
-import { reducer as Settings, type SettingsState } from './SettingsState';
 import { reducer as TimeSync, type TimeSyncState } from './TimeSyncState';
 import { reducer as Upcoming, type UpcomingState } from './UpcomingState';
 
 export type ApplicationState = {
-  readonly authentication: AuthenticationState;
   readonly upcoming: UpcomingState;
   readonly matchModeration: MatchModerationState;
   readonly matchDetails: MatchDetailsState;
   readonly hostHistory: HostHistoryState;
   readonly apiKey: ApiKeyState;
-  readonly settings: SettingsState;
   readonly timeSync: TimeSyncState;
   readonly hostFormSavedData: HostFormSavedDataState;
   readonly presets: PresetsState;
@@ -37,13 +33,11 @@ const sagaMiddleware = createSagaMiddleware();
 export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
   const store = legacy_createStore(
     combineReducers({
-      authentication: Authentication,
       upcoming: Upcoming,
       matchModeration: MatchModeration,
       hostHistory: HostHistory,
       matchDetails: MatchDetails,
       apiKey: ApiKey,
-      settings: Settings,
       timeSync: TimeSync,
       hostFormSavedData: HostFormSavedData,
       presets: Presets,

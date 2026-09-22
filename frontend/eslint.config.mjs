@@ -7,7 +7,10 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importx from 'eslint-plugin-import-x';
 import blueprint from '@blueprintjs/eslint-plugin';
+import { defaultConditionNames } from 'eslint-import-resolver-typescript';
+
 import noStringIcons from './eslint/rules/no-string-icons.mjs';
+import requireAtomWithStorageGetoninit from './eslint/rules/require-atom-with-storage-getoninit.mjs';
 
 // jsxA11y has a `parserOptions` key, which flat config rejects for, moved it under `languageOptions`
 const { parserOptions: a11yParserOptions, ...a11yRecommended } = jsxA11y.configs.recommended;
@@ -61,6 +64,18 @@ export default tseslint.config(
       },
       globals: { ...globals.browser, ...globals.es2021 },
     },
+    settings: {
+      'import-x/resolver': {
+        typescript: {
+          // eslint-resolver doesn't resolve typescript version conditions, only jotai
+          // uses this and use types@>=5.5. The resolve defaults to the <5.5 version so
+          // we're adding that explicitly here for the resolver to pick it up instead,
+          // safe as we're using 6.0.3 currently. May need to update this in the future
+          // if import linting issues crop up again
+          conditionNames: ['types@>=5.5', ...defaultConditionNames],
+        },
+      },
+    },
   },
   {
     // Sagas can't type yields correctly, so turn off the rule for 'any' assignment
@@ -70,9 +85,17 @@ export default tseslint.config(
     },
   },
   {
-    plugins: { local: { rules: { 'no-string-icons': noStringIcons } } },
+    plugins: {
+      local: {
+        rules: {
+          'no-string-icons': noStringIcons,
+          'require-atom-with-storage-getoninit': requireAtomWithStorageGetoninit,
+        },
+      },
+    },
     rules: {
       'local/no-string-icons': 'error',
+      'local/require-atom-with-storage-getoninit': 'error',
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

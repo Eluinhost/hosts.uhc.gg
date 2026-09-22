@@ -1,11 +1,11 @@
 import { Classes, Intent, Button } from '@blueprintjs/core';
 import { RefreshIcon } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
+import { timeFormatAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 import type { Dayjs } from '../../dayjs';
-import { getTimeFormat, getTimezone } from '../../state/Selectors';
 
 type OwnProps = {
   readonly lastUpdated: Dayjs | null;
@@ -13,13 +13,9 @@ type OwnProps = {
   readonly loading: boolean;
 };
 
-const stateSelector = createSelector(getTimeFormat, getTimezone, (format, timezone) => ({
-  format,
-  timezone,
-}));
-
 export const RefreshButton: React.FC<OwnProps> = ({ lastUpdated, onClick, loading }) => {
-  const { format, timezone } = useSelector(stateSelector);
+  const timezone = useAtomValue(timezoneAtom);
+  const format = useAtomValue(timeFormatAtom);
 
   const buttonContent = loading
     ? 'Refreshing...'

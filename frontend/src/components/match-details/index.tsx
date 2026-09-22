@@ -11,12 +11,13 @@ import {
   TrashIcon,
   WarningSignIcon,
 } from '@blueprintjs/icons';
+import { useAtomValue } from 'jotai';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { ApproveMatch, FetchMatchDetails } from '../../actions';
+import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
 import type { ApplicationState } from '../../state/ApplicationState';
-import { getPermissions, getUsername } from '../../state/Selectors';
 import { ClipboardControlGroup } from '../clipboard-control-group';
 import { HostStatus } from '../host-status';
 import { Markdown } from '../Markdown';
@@ -36,15 +37,15 @@ export interface MatchDetailsProps {
 export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
   const dispatch = useDispatch();
   const [isRemoving, setIsRemoving] = useState(false);
-  const username = useSelector(getUsername);
-  const permissions = useSelector(getPermissions);
+  const username = useAtomValue(usernameAtom);
+  const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
+
   const details = useSelector((state: ApplicationState) => state.matchDetails);
 
   const canModify = details.match !== null && !details.match.removed && !details.match.approvedBy;
 
-  const canApprove = canModify && permissions.includes('hosting advisor');
-  const canRemove =
-    canModify && (permissions.includes('hosting advisor') || (username != null && username === details.match.author));
+  const canApprove = canModify && isHostingAdvisor;
+  const canRemove = canModify && (isHostingAdvisor || (username != null && username === details.match.author));
 
   const clear = useCallback(() => dispatch(FetchMatchDetails.clear()), [dispatch]);
 

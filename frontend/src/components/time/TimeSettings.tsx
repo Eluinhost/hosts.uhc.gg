@@ -1,12 +1,11 @@
 import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core';
 import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
+import { useAtom } from 'jotai';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { List, type ListRowProps } from 'react-virtualized';
-import { createSelector } from 'reselect';
 
-import { Settings } from '../../actions';
-import { getTimezone, is12hFormat } from '../../state/Selectors';
+import { is12hAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
 
 import { CurrentTime } from './CurrentTime';
 
@@ -37,14 +36,9 @@ const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onSelect }) => (
   />
 );
 
-const stateSelector = createSelector(getTimezone, is12hFormat, (timezone, is12h) => ({
-  timezone,
-  is12h,
-}));
-
 export const TimeSettings: React.FC = () => {
-  const { is12h, timezone } = useSelector(stateSelector);
-  const dispatch = useDispatch();
+  const [timezone, setTimezone] = useAtom(timezoneAtom);
+  const [is12h, setIs12h] = useAtom(is12hAtom);
 
   const [filter, setFilter] = useState('');
   const [open, setOpen] = useState(false);
@@ -59,21 +53,20 @@ export const TimeSettings: React.FC = () => {
     setOpen(prev => !prev);
   };
 
-  const changeTimezone = useCallback((newTimezone: string) => dispatch(Settings.setTimezone(newTimezone)), [dispatch]);
-
-  const toggleTimeFormat = useCallback(() => dispatch(Settings.toggleIs12h()), [dispatch]);
-
-  const onSelect = useCallback((newTimezone: string) => changeTimezone(newTimezone), [changeTimezone]);
-
   const filtered = useMemo(() => tzs.filter(searchFilter(filter)), [filter]);
 
   const renderRow = useCallback(
     (props: ListRowProps) => (
       <div style={props.style} key={props.key}>
-        <TimezoneItem timezone={filtered[props.index]} onSelect={onSelect} />
+        <TimezoneItem
+          timezone={filtered[props.index]}
+          onSelect={value => {
+            setTimezone(value);
+          }}
+        />
       </div>
     ),
-    [filtered, onSelect],
+    [filtered, setTimezone],
   );
 
   const rowHeight = 30;
@@ -93,7 +86,9 @@ export const TimeSettings: React.FC = () => {
             icon={<TimeIcon />}
             variant="minimal"
             size="large"
-            onClick={toggleTimeFormat}
+            onClick={() => {
+              setIs12h(!is12h);
+            }}
           />
         )}
         {open && (

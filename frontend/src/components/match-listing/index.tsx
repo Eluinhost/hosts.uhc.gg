@@ -1,15 +1,13 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { CrossIcon, GeosearchIcon, RefreshIcon, SearchIcon } from '@blueprintjs/icons';
+import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector, type Selector } from 'reselect';
 
-import { Settings } from '../../actions';
+import { usernameAtom } from '../../atoms/authentication';
+import { hideRemovedAtom, showOwnRemovedAtom } from '../../atoms/removedMatches';
 import dayjs, { type Dayjs } from '../../dayjs';
 import type { Match } from '../../models/Match';
 import { VisibilityDetector } from '../../services/VisibilityDetector';
-import type { ApplicationState } from '../../state/ApplicationState';
-import { getUsername } from '../../state/Selectors';
 import { ApprovalModal } from '../approval-modal';
 import { MatchRow } from '../match-row';
 
@@ -30,23 +28,6 @@ type MatchListingProps = {
   readonly disableApprove?: boolean;
 };
 
-type StateSlice = {
-  readonly hideRemoved: boolean;
-  readonly showOwnRemoved: boolean;
-  readonly username: string | null;
-};
-
-const stateSliceSelector: Selector<ApplicationState, StateSlice> = createSelector(
-  getUsername,
-  (state: ApplicationState) => state.settings.hideRemoved,
-  (state: ApplicationState) => state.settings.showOwnRemoved,
-  (username, hideRemoved, showOwnRemoved): StateSlice => ({
-    username,
-    hideRemoved,
-    showOwnRemoved,
-  }),
-);
-
 export const MatchListing: FC<MatchListingProps> = ({
   matches,
   loading,
@@ -59,8 +40,9 @@ export const MatchListing: FC<MatchListingProps> = ({
   disableRemove,
   disableApprove,
 }) => {
-  const { hideRemoved, showOwnRemoved, username } = useSelector(stateSliceSelector);
-  const dispatch = useDispatch();
+  const username = useAtomValue(usernameAtom);
+  const [hideRemoved, setHideRemoved] = useAtom(hideRemovedAtom);
+  const [showOwnRemoved, setShowOwnRemoved] = useAtom(showOwnRemovedAtom);
 
   const [search, setSearch] = useState('');
 
@@ -179,15 +161,24 @@ export const MatchListing: FC<MatchListingProps> = ({
     [afterSearchQuery, renderMatch, noMatches],
   );
 
-  const toggleHideRemoved = useCallback(() => dispatch(Settings.toggleHideRemoved()), [dispatch]);
-  const toggleShowOwnRemoved = useCallback(() => dispatch(Settings.toggleShowOwnRemoved()), [dispatch]);
-
   return (
     <div className="match-listing">
       <div className="match-listing__filters">
-        <Switch checked={hideRemoved} label="Hide Removed" onChange={toggleHideRemoved} />
+        <Switch
+          checked={hideRemoved}
+          label="Hide Removed"
+          onChange={() => {
+            setHideRemoved(prev => !prev);
+          }}
+        />
         {!!username && hideRemoved && (
-          <Switch checked={showOwnRemoved} label="Show Own Removed" onChange={toggleShowOwnRemoved} />
+          <Switch
+            checked={showOwnRemoved}
+            label="Show Own Removed"
+            onChange={() => {
+              setShowOwnRemoved(prev => !prev);
+            }}
+          />
         )}
       </div>
 
