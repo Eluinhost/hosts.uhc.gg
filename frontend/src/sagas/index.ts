@@ -3,7 +3,6 @@ import { fork } from 'redux-saga/effects';
 
 import { listenForHostingApplicationSagas } from '../hosting-applications/sagas';
 
-import { watchApiKey } from './apiKey';
 import { watchApproveMatch } from './approveMatch';
 import { authentication } from './authentication';
 import { watchFetchMatchDetails } from './fetchMatchDetails';
@@ -19,6 +18,5 @@ export default function* rootSaga(): SagaIterator {
   yield fork(watchLoadHostHistory);
   yield fork(watchFetchMatchDetails);
   yield fork(authentication);
-  yield fork(watchApiKey);
   yield fork(listenForHostingApplicationSagas);
 }

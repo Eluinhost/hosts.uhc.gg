@@ -4,7 +4,6 @@ import createSagaMiddleware from 'redux-saga';
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
 import sagas from '../sagas';
 
-import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
 import { reducer as MatchDetails, type MatchDetailsState } from './MatchDetailsState';
 import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
@@ -15,7 +14,6 @@ export type ApplicationState = {
   readonly matchModeration: MatchModerationState;
   readonly matchDetails: MatchDetailsState;
   readonly hostHistory: HostHistoryState;
-  readonly apiKey: ApiKeyState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
@@ -30,7 +28,6 @@ export const createReduxStore = (): Store<ApplicationState> => {
       matchModeration: MatchModeration,
       hostHistory: HostHistory,
       matchDetails: MatchDetails,
-      apiKey: ApiKey,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),

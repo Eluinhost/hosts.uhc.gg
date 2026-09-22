@@ -80,17 +80,3 @@ export const FetchMatchDetails = {
   ),
   clear: createAction('CLEAR_MATCH_DETAILS'),
 };
-
-export const FetchApiKey = {
-  start: createAction('FETCH_API_KEY_START'),
-  started: createAction('FETCH_API_KEY_STARTED'),
-  success: createAction('FETCH_API_KEY_SUCCESS', (payload: WithResult<string | null>) => payload),
-  failure: createAction('FETCH_API_KEY_FAILURE', (payload: WithError) => payload),
-};
-
-export const RegenerateApiKey = {
-  start: createAction('REGENERATE_API_KEY_START'),
-  started: createAction('REGENERATE_API_KEY_STARTED'),
-  success: createAction('REGENERATE_API_KEY_SUCCESS', (payload: WithResult<string>) => payload),
-  failure: createAction('REGENERATE_API_KEY_FAILURE', (payload: WithError) => payload),
-};
