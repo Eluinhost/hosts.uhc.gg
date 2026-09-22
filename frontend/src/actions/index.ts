@@ -101,10 +101,3 @@ export const RegenerateApiKey = {
   success: createAction('REGENERATE_API_KEY_SUCCESS', (payload: WithResult<string>) => payload),
   failure: createAction('REGENERATE_API_KEY_FAILURE', (payload: WithError) => payload),
 };
-
-export const ClearStorage = {
-  start: createAction('CLEAR_STORAGE_START'),
-  started: createAction('CLEAR_STORAGE_STARTED'),
-  success: createAction('CLEAR_STORAGE_SUCCESS'),
-  failure: createAction('CLEAR_STORAGE_FAILURE', (payload: WithError) => payload),
-};

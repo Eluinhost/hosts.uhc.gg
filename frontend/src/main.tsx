@@ -19,30 +19,29 @@ const queryClient = new QueryClient();
 
 const formDevTools = formDevtoolsPlugin();
 
-void createReduxStore().then(store => {
-  const root = document.getElementById('root');
+const store = createReduxStore();
 
-  if (!root) {
-    console.error('Could not find root element');
-    return;
-  }
+const root = document.getElementById('root');
 
-  createRoot(root).render(
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <OverlaysProvider>
-            <HotkeysProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </HotkeysProvider>
-          </OverlaysProvider>
-        </Provider>
-        <ReactQueryDevtools />
-        <TanStackDevtools plugins={[formDevTools]} />
-        <JotaiDevTools />
-      </QueryClientProvider>
-    </React.StrictMode>,
-  );
-});
+if (!root) {
+  throw new Error('Could not find root element');
+}
+
+createRoot(root).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <OverlaysProvider>
+          <HotkeysProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </HotkeysProvider>
+        </OverlaysProvider>
+      </Provider>
+      <ReactQueryDevtools />
+      <TanStackDevtools plugins={[formDevTools]} />
+      <JotaiDevTools />
+    </QueryClientProvider>
+  </React.StrictMode>,
+);

@@ -4,7 +4,8 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ClearStorage, FetchApiKey, RegenerateApiKey } from '../../actions';
+import { FetchApiKey, RegenerateApiKey } from '../../actions';
+import { useResetStorage } from '../../atoms/useResetStorage';
 import type { ApplicationState } from '../../state/ApplicationState';
 
 const stateSelector = createSelector(
@@ -17,10 +18,10 @@ export const ProfilePage: React.FC = () => {
     apiKey: { fetching, error, key },
   } = useSelector(stateSelector);
   const dispatch = useDispatch();
+  const resetStorage = useResetStorage();
 
   const refreshApiKey = useCallback(() => dispatch(FetchApiKey.start()), [dispatch]);
   const regenerateApiKey = useCallback(() => dispatch(RegenerateApiKey.start()), [dispatch]);
-  const resetStorage = useCallback(() => dispatch(ClearStorage.start()), [dispatch]);
 
   useEffect(() => {
     refreshApiKey();

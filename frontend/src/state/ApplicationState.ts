@@ -3,7 +3,6 @@ import createSagaMiddleware from 'redux-saga';
 
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
 import sagas from '../sagas';
-import { syncWithStorage } from '../sagas/syncWithStorage';
 
 import { reducer as ApiKey, type ApiKeyState } from './ApiKeyState';
 import { reducer as HostHistory, type HostHistoryState } from './HostHistoryState';
@@ -26,7 +25,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const sagaMiddleware = createSagaMiddleware();
 
-export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
+export const createReduxStore = (): Store<ApplicationState> => {
   const store = legacy_createStore(
     combineReducers({
       upcoming: Upcoming,
@@ -42,9 +41,5 @@ export const createReduxStore = async (): Promise<Store<ApplicationState>> => {
 
   sagaMiddleware.run(sagas);
 
-  // wait for storage sync then return the store
-  return sagaMiddleware
-    .run(syncWithStorage)
-    .toPromise()
-    .then(() => store);
+  return store;
 };
