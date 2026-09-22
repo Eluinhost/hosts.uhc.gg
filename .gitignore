@@ -5,5 +5,5 @@ target
 /application.conf
 /.idea
 *.iml
-/database/postgres
+/database
 /docker-compose.override.yml
