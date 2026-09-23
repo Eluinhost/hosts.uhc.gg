@@ -1,11 +1,9 @@
 import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
 import { AddIcon, TrashIcon } from '@blueprintjs/icons';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import type { CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
-import { QuizQuestions } from '../actions';
-import { getCreateQuizQuestionApiState } from '../selectors';
+import { type CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
+import { QuizQuestionsData } from '../api';
 
 type ChoiceDraft = {
   readonly text: string;
@@ -73,17 +71,16 @@ const Choice: React.FC<ChoiceProps> = ({
 const emptyChoices: ChoiceDraft[] = [{ text: '' }, { text: '' }];
 
 export const CreateQuizQuestionForm = () => {
-  const { isFetching } = useSelector(getCreateQuizQuestionApiState);
-  const dispatch = useDispatch();
+  const { mutateAsync: createQuestion, isPending } = QuizQuestionsData.mutations.useCreateQuizQuestion();
 
   const [prompt, setPrompt] = useState('');
-  const [questionType, setQuestionType] = useState<QuestionType>('multiple choice');
+  const [questionType, setQuestionType] = useState<QuestionType>(QuestionType.MULTIPLE_CHOICE);
   const [choices, setChoices] = useState(emptyChoices);
   const [correctIndex, setCorrectIndex] = useState(0);
 
   const reset = useCallback(() => {
     setPrompt('');
-    setQuestionType('multiple choice');
+    setQuestionType(QuestionType.MULTIPLE_CHOICE);
     setChoices(emptyChoices);
     setCorrectIndex(0);
   }, []);
@@ -113,12 +110,12 @@ export const CreateQuizQuestionForm = () => {
     setChoices(prev => [...prev, { text: '' }]);
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     const data: CreateQuizQuestionData =
-      questionType === 'multiple choice'
+      questionType === QuestionType.MULTIPLE_CHOICE
         ? {
             prompt: prompt.trim(),
-            questionType: 'multiple choice',
+            questionType: QuestionType.MULTIPLE_CHOICE,
             choices: choices.map((choice, index) => ({
               text: choice.text.trim(),
               correct: index === correctIndex,
@@ -126,24 +123,20 @@ export const CreateQuizQuestionForm = () => {
           }
         : {
             prompt: prompt.trim(),
-            questionType: 'text',
+            questionType: QuestionType.TEXT,
             choices: [],
           };
 
-    dispatch(
-      QuizQuestions.create.start({
-        data,
-        onSuccess: reset,
-      }),
-    );
-  }, [choices, correctIndex, dispatch, prompt, questionType, reset]);
+    await createQuestion(data);
+    reset();
+  }, [choices, correctIndex, createQuestion, prompt, questionType, reset]);
 
   const isValid = useMemo(() => {
     if (!prompt.trim()) {
       return false;
     }
 
-    if (questionType === 'multiple choice') {
+    if (questionType === QuestionType.MULTIPLE_CHOICE) {
       const filled = choices.filter(c => c.text.trim().length > 0);
       return filled.length >= 2 && choices.every(c => c.text.trim().length > 0);
     }
@@ -158,17 +151,17 @@ export const CreateQuizQuestionForm = () => {
         placeholder="Question prompt"
         value={prompt}
         onChange={handlePromptChange}
-        disabled={isFetching}
+        disabled={isPending}
       />
 
       <div style={{ marginTop: 10 }}>
-        <HTMLSelect value={questionType} onChange={handleTypeChange} disabled={isFetching}>
+        <HTMLSelect value={questionType} onChange={handleTypeChange} disabled={isPending}>
           <option value="multiple choice">Multiple choice</option>
           <option value="text">Text answer</option>
         </HTMLSelect>
       </div>
 
-      {questionType === 'multiple choice' && (
+      {questionType === QuestionType.MULTIPLE_CHOICE && (
         <RadioGroup label="Choices (select the correct answer)" onChange={() => undefined} selectedValue={correctIndex}>
           {choices.map((choice, index) => (
             <Choice
@@ -178,7 +171,7 @@ export const CreateQuizQuestionForm = () => {
               isCorrect={index === correctIndex}
               onSelect={handleCorrectChoiceChange}
               onChange={handleChoiceTextChange}
-              isDisabled={isFetching}
+              isDisabled={isPending}
               canRemove={choices.length > 2}
               onRemove={handleRemoveChoice}
             />
@@ -186,14 +179,21 @@ export const CreateQuizQuestionForm = () => {
         </RadioGroup>
       )}
 
-      {questionType === 'multiple choice' && (
-        <Button icon={<AddIcon />} variant="minimal" onClick={handleAddChoice} disabled={isFetching}>
+      {questionType === QuestionType.MULTIPLE_CHOICE && (
+        <Button icon={<AddIcon />} variant="minimal" onClick={handleAddChoice} disabled={isPending}>
           Add choice
         </Button>
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button intent={Intent.PRIMARY} icon={<AddIcon />} disabled={isFetching || !isValid} onClick={handleSubmit}>
+        <Button
+          intent={Intent.PRIMARY}
+          icon={<AddIcon />}
+          disabled={isPending || !isValid}
+          onClick={() => {
+            void handleSubmit();
+          }}
+        >
           Create question
         </Button>
       </div>

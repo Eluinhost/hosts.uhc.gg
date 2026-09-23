@@ -29,7 +29,7 @@ const ApplyHostApplicationPage = lazy(() =>
   })),
 );
 const HostApplicationsPage = lazy(() =>
-  import('../hosting-applications/components/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
+  import('../hosting-applications/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
 );
 const MembersPage = lazy(() => import('../members/components/MembersPage').then(m => ({ default: m.MembersPage })));
 const LoginPage = lazy(() => import('./LoginPage').then(m => ({ default: m.LoginPage })));
@@ -38,7 +38,7 @@ const ModifiersPage = lazy(() =>
   import('../modifiers/components/ModifiersPage').then(m => ({ default: m.ModifiersPage })),
 );
 const QuizManagementPage = lazy(() =>
-  import('../hosting-applications/questions/components/QuizManagementPage').then(m => ({
+  import('../hosting-applications/questions/QuizManagementPage').then(m => ({
     default: m.QuizManagementPage,
   })),
 );

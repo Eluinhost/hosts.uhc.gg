@@ -1,16 +1,15 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { AddIcon, InboxIcon } from '@blueprintjs/icons';
+import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMemo } from 'react';
 import { Link } from 'react-router';
 
-import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../../atoms/authentication';
-import { HostApplications } from '../actions';
-import { canApplyToHostAtom } from '../atoms';
-import { getHostApplicationsListState } from '../selectors';
+import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../atoms/authentication';
 
-import { ExistingHostApplication } from './ExistingHostApplication';
+import { HostApplicationsData } from './api';
+import { canApplyToHostAtom } from './atoms';
+import { ExistingHostApplication } from './components/ExistingHostApplication';
 
 export const HostApplicationsPage = () => {
   const username = useAtomValue(usernameAtom);
@@ -18,15 +17,16 @@ export const HostApplicationsPage = () => {
   const isBanned = useAtomValue(isHostingBannedAtom);
   const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
 
-  const { data, error, isFetching } = useSelector(getHostApplicationsListState);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(HostApplications.fetch.list.start());
-  }, [dispatch]);
+  const { data, error, isFetching } = useQuery(HostApplicationsData.getAll);
 
   const sorted = useMemo(() => {
-    if (!username) return data;
+    if (!data) {
+      return [];
+    }
+
+    if (!username) {
+      return data;
+    }
 
     const mine = data.filter(application => application.username === username);
     const others = data.filter(application => application.username !== username);
@@ -38,7 +38,7 @@ export const HostApplicationsPage = () => {
       <title>uhc.gg | Host Applications</title>
       <H1>Host Applications</H1>
 
-      {error && <Callout intent={Intent.DANGER}>{error}</Callout>}
+      {error && <Callout intent={Intent.DANGER}>{error.message}</Callout>}
 
       {isBanned && (
         <Callout intent={Intent.DANGER} style={{ marginBottom: 20 }}>
@@ -58,7 +58,7 @@ export const HostApplicationsPage = () => {
 
       {isFetching ? (
         <Spinner />
-      ) : data.length === 0 ? (
+      ) : data?.length === 0 ? (
         <NonIdealState
           icon={<InboxIcon />}
           title="No host applications yet"

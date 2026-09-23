@@ -1,137 +1,128 @@
-import { Button, Classes, H5, Intent, Radio, RadioGroup, TextArea } from '@blueprintjs/core';
+import { Button, Intent } from '@blueprintjs/core';
 import { AddIcon } from '@blueprintjs/icons';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useMemo } from 'react';
 
-import type { QuizQuestion } from '../../models/QuizQuestion';
-import { HostApplications } from '../actions';
-import { getHostApplicationsReviewingState } from '../selectors';
+import { FormLabel } from '../../forms/FormLabel';
+import { useAppForm } from '../../forms/useAppForm';
+import { QuestionType, type QuizQuestion } from '../../models/QuizQuestion';
+import { HostApplicationsData } from '../api';
 
-interface MultiChoiceProps {
-  question: QuizQuestion;
-  value?: number;
-  onChange: (questionId: number, choice: number) => void;
-  isDisabled: boolean;
-}
+// interface MultiChoiceProps {
+//   question: QuizQuestion;
+//   value?: number;
+//   onChange: (questionId: number, choice: number) => void;
+//   isDisabled: boolean;
+// }
 
-const MultiChoice: React.FC<MultiChoiceProps> = ({ question, value, onChange, isDisabled }) => {
-  const handleChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(question.id, Number(evt.currentTarget.value));
-    },
-    [question.id, onChange],
-  );
+// const MultiChoice: React.FC<MultiChoiceProps> = ({ question, value, onChange, isDisabled }) => {
+//   const handleChange = useCallback(
+//     (evt: React.ChangeEvent<HTMLInputElement>) => {
+//       onChange(question.id, Number(evt.currentTarget.value));
+//     },
+//     [question.id, onChange],
+//   );
+//
+//   return (
+//     <RadioGroup onChange={handleChange} selectedValue={value}>
+//       {question.choices.map(choice => (
+//         <Radio key={choice.id} label={choice.text} value={choice.id} disabled={isDisabled} />
+//       ))}
+//     </RadioGroup>
+//   );
+// };
 
-  return (
-    <RadioGroup onChange={handleChange} selectedValue={value}>
-      {question.choices.map(choice => (
-        <Radio key={choice.id} label={choice.text} value={choice.id} disabled={isDisabled} />
-      ))}
-    </RadioGroup>
-  );
-};
+// interface FreeTextProps {
+//   question: QuizQuestion;
+//   value: string;
+//   onChange: (questionId: number, text: string) => void;
+//   isDisabled: boolean;
+// }
 
-interface FreeTextProps {
-  question: QuizQuestion;
-  value: string;
-  onChange: (questionId: number, text: string) => void;
-  isDisabled: boolean;
-}
-
-const FreeText: React.FC<FreeTextProps> = ({ question, value, onChange, isDisabled }) => {
-  const handleChange = useCallback(
-    (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange(question.id, evt.target.value);
-    },
-    [question.id, onChange],
-  );
-
-  return <TextArea className={Classes.FILL} fill value={value} onChange={handleChange} disabled={isDisabled} />;
-};
+// const FreeText: React.FC<FreeTextProps> = ({ question, value, onChange, isDisabled }) => {
+//   const handleChange = useCallback(
+//     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+//       onChange(question.id, evt.target.value);
+//     },
+//     [question.id, onChange],
+//   );
+//
+//   return <TextArea className={Classes.FILL} fill value={value} onChange={handleChange} disabled={isDisabled} />;
+// };
 
 interface HostApplicationFormProps {
   questions: Array<QuizQuestion>;
 }
 
-interface AnswerState {
-  choiceId?: number;
-  textAnswer?: string;
-}
-
-type AnswerMap = Partial<Record<number, AnswerState>>;
-
 export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questions }) => {
-  const [answers, setAnswers] = useState<AnswerMap>({});
+  const { mutateAsync: createApplication } = HostApplicationsData.mutations.useCreateHostApplication();
 
-  const dispatch = useDispatch();
-  const { isFetching: isSubmitting } = useSelector(getHostApplicationsReviewingState);
-
-  const isComplete = useMemo(
-    (): boolean =>
-      questions.every(question => {
-        const answer = answers[question.id];
-        if (!answer) return false;
-
-        return question.questionType === 'multiple choice'
-          ? answer.choiceId !== undefined
-          : !!answer.textAnswer && answer.textAnswer.trim().length > 0;
-      }),
-    [answers, questions],
+  // building defaults based on the actual questions inputted
+  const defaults = useMemo(
+    () =>
+      questions.reduce<Record<string, string>>((acc, question) => {
+        const id = question.id.toString(10);
+        acc[id] = '';
+        return acc;
+      }, {}),
+    [questions],
   );
 
-  const handleSubmit = useCallback(() => {
-    dispatch(
-      HostApplications.create.start(
-        questions.map(question => ({
-          questionId: question.id,
-          choiceId: answers[question.id]?.choiceId,
-          textAnswer: answers[question.id]?.textAnswer,
+  // not using form-level validation as we're better off with per-field validation
+  const form = useAppForm({
+    defaultValues: defaults,
+    onSubmit: async ({ value }) => {
+      await createApplication({
+        answers: questions.map(({ id, questionType }) => ({
+          questionId: id,
+          choiceId: questionType === QuestionType.MULTIPLE_CHOICE ? parseInt(value[id], 10) : undefined,
+          textAnswer: questionType === QuestionType.TEXT ? value[id] : undefined,
         })),
-      ),
-    );
-  }, [answers, dispatch, questions]);
-
-  const handleChoiceChange = useCallback((questionId: number, choiceId: number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: { choiceId } }));
-  }, []);
-
-  const handleTextChange = useCallback((questionId: number, textAnswer: string) => {
-    setAnswers(prev => ({ ...prev, [questionId]: { textAnswer } }));
-  }, []);
+      });
+    },
+  });
 
   return (
-    <div>
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
       {questions.map(question => (
-        <div key={question.id} style={{ marginBottom: 20 }}>
-          <H5>{question.prompt}</H5>
-
-          {question.questionType === 'multiple choice' ? (
-            <MultiChoice
-              question={question}
-              value={answers[question.id]?.choiceId}
-              isDisabled={isSubmitting}
-              onChange={handleChoiceChange}
-            />
-          ) : (
-            <FreeText
-              question={question}
-              value={answers[question.id]?.textAnswer ?? ''}
-              isDisabled={isSubmitting}
-              onChange={handleTextChange}
-            />
+        <form.Field key={question.id} name={question.id.toString(10)}>
+          {field => (
+            <FormLabel field={field} label={question.prompt}>
+              {question.questionType === QuestionType.MULTIPLE_CHOICE ? (
+                <field.SegmentedField
+                  field={field}
+                  options={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
+                />
+              ) : (
+                <field.SegmentedField
+                  field={field}
+                  options={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
+                />
+              )}
+            </FormLabel>
           )}
-        </div>
+        </form.Field>
       ))}
 
-      <Button
-        type="button"
-        intent={Intent.PRIMARY}
-        icon={<AddIcon />}
-        disabled={isSubmitting || !isComplete}
-        onClick={handleSubmit}
-      >
-        Submit Application
-      </Button>
-    </div>
+      <form.Subscribe selector={state => state.isSubmitting || state.isInvalid}>
+        {disabled => (
+          <Button
+            type="submit"
+            intent={Intent.PRIMARY}
+            icon={<AddIcon />}
+            disabled={disabled}
+            onClick={() => {
+              void form.handleSubmit();
+            }}
+          >
+            Submit Application
+          </Button>
+        )}
+      </form.Subscribe>
+    </form>
   );
 };

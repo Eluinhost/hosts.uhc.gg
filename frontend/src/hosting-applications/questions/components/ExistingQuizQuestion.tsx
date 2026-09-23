@@ -1,11 +1,9 @@
 import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
 import { TrashIcon } from '@blueprintjs/icons';
-import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 
-import type { ManageQuizQuestion } from '../../../models/QuizQuestion';
-// import { getDeleteQuizQuestionApiState } from '../selectors';
-import { QuizQuestions } from '../actions';
+import { type ManageQuizQuestion, QuestionType } from '../../../models/QuizQuestion';
+import { QuizQuestionsData } from '../api';
 
 interface ExistingQuizQuestionProps {
   question: ManageQuizQuestion;
@@ -13,36 +11,29 @@ interface ExistingQuizQuestionProps {
 
 export const ExistingQuizQuestion: React.FC<ExistingQuizQuestionProps> = ({ question }) => {
   // TODO error + fetching UIs
-  // const { error, isFetching } = useSelector(getDeleteQuizQuestionApiState);
-  const dispatch = useDispatch();
+  const { mutate: deleteQuestion } = QuizQuestionsData.mutations.useDeleteQuizQuestion();
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-
-  const handleClick = useCallback(() => {
-    setIsAlertOpen(true);
-  }, []);
-
-  const handleCancel = useCallback(() => {
-    setIsAlertOpen(false);
-  }, []);
-
-  const handleConfirm = useCallback(() => {
-    setIsAlertOpen(false);
-    dispatch(QuizQuestions.delete.start(question.id));
-  }, [question.id, dispatch]);
 
   return (
     <div className={`${Classes.CARD} ${Classes.ELEVATION_1}`} style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <strong>{question.prompt}</strong>
-        <Button icon={<TrashIcon />} intent={Intent.DANGER} variant="minimal" onClick={handleClick} />
+        <Button
+          icon={<TrashIcon />}
+          intent={Intent.DANGER}
+          variant="minimal"
+          onClick={() => {
+            setIsAlertOpen(true);
+          }}
+        />
       </div>
 
       <Tag minimal style={{ marginTop: 5 }}>
         {question.questionType}
       </Tag>
 
-      {question.questionType === 'multiple choice' && (
+      {question.questionType === QuestionType.MULTIPLE_CHOICE && (
         <ul>
           {question.choices.map(choice => (
             <li key={choice.id}>
@@ -54,8 +45,13 @@ export const ExistingQuizQuestion: React.FC<ExistingQuizQuestionProps> = ({ ques
 
       <Alert
         isOpen={isAlertOpen}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onConfirm={() => {
+          setIsAlertOpen(false);
+          deleteQuestion({ id: question.id });
+        }}
+        onCancel={() => {
+          setIsAlertOpen(false);
+        }}
         confirmButtonText="Delete"
         cancelButtonText="Cancel"
         intent={Intent.DANGER}

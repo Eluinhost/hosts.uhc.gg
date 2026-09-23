@@ -1,47 +1,74 @@
-import { authHeaders, callApi, fetchArray, fetchObject } from '../api/util';
-import type { HostApplication, HostApplicationDetails, SubmitAnswerData } from '../models/HostApplication';
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { enforce } from 'vest';
 
-export const fetchHostApplications = (): Promise<HostApplication[]> =>
-  fetchArray<HostApplication>({
-    url: '/api/host-applications',
-  });
+import { apiClient } from '../apiClient';
+import { isValueOf } from '../forms/rules';
 
-export const fetchHostApplicationDetails = (id: number, accessToken: string): Promise<HostApplicationDetails> =>
-  fetchObject<HostApplicationDetails>({
-    url: `/api/host-applications/${id}`,
-    config: {
-      headers: authHeaders(accessToken),
+import { HostApplicationStatus, type SubmitAnswerData } from './HostApplication';
+
+const commonFields = {
+  id: enforce.isNumber(),
+  username: enforce.isString(),
+  created: enforce.isString(),
+  status: isValueOf(HostApplicationStatus),
+  reviewedBy: enforce.anyOf(enforce.isString(), enforce.isNull()),
+  reviewedAt: enforce.anyOf(enforce.isString(), enforce.isNull()),
+  reviewReason: enforce.anyOf(enforce.isString(), enforce.isNull()),
+};
+
+const hostApplication = enforce.shape(commonFields);
+
+const hostApplicationAnswer = enforce.shape({
+  questionPrompt: enforce.isString(),
+  questionType: enforce.isString().inside(['multiple choice', 'text']),
+  choiceText: enforce.anyOf(enforce.isString(), enforce.isNull()),
+  choiceCorrect: enforce.anyOf(enforce.isBoolean(), enforce.isNull()),
+  textAnswer: enforce.anyOf(enforce.isString(), enforce.isNull()),
+});
+
+const hostApplicationDetails = enforce.shape({
+  ...commonFields,
+  answers: enforce.isArrayOf(hostApplicationAnswer),
+});
+
+export const HostApplicationsData = {
+  getAll: queryOptions({
+    queryKey: ['hostApplications', 'list'],
+    queryFn: () => apiClient.get('/api/host-applications').json(enforce.isArrayOf(hostApplication)),
+  }),
+  getById: (id: number) =>
+    queryOptions({
+      queryKey: ['hostApplications', 'byId', id],
+      queryFn: () => apiClient.get(`/api/host-applications/${id}`).json(hostApplicationDetails),
+    }),
+  mutations: {
+    useCreateHostApplication: () => {
+      const client = useQueryClient();
+
+      return useMutation({
+        mutationFn: ({ answers }: { answers: SubmitAnswerData[] }) =>
+          apiClient.post('/api/host-applications', {
+            body: JSON.stringify({ answers }),
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        onSuccess: () => {
+          void client.invalidateQueries(HostApplicationsData.getAll);
+        },
+      });
     },
-  });
+    useReviewHostApplication: () => {
+      const client = useQueryClient();
 
-export const createHostApplication = (answers: SubmitAnswerData[], accessToken: string): Promise<void> =>
-  callApi({
-    url: '/api/host-applications',
-    config: {
-      method: 'POST',
-      headers: {
-        ...authHeaders(accessToken),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ answers }),
+      return useMutation({
+        mutationFn: ({ id, decision, reason }: { id: number; decision: 'approve' | 'decline'; reason?: string }) =>
+          apiClient.post(`/api/host-applications/${id}/${decision}`, {
+            body: JSON.stringify({ reason }),
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        onSuccess: () => {
+          void client.invalidateQueries(HostApplicationsData.getAll);
+        },
+      });
     },
-    status: 201,
-  });
-
-export const reviewHostApplication = (
-  id: number,
-  decision: 'approve' | 'decline',
-  accessToken: string,
-  reason?: string,
-): Promise<void> =>
-  callApi({
-    url: `/api/host-applications/${id}/${decision}`,
-    config: {
-      method: 'POST',
-      headers: {
-        ...authHeaders(accessToken),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ reason }),
-    },
-  });
+  },
+};

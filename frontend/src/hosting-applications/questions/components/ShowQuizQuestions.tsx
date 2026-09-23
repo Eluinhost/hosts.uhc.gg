@@ -1,38 +1,30 @@
 import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
 import { HelpIcon } from '@blueprintjs/icons';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
-import { QuizQuestions } from '../actions';
-import { getFetchQuizQuestionsForManagementApiState, getQuizQuestionsForManagement } from '../selectors';
+import { QuizQuestionsData } from '../api';
 
 import { CreateQuizQuestionForm } from './CreateQuizQuestionForm';
 import { ExistingQuizQuestion } from './ExistingQuizQuestion';
 
 export const ShowQuizQuestions = () => {
-  const { isFetching, error } = useSelector(getFetchQuizQuestionsForManagementApiState);
-  const questions = useSelector(getQuizQuestionsForManagement);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(QuizQuestions.fetchForManagement.start());
-  }, [dispatch]);
+  const { data, isFetching, error } = useQuery(QuizQuestionsData.getQuestionsForManagement);
 
   let top;
   if (error) {
     top = (
       <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-        <H5>Error: {error}</H5>
+        <H5>Error: {error.message}</H5>
       </div>
     );
   } else if (isFetching) {
     top = <NonIdealState icon={<Spinner />} title="Loading...." />;
-  } else if (questions.length === 0) {
+  } else if (data && data.length === 0) {
     top = <NonIdealState icon={<HelpIcon />} title="No questions setup" />;
   } else {
     top = (
       <div>
-        {questions.map(question => (
+        {data?.map(question => (
           <ExistingQuizQuestion question={question} key={question.id} />
         ))}
       </div>

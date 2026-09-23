@@ -1,4 +1,9 @@
-export type QuestionType = 'multiple choice' | 'text';
+import { type Dayjs } from '../dayjs';
+
+export enum QuestionType {
+  MULTIPLE_CHOICE = 'multiple choice',
+  TEXT = 'text',
+}
 
 export type QuizChoice = {
   readonly id: number;
@@ -21,7 +26,7 @@ export type ManageQuizQuestion = {
   readonly prompt: string;
   readonly questionType: QuestionType;
   readonly createdBy: string;
-  readonly created: string;
+  readonly created: Dayjs;
   readonly choices: ManageQuizChoice[];
 };
 

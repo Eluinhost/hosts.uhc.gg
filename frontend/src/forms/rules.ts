@@ -15,6 +15,19 @@ declare global {
 
 const IP_REGEX = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/;
 
+// built-in has type erasure for schemas, this keeps it intact, useful for enum mapping
+type ValueRule<T> = {
+  infer: T;
+  test: (...a: [T]) => boolean;
+  run: (...a: [T]) => never;
+  validate: (...a: [T]) => never;
+  parse: (...a: [T]) => T;
+  [key: string]: unknown;
+  '~standard': never;
+};
+export const isValueOf = <T>(record: Record<string, T>): ValueRule<T> =>
+  enforce.isValueOf(record) as unknown as ValueRule<T>;
+
 export const isValidIp = (ip: string): boolean => {
   const m = IP_REGEX.exec(ip);
   if (!m) return false;

@@ -1,4 +1,8 @@
-export type HostApplicationStatus = 'pending' | 'approved' | 'declined';
+export enum HostApplicationStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  DECLINED = 'declined',
+}
 
 export type HostApplication = {
   readonly id: number;

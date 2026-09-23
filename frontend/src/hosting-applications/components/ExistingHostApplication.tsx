@@ -1,15 +1,11 @@
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
 import { ChevronDownIcon, ChevronUpIcon, CrossIcon, TickIcon } from '@blueprintjs/icons';
+import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
 import dayjs from '../../dayjs';
-import type { HostApplication } from '../../models/HostApplication';
-import type { ApplicationState } from '../../state/ApplicationState';
-import { HostApplications } from '../actions';
-import type { HostApplicationDetailsState } from '../reducer';
-import { getHostApplicationsDetailsState, getHostApplicationsReviewingState } from '../selectors';
+import { HostApplicationsData } from '../api';
+import { type HostApplication, HostApplicationStatus } from '../HostApplication';
 
 interface ExistingHostApplicationProps {
   application: HostApplication;
@@ -17,59 +13,16 @@ interface ExistingHostApplicationProps {
   isOwn: boolean;
 }
 
-const selector = createSelector(
-  (state: ApplicationState, id: number): HostApplicationDetailsState | undefined =>
-    getHostApplicationsDetailsState(state)[id],
-  details => details,
-);
-
 export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = ({ application, canReview, isOwn }) => {
-  const dispatch = useDispatch();
-  const detailsState = useSelector(state => selector(state, application.id));
-  const { isFetching: isReviewing } = useSelector(getHostApplicationsReviewingState);
-
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
 
-  const toggleExpanded = useCallback(() => {
-    setIsExpanded(!isExpanded);
-
-    // expanded when called, skip api call
-    if (isExpanded) {
-      return;
-    }
-
-    dispatch(HostApplications.fetch.individual.start(application.id));
-  }, [isExpanded, dispatch, application.id]);
-
-  const handleReviewed = useCallback(() => {
-    setDeclineReason('');
-    setIsDeclineDialogOpen(false);
-    setIsExpanded(false);
-  }, []);
-
-  const handleApprove = useCallback(
-    () =>
-      dispatch(HostApplications.respond.start({ id: application.id, status: 'approve', onSuccess: handleReviewed })),
-    [application.id, handleReviewed, dispatch],
-  );
-  const handleReject = useCallback(
-    () =>
-      dispatch(
-        HostApplications.respond.start({
-          id: application.id,
-          status: 'decline',
-          rejectReason: declineReason,
-          onSuccess: handleReviewed,
-        }),
-      ),
-    [application.id, declineReason, handleReviewed, dispatch],
-  );
-
-  const handleDeclineReasonChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDeclineReason(evt.target.value);
-  }, []);
+  const { data, isFetching, error } = useQuery({
+    enabled: isExpanded,
+    ...HostApplicationsData.getById(application.id),
+  });
+  const { mutateAsync: review, isPending: isReviewing } = HostApplicationsData.mutations.useReviewHostApplication();
 
   const openDeclineDialog = useCallback(() => {
     setDeclineReason('');
@@ -81,8 +34,8 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
   }, []);
 
   const intent = useMemo((): Intent => {
-    if (application.status === 'approved') return Intent.SUCCESS;
-    if (application.status === 'declined') return Intent.DANGER;
+    if (application.status === HostApplicationStatus.APPROVED) return Intent.SUCCESS;
+    if (application.status === HostApplicationStatus.DECLINED) return Intent.DANGER;
     return Intent.WARNING;
   }, [application.status]);
 
@@ -102,25 +55,31 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
           {application.reviewedAt && ` on ${dayjs.utc(application.reviewedAt).format('MMM Do YYYY, HH:mm z')}`}
         </p>
       )}
-      {application.status === 'declined' && application.reviewReason && (
+      {application.status === HostApplicationStatus.DECLINED && application.reviewReason && (
         <p>
           <strong>Reason:</strong> {application.reviewReason}
         </p>
       )}
 
       <div style={{ marginTop: 10 }}>
-        <Button variant="minimal" icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />} onClick={toggleExpanded}>
+        <Button
+          variant="minimal"
+          icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          onClick={() => {
+            setIsExpanded(prev => !prev);
+          }}
+        >
           {isExpanded ? 'Hide answers' : 'View answers'}
         </Button>
       </div>
 
-      {isExpanded && detailsState && (
+      {isExpanded && (
         <>
-          {detailsState.isFetching && <Spinner size={20} />}
-          {detailsState.error && <p className={Classes.TEXT_MUTED}>{detailsState.error}</p>}
-          {detailsState.data && (
+          {isFetching && <Spinner size={20} />}
+          {error && <p className={Classes.TEXT_MUTED}>{error.message}</p>}
+          {data && (
             <div style={{ marginTop: 10 }}>
-              {detailsState.data.answers.map((answer, index) => (
+              {data.answers.map((answer, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
                   <strong>{answer.questionPrompt}</strong>
                   <p>
@@ -147,9 +106,16 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
         </>
       )}
 
-      {canReview && application.status === 'pending' && (
+      {canReview && application.status === HostApplicationStatus.PENDING && (
         <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
-          <Button intent={Intent.SUCCESS} icon={<TickIcon />} loading={isReviewing} onClick={handleApprove}>
+          <Button
+            intent={Intent.SUCCESS}
+            icon={<TickIcon />}
+            loading={isReviewing}
+            onClick={() => {
+              void review({ id: application.id, decision: 'approve' });
+            }}
+          >
             Approve
           </Button>
           <Button intent={Intent.DANGER} icon={<CrossIcon />} loading={isReviewing} onClick={openDeclineDialog}>
@@ -164,7 +130,9 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
           <TextArea
             fill
             value={declineReason}
-            onChange={handleDeclineReasonChange}
+            onChange={e => {
+              setDeclineReason(e.target.value);
+            }}
             placeholder="Reason for declining"
           />
         </div>
@@ -175,7 +143,12 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
               intent={Intent.DANGER}
               loading={isReviewing}
               disabled={declineReason.trim().length === 0}
-              onClick={handleReject}
+              onClick={() => {
+                void review({ id: application.id, decision: 'decline', reason: declineReason });
+                setDeclineReason('');
+                setIsDeclineDialogOpen(false);
+                setIsExpanded(false);
+              }}
             >
               Decline
             </Button>

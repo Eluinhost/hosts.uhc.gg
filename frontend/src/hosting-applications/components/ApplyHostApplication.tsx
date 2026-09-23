@@ -1,34 +1,22 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
 import { BanCircleIcon, HelpIcon, TickCircleIcon, TickIcon } from '@blueprintjs/icons';
+import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router';
 
 import { isHostingBannedAtom } from '../../atoms/authentication';
-import { HostApplications } from '../actions';
+import { HostApplicationsData } from '../api';
 import { canApplyToHostAtom } from '../atoms';
-import { QuizQuestions } from '../questions/actions';
-import { getFetchQuizQuestionsApiState } from '../questions/selectors';
-import { getHasSubmittedHostApplicationSuccessfully } from '../selectors';
+import { QuizQuestionsData } from '../questions/api';
 
 import { HostApplicationForm } from './HostApplicationForm';
 
 export const ApplyHostApplicationPage: React.FC = () => {
-  const dispatch = useDispatch();
-  const { error, data, isFetching } = useSelector(getFetchQuizQuestionsApiState);
+  const { error, data, isFetching } = useQuery(QuizQuestionsData.getQuestions);
   const canApply = useAtomValue(canApplyToHostAtom);
   const isBanned = useAtomValue(isHostingBannedAtom);
-
-  const hasSubmittedHostApplicationSuccessfully = useSelector(getHasSubmittedHostApplicationSuccessfully);
-
-  useEffect(() => {
-    dispatch(QuizQuestions.fetch.start());
-
-    return () => {
-      dispatch(HostApplications.create.reset());
-    };
-  }, [dispatch]);
+  const { isSuccess } = HostApplicationsData.mutations.useCreateHostApplication();
 
   if (isBanned) {
     return (
@@ -60,7 +48,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
     );
   }
 
-  if (hasSubmittedHostApplicationSuccessfully) {
+  if (isSuccess) {
     return (
       <NonIdealState
         icon={<TickIcon />}
@@ -80,11 +68,11 @@ export const ApplyHostApplicationPage: React.FC = () => {
       <title>uhc.gg | Apply to Host</title>
       <H1>Apply to Host</H1>
 
-      {error && <Callout intent={Intent.DANGER}>{error}</Callout>}
+      {error && <Callout intent={Intent.DANGER}>{error.message}</Callout>}
 
       {isFetching ? (
         <Spinner />
-      ) : data.length === 0 ? (
+      ) : !data || data.length === 0 ? (
         <NonIdealState icon={<HelpIcon />} title="No quiz questions have been configured yet" />
       ) : (
         <HostApplicationForm questions={data} />
