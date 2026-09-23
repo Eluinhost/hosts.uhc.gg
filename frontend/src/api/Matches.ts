@@ -1,20 +1,7 @@
-import dayjs from '../dayjs';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 
-import { authHeaders, callApi, fetchArray } from './util';
-
-export const fetchUpcomingMatches = (): Promise<Match[]> =>
-  fetchArray<Match>({
-    url: `/api/matches/upcoming`,
-  }).then(matches =>
-    matches.map(match => ({
-      ...match,
-      opens: dayjs.utc(match.opens),
-      created: dayjs.utc(match.created),
-      removedAt: match.removedAt && dayjs.utc(match.removedAt),
-    })),
-  );
+import { authHeaders, callApi } from './util';
 
 export const callRemove = (id: number, reason: string, accessToken: string): Promise<void> =>
   callApi({
@@ -60,15 +47,3 @@ export const create = (data: CreateMatchData, accessToken: string): Promise<void
     },
   });
 };
-
-export const fetchHistoryForHost = (host: string, before?: number): Promise<Match[]> =>
-  fetchArray<Match>({
-    url: `/api/hosts/${host}/matches?before=${before || ''}`,
-  }).then(matches =>
-    matches.map(match => ({
-      ...match,
-      opens: dayjs.utc(match.opens),
-      created: dayjs.utc(match.created),
-      removedAt: match.removedAt && dayjs.utc(match.removedAt),
-    })),
-  );

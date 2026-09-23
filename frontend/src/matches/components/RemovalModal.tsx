@@ -3,10 +3,8 @@ import { ArrowLeftIcon, DeleteIcon, TickIcon, WarningSignIcon } from '@blueprint
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
-import { useDispatch } from 'react-redux';
 import { enforce, test, create } from 'vest';
 
-import { UpdateUpcoming } from '../../actions';
 import { ApiErrors, MatchesApi } from '../../api';
 import { accessTokenAtom } from '../../atoms/authentication';
 import { isDarkModeAtom } from '../../atoms/isDarkMode';
@@ -34,7 +32,6 @@ export const suite = create(data => {
 export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
   const isDarkMode = useAtomValue(isDarkModeAtom);
   const accessToken = useAtomValue(accessTokenAtom);
-  const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
   const { mutateAsync } = useMutation({
@@ -62,8 +59,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
 
         onClose();
 
-        // TODO replace later with tanstack query cache invalidation when they're not longer in redux + sagas
-        dispatch(UpdateUpcoming.start());
+        void queryClient.invalidateQueries(MatchesData.upcoming);
         void queryClient.invalidateQueries(MatchesData.getById(id));
       } catch (err) {
         const message = err instanceof ApiErrors.BadDataError ? err.message : `Failed to remove match #${id}`;

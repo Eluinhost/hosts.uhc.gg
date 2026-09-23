@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { enforce } from 'vest';
 
@@ -37,7 +37,45 @@ const singleMatchSchema = enforce.shape({
   roles: enforce.isArrayOf(enforce.isString()),
 });
 
+const transformMatch = (match: ReturnType<(typeof singleMatchSchema)['parse']>): Match => ({
+  ...match,
+  opens: dayjs.utc(match.opens),
+  created: dayjs.utc(match.created),
+  removedAt: match.removedAt ? dayjs.utc(match.removedAt) : null,
+});
+
 export const MatchesData = {
+  upcoming: queryOptions({
+    queryKey: ['matches', 'upcoming'],
+    queryFn: async () => {
+      const data = await apiClient.get('/api/matches/upcoming').json(enforce.isArrayOf(singleMatchSchema));
+
+      return data.map(transformMatch);
+    },
+    refetchInterval: 60 * 1000,
+  }),
+  hostHistory: (username: string) =>
+    infiniteQueryOptions({
+      queryKey: ['matches', 'hostHistory', username],
+      queryFn: async ctx => {
+        const data = await apiClient
+          .get(`/api/hosts/${username}/matches`, {
+            searchParams: { before: ctx.pageParam },
+          })
+          .json(enforce.isArrayOf(singleMatchSchema));
+
+        return data.map(transformMatch);
+      },
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: lastPage => {
+        // using default page size of 20, so if less than 20 items in the page we're at the end
+        if (lastPage.length < 20) {
+          return undefined;
+        }
+
+        return lastPage[lastPage.length - 1].id;
+      },
+    }),
   getById: (id: number) =>
     queryOptions({
       queryKey: ['matches', 'byId', id],
@@ -49,21 +87,16 @@ export const MatchesData = {
         // matches default 'try 3 times'
         return failureCount < 2;
       },
-      queryFn: async (): Promise<Match> => {
+      queryFn: async () => {
         const data = await apiClient.get<Match>(`/api/matches/${id}`).json(singleMatchSchema);
 
-        return {
-          ...data,
-          created: dayjs.utc(data.created),
-          opens: dayjs.utc(data.opens),
-          removedAt: data.removedAt ? dayjs.utc(data.removedAt) : null,
-        };
+        return transformMatch(data);
       },
     }),
   getPotentialConflicts: (region: string, time: Dayjs, version: string) =>
     queryOptions({
       queryKey: ['potentialConflicts', { region, time, version }],
-      queryFn: async (): Promise<Match[]> => {
+      queryFn: async () => {
         const result = await apiClient
           .get('/api/matches/conflicts', {
             searchParams: {
@@ -74,12 +107,7 @@ export const MatchesData = {
           })
           .json(enforce.isArrayOf(singleMatchSchema));
 
-        return result.map(match => ({
-          ...match,
-          opens: dayjs.utc(match.opens),
-          created: dayjs.utc(match.created),
-          removedAt: match.removedAt ? dayjs.utc(match.removedAt) : null,
-        }));
+        return result.map(transformMatch);
       },
     }),
 };

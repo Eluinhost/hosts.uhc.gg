@@ -1,45 +1,23 @@
 import { H1 } from '@blueprintjs/core';
-import { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
-import { createSelector } from 'reselect';
 
-import { LoadHostHistory } from '../../actions';
+import dayjs from '../../dayjs';
+import { MatchesData } from '../../matches/api';
 import { MatchListing } from '../../matches/components/MatchListing';
-import type { ApplicationState } from '../../state/ApplicationState';
 
 type RouteParams = {
   readonly host: string;
 };
 
-const hostHistorySelector = createSelector(
-  (state: ApplicationState) => state.hostHistory,
-  hostHistory => hostHistory,
-);
-
 export const HistoryPage = () => {
-  const { matches, error, fetching, hasMorePages, updated } = useSelector(hostHistorySelector);
-  const dispatch = useDispatch();
-
   const { host } = useParams<RouteParams>();
+  const { data, error, isPending, hasNextPage, fetchNextPage, refetch, dataUpdatedAt } = useInfiniteQuery({
+    enabled: !!host,
+    ...MatchesData.hostHistory(host ?? ''),
+  });
 
-  const reload = useCallback(() => {
-    if (host) {
-      dispatch(LoadHostHistory.start({ host, refresh: true }));
-    }
-  }, [dispatch, host]);
-
-  const next = useCallback(() => {
-    if (host) {
-      dispatch(LoadHostHistory.start({ host, refresh: false }));
-    }
-  }, [dispatch, host]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(LoadHostHistory.clear());
-    };
-  }, [dispatch]);
+  if (!host) return null;
 
   return (
     <div>
@@ -51,13 +29,17 @@ export const HistoryPage = () => {
       </p>
 
       <MatchListing
-        matches={matches}
+        matches={data?.pages.flat() ?? []}
         error={error}
-        loading={fetching}
-        hasMore={hasMorePages}
-        loadMore={next}
-        refetch={reload}
-        lastUpdated={updated}
+        loading={isPending}
+        hasMore={hasNextPage}
+        loadMore={() => {
+          void fetchNextPage();
+        }}
+        refetch={() => {
+          void refetch();
+        }}
+        lastUpdated={dataUpdatedAt ? dayjs.unix(dataUpdatedAt / 1000) : null}
       />
     </div>
   );

@@ -1,15 +1,14 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
 import { CrossIcon, GeosearchIcon, RefreshIcon, SearchIcon } from '@blueprintjs/icons';
 import { useAtom, useAtomValue } from 'jotai';
-import { type ChangeEvent, type FC, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { usernameAtom } from '../../atoms/authentication';
 import { hideRemovedAtom, showOwnRemovedAtom } from '../../atoms/removedMatches';
-import dayjs, { type Dayjs } from '../../dayjs';
+import { type Dayjs } from '../../dayjs';
 import { ApprovalModal } from '../../matches/components/ApprovalModal';
 import { MatchRow } from '../../matches/components/MatchRow';
 import type { Match } from '../../models/Match';
-import { VisibilityDetector } from '../../services/VisibilityDetector';
 
 import { RefreshButton } from './RefreshButton';
 
@@ -18,11 +17,10 @@ import './MatchListing.sass';
 type MatchListingProps = {
   readonly matches: Match[];
   readonly loading: boolean;
-  readonly error: string | null;
+  readonly error: Error | null;
   readonly refetch: () => void;
   readonly loadMore: () => void;
   readonly lastUpdated: Dayjs | null;
-  readonly autoRefreshSeconds?: number;
   readonly hasMore: boolean;
   readonly disableRemove?: boolean;
   readonly disableApprove?: boolean;
@@ -35,7 +33,6 @@ export const MatchListing: FC<MatchListingProps> = ({
   refetch,
   loadMore,
   lastUpdated,
-  autoRefreshSeconds,
   hasMore,
   disableRemove,
   disableApprove,
@@ -45,53 +42,6 @@ export const MatchListing: FC<MatchListingProps> = ({
   const [showOwnRemoved, setShowOwnRemoved] = useAtom(showOwnRemovedAtom);
 
   const [search, setSearch] = useState('');
-
-  const timerIdRef = useRef<number | null>(null);
-  const visibilityDetectorRef = useRef(new VisibilityDetector());
-
-  const stopTimer = useCallback(() => {
-    if (timerIdRef.current) {
-      window.clearInterval(timerIdRef.current);
-      timerIdRef.current = null;
-    }
-  }, []);
-
-  const handleVisibilityChange = useCallback(() => {
-    // always clear any existing timer first
-    stopTimer();
-
-    // if it's visible (or not supported) start the timer if required
-    if (!visibilityDetectorRef.current.isHidden()) {
-      if (autoRefreshSeconds !== undefined && autoRefreshSeconds < 1) {
-        throw new Error("autorefresh shouldn't be < 1");
-      }
-
-      // if we are to auto refresh start a timer
-      if (autoRefreshSeconds) {
-        timerIdRef.current = window.setInterval(refetch, autoRefreshSeconds * 1000);
-      }
-
-      // data is stale if it has never been updated or the last update was before the refresh timer allows
-      const isDataStale: boolean =
-        lastUpdated === null ||
-        (autoRefreshSeconds !== undefined && dayjs.utc().diff(lastUpdated, 'seconds') > autoRefreshSeconds);
-
-      if (isDataStale) {
-        refetch();
-      }
-    }
-  }, [autoRefreshSeconds, lastUpdated, refetch, stopTimer]);
-
-  useEffect(() => {
-    const detector = visibilityDetectorRef.current;
-    detector.addEventListener(handleVisibilityChange);
-    handleVisibilityChange();
-
-    return () => {
-      stopTimer();
-      detector.removeEventListener(handleVisibilityChange);
-    };
-  }, [handleVisibilityChange, stopTimer]);
 
   const renderMatch = useCallback(
     (match: Match): ReactElement => (
@@ -196,7 +146,7 @@ export const MatchListing: FC<MatchListingProps> = ({
 
       {!loading && !!error && (
         <Callout intent={Intent.DANGER}>
-          <H5>{error}</H5>
+          <H5>{error.message}</H5>
         </Callout>
       )}
 

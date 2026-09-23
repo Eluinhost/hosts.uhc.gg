@@ -1,40 +1,31 @@
 import { H1 } from '@blueprintjs/core';
-import { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
+import { useQuery } from '@tanstack/react-query';
 
-import { UpdateUpcoming } from '../../actions';
+import dayjs from '../../dayjs';
 import { MatchListing } from '../../matches/components/MatchListing';
-import type { ApplicationState } from '../../state/ApplicationState';
+import { MatchesData } from '../api';
 
 const dontLoadMore = () => {
   throw new Error('Should not be called');
 };
 
-const stateSelector = createSelector(
-  (state: ApplicationState) => state.upcoming,
-  state => state,
-);
-
 export const UpcomingMatchesPage = () => {
-  const { matches, error, fetching, updated } = useSelector(stateSelector);
-  const dispatch = useDispatch();
-
-  const refetch = useCallback(() => dispatch(UpdateUpcoming.start()), [dispatch]);
+  const { data, error, isFetching, refetch, dataUpdatedAt } = useQuery(MatchesData.upcoming);
 
   return (
     <div>
       <title>uhc.gg | Upcoming Matches</title>
       <H1>Upcoming Matches</H1>
       <MatchListing
-        matches={matches}
+        matches={data ?? []}
         error={error}
-        loading={fetching}
-        refetch={refetch}
-        autoRefreshSeconds={60}
+        loading={isFetching}
+        refetch={() => {
+          void refetch();
+        }}
         hasMore={false}
         loadMore={dontLoadMore}
-        lastUpdated={updated}
+        lastUpdated={dataUpdatedAt ? dayjs.unix(dataUpdatedAt / 1000) : null}
       />
     </div>
   );
