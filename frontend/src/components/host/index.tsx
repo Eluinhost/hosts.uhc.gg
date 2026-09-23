@@ -4,13 +4,13 @@ import { useAtom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { MatchesApi } from '../../api';
-import { accessTokenAtom, permissionsAtom, usernameAtom } from '../../atoms/authentication';
+import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
 import { hostFormDataAtom } from '../../atoms/hostFormData';
 import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm, useFormSelector } from '../../forms/useAppForm';
+import { MatchesData } from '../../matches/api';
 import { MatchRow } from '../../matches/components/MatchRow';
 import { PotentialConflicts } from '../../matches/components/PotentialConflicts';
 import type { CreateMatchData } from '../../models/CreateMatchData';
@@ -40,10 +40,10 @@ const createTemplateContext = (values: CreateMatchData, author: string): Templat
 export const HostingPage: React.FC = () => {
   const username = useAtomValue(usernameAtom) ?? 'Unknown User';
   const roles = useAtomValue(permissionsAtom) ?? [];
-  const accessToken = useAtomValue(accessTokenAtom);
   const timezone = useAtomValue(timezoneAtom);
   const [savedValues, setSavedValues] = useAtom(hostFormDataAtom);
   const navigate = useNavigate();
+  const { mutateAsync: createMatch } = MatchesData.mutations.useCreateMatch();
 
   const [defaultValues] = useState<CreateMatchData>(() => ({
     ...savedValues,
@@ -71,7 +71,7 @@ export const HostingPage: React.FC = () => {
       // + overhost checking, so just make the actual call and log the error response body on the form
       // to match the previous logic
 
-      await MatchesApi.create(withRenderedTemplate, accessToken ?? 'NO ACCESS TOKEN IN STORE');
+      await createMatch(withRenderedTemplate);
 
       // if success send them to the matches page to view it
       void navigate('/matches');

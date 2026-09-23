@@ -1,12 +1,15 @@
 import { Intent } from '@blueprintjs/core';
 import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import { createElement } from 'react';
 import { enforce } from 'vest';
 
 import { apiClient } from '../apiClient';
+import { usernameAtom } from '../atoms/authentication';
 import dayjs, { type Dayjs } from '../dayjs';
+import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 import { showToast } from '../services/AppToaster';
 
@@ -115,6 +118,50 @@ export const MatchesData = {
       },
     }),
   mutations: {
+    useCreateMatch: () => {
+      const client = useQueryClient();
+      const username = useAtomValue(usernameAtom);
+
+      return useMutation({
+        mutationFn: (data: CreateMatchData) =>
+          apiClient.post('/api/matches', {
+            body: JSON.stringify({
+              ...data,
+              opens: data.opens.utc(),
+              // convert the modifiers into scenarios
+              scenarios: [...data.modifiers, ...data.scenarios],
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        onSuccess: () => {
+          void client.invalidateQueries(MatchesData.upcoming);
+          if (username) {
+            void client.invalidateQueries(MatchesData.hostHistory(username));
+          }
+        },
+      });
+    },
+    useRemoveMatch: () => {
+      const client = useQueryClient();
+
+      return useMutation({
+        mutationFn: ({ id, reason }: { id: number; reason: string }) =>
+          apiClient.delete(`/api/matches/${id}`, { body: JSON.stringify({ reason }) }),
+        onSuccess: (_data, { id }) => {
+          // invalidate upcoming matches only if it's in there
+          if (client.getQueryData(MatchesData.upcoming.queryKey)?.some(x => x.id === id)) {
+            void client.invalidateQueries(MatchesData.upcoming);
+          }
+
+          // just invalidate whole host history, we don't know the host name here
+          void client.invalidateQueries({
+            queryKey: MatchesData.hostHistory('').queryKey.slice(2),
+          });
+
+          void client.invalidateQueries(MatchesData.getById(id));
+        },
+      });
+    },
     useApproveMatch: () => {
       const client = useQueryClient();
 

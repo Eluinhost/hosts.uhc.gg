@@ -1,12 +1,10 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
 import { ArrowLeftIcon, DeleteIcon, TickIcon, WarningSignIcon } from '@blueprintjs/icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
 import { enforce, test, create } from 'vest';
 
-import { ApiErrors, MatchesApi } from '../../api';
-import { accessTokenAtom } from '../../atoms/authentication';
+import { ApiErrors } from '../../api';
 import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
@@ -17,7 +15,7 @@ const schema = enforce.shape({
   reason: enforce.isString(),
 });
 
-export const suite = create(data => {
+const suite = create(data => {
   test('reason', 'This field is required', () => {
     enforce(data.reason).isString().min(1);
   });
@@ -31,13 +29,7 @@ export const suite = create(data => {
 
 export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
   const isDarkMode = useAtomValue(isDarkModeAtom);
-  const accessToken = useAtomValue(accessTokenAtom);
-  const queryClient = useQueryClient();
-
-  const { mutateAsync } = useMutation({
-    mutationFn: ({ id, reason }: { id: number; reason: string }) =>
-      MatchesApi.callRemove(id, reason, accessToken ?? 'NO ACCESS TOKEN'),
-  });
+  const { mutateAsync } = MatchesData.mutations.useRemoveMatch();
 
   const form = useAppForm({
     defaultValues: { reason: '' },
@@ -58,9 +50,6 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
         });
 
         onClose();
-
-        void queryClient.invalidateQueries(MatchesData.upcoming);
-        void queryClient.invalidateQueries(MatchesData.getById(id));
       } catch (err) {
         const message = err instanceof ApiErrors.BadDataError ? err.message : `Failed to remove match #${id}`;
 
