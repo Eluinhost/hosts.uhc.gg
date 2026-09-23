@@ -2,7 +2,6 @@ import { Tooltip, Position } from '@blueprintjs/core';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
-import { lruMemoize } from 'reselect';
 
 import { is12hAtom } from '../../atoms/timeFormatting';
 import { timezoneAtom } from '../../atoms/timezone';
@@ -15,36 +14,33 @@ const MILLIS_PER_MINUTE = MILLIS_PER_SECOND * SECONDS_PER_MINUTE;
 const MINUTES_PER_HOUR = 60;
 const MILLIS_PER_HOUR = MILLIS_PER_MINUTE * MINUTES_PER_HOUR;
 
-const formatOffset = lruMemoize(
-  (offset: number): string => {
-    let o = offset;
-    const negative = o < 0;
+const formatOffset = (offset: number): string => {
+  let o = offset;
+  const negative = o < 0;
 
-    let output = '';
+  let output = '';
 
-    if (negative) {
-      output = '-';
-      o *= -1;
-    }
+  if (negative) {
+    output = '-';
+    o *= -1;
+  }
 
-    if (o > MILLIS_PER_HOUR) {
-      output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
-      o %= MILLIS_PER_HOUR;
-    }
+  if (o > MILLIS_PER_HOUR) {
+    output += `${Math.floor(o / MILLIS_PER_HOUR)}h `;
+    o %= MILLIS_PER_HOUR;
+  }
 
-    if (o > MILLIS_PER_MINUTE) {
-      output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
-      o %= MILLIS_PER_MINUTE;
-    }
+  if (o > MILLIS_PER_MINUTE) {
+    output += `${Math.floor(o / MILLIS_PER_MINUTE)}m `;
+    o %= MILLIS_PER_MINUTE;
+  }
 
-    const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
+  const display: number = offset < 10 * MILLIS_PER_SECOND ? o / MILLIS_PER_SECOND : Math.floor(o / MILLIS_PER_SECOND);
 
-    output += `${display}s `;
+  output += `${display}s `;
 
-    return output.trim();
-  },
-  { maxSize: 1 },
-);
+  return output.trim();
+};
 
 export const currentTimeFormatAtom = atom(get => (get(is12hAtom) ? 'hh:mm:ss A z' : 'HH:mm:ss z'));
 
@@ -64,12 +60,14 @@ export const CurrentTime: React.FC = () => {
     };
   }, []);
 
+  const formattedOffset = useMemo(() => formatOffset(offset ?? 0), [offset]);
+
   const tooltipText = useMemo(
     () =>
       unsynced
         ? 'Not synced with the server'
-        : `Synced with the server with ${formatOffset(offset ?? 0)} offset. Click to resync`,
-    [offset, unsynced],
+        : `Synced with the server with ${formattedOffset} offset. Click to resync`,
+    [formattedOffset, unsynced],
   );
 
   const timeText = useMemo(

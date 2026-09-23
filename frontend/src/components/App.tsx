@@ -7,6 +7,7 @@ import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '../atoms/authentication';
 import { isDarkModeAtom } from '../atoms/isDarkMode';
+import { useAuthRefresh } from '../authentication/useAuthRefresh';
 import { UpcomingMatchesPage } from '../matches/pages/UpcomingMatchesPage';
 import { TimeSettings } from '../time/components/TimeSettings';
 
@@ -134,6 +135,7 @@ const AppRoutes: React.FC = () => {
 };
 
 export const App: React.FC = () => {
+  useAuthRefresh();
   useGlobalHotkeys();
 
   const darkModeEnabled = useAtomValue(isDarkModeAtom);
