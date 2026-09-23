@@ -15,9 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { ApproveMatch } from '../../actions';
 import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
 import { ClipboardControlGroup } from '../../components/clipboard-control-group';
 import { HostStatus } from '../../components/host-status';
@@ -28,6 +26,7 @@ import { MatchesData } from '../../matches/api';
 import { MatchOpens } from '../../time/components/MatchOpens';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 
+import { ApprovalModal } from './ApprovalModal';
 import { RemovalModal } from './RemovalModal';
 import { RemovedInfo } from './RemovedInfo';
 import { RemovedTag } from './RemovedTag';
@@ -37,8 +36,8 @@ export interface MatchDetailsProps {
 }
 
 export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
-  const dispatch = useDispatch();
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
   const username = useAtomValue(usernameAtom);
   const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
 
@@ -48,8 +47,6 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
 
   const canApprove = canModify && isHostingAdvisor;
   const canRemove = canModify && (isHostingAdvisor || (username != null && username === data.author));
-
-  const approve = useCallback(() => dispatch(ApproveMatch.openDialog(id)), [id, dispatch]);
 
   const renderTags = useCallback(
     (tags: string[]): React.ReactElement[] =>
@@ -200,7 +197,14 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
         {(canApprove || canRemove) && (
           <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
             {canApprove && (
-              <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={approve} />
+              <Button
+                intent={Intent.SUCCESS}
+                icon={<ConfirmIcon />}
+                title="Approve Match"
+                onClick={() => {
+                  setIsApproving(true);
+                }}
+              />
             )}
             {canRemove && (
               <Button
@@ -220,6 +224,14 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
             id={data.id}
             onClose={() => {
               setIsRemoving(false);
+            }}
+          />
+        )}
+        {isApproving && (
+          <ApprovalModal
+            id={data.id}
+            onClose={() => {
+              setIsApproving(false);
             }}
           />
         )}

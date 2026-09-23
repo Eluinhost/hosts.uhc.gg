@@ -1,10 +1,14 @@
-import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
+import { Intent } from '@blueprintjs/core';
+import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
+import { createElement } from 'react';
 import { enforce } from 'vest';
 
 import { apiClient } from '../apiClient';
 import dayjs, { type Dayjs } from '../dayjs';
 import type { Match } from '../models/Match';
+import { showToast } from '../services/AppToaster';
 
 const singleMatchSchema = enforce.shape({
   id: enforce.isNumber(),
@@ -110,4 +114,39 @@ export const MatchesData = {
         return result.map(transformMatch);
       },
     }),
+  mutations: {
+    useApproveMatch: () => {
+      const client = useQueryClient();
+
+      return useMutation({
+        mutationFn: async (id: number) => apiClient.post(`/api/matches/${id}/approve`),
+        onSuccess: (_data, id) => {
+          void showToast({
+            intent: Intent.SUCCESS,
+            icon: createElement(TickIcon),
+            message: `Approved match #${id}`,
+          });
+
+          // invalidate upcoming matches only if it's in there
+          if (client.getQueryData(MatchesData.upcoming.queryKey)?.some(x => x.id === id)) {
+            void client.invalidateQueries(MatchesData.upcoming);
+          }
+
+          // just invalidate whole host history, we don't know the host name here
+          void client.invalidateQueries({
+            queryKey: MatchesData.hostHistory('').queryKey.slice(2),
+          });
+
+          void client.invalidateQueries(MatchesData.getById(id));
+        },
+        onError: (_error, id) => {
+          void showToast({
+            intent: Intent.DANGER,
+            icon: createElement(WarningSignIcon),
+            message: `Failed to approve match #${id}`,
+          });
+        },
+      });
+    },
+  },
 };

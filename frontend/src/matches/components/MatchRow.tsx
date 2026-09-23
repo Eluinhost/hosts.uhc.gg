@@ -10,10 +10,8 @@ import {
 } from '@blueprintjs/icons';
 import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router';
 
-import { ApproveMatch } from '../../actions';
 import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
 import { HostStatus } from '../../components/host-status';
 import { HoverSwap } from '../../components/HoverSwap';
@@ -24,6 +22,7 @@ import type { Match } from '../../models/Match';
 import { MatchOpensTag } from '../../time/components/MatchOpensTag';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 
+import { ApprovalModal } from './ApprovalModal';
 import { RemovalModal } from './RemovalModal';
 import { RemovedReason } from './RemovedReason';
 import { ServerTag } from './ServerTag';
@@ -43,21 +42,8 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
   const canApprove = (permissions ?? []).includes('hosting advisor');
   const canRemove = canApprove || (username != null && username === match.author);
 
-  const dispatch = useDispatch();
-
   const [isRemoving, setIsRemoving] = useState(false);
-
-  const openApprovalModal = useCallback((id: number) => dispatch(ApproveMatch.openDialog(id)), [dispatch]);
-
-  const onApprovePress = useCallback(
-    (event: React.MouseEvent<HTMLElement>): void => {
-      event.stopPropagation();
-      event.preventDefault();
-
-      openApprovalModal(match.id);
-    },
-    [openApprovalModal, match.id],
-  );
+  const [isApproving, setIsApproving] = useState(false);
 
   const onRemovePress = useCallback((event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
@@ -129,7 +115,16 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         <div className="match-moderation-actions">
           <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.VERTICAL} ${Classes.LARGE}`}>
             {!disableApproval && canApprove && !match.approvedBy && (
-              <Button intent={Intent.SUCCESS} icon={<ConfirmIcon />} title="Approve Match" onClick={onApprovePress} />
+              <Button
+                intent={Intent.SUCCESS}
+                icon={<ConfirmIcon />}
+                title="Approve Match"
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setIsApproving(true);
+                }}
+              />
             )}
 
             {!!match.approvedBy && (
@@ -154,11 +149,21 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
     />
   );
 
+  const approval = isApproving && (
+    <ApprovalModal
+      id={match.id}
+      onClose={() => {
+        setIsApproving(false);
+      }}
+    />
+  );
+
   if (disableLink)
     return (
       <>
         {card}
         {removal}
+        {approval}
       </>
     );
 
@@ -168,6 +173,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         {card}
       </Link>
       {removal}
+      {approval}
     </>
   );
 };

@@ -17,15 +17,6 @@ export const callRemove = (id: number, reason: string, accessToken: string): Pro
     },
   });
 
-export const callApprove = (id: number, accessToken: string): Promise<void> =>
-  callApi({
-    url: `/api/matches/${id}/approve`,
-    config: {
-      method: 'POST',
-      headers: authHeaders(accessToken),
-    },
-  });
-
 export const create = (data: CreateMatchData, accessToken: string): Promise<void> => {
   const body: Partial<Match> = {
     ...data,

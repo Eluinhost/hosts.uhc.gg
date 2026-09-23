@@ -6,7 +6,6 @@ import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, use
 import { usernameAtom } from '../../atoms/authentication';
 import { hideRemovedAtom, showOwnRemovedAtom } from '../../atoms/removedMatches';
 import { type Dayjs } from '../../dayjs';
-import { ApprovalModal } from '../../matches/components/ApprovalModal';
 import { MatchRow } from '../../matches/components/MatchRow';
 import type { Match } from '../../models/Match';
 
@@ -166,8 +165,6 @@ export const MatchListing: FC<MatchListingProps> = ({
           />
         </div>
       )}
-
-      <ApprovalModal />
     </div>
   );
 };

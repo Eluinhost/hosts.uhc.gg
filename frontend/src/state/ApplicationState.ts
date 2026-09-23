@@ -4,10 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import { reducer as hostingApplications } from '../hosting-applications/reducer';
 import sagas from '../sagas';
 
-import { reducer as MatchModeration, type MatchModerationState } from './MatchModerationState';
-
 export type ApplicationState = {
-  readonly matchModeration: MatchModerationState;
   readonly hostingApplications: ReturnType<typeof hostingApplications>;
 };
 
@@ -18,7 +15,6 @@ const sagaMiddleware = createSagaMiddleware();
 export const createReduxStore = (): Store<ApplicationState> => {
   const store = legacy_createStore(
     combineReducers({
-      matchModeration: MatchModeration,
       hostingApplications,
     }),
     composeEnhancers(applyMiddleware(sagaMiddleware)),
