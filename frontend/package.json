@@ -23,6 +23,7 @@
     "@rc-component/picker": "1.14.0",
     "@tanstack/markdown": "0.0.15",
     "@tanstack/react-form": "2.0.0-alpha.2",
+    "@tanstack/react-pacer": "0.23.0",
     "@tanstack/react-query": "5.103.1",
     "clsx": "2.1.1",
     "dayjs": "1.11.23",
