@@ -45,6 +45,7 @@ object Settings {
       "com.zaxxer"               % "HikariCP"                   % versions.hikaricp,
       "ch.qos.logback"           % "logback-classic"            % versions.logback,
       "io.circe"                 %% "circe-generic"             % versions.circe,
+      "io.circe"                 %% "circe-parser"              % versions.circe,
       "org.flywaydb"             % "flyway-core"                % versions.flyway,
       "org.flywaydb"             % "flyway-database-postgresql" % versions.flyway,
       "com.github.jwt-scala"     %% "jwt-circe"                 % versions.jwtCirce,
