@@ -53,7 +53,11 @@ object Settings {
       "com.softwaremill.macwire" %% "util"                      % versions.macwire,
       "com.github.blemale"       %% "scaffeine"                 % versions.caffeine,
       "nl.grons"                 %% "metrics4-scala"            % versions.metricsScala,
-      "com.github.davidb"        % "metrics-influxdb"           % versions.metricsInfluxDb
+      "com.github.davidb"        % "metrics-influxdb"           % versions.metricsInfluxDb,
+
+      // not direct dependency, for security patching
+      "co.fs2"                   %% "fs2-core"                  % "2.5.13",
+      "co.fs2"                   %% "fs2-io"                    % "2.5.13"
     )
   )
 }
