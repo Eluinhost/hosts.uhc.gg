@@ -27,7 +27,7 @@ export const useAuthRefresh = () => {
       enabled: isLoggedIn,
       initialData: () => store.get(authenticationAtom),
       queryKey: ['authentication', 'refresh'],
-      queryFn: async (): Promise<{ accessToken: string; refreshToken: string } | null> => {
+      queryFn: async ({ signal }): Promise<{ accessToken: string; refreshToken: string } | null> => {
         const previous = store.get(authenticationAtom);
 
         console.log('Checking authentication token refresh status');
@@ -61,6 +61,7 @@ export const useAuthRefresh = () => {
               headers: {
                 Authorization: `Bearer ${previous.refreshToken}`,
               },
+              signal,
             })
             .json(enforce.anyOf(enforce.isNull(), tokensSchema));
 

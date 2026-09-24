@@ -40,12 +40,14 @@ const manageQuizQuestionSchema = enforce.shape({
 export const QuizQuestionsData = {
   getQuestions: queryOptions({
     queryKey: ['quizQuestions', 'nonManagement'],
-    queryFn: () => apiClient.get('/api/quiz').json(enforce.isArrayOf(quizQuestionSchema)),
+    queryFn: ({ signal }) => apiClient.get('/api/quiz', { signal }).json(enforce.isArrayOf(quizQuestionSchema)),
   }),
   getQuestionsForManagement: queryOptions({
     queryKey: ['quizQuestions', 'management'],
-    queryFn: async () => {
-      const data = await apiClient.get('/api/quiz/manage').json(enforce.isArrayOf(manageQuizQuestionSchema));
+    queryFn: async ({ signal }) => {
+      const data = await apiClient
+        .get('/api/quiz/manage', { signal })
+        .json(enforce.isArrayOf(manageQuizQuestionSchema));
 
       return data.map(x => ({ ...x, created: dayjs.utc(x.created) }));
     },
@@ -57,7 +59,11 @@ export const QuizQuestionsData = {
       return useMutation({
         mutationFn: (data: CreateQuizQuestionData) =>
           apiClient
-            .post('/api/quiz', { body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
+            .post('/api/quiz', {
+              body: JSON.stringify(data),
+              headers: { 'Content-Type': 'application/json' },
+              signal: null,
+            })
             .json(
               enforce.shape({
                 id: enforce.isNumber(),
@@ -73,7 +79,7 @@ export const QuizQuestionsData = {
       const client = useQueryClient();
 
       return useMutation({
-        mutationFn: ({ id }: { id: number }) => apiClient.delete(`/api/quiz/${id}`),
+        mutationFn: ({ id }: { id: number }) => apiClient.delete(`/api/quiz/${id}`, { signal: null }),
         onSuccess: () => {
           void client.invalidateQueries(QuizQuestionsData.getQuestions);
           void client.invalidateQueries(QuizQuestionsData.getQuestionsForManagement);

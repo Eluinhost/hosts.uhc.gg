@@ -34,12 +34,13 @@ const hostApplicationDetails = enforce.shape({
 export const HostApplicationsData = {
   getAll: queryOptions({
     queryKey: ['hostApplications', 'list'],
-    queryFn: () => apiClient.get('/api/host-applications').json(enforce.isArrayOf(hostApplication)),
+    queryFn: ({ signal }) =>
+      apiClient.get('/api/host-applications', { signal }).json(enforce.isArrayOf(hostApplication)),
   }),
   getById: (id: number) =>
     queryOptions({
       queryKey: ['hostApplications', 'byId', id],
-      queryFn: () => apiClient.get(`/api/host-applications/${id}`).json(hostApplicationDetails),
+      queryFn: ({ signal }) => apiClient.get(`/api/host-applications/${id}`, { signal }).json(hostApplicationDetails),
     }),
   mutations: {
     useCreateHostApplication: () => {
@@ -50,6 +51,7 @@ export const HostApplicationsData = {
           apiClient.post('/api/host-applications', {
             body: JSON.stringify({ answers }),
             headers: { 'Content-Type': 'application/json' },
+            signal: null,
           }),
         onSuccess: () => {
           void client.invalidateQueries(HostApplicationsData.getAll);
@@ -64,6 +66,7 @@ export const HostApplicationsData = {
           apiClient.post(`/api/host-applications/${id}/${decision}`, {
             body: JSON.stringify({ reason }),
             headers: { 'Content-Type': 'application/json' },
+            signal: null,
           }),
         onSuccess: () => {
           void client.invalidateQueries(HostApplicationsData.getAll);

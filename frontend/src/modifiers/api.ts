@@ -12,8 +12,8 @@ const BASE_KEY = 'modifiers';
 export const ModifiersData = {
   getAllModifiers: queryOptions({
     queryKey: [BASE_KEY],
-    queryFn: (): Promise<Modifier[]> =>
-      apiClient.get('/api/modifiers').json(
+    queryFn: ({ signal }): Promise<Modifier[]> =>
+      apiClient.get('/api/modifiers', { signal }).json(
         enforce.isArrayOf(
           enforce.shape({
             id: enforce.isNumber(),
@@ -28,7 +28,7 @@ export const ModifiersData = {
 
       return useMutation({
         mutationFn: async (id: number) => {
-          await apiClient.delete(`/api/modifiers/${id}`);
+          await apiClient.delete(`/api/modifiers/${id}`, { signal: null });
         },
         onSuccess: () => {
           void client.invalidateQueries(ModifiersData.getAllModifiers);
@@ -52,6 +52,7 @@ export const ModifiersData = {
               headers: {
                 'content-type': 'application/json',
               },
+              signal: null,
             })
             .json(
               enforce.shape({

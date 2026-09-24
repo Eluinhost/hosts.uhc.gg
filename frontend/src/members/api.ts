@@ -28,14 +28,14 @@ const useInvalidateAfterModification = () => {
 export const MembersData = {
   fetchUserCountPerPermission: queryOptions({
     queryKey: [BASE_KEY, 'countPerPermission'],
-    queryFn: async (): Promise<UserCountPerPermission> =>
-      apiClient.get(`/api/permissions`).json(enforce.record(enforce.isNumber())),
+    queryFn: async ({ signal }): Promise<UserCountPerPermission> =>
+      apiClient.get(`/api/permissions`, { signal }).json(enforce.record(enforce.isNumber())),
   }),
   fetchUsersInPermission: (permission: string) =>
     queryOptions({
       queryKey: [BASE_KEY, 'permissions', permission, 'users'],
-      queryFn: async (): Promise<UsersInPermission> =>
-        apiClient.get(`/api/permissions/${permission}`).json(
+      queryFn: async ({ signal }): Promise<UsersInPermission> =>
+        apiClient.get(`/api/permissions/${permission}`, { signal }).json(
           enforce.anyOf(
             // count per letter
             enforce.record(enforce.isNumber()),
@@ -47,13 +47,15 @@ export const MembersData = {
   fetchUsersInPermissionLetter: (permission: string, letter: string) =>
     queryOptions({
       queryKey: [BASE_KEY, 'permissions', permission, 'letter', letter, 'users'],
-      queryFn: async (): Promise<Array<string>> =>
-        apiClient.get(`/api/permissions/${permission}/${letter}`).json(enforce.isArrayOf(enforce.isString())),
+      queryFn: async ({ signal }): Promise<Array<string>> =>
+        apiClient
+          .get(`/api/permissions/${permission}/${letter}`, { signal })
+          .json(enforce.isArrayOf(enforce.isString())),
     }),
   fetchPermissionModerationLog: queryOptions({
     queryKey: [BASE_KEY, 'moderationLog'],
-    queryFn: async (): Promise<Array<PermissionModerationLogEntry>> => {
-      const response = await apiClient.get(`/api/permissions/log`).json(
+    queryFn: async ({ signal }): Promise<Array<PermissionModerationLogEntry>> => {
+      const response = await apiClient.get(`/api/permissions/log`, { signal }).json(
         enforce.isArrayOf(
           enforce.shape({
             id: enforce.isNumber(),
@@ -75,7 +77,7 @@ export const MembersData = {
 
       return useMutation({
         mutationFn: ({ permission, username }: { permission: string; username: string }) =>
-          apiClient.post(`/api/permissions/${permission}/${username}`),
+          apiClient.post(`/api/permissions/${permission}/${username}`, { signal: null }),
         onSuccess: async (_response, { permission, username }) => {
           invalidate(permission, username);
 
@@ -99,7 +101,7 @@ export const MembersData = {
 
       return useMutation({
         mutationFn: ({ permission, username }: { permission: string; username: string }) =>
-          apiClient.delete(`/api/permissions/${permission}/${username}`),
+          apiClient.delete(`/api/permissions/${permission}/${username}`, { signal: null }),
         onSuccess: async (_, { permission, username }) => {
           invalidate(permission, username);
 

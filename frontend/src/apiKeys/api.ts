@@ -6,8 +6,8 @@ import { apiClient } from '../apiClient';
 export const ApiKeysData = {
   apiKey: queryOptions({
     queryKey: ['apiKey'],
-    queryFn: () =>
-      apiClient.get('/api/key').json(
+    queryFn: ({ signal }) =>
+      apiClient.get('/api/key', { signal }).json(
         enforce.shape({
           key: enforce.anyOf(enforce.isString(), enforce.isNull()),
         }),
@@ -19,7 +19,7 @@ export const ApiKeysData = {
 
       return useMutation({
         mutationFn: async () => {
-          const result = await apiClient.post('/api/key').json(
+          const result = await apiClient.post('/api/key', { signal: null }).json(
             enforce.shape({
               key: enforce.isString(),
             }),

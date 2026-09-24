@@ -13,8 +13,8 @@ export type HostingRules = {
 export const HostingRulesData = {
   fetchHostingRules: queryOptions({
     queryKey: ['hostingRules'],
-    queryFn: async (): Promise<HostingRules> => {
-      const response = await apiClient.get('/api/rules').json(
+    queryFn: async ({ signal }): Promise<HostingRules> => {
+      const response = await apiClient.get('/api/rules', { signal }).json(
         enforce.shape({
           id: enforce.isNumber(),
           content: enforce.isString(),
@@ -38,6 +38,7 @@ export const HostingRulesData = {
           await apiClient.post('/api/rules', {
             body: JSON.stringify(content),
             headers: { 'Content-Type': 'application/json' },
+            signal: null,
           });
         },
         onSuccess: () => {

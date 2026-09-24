@@ -7,8 +7,8 @@ import dayjs from '../dayjs';
 export const TimeData = {
   serverOffset: queryOptions({
     queryKey: ['serverOffset'],
-    queryFn: async () => {
-      const result = await apiClient.get('/api/sync').json(enforce.isString());
+    queryFn: async ({ signal }) => {
+      const result = await apiClient.get('/api/sync', { signal }).json(enforce.isString());
       return dayjs.utc(result).diff(dayjs.utc());
     },
     // keep in sync every 2 minutes

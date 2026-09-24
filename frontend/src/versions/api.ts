@@ -21,7 +21,7 @@ interface VersionMinMax {
 export const VersionsData = {
   getAllVersions: queryOptions({
     queryKey: ['versions'],
-    queryFn: async (): Promise<Array<string>> => {
+    queryFn: async ({ signal }): Promise<Array<string>> => {
       const versions = await apiClient
         .get(
           'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
@@ -30,6 +30,7 @@ export const VersionsData = {
               // make sure to not leak our token outside the domain
               Authorization: undefined,
             },
+            signal,
           },
         )
         // TODO schema

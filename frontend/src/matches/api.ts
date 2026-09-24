@@ -54,8 +54,8 @@ const transformMatch = (match: ReturnType<(typeof singleMatchSchema)['parse']>):
 export const MatchesData = {
   upcoming: queryOptions({
     queryKey: ['matches', 'upcoming'],
-    queryFn: async () => {
-      const data = await apiClient.get('/api/matches/upcoming').json(enforce.isArrayOf(singleMatchSchema));
+    queryFn: async ({ signal }) => {
+      const data = await apiClient.get('/api/matches/upcoming', { signal }).json(enforce.isArrayOf(singleMatchSchema));
 
       return data.map(transformMatch);
     },
@@ -64,10 +64,11 @@ export const MatchesData = {
   hostHistory: (username: string) =>
     infiniteQueryOptions({
       queryKey: ['matches', 'hostHistory', username],
-      queryFn: async ctx => {
+      queryFn: async ({ signal, pageParam }) => {
         const data = await apiClient
           .get(`/api/hosts/${username}/matches`, {
-            searchParams: { before: ctx.pageParam },
+            searchParams: { before: pageParam },
+            signal,
           })
           .json(enforce.isArrayOf(singleMatchSchema));
 
@@ -94,8 +95,8 @@ export const MatchesData = {
         // matches default 'try 3 times'
         return failureCount < 2;
       },
-      queryFn: async () => {
-        const data = await apiClient.get<Match>(`/api/matches/${id}`).json(singleMatchSchema);
+      queryFn: async ({ signal }) => {
+        const data = await apiClient.get<Match>(`/api/matches/${id}`, { signal }).json(singleMatchSchema);
 
         return transformMatch(data);
       },
@@ -103,7 +104,7 @@ export const MatchesData = {
   getPotentialConflicts: (region: string, time: Dayjs, version: string) =>
     queryOptions({
       queryKey: ['potentialConflicts', { region, time, version }],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const result = await apiClient
           .get('/api/matches/conflicts', {
             searchParams: {
@@ -111,6 +112,7 @@ export const MatchesData = {
               opens: time.toISOString(),
               version,
             },
+            signal,
           })
           .json(enforce.isArrayOf(singleMatchSchema));
 
@@ -132,6 +134,7 @@ export const MatchesData = {
               scenarios: [...data.modifiers, ...data.scenarios],
             }),
             headers: { 'Content-Type': 'application/json' },
+            signal: null,
           }),
         onSuccess: () => {
           void client.invalidateQueries(MatchesData.upcoming);
@@ -146,7 +149,7 @@ export const MatchesData = {
 
       return useMutation({
         mutationFn: ({ id, reason }: { id: number; reason: string }) =>
-          apiClient.delete(`/api/matches/${id}`, { body: JSON.stringify({ reason }) }),
+          apiClient.delete(`/api/matches/${id}`, { body: JSON.stringify({ reason }), signal: null }),
         onSuccess: (_data, { id }) => {
           // invalidate upcoming matches only if it's in there
           if (client.getQueryData(MatchesData.upcoming.queryKey)?.some(x => x.id === id)) {
@@ -166,7 +169,7 @@ export const MatchesData = {
       const client = useQueryClient();
 
       return useMutation({
-        mutationFn: async (id: number) => apiClient.post(`/api/matches/${id}/approve`),
+        mutationFn: async (id: number) => apiClient.post(`/api/matches/${id}/approve`, { signal: null }),
         onSuccess: (_data, id) => {
           void showToast({
             intent: Intent.SUCCESS,
