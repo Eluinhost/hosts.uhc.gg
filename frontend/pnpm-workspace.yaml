@@ -5,6 +5,7 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@tanstack/eslint-plugin-query@5.103.2'
+  - knip@6.38.0
 overrides:
   jsondiffpatch@<0.7.2: ^0.7.2
   jsondiffpatch@<0.7.6: ^0.7.6

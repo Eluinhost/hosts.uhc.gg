@@ -5,7 +5,7 @@ export enum QuestionType {
   TEXT = 'text',
 }
 
-export type QuizChoice = {
+type QuizChoice = {
   readonly id: number;
   readonly text: string;
 };
@@ -17,7 +17,7 @@ export type QuizQuestion = {
   readonly choices: QuizChoice[];
 };
 
-export type ManageQuizChoice = QuizChoice & {
+type ManageQuizChoice = QuizChoice & {
   readonly correct: boolean;
 };
 
@@ -30,7 +30,7 @@ export type ManageQuizQuestion = {
   readonly choices: ManageQuizChoice[];
 };
 
-export type CreateQuizChoiceData = {
+type CreateQuizChoiceData = {
   readonly text: string;
   readonly correct: boolean;
 };

@@ -1,4 +1,4 @@
-export const ALLOWABLE_MODIFICATIONS: Record<string, Array<string>> = {
+const ALLOWABLE_MODIFICATIONS: Record<string, Array<string>> = {
   'hosting advisor': ['host', 'trial host', 'hosting banned'],
   admin: ['trial host', 'host', 'hosting advisor', 'beta tester'],
 };

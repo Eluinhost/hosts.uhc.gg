@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { fetchArray } from '../api/util';
+import { apiClient } from '../apiClient';
 
 const compareVersion = (a: VersionMinMax, b: VersionMinMax): number => {
   return b.min.dataVersion - a.min.dataVersion;
@@ -22,10 +22,18 @@ export const VersionsData = {
   getAllVersions: queryOptions({
     queryKey: ['versions'],
     queryFn: async (): Promise<Array<string>> => {
-      const versions = await fetchArray<PrismarineJSVersion>({
-        url: 'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
-        status: 200,
-      });
+      const versions = await apiClient
+        .get(
+          'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
+          {
+            headers: {
+              // make sure to not leak our token outside the domain
+              Authorization: undefined,
+            },
+          },
+        )
+        // TODO schema
+        .json<PrismarineJSVersion[]>();
 
       const map = versions
         .filter(({ minecraftVersion }) => /^[0-9.]+$/.test(minecraftVersion))

@@ -12,7 +12,7 @@ export const authenticationAtom = atomWithStorage<{ accessToken: string; refresh
 );
 
 export const accessTokenAtom = atom(get => get(authenticationAtom)?.accessToken);
-export const refreshTokenAtom = atom(get => get(authenticationAtom)?.refreshToken);
+const refreshTokenAtom = atom(get => get(authenticationAtom)?.refreshToken);
 
 export const accessTokenClaimsAtom = atom(get => {
   const token = get(accessTokenAtom);

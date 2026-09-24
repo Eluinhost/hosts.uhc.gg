@@ -12,6 +12,10 @@ import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
 import { App } from './components/App';
 
 import 'jotai-devtools/styles.css';
+import 'normalize.css/normalize.css';
+import '@rc-component/picker/assets/index.css';
+import 'react-virtualized/styles.css';
+import '../resources/blueprint.css';
 import './main.sass';
 
 const queryClient = new QueryClient();

@@ -13,7 +13,7 @@ const schema = enforce.shape({
   username: enforce.isString(),
 });
 
-export const suite = create(data => {
+const suite = create(data => {
   test('username', 'This field is required', () => {
     enforce(data.username).isString().min(1);
   });

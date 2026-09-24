@@ -5,7 +5,7 @@ import { timeFormatAtom } from '../../atoms/timeFormatting';
 import { timezoneAtom } from '../../atoms/timezone';
 import type { Dayjs } from '../../dayjs';
 
-export const detailsDateTimeFormatAtom = atom(get => `MMM Do YYYY - ${get(timeFormatAtom)} z`);
+const detailsDateTimeFormatAtom = atom(get => `MMM Do YYYY - ${get(timeFormatAtom)} z`);
 
 export const MatchOpens: React.FC<{ time: Dayjs }> = ({ time }) => {
   const timezone = useAtomValue(timezoneAtom);

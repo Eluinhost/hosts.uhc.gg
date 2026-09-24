@@ -14,7 +14,7 @@ const schema = enforce.shape({
   rules: enforce.isString(),
 });
 
-export const suite = create(data => {
+const suite = create(data => {
   test('rules', 'This field is required', () => {
     enforce(data.rules).isString().isNotEmpty();
   });

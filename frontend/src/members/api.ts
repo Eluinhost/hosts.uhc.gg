@@ -4,7 +4,6 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import { createElement } from 'react';
 import { enforce } from 'vest';
 
-import { ApiErrors } from '../api';
 import { apiClient } from '../apiClient';
 import dayjs from '../dayjs';
 import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
@@ -85,14 +84,11 @@ export const MembersData = {
             message: `Added permission '${permission}' to /u/${username}`,
           });
         },
-        onError: async (error, variables) => {
+        onError: async (_error, variables) => {
           await showToast({
             intent: Intent.DANGER,
             icon: createElement(WarningSignIcon),
-            message:
-              error instanceof ApiErrors.BadDataError
-                ? error.message
-                : `Failed to add permission to /u/${variables.username}`,
+            message: `Failed to add permission to /u/${variables.username}`,
           });
         },
       });
@@ -112,14 +108,11 @@ export const MembersData = {
             message: `Removed permission '${permission}' from /u/${username}`,
           });
         },
-        onError: async (error, { username, permission }) => {
+        onError: async (_error, { username, permission }) => {
           await showToast({
             intent: Intent.DANGER,
             icon: createElement(WarningSignIcon),
-            message:
-              error instanceof ApiErrors.BadDataError
-                ? error.message
-                : `Failed to remove permission '${permission}' from /u/${username}`,
+            message: `Failed to remove permission '${permission}' from /u/${username}`,
           });
         },
       });

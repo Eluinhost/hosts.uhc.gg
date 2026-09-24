@@ -4,7 +4,6 @@ import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
 import { enforce, test, create } from 'vest';
 
-import { ApiErrors } from '../../api';
 import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
@@ -50,16 +49,14 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
         });
 
         onClose();
-      } catch (err) {
-        const message = err instanceof ApiErrors.BadDataError ? err.message : `Failed to remove match #${id}`;
-
+      } catch {
         await showToast({
           intent: Intent.DANGER,
           icon: createElement(WarningSignIcon),
-          message,
+          message: `Failed to remove match #${id}`,
         });
 
-        return createValidationError(message);
+        return createValidationError(`Failed to remove match #${id}`);
       }
     },
   });

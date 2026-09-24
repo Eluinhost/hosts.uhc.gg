@@ -28,7 +28,7 @@ type ValueRule<T> = {
 export const isValueOf = <T>(record: Record<string, T>): ValueRule<T> =>
   enforce.isValueOf(record) as unknown as ValueRule<T>;
 
-export const isValidIp = (ip: string): boolean => {
+const isValidIp = (ip: string): boolean => {
   const m = IP_REGEX.exec(ip);
   if (!m) return false;
 
@@ -45,7 +45,7 @@ export const isValidIp = (ip: string): boolean => {
 };
 
 // export const isBlank = (v: string | null): v is null | '' => v === null || v === '';
-export const isEmptyString = (v: string): v is '' => v === '';
+const isEmptyString = (v: string): v is '' => v === '';
 
 enforce.extend({
   isDayjs: (value: unknown): value is Dayjs => value instanceof dayjs,

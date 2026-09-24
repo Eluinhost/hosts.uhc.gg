@@ -11,6 +11,7 @@ import { TagsField } from './fields/TagsField';
 import { TextField } from './fields/TextField';
 import { VersionField } from './fields/VersionField';
 
+/* @beta - unused exports but here for discoverability */
 export const { useAppForm, useFormContext, appFormOptions, defineAppFieldGroup } = createFormHook({
   fieldComponents: {
     TextField,

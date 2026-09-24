@@ -42,7 +42,7 @@ const formatOffset = (offset: number): string => {
   return output.trim();
 };
 
-export const currentTimeFormatAtom = atom(get => (get(is12hAtom) ? 'hh:mm:ss A z' : 'HH:mm:ss z'));
+const currentTimeFormatAtom = atom(get => (get(is12hAtom) ? 'hh:mm:ss A z' : 'HH:mm:ss z'));
 
 export const CurrentTime: React.FC = () => {
   const { data: offset, refetch: resync, isPending: unsynced } = useQuery(TimeData.serverOffset);
