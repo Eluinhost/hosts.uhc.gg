@@ -10,7 +10,11 @@ const client = ky.create({
   hooks: {
     beforeRequest: [
       ({ request }) => {
-        request.headers.set('Authorization', `Bearer ${store.get(accessTokenAtom)}`);
+        const token = store.get(accessTokenAtom);
+
+        if (token && new URL(request.url).hostname === window.location.hostname) {
+          request.headers.set('Authorization', `Bearer ${token}`);
+        }
       },
     ],
   },

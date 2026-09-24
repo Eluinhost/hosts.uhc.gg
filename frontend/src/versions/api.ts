@@ -26,10 +26,6 @@ export const VersionsData = {
         .get(
           'https://raw.githubusercontent.com/PrismarineJS/minecraft-data/refs/heads/master/data/pc/common/protocolVersions.json',
           {
-            headers: {
-              // make sure to not leak our token outside the domain
-              Authorization: undefined,
-            },
             signal,
           },
         )
