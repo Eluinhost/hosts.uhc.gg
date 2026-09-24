@@ -11,3 +11,13 @@ declare interface Document {
 declare module '*.scss';
 declare module '*.sass';
 declare module '*.css';
+
+interface ImportMeta {
+  readonly env: {
+    readonly BASE_URL: string;
+    readonly MODE: string;
+    readonly DEV: boolean;
+    readonly PROD: boolean;
+    readonly SSR: boolean;
+  };
+}

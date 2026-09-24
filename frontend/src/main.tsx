@@ -1,17 +1,12 @@
 import { HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
-import { TanStackDevtools } from '@tanstack/react-devtools';
-import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { DevTools as JotaiDevTools } from 'jotai-devtools';
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
 import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
 import { App } from './components/App';
 
-import 'jotai-devtools/styles.css';
 import 'normalize.css/normalize.css';
 import '@rc-component/picker/assets/index.css';
 import 'react-virtualized/styles.css';
@@ -20,7 +15,7 @@ import './main.sass';
 
 const queryClient = new QueryClient();
 
-const formDevTools = formDevtoolsPlugin();
+const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then(m => ({ default: m.DevTools }))) : null;
 
 const root = document.getElementById('root');
 
@@ -45,9 +40,11 @@ void (async () => {
             </BrowserRouter>
           </HotkeysProvider>
         </OverlaysProvider>
-        <ReactQueryDevtools />
-        <TanStackDevtools plugins={[formDevTools]} />
-        <JotaiDevTools />
+        {DevTools && (
+          <Suspense fallback={null}>
+            <DevTools />
+          </Suspense>
+        )}
       </QueryClientProvider>
     </React.StrictMode>,
   );
