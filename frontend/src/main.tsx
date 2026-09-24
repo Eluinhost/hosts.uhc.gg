@@ -9,7 +9,6 @@ import { App } from './components/App';
 
 import 'normalize.css/normalize.css';
 import '@rc-component/picker/assets/index.css';
-import 'react-virtualized/styles.css';
 import '../resources/blueprint.css';
 import './main.sass';
 

@@ -2,7 +2,7 @@ import { PopoverNext, Button, MenuItem, Card, Classes } from '@blueprintjs/core'
 import { ChevronRightIcon, CogIcon, DoubleCaretVerticalIcon, TimeIcon } from '@blueprintjs/icons';
 import { useAtom } from 'jotai';
 import React, { useCallback, useMemo, useState } from 'react';
-import { List, type ListRowProps } from 'react-virtualized';
+import { List, type RowComponentProps } from 'react-window';
 
 import { is12hAtom } from '../../atoms/timeFormatting';
 import { timezoneAtom } from '../../atoms/timezone';
@@ -36,6 +36,17 @@ const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onSelect }) => (
   />
 );
 
+type TimezoneRowProps = {
+  readonly timezones: readonly string[];
+  readonly onSelect: (timezone: string) => void;
+};
+
+const TimezoneRow = ({ index, style, timezones, onSelect }: RowComponentProps<TimezoneRowProps>) => (
+  <div style={style}>
+    <TimezoneItem timezone={timezones[index]} onSelect={onSelect} />
+  </div>
+);
+
 export const TimeSettings: React.FC = () => {
   const [timezone, setTimezone] = useAtom(timezoneAtom);
   const [is12h, setIs12h] = useAtom(is12hAtom);
@@ -47,26 +58,22 @@ export const TimeSettings: React.FC = () => {
     setFilter(event.target.value);
   }, []);
 
-  const noRows = useCallback(() => <MenuItem text="No items found." />, []);
-
   const toggleOpen = () => {
     setOpen(prev => !prev);
   };
 
   const filtered = useMemo(() => tzs.filter(searchFilter(filter)), [filter]);
 
-  const renderRow = useCallback(
-    (props: ListRowProps) => (
-      <div style={props.style} key={props.key}>
-        <TimezoneItem
-          timezone={filtered[props.index]}
-          onSelect={value => {
-            setTimezone(value);
-          }}
-        />
-      </div>
-    ),
-    [filtered, setTimezone],
+  const onSelectTimezone = useCallback(
+    (value: string) => {
+      setTimezone(value);
+    },
+    [setTimezone],
+  );
+
+  const rowProps = useMemo<TimezoneRowProps>(
+    () => ({ timezones: filtered, onSelect: onSelectTimezone }),
+    [filtered, onSelectTimezone],
   );
 
   const rowHeight = 30;
@@ -107,15 +114,20 @@ export const TimeSettings: React.FC = () => {
                   value={filter}
                   onChange={onFilterChange}
                 />
-                <List
-                  className={`${Classes.MENU} ${Classes.LARGE} ${Classes.MINIMAL}`}
-                  height={height}
-                  width={200}
-                  rowCount={filtered.length}
-                  rowHeight={rowHeight}
-                  rowRenderer={renderRow}
-                  noRowsRenderer={noRows}
-                />
+                {filtered.length === 0 ? (
+                  <div className={`${Classes.MENU} ${Classes.LARGE} ${Classes.MINIMAL}`}>
+                    <MenuItem text="No items found." />
+                  </div>
+                ) : (
+                  <List
+                    className={`${Classes.MENU} ${Classes.LARGE} ${Classes.MINIMAL}`}
+                    style={{ height, width: 200 }}
+                    rowCount={filtered.length}
+                    rowHeight={rowHeight}
+                    rowComponent={TimezoneRow}
+                    rowProps={rowProps}
+                  />
+                )}
               </div>
             }
             renderTarget={targetProps => (
