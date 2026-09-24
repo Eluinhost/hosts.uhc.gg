@@ -179,6 +179,9 @@ importers:
       '@rc-component/picker':
         specifier: 1.14.0
         version: 1.14.0(dayjs@1.11.23)(moment@2.30.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tanstack/markdown':
+        specifier: 0.0.15
+        version: 0.0.15(react@19.3.0)
       '@tanstack/react-form':
         specifier: 2.0.0-alpha.2
         version: 2.0.0-alpha.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -224,9 +227,6 @@ importers:
       react-window:
         specifier: 2.3.3
         version: 2.3.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      snuownd:
-        specifier: 1.1.0
-        version: 1.1.0
       vest:
         specifier: 6.3.2
         version: 6.3.2
@@ -1273,6 +1273,17 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: '>=1.9.5'
+
+  '@tanstack/markdown@0.0.15':
+    resolution: {integrity: sha512-8hZFgCxGzYcBogffndvOm/prhdDt8nATQ4jzd9b0ziU0j4ofW/5guC1sknO2JyBNSXPgeLrrdXlJA8sbb1zw8w==}
+    peerDependencies:
+      octane: '>=0.1.12'
+      react: '>=18'
+    peerDependenciesMeta:
+      octane:
+        optional: true
+      react:
+        optional: true
 
   '@tanstack/match-sorter-utils@8.19.4':
     resolution: {integrity: sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==}
@@ -3137,9 +3148,6 @@ packages:
   snake-case@3.0.4:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
 
-  snuownd@1.1.0:
-    resolution: {integrity: sha512-LiYd2/AU5Qt7Jy3PMPqjIr6p8RLY8Q/2sWFn3Gq7glBnjdEnNUBwV9kF4n4hCmU+OQ+z/ziD4XEFNxJpN8ZGOg==}
-
   solid-js@1.9.15:
     resolution: {integrity: sha512-EeiY2xfpZJqPLjXspVEKjAII4yv8NyG//NxZ3IpOFHdUNnnTyL0uJOeS9LWGvA7cFCz5y94cjFwYlmw5Luncsg==}
 
@@ -4467,6 +4475,10 @@ snapshots:
       - react
       - utf-8-validate
       - vue
+
+  '@tanstack/markdown@0.0.15(react@19.3.0)':
+    optionalDependencies:
+      react: 19.3.0
 
   '@tanstack/match-sorter-utils@8.19.4':
     dependencies:
@@ -6911,8 +6923,6 @@ snapshots:
     dependencies:
       dot-case: 3.0.4
       tslib: 2.8.1
-
-  snuownd@1.1.0: {}
 
   solid-js@1.9.15:
     dependencies:

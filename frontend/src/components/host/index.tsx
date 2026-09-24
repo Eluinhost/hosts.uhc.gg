@@ -1,4 +1,4 @@
-import { Button, Intent } from '@blueprintjs/core';
+import { Button, Callout, Intent } from '@blueprintjs/core';
 import { CloudUploadIcon } from '@blueprintjs/icons';
 import { useAtom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -19,6 +19,7 @@ import { Regions } from '../../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
 
+import { defaultPreset } from './defaultPreset';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { applyScenarioRules } from './scenarioRules';
 import { suite } from './schema';
@@ -368,6 +369,17 @@ export const HostingPage: React.FC = () => {
         <form.Field name="content">
           {field => <field.TemplateField field={field} context={templateContext} />}
         </form.Field>
+
+        <form.Subscribe selector={state => state.values.content}>
+          {content =>
+            content === defaultPreset && (
+              <Callout intent={Intent.WARNING}>
+                This is the default preset. You may want to customize it and save it in the Presets menu before
+                submitting.
+              </Callout>
+            )
+          }
+        </form.Subscribe>
       </fieldset>
 
       <form.Subscribe

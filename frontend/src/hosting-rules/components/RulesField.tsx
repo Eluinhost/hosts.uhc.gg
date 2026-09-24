@@ -1,8 +1,7 @@
-import { Pre, Tab, Tabs, TextArea } from '@blueprintjs/core';
+import { Tab, Tabs, TextArea } from '@blueprintjs/core';
 import type { FieldWithValue } from '@tanstack/react-form';
-import * as snuownd from 'snuownd';
 
-const parser = snuownd.getParser();
+import { Markdown } from '../../components/Markdown';
 
 export const RulesField = ({ className, field }: { className?: string; field: FieldWithValue<string> }) => {
   return (
@@ -25,17 +24,7 @@ export const RulesField = ({ className, field }: { className?: string; field: Fi
             />
           }
         />
-        <Tab
-          id="rules-form-preview"
-          title="Preview"
-          panel={
-            <Pre
-              dangerouslySetInnerHTML={{
-                __html: parser.render(typeof field.value === 'string' ? field.value : String(field.value)),
-              }}
-            />
-          }
-        />
+        <Tab id="rules-form-preview" title="Preview" panel={<Markdown markdown={field.value} />} />
       </Tabs>
     </div>
   );

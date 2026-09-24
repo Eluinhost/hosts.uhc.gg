@@ -1,6 +1,6 @@
 import { atomWithStorage } from 'jotai/utils';
 
-import { presets } from '../components/host/presets';
+import { defaultPreset } from '../components/host/defaultPreset';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import { Regions } from '../models/Regions';
 import { TeamStyles } from '../models/TeamStyles';
@@ -16,7 +16,7 @@ export const hostFormDataAtom = atomWithStorage<Omit<CreateMatchData, 'opens'> &
     size: 0,
     customStyle: '',
     address: '',
-    content: presets['Default'],
+    content: defaultPreset,
     ip: '',
     count: 1,
     location: '',

@@ -26,6 +26,7 @@ import {
   ExportIcon,
   ImportIcon,
   InfoSignIcon,
+  ResetIcon,
 } from '@blueprintjs/icons';
 import type { FieldWithValue } from '@tanstack/react-form';
 import { useAtom } from 'jotai';
@@ -37,7 +38,7 @@ import type { Dayjs } from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
 import { Markdown } from '../Markdown';
 
-import { presets } from './presets';
+import { defaultPreset } from './defaultPreset';
 
 import './TemplateField.sass';
 
@@ -62,7 +63,10 @@ const samples = [
   ['{{hostingName}}', 'Any hosting name override'],
   ['{{tournament}}', 'Is a tournament?'],
   ['{{opens}}', 'When the match opens, default formatting'],
-  ['{{opens|date>MMM Do HH:mm z}}', 'Use `|moment>FORMAT` to specify a custom format'],
+  [
+    '{{opens|date>MMM Do HH:mm z}}',
+    'Use `|opens>FORMAT` to specify a custom format, see https://day.js.org/docs/en/display/format',
+  ],
   ['{{address}}', 'The address of the server'],
   ['{{ip}}', 'The direct IP of the server'],
   ['{{address|blank>`ip`}}', 'Use the address, if it is blank use the IP instead'],
@@ -94,15 +98,11 @@ const HelpTab: React.FC<{ context: TemplateContext }> = ({ context }) => (
   <Callout intent={Intent.PRIMARY}>
     <H5>Template information</H5>
     <div>
-      <span>Templates can use </span>
-      <a href="https://www.reddit.com/wiki/commenting" target="_blank" rel="noopener noreferrer">
-        Reddit Formatting
-      </a>
-      <span> as well as </span>
+      <span>Templates can use Markdown as well as </span>
       <a href="https://github.com/adammark/Markup.js/blob/master/README.md" target="_blank" rel="noopener noreferrer">
         Markup Templating
       </a>
-      <span> for generating content. Here are some template examples:</span>
+      <span> for generating content. Here are some template examples and what they would output:</span>
     </div>
     <HTMLTable bordered striped>
       <thead>
@@ -165,6 +165,8 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
     [setLocalPresets],
   );
 
+  const saved = Object.entries(localPresets);
+
   return (
     <div className="template-field">
       <div className="presets-bar">
@@ -176,18 +178,8 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
             isOpen={isPresetMenuOpen}
             content={
               <Menu size="large">
-                <MenuDivider title="Built-in presets" />
-                {Object.entries(presets).map(([name, template]) => (
-                  <MenuItem
-                    key={name}
-                    text={name}
-                    onClick={() => {
-                      field.handleChange(template);
-                    }}
-                  />
-                ))}
-                <MenuDivider title="Saved Presets" />
-                {Object.entries(localPresets).map(([name, template]) => (
+                <MenuDivider title={saved.length === 0 ? 'No saved presets' : 'Saved Presets'} />
+                {saved.map(([name, template]) => (
                   <MenuItem
                     key={name}
                     text={name}
@@ -240,6 +232,13 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
                     setIsShowingImportPopover(true);
                   }}
                 />
+                <MenuItem
+                  icon={<ResetIcon />}
+                  text="Reset to Default"
+                  onClick={() => {
+                    field.handleChange(defaultPreset);
+                  }}
+                />
               </Menu>
             }
             placement="bottom"
@@ -275,7 +274,6 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
           }}
           onBlur={field.handleBlur}
           value={field.value}
-          style={{ flex: 1 }}
         />
         <Markdown markdown={renderToMarkdown(field.value, context)} />
       </div>

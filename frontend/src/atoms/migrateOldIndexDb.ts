@@ -1,5 +1,6 @@
 import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 
+import { defaultPreset } from '../components/host/defaultPreset';
 import type { CreateMatchData } from '../models/CreateMatchData';
 
 import { authenticationAtom } from './authentication';
@@ -95,9 +96,14 @@ export const migrateOldIndexDb = async (): Promise<void> => {
   }
 
   if (hostFormData !== undefined) {
-    const { opens: _opens, ...hostData } = hostFormData;
+    // remove any old serialized opens, not in new data
+    // 1 time reset of content -> preset default as formatting has changed in new version
+    const { opens: _opens, content: _content, ...hostData } = hostFormData;
 
-    jotaiStore.set(hostFormDataAtom, hostData);
+    jotaiStore.set(hostFormDataAtom, {
+      ...hostData,
+      content: defaultPreset,
+    });
   }
 
   if (isDarkMode !== undefined) {
