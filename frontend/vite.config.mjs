@@ -30,6 +30,18 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules/,
+            },
+          ],
+        },
+      },
+    },
   },
   define: {
     // By default, vite doesn't define globals and react-dates relies on it without an upgrade available
