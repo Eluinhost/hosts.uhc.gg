@@ -1,6 +1,7 @@
 import { Button, Callout, Intent } from '@blueprintjs/core';
 import { CloudUploadIcon } from '@blueprintjs/icons';
 import { useAtom, useAtomValue } from 'jotai';
+import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -66,13 +67,17 @@ export const HostingPage: React.FC = () => {
         content: renderToMarkdown(state.value.content, createTemplateContext(state.value, username)),
       };
 
-      // TODO throws 400 if conflicts, surface error properly\
-      // TODO include conflicts in validation logic instead
-      // notes - create match endpoint does same logic as potential conflicts, but does extra tournament
-      // + overhost checking, so just make the actual call and log the error response body on the form
-      // to match the previous logic
+      try {
+        await createMatch(withRenderedTemplate);
+      } catch (error) {
+        if (error instanceof HTTPError && error.response.status === 400) {
+          const message = typeof error.data === 'string' ? error.data : 'Invalid data';
 
-      await createMatch(withRenderedTemplate);
+          return state.createValidationError({ form: message, fields: {} });
+        }
+
+        throw error;
+      }
 
       // if success send them to the matches page to view it
       void navigate('/matches');
@@ -387,7 +392,14 @@ export const HostingPage: React.FC = () => {
           region: state.values.region,
           time: state.values.opens,
           version: state.values.version,
-          isInvalid: state.errors.some(x => ['region', 'opens', 'version'].some(path => x.path?.[0] === path)),
+          isInvalid: state.errors.some(x =>
+            ['region', 'opens', 'version'].some(path => {
+              if ('path' in x) {
+                return x.path?.[0] === path;
+              }
+              return false;
+            }),
+          ),
         })}
       >
         {props => (
@@ -405,16 +417,39 @@ export const HostingPage: React.FC = () => {
         )}
       </form.Subscribe>
 
+      <form.Subscribe selector={({ errors }) => ({ errors })}>
+        {({ errors }) =>
+          errors.map((error, index) => {
+            // only showing form-level errors
+            if ('path' in error) {
+              return null;
+            }
+
+            return <Callout key={index} intent={Intent.DANGER} title={error.message} />;
+          })
+        }
+      </form.Subscribe>
+
       <div className="host-form-actions">
-        <Button
-          type="submit"
-          disabled={!form.state.canSubmit}
-          icon={<CloudUploadIcon />}
-          loading={form.state.isSubmitting}
-          intent={form.state.isValid ? Intent.SUCCESS : Intent.WARNING}
+        <form.Subscribe
+          selector={({ isSubmitting, isValid, canSubmit }) => ({
+            isSubmitting,
+            isValid,
+            canSubmit,
+          })}
         >
-          {form.state.isSubmitting ? 'Creating...' : 'Create Match'}
-        </Button>
+          {({ isSubmitting, isValid, canSubmit }) => (
+            <Button
+              type="submit"
+              disabled={!canSubmit}
+              icon={<CloudUploadIcon />}
+              loading={isSubmitting}
+              intent={isValid ? Intent.SUCCESS : Intent.WARNING}
+            >
+              {isSubmitting ? 'Creating...' : 'Create Match'}
+            </Button>
+          )}
+        </form.Subscribe>
       </div>
     </form>
   );
