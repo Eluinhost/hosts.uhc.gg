@@ -27,7 +27,7 @@ export const TimeSettings: React.FC = () => {
           <Button
             leftSection={<ClockIcon />}
             variant="subtle"
-            size="sm"
+            size="compact-sm"
             onClick={() => {
               setIs12h(!is12h);
             }}
@@ -48,14 +48,16 @@ export const TimeSettings: React.FC = () => {
             nothingFoundMessage="No items found."
           >
             <ComboboxPopover.Target>
-              <Button variant="subtle" size="sm" rightSection={<CaretUpDownIcon />}>
+              <Button variant="subtle" size="compact-sm" rightSection={<CaretUpDownIcon />}>
                 {timezone}
               </Button>
             </ComboboxPopover.Target>
           </ComboboxPopover>
         )}
         <ActionIcon
-          size="lg"
+          size="md"
+          mr="md"
+          bdrs={100}
           variant="subtle"
           onClick={() => {
             setOpen(prev => !prev);

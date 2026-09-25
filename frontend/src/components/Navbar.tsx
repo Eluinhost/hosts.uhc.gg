@@ -26,11 +26,12 @@ type NavBarButtonProps = {
   readonly to: string;
 };
 
-const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) => {
+const NavbarButton: React.FC<NavBarButtonProps> = ({ text, icon, to }) => {
   const location = useLocation();
 
   return (
     <Button
+      size="compact-md"
       leftSection={icon}
       variant="subtle"
       component={Link}
@@ -44,13 +45,11 @@ const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) 
   );
 };
 
-const NavbarButton: React.FC<NavBarButtonProps> = NavBarButtonComponent;
-
 export const Navbar: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useAtom(isDarkModeAtom);
 
   return (
-    <Flex direction="row" gap="lg" className={styles.navbar} bdrs="0" component={Paper}>
+    <Flex direction="row" gap="lg" className={styles.navbar} bdrs="0" component={Paper} pl="md" pr="md">
       <Flex direction="row" align="center" gap="xs">
         <Link to="/">
           <Image src="/logo.png" alt="logo" className="brand-logo" h="4rem" w="auto" p=".5rem" />
@@ -81,6 +80,7 @@ export const Navbar: React.FC = () => {
       <Flex direction="row" justify="flex-end" align="center" gap="xs">
         <Username />
         <ActionIcon
+          bdrs={100}
           variant="subtle"
           onClick={() => {
             setIsDarkMode(prev => !prev);

@@ -1,43 +1,32 @@
-import {
-  H1,
-  H2,
-  H3,
-  H4,
-  H5,
-  H6,
-  Intent,
-  Link,
-  Blockquote,
-  Code,
-  Divider,
-  UL,
-  OL,
-  Pre,
-  HTMLTable,
-} from '@blueprintjs/core';
+import { Title, Anchor, Blockquote, Code, Divider, List, Table } from '@mantine/core';
 import { Markdown as TanstackMarkdown, type MarkdownComponents } from '@tanstack/markdown/react';
 
-import './Markdown.sass';
+import styles from './Markdown.module.css';
 
 export interface MarkdownProps {
   markdown: string;
 }
 
 const components: MarkdownComponents = {
-  h1: H1,
-  h2: H2,
-  h3: H3,
-  h4: H4,
-  h5: H5,
-  h6: H6,
-  a: props => <Link {...props} color={Intent.PRIMARY} />,
+  h1: props => <Title order={1} {...props} />,
+  h2: props => <Title order={2} {...props} />,
+  h3: props => <Title order={3} {...props} />,
+  h4: props => <Title order={4} {...props} />,
+  h5: props => <Title order={5} {...props} />,
+  h6: props => <Title order={6} {...props} />,
+  a: Anchor,
   blockquote: Blockquote,
   code: Code,
-  hr: Divider,
-  ul: UL,
-  ol: OL,
-  pre: Pre,
-  table: props => <HTMLTable {...props} compact striped />,
+  hr: props => <Divider {...props} mt="sm" mb="sm" />,
+  ul: List,
+  ol: props => <List {...props} type="ordered" />,
+  pre: props => <Code {...props} block />,
+  table: props => <Table {...props} striped />,
+  thead: Table.Thead,
+  tbody: Table.Tbody,
+  tr: Table.Tr,
+  td: Table.Td,
+  th: Table.Th,
   // explicitly deny images
   img: () => null,
   image: () => null,
@@ -45,7 +34,7 @@ const components: MarkdownComponents = {
 
 export const Markdown = ({ markdown }: MarkdownProps) => {
   return (
-    <div className="rendered-markdown">
+    <div className={styles.markdown}>
       <TanstackMarkdown components={components} allowHtml={false}>
         {markdown}
       </TanstackMarkdown>

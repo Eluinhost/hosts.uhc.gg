@@ -149,7 +149,7 @@ export const App: React.FC = () => {
     <Stack w="100vw" h="100vh" align="stretch" gap={0} className={styles.app}>
       <Navbar />
       <TimeSettings />
-      <Container component={Stack} flex={1}>
+      <Container component={Stack} flex={1} w="100%">
         <AppRoutes />
       </Container>
       <Footer />
