@@ -1,4 +1,4 @@
-import { EmptyState, Loader, Stack } from '@mantine/core';
+import { Container, EmptyState, Loader, Stack } from '@mantine/core';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { type PropsWithChildren, lazy, Suspense, useEffect } from 'react';
@@ -149,9 +149,9 @@ export const App: React.FC = () => {
     <Stack w="100vw" h="100vh" align="stretch" gap={0} className={styles.app}>
       <Navbar />
       <TimeSettings />
-      <Stack flex={1}>
+      <Container component={Stack} flex={1}>
         <AppRoutes />
-      </Stack>
+      </Container>
       <Footer />
     </Stack>
   );
