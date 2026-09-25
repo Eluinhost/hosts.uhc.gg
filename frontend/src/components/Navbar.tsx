@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Flex, Image } from '@mantine/core';
+import { ActionIcon, Button, Flex, Image, Paper } from '@mantine/core';
 import {
   BoxArrowUpIcon,
   FileTextIcon,
@@ -50,12 +50,14 @@ export const Navbar: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useAtom(isDarkModeAtom);
 
   return (
-    <Flex direction="row" gap="lg" className={styles.navbar}>
+    <Flex direction="row" gap="lg" className={styles.navbar} bdrs="0" component={Paper}>
       <Flex direction="row" align="center" gap="xs">
         <Link to="/">
           <Image src="/logo.png" alt="logo" className="brand-logo" h="4rem" w="auto" p=".5rem" />
         </Link>
-        <Link to="/">uhc.gg hosting</Link>
+        <Link to="/" className={styles.homeLink}>
+          uhc.gg hosting
+        </Link>
       </Flex>
       <Flex
         direction="row"

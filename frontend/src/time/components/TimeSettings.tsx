@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Space, ComboboxPopover } from '@mantine/core';
+import { ActionIcon, Button, Group, Space, ComboboxPopover, Paper } from '@mantine/core';
 import { CaretRightIcon, CaretUpDownIcon, ClockIcon, GearIcon } from '@phosphor-icons/react';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
@@ -17,7 +17,7 @@ export const TimeSettings: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Group align="center" className={styles.timeSettings}>
+    <Paper className={styles.timeSettings} bdrs="0" shadow="xs" component={Group} align="center">
       <Space flex={1} />
       <Group flex={1} justify="center" align="center">
         <CurrentTime />
@@ -64,6 +64,6 @@ export const TimeSettings: React.FC = () => {
           {open ? <CaretRightIcon /> : <GearIcon />}
         </ActionIcon>
       </Group>
-    </Group>
+    </Paper>
   );
 };

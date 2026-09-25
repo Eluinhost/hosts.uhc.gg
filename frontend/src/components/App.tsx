@@ -1,8 +1,7 @@
-import { NonIdealState, Spinner } from '@blueprintjs/core';
-import { AppShell } from '@mantine/core';
+import { EmptyState, Loader, Stack } from '@mantine/core';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
-import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { type PropsWithChildren, lazy, Suspense, useEffect } from 'react';
 import * as reactGa from 'react-ga';
 import { Route, Routes, useLocation } from 'react-router';
 
@@ -12,7 +11,7 @@ import { UpcomingMatchesPage } from '../matches/pages/UpcomingMatchesPage';
 import { TimeSettings } from '../time/components/TimeSettings';
 
 import styles from './App.module.css';
-import { Footer } from './footer';
+import { Footer } from './footer/Footer';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
 import { useGlobalHotkeys } from './useGlobalHotkeys';
@@ -47,10 +46,10 @@ const QuizManagementPage = lazy(() =>
 const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePage })));
 
 const NotFoundPage: React.FC = () => (
-  <>
+  <Stack flex={1} justify="center" align="center">
     <title>uhc.gg | Not Found</title>
-    <NonIdealState title="Not Found" icon={<MagnifyingGlassIcon />} />
-  </>
+    <EmptyState icon={<MagnifyingGlassIcon />} title="Not Found" />
+  </Stack>
 );
 
 const requiresHostPermission = (permission: string | string[]): boolean =>
@@ -63,14 +62,21 @@ const ADVISOR_PERMISSIONS: string[] = ['hosting advisor'];
 const AuthenticatedRoute: React.FC<PropsWithChildren<{ permission: Array<string> }>> = ({ permission, children }) => {
   const authenticated = useAtomValue(isLoggedInAtom);
 
-  const alternative = !authenticated
+  const Alternative = !authenticated
     ? PromptToLogin
     : requiresHostPermission(permission)
       ? PromptToApplyForHost
       : NotAllowed;
 
   return (
-    <WithPermission permission={permission} alternative={alternative}>
+    <WithPermission
+      permission={permission}
+      alternative={() => (
+        <Stack flex={1} align="center" justify="center">
+          <Alternative />
+        </Stack>
+      )}
+    >
       {children}
     </WithPermission>
   );
@@ -87,7 +93,7 @@ const AppRoutes: React.FC = () => {
   }, [pathname, search]);
 
   return (
-    <Suspense fallback={<Spinner style={{ display: 'block', margin: '100px auto 0' }} />}>
+    <Suspense fallback={<Loader />}>
       <Routes>
         <Route
           path="/host"
@@ -139,32 +145,14 @@ export const App: React.FC = () => {
   useAuthRefresh();
   useGlobalHotkeys();
 
-  const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
-  const onScroll = useCallback(() => {
-    setNavbarSticky(window.scrollY > 50);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener('scroll', onScroll);
-    return () => {
-      document.removeEventListener('scroll', onScroll);
-    };
-  }, [onScroll]);
-
-  const classes = ['full-page'];
-
-  if (navbarSticky) classes.push('navbar-sticky');
-
   return (
-    <AppShell className={styles.app}>
-      <AppShell.Main>
-        <Navbar />
-        <TimeSettings />
+    <Stack w="100vw" h="100vh" align="stretch" gap={0} className={styles.app}>
+      <Navbar />
+      <TimeSettings />
+      <Stack flex={1}>
         <AppRoutes />
-      </AppShell.Main>
-      <AppShell.Footer>
-        <Footer />
-      </AppShell.Footer>
-    </AppShell>
+      </Stack>
+      <Footer />
+    </Stack>
   );
 };
