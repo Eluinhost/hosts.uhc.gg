@@ -1,0 +1,8 @@
+.active {
+    border: 1px solid var(--mantine-color-primary-9);
+}
+
+.navbar {
+    border-bottom: 1px solid var(--mantine-color-primary-9);
+}
+

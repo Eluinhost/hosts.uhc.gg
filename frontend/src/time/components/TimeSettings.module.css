@@ -1,0 +1,7 @@
+.timeSettings {
+    position: sticky;
+    top: 0;
+    box-shadow: var(--mantine-shadow-lg);
+    background-color: var(--mantine-color-body);
+    z-index: var(--mantine-z-index-app);
+}

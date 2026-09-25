@@ -1,0 +1,10 @@
+.unsynced {
+    color: var(--mantine-color-red-6)
+}
+
+.currentTime {
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 0;
+    padding: 1rem;
+}

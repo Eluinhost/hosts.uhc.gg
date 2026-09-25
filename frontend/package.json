@@ -20,6 +20,8 @@
   "dependencies": {
     "@blueprintjs/core": "6.20.0",
     "@blueprintjs/icons": "6.14.1",
+    "@mantine/core": "9.6.2",
+    "@phosphor-icons/react": "2.1.10",
     "@rc-component/picker": "1.14.0",
     "@tanstack/markdown": "0.0.15",
     "@tanstack/react-form": "2.0.0-alpha.2",
@@ -31,13 +33,11 @@
     "jwt-decode": "4.0.0",
     "ky": "2.1.0",
     "markup-js": "1.5.21",
-    "normalize.css": "8.0.1",
     "query-string": "9.5.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-ga": "3.3.1",
     "react-router": "8.4.0",
-    "react-window": "2.3.3",
     "vest": "6.3.2"
   },
   "devDependencies": {
@@ -61,7 +61,6 @@
     "globals": "17.12.0",
     "husky": "9.1.7",
     "jotai-babel": "0.3.0",
-    "jotai-devtools": "0.15.0-alpha.0",
     "knip": "6.38.0",
     "prettier": "3.9.8",
     "sass": "1.104.1",
