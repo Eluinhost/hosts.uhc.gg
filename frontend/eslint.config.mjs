@@ -9,7 +9,6 @@ import importx from 'eslint-plugin-import-x';
 import blueprint from '@blueprintjs/eslint-plugin';
 import { defaultConditionNames } from 'eslint-import-resolver-typescript';
 
-import noStringIcons from './eslint/rules/no-string-icons.mjs';
 import requireAtomWithStorageGetoninit from './eslint/rules/require-atom-with-storage-getoninit.mjs';
 
 // jsxA11y has a `parserOptions` key, which flat config rejects for, moved it under `languageOptions`
@@ -88,13 +87,11 @@ export default tseslint.config(
     plugins: {
       local: {
         rules: {
-          'no-string-icons': noStringIcons,
           'require-atom-with-storage-getoninit': requireAtomWithStorageGetoninit,
         },
       },
     },
     rules: {
-      'local/no-string-icons': 'error',
       'local/require-atom-with-storage-getoninit': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
       '@typescript-eslint/restrict-template-expressions': [

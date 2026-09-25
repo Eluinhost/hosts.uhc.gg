@@ -1,0 +1,12 @@
+.active {
+    border: 1px solid var(--mantine-color-primary-9);
+}
+
+.navbar {
+    border-bottom: 1px solid var(--mantine-color-primary-9);
+}
+
+.homeLink {
+    text-decoration: none;
+    color: var(--mantine-color-primary-7);
+}

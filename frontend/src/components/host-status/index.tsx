@@ -1,5 +1,5 @@
 import { Classes, Intent, Tag } from '@blueprintjs/core';
-import { PersonIcon, TickCircleIcon } from '@blueprintjs/icons';
+import { UserIcon, CheckCircleIcon } from '@phosphor-icons/react';
 import React from 'react';
 
 type HostStatusProps = {
@@ -11,7 +11,7 @@ export const HostStatus: React.FC<HostStatusProps> = ({ roles = [] }) => {
   if (roles.indexOf('host') !== -1) {
     return (
       <Tag intent={Intent.SUCCESS} className={Classes.LARGE} title="Verified Host">
-        <TickCircleIcon /> Verified Host
+        <CheckCircleIcon /> Verified Host
       </Tag>
     );
   }
@@ -19,7 +19,7 @@ export const HostStatus: React.FC<HostStatusProps> = ({ roles = [] }) => {
   if (roles.indexOf('trial host') !== -1) {
     return (
       <Tag intent={Intent.WARNING} className={Classes.LARGE} title="Trial Host">
-        <PersonIcon /> Trial Host
+        <UserIcon /> Trial Host
       </Tag>
     );
   }

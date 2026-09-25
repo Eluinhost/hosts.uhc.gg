@@ -1,5 +1,5 @@
 import { Button, Intent } from '@blueprintjs/core';
-import { AddIcon } from '@blueprintjs/icons';
+import { PlusIcon } from '@phosphor-icons/react';
 import React, { useMemo } from 'react';
 
 import { FormLabel } from '../../forms/FormLabel';
@@ -113,7 +113,7 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
           <Button
             type="submit"
             intent={Intent.PRIMARY}
-            icon={<AddIcon />}
+            icon={<PlusIcon />}
             disabled={disabled}
             onClick={() => {
               void form.handleSubmit();

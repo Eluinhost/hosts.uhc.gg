@@ -12,14 +12,6 @@ export default defineConfig({
       presets: [reactCompilerPreset(), jotaiBabel],
     }),
   ],
-  resolve: {
-    alias: [
-      {
-        find: /^@blueprintjs\/icons$/,
-        replacement: new URL('./vite/blueprintIconsShim.mjs', import.meta.url).pathname,
-      },
-    ],
-  },
   server: {
     port: 3000,
     host: '0.0.0.0',

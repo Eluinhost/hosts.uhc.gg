@@ -1,33 +1,28 @@
+import { ActionIcon, Button, Flex, Image, Paper } from '@mantine/core';
 import {
-  Button,
-  type IconName,
-  type MaybeElement,
-  NavbarGroup,
-  NavbarHeading,
-  Navbar as BpNavbar,
-} from '@blueprintjs/core';
-import {
-  CloudUploadIcon,
-  FlashIcon,
-  HelpIcon,
-  InboxIcon,
+  BoxArrowUpIcon,
+  FileTextIcon,
+  ListBulletsIcon,
   MoonIcon,
-  NumberedListIcon,
-  UnresolveIcon,
-  UserIcon,
-} from '@blueprintjs/icons';
+  QuestionIcon,
+  SunIcon,
+  ToggleLeftIcon,
+  UsersIcon,
+} from '@phosphor-icons/react';
+import { clsx } from 'clsx';
 import { useAtom } from 'jotai';
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { useLocation, Link } from 'react-router';
 
 import { isDarkModeAtom } from '../atoms/isDarkMode';
 
+import styles from './Navbar.module.css';
 import { Username } from './Username';
 import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
   readonly text: string;
-  readonly icon: IconName | MaybeElement;
+  readonly icon?: ReactNode;
   readonly to: string;
 };
 
@@ -35,11 +30,17 @@ const NavBarButtonComponent: React.FC<NavBarButtonProps> = ({ text, icon, to }) 
   const location = useLocation();
 
   return (
-    <Link to={to}>
-      <Button variant="minimal" icon={icon} active={location.pathname === to || location.pathname.startsWith(`${to}/`)}>
-        {text}
-      </Button>
-    </Link>
+    <Button
+      leftSection={icon}
+      variant="subtle"
+      component={Link}
+      to={to}
+      className={clsx({
+        [styles.active]: location.pathname === to,
+      })}
+    >
+      {text}
+    </Button>
   );
 };
 
@@ -49,37 +50,45 @@ export const Navbar: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useAtom(isDarkModeAtom);
 
   return (
-    <BpNavbar>
-      <NavbarGroup>
+    <Flex direction="row" gap="lg" className={styles.navbar} bdrs="0" component={Paper}>
+      <Flex direction="row" align="center" gap="xs">
         <Link to="/">
-          <img src="/logo.png" alt="logo" className="brand-logo" />
+          <Image src="/logo.png" alt="logo" className="brand-logo" h="4rem" w="auto" p=".5rem" />
         </Link>
-        <Link to="/">
-          <NavbarHeading>uhc.gg hosting</NavbarHeading>
+        <Link to="/" className={styles.homeLink}>
+          uhc.gg hosting
         </Link>
-      </NavbarGroup>
-      <NavbarGroup>
-        <NavbarButton to="/host" text="Host" icon={<CloudUploadIcon />} />
-        <NavbarButton to="/matches" text="Matches" icon={<NumberedListIcon />} />
-        <NavbarButton to="/host-applications" text="Host Applications" icon={<InboxIcon />} />
-        <NavbarButton to="/members" text="Members" icon={<UserIcon />} />
+      </Flex>
+      <Flex
+        direction="row"
+        justify="center"
+        flex="1"
+        align="center"
+        gap="xs"
+        className={styles.navLinks}
+        wrap="wrap"
+        m="xs"
+      >
+        <NavbarButton to="/host" text="Host" icon={<BoxArrowUpIcon size={20} />} />
+        <NavbarButton to="/matches" text="Matches" icon={<ListBulletsIcon size={20} />} />
+        <NavbarButton to="/host-applications" text="Host Applications" icon={<FileTextIcon />} />
+        <NavbarButton to="/members" text="Members" icon={<UsersIcon />} />
         <WithPermission permission="hosting advisor">
-          <NavbarButton text="Modifiers" icon={<UnresolveIcon />} to="/modifiers" />
+          <NavbarButton text="Modifiers" icon={<ToggleLeftIcon />} to="/modifiers" />
+          <NavbarButton to="/quiz" text="Application Quiz" icon={<QuestionIcon />} />
         </WithPermission>
-        <WithPermission permission="hosting advisor">
-          <NavbarButton to="/quiz" text="Application Quiz" icon={<HelpIcon />} />
-        </WithPermission>
-      </NavbarGroup>
-      <NavbarGroup>
+      </Flex>
+      <Flex direction="row" justify="flex-end" align="center" gap="xs">
         <Username />
-        <Button
-          variant="minimal"
-          icon={isDarkMode ? <MoonIcon /> : <FlashIcon />}
+        <ActionIcon
+          variant="subtle"
           onClick={() => {
             setIsDarkMode(prev => !prev);
           }}
-        />
-      </NavbarGroup>
-    </BpNavbar>
+        >
+          {isDarkMode ? <MoonIcon /> : <SunIcon />}
+        </ActionIcon>
+      </Flex>
+    </Flex>
   );
 };

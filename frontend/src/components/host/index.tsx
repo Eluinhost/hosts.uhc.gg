@@ -1,5 +1,5 @@
 import { Button, Callout, Intent } from '@blueprintjs/core';
-import { CloudUploadIcon } from '@blueprintjs/icons';
+import { CloudArrowUpIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -442,7 +442,7 @@ export const HostingPage: React.FC = () => {
             <Button
               type="submit"
               disabled={!canSubmit}
-              icon={<CloudUploadIcon />}
+              icon={<CloudArrowUpIcon />}
               loading={isSubmitting}
               intent={isValid ? Intent.SUCCESS : Intent.WARNING}
             >

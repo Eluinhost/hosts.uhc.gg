@@ -1,0 +1,4 @@
+.app {
+    background-color: var(--mantine-background-color);
+    overflow-y: scroll;
+}
