@@ -1,5 +1,5 @@
-import { Button, Menu, MenuItem, PopoverNext } from '@blueprintjs/core';
-import { CogIcon, LogOutIcon, UserIcon } from '@blueprintjs/icons';
+import { Menu, Button } from '@mantine/core';
+import { UserIcon, GearIcon, SignOutIcon } from '@phosphor-icons/react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
 import { useNavigate, Link } from 'react-router';
@@ -7,15 +7,6 @@ import { useNavigate, Link } from 'react-router';
 import { authenticationAtom, isLoggedInAtom, usernameAtom } from '../atoms/authentication';
 
 import { LoginButton } from './LoginButton';
-
-const UserMenu: React.FunctionComponent<{ readonly logout: () => void }> = ({ logout }) => (
-  <Menu>
-    <Link to="/profile">
-      <MenuItem icon={<CogIcon />} text="Profile" />
-    </Link>
-    <MenuItem icon={<LogOutIcon />} onClick={logout} text="Logout" />
-  </Menu>
-);
 
 export const Username: React.FC = () => {
   const setAuthentication = useSetAtom(authenticationAtom);
@@ -30,15 +21,21 @@ export const Username: React.FC = () => {
 
   if (isLoggedIn) {
     return (
-      <PopoverNext
-        content={<UserMenu logout={logout} />}
-        placement="bottom-end"
-        renderTarget={triggerProps => (
-          <Button {...triggerProps} variant="minimal" icon={<UserIcon />}>
+      <Menu trigger="click-hover">
+        <Menu.Target>
+          <Button variant="minimal" leftSection={<UserIcon />}>
             {username}
           </Button>
-        )}
-      ></PopoverNext>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item leftSection={<GearIcon />} component={Link} to="/profile">
+            Profile
+          </Menu.Item>
+          <Menu.Item leftSection={<SignOutIcon />} onClick={logout}>
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     );
   }
 

@@ -1,6 +1,4 @@
-declare interface Window {
-  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: <R>(a: R) => R;
-}
+/// <reference types="vite/client" />
 
 declare interface Document {
   hidden?: boolean;
@@ -10,7 +8,6 @@ declare interface Document {
 
 declare module '*.scss';
 declare module '*.sass';
-declare module '*.css';
 
 interface ImportMeta {
   readonly env: {

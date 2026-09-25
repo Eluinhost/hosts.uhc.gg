@@ -1,16 +1,17 @@
-import { Classes, NonIdealState, Spinner } from '@blueprintjs/core';
+import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { GeosearchIcon } from '@blueprintjs/icons';
+import { AppShell } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
 import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '../atoms/authentication';
-import { isDarkModeAtom } from '../atoms/isDarkMode';
 import { useAuthRefresh } from '../authentication/useAuthRefresh';
 import { UpcomingMatchesPage } from '../matches/pages/UpcomingMatchesPage';
 import { TimeSettings } from '../time/components/TimeSettings';
 
+import styles from './App.module.css';
 import { Footer } from './footer';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
@@ -138,7 +139,6 @@ export const App: React.FC = () => {
   useAuthRefresh();
   useGlobalHotkeys();
 
-  const darkModeEnabled = useAtomValue(isDarkModeAtom);
   const [navbarSticky, setNavbarSticky] = useState(window.scrollY > 50); // upper navbar is 50px
   const onScroll = useCallback(() => {
     setNavbarSticky(window.scrollY > 50);
@@ -153,19 +153,18 @@ export const App: React.FC = () => {
 
   const classes = ['full-page'];
 
-  if (darkModeEnabled) classes.push(Classes.DARK);
   if (navbarSticky) classes.push('navbar-sticky');
 
   return (
-    <div className={classes.join(' ')}>
-      <div style={{ flexGrow: 0 }}>
+    <AppShell className={styles.app}>
+      <AppShell.Main>
         <Navbar />
         <TimeSettings />
-      </div>
-      <div className="app-container">
         <AppRoutes />
-      </div>
-      <Footer />
-    </div>
+      </AppShell.Main>
+      <AppShell.Footer>
+        <Footer />
+      </AppShell.Footer>
+    </AppShell>
   );
 };

@@ -1,5 +1,6 @@
-import { Tooltip, Position } from '@blueprintjs/core';
+import { Button, Tooltip } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
+import { clsx } from 'clsx';
 import { atom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -7,6 +8,8 @@ import { is12hAtom } from '../../atoms/timeFormatting';
 import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import { TimeData } from '../api';
+
+import styles from './CurrentTime.module.css';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -80,22 +83,22 @@ export const CurrentTime: React.FC = () => {
   );
 
   return (
-    <Tooltip content={tooltipText} position={Position.BOTTOM}>
-      <span
-        role="button"
-        tabIndex={0}
-        className={`current-time ${offset ? '' : 'current-time-unsynced'}`}
+    <Tooltip label={tooltipText} position="bottom">
+      <Button
+        variant="subtle"
+        size="lg"
+        p="xs"
+        m={0}
+        className={clsx({
+          [styles.currentTime]: true,
+          [styles.unsynced]: offset === undefined,
+        })}
         onClick={() => {
           void resync();
         }}
-        onKeyDown={e => {
-          if (e.key === 'Enter') {
-            void resync();
-          }
-        }}
       >
         {timeText}
-      </span>
+      </Button>
     </Tooltip>
   );
 };
