@@ -22,12 +22,12 @@ export const TimeSettings: React.FC = () => {
       <Group flex={1} justify="center" align="center">
         <CurrentTime />
       </Group>
-      <Group flex={1} justify="flex-end" align="stretch" gap="xs">
+      <Group flex={1} justify="flex-end" align="center" gap="xs">
         {open && (
           <Button
             leftSection={<ClockIcon />}
             variant="subtle"
-            size="large"
+            size="sm"
             onClick={() => {
               setIs12h(!is12h);
             }}
