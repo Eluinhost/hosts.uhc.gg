@@ -1,5 +1,5 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { AddIcon, ArrowLeftIcon, TakeActionIcon } from '@blueprintjs/icons';
+import { PlusIcon, ArrowLeftIcon, LightningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { create, enforce, test } from 'vest';
 
@@ -43,7 +43,7 @@ export const SetRulesDialog = ({ current, onClose }: { current: string; onClose:
 
   return (
     <Dialog
-      icon={<TakeActionIcon />}
+      icon={<LightningIcon />}
       isOpen
       onClose={onClose}
       title="Modify Rules"
@@ -76,7 +76,7 @@ export const SetRulesDialog = ({ current, onClose }: { current: string; onClose:
                 intent={Intent.SUCCESS}
                 onClick={() => void form.handleSubmit()}
                 disabled={!canSubmit}
-                icon={<AddIcon />}
+                icon={<PlusIcon />}
               >
                 Update Rules
               </Button>

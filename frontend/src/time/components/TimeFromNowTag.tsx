@@ -1,5 +1,5 @@
 import { Intent, Tag, type TagProps } from '@blueprintjs/core';
-import { TimeIcon } from '@blueprintjs/icons';
+import { ClockIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -44,7 +44,7 @@ export const TimeFromNowTag: React.FC<TimeFromNowTagProps> = ({ time, hideSuffix
 
   return (
     <Tag {...props} intent={intent}>
-      <TimeIcon /> {text}
+      <ClockIcon /> {text}
     </Tag>
   );
 };

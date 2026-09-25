@@ -1,5 +1,5 @@
 import { Button, Intent, NonIdealState, Pre, Spinner } from '@blueprintjs/core';
-import { WarningSignIcon } from '@blueprintjs/icons';
+import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -18,7 +18,7 @@ export const ProfilePage: React.FC = () => {
   if (error) {
     return (
       <NonIdealState
-        icon={<WarningSignIcon />}
+        icon={<WarningIcon />}
         title="Error"
         action={
           <Button

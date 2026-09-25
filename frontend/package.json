@@ -19,7 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "@blueprintjs/core": "6.20.0",
-    "@blueprintjs/icons": "6.14.1",
     "@mantine/core": "9.6.2",
     "@phosphor-icons/react": "2.1.10",
     "@rc-component/picker": "1.14.0",

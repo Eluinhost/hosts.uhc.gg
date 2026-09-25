@@ -1,5 +1,5 @@
 import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
-import { AddIcon, TrashIcon } from '@blueprintjs/icons';
+import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { type CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
@@ -180,7 +180,7 @@ export const CreateQuizQuestionForm = () => {
       )}
 
       {questionType === QuestionType.MULTIPLE_CHOICE && (
-        <Button icon={<AddIcon />} variant="minimal" onClick={handleAddChoice} disabled={isPending}>
+        <Button icon={<PlusIcon />} variant="minimal" onClick={handleAddChoice} disabled={isPending}>
           Add choice
         </Button>
       )}
@@ -188,7 +188,7 @@ export const CreateQuizQuestionForm = () => {
       <div style={{ marginTop: 10 }}>
         <Button
           intent={Intent.PRIMARY}
-          icon={<AddIcon />}
+          icon={<PlusIcon />}
           disabled={isPending || !isValid}
           onClick={() => {
             void handleSubmit();

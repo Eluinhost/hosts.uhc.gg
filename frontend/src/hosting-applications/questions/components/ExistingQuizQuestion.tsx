@@ -1,5 +1,5 @@
 import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
-import { TrashIcon } from '@blueprintjs/icons';
+import { TrashIcon } from '@phosphor-icons/react';
 import React, { useState } from 'react';
 
 import { type ManageQuizQuestion, QuestionType } from '../../../models/QuizQuestion';

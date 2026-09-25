@@ -1,5 +1,5 @@
 import { AnchorButton, Classes, Intent } from '@blueprintjs/core';
-import { BuildIcon, CommentIcon, GitRepoIcon, IssueIcon } from '@blueprintjs/icons';
+import { CodeIcon, ChatCircleDotsIcon, GitBranchIcon, BugIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
         <AnchorButton
           href="https://uhc.gg/discord"
           intent={intent}
-          icon={<CommentIcon />}
+          icon={<ChatCircleDotsIcon />}
           variant="minimal"
           target="_blank"
           rel="noopener noreferrer"
@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
         <AnchorButton
           href="https://github.com/Eluinhost/hosts.uhc.gg"
           intent={intent}
-          icon={<GitRepoIcon />}
+          icon={<GitBranchIcon />}
           target="_blank"
         >
           Source
@@ -36,12 +36,12 @@ export const Footer: React.FC = () => {
         <AnchorButton
           href="https://github.com/Eluinhost/hosts.uhc.gg/issues"
           intent={intent}
-          icon={<IssueIcon />}
+          icon={<BugIcon />}
           target="_blank"
         >
           Issues
         </AnchorButton>
-        <AnchorButton href="/api/docs/" intent={intent} icon={<BuildIcon />} target="_blank">
+        <AnchorButton href="/api/docs/" intent={intent} icon={<CodeIcon />} target="_blank">
           API
         </AnchorButton>
       </div>

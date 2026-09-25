@@ -1,5 +1,5 @@
 import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
-import { ClipboardIcon } from '@blueprintjs/icons';
+import { ClipboardIcon } from '@phosphor-icons/react';
 import React, { useCallback, useRef } from 'react';
 
 import { showToast } from '../../services/AppToaster';

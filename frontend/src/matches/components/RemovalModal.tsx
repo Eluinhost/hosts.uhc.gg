@@ -1,5 +1,5 @@
 import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
-import { ArrowLeftIcon, DeleteIcon, TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { ArrowLeftIcon, TrashIcon, CheckIcon, WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { createElement } from 'react';
 import { enforce, test, create } from 'vest';
@@ -44,7 +44,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
         await mutateAsync({ id, reason: value.reason });
         await showToast({
           intent: Intent.SUCCESS,
-          icon: createElement(TickIcon),
+          icon: createElement(CheckIcon),
           message: `Removed match #${id}`,
         });
 
@@ -52,7 +52,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
       } catch {
         await showToast({
           intent: Intent.DANGER,
-          icon: createElement(WarningSignIcon),
+          icon: createElement(WarningIcon),
           message: `Failed to remove match #${id}`,
         });
 
@@ -63,7 +63,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
 
   return (
     <Dialog
-      icon={<DeleteIcon />}
+      icon={<TrashIcon />}
       isOpen
       onClose={onClose}
       title="Remove match"
@@ -102,7 +102,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
                   void form.handleSubmit();
                 }}
                 disabled={!canSubmit}
-                icon={<DeleteIcon />}
+                icon={<TrashIcon />}
               >
                 Confirm Removal
               </Button>

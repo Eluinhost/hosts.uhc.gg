@@ -1,5 +1,5 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
-import { CrossIcon, GeosearchIcon, RefreshIcon, SearchIcon } from '@blueprintjs/icons';
+import { XIcon, MagnifyingGlassIcon, ArrowClockwiseIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, useState } from 'react';
 
@@ -52,7 +52,11 @@ export const MatchListing: FC<MatchListingProps> = ({
   const noMatches = useMemo(
     () =>
       !loading && (
-        <NonIdealState title="Nothing to see!" icon={<GeosearchIcon />} description="There are currently no matches" />
+        <NonIdealState
+          title="Nothing to see!"
+          icon={<MagnifyingGlassIcon />}
+          description="There are currently no matches"
+        />
       ),
     [loading],
   );
@@ -91,7 +95,7 @@ export const MatchListing: FC<MatchListingProps> = ({
       return (
         <>
           Showing {showing} of {outOf}.
-          <Button variant="minimal" icon={<CrossIcon />} onClick={clearSearch} />
+          <Button variant="minimal" icon={<XIcon />} onClick={clearSearch} />
         </>
       );
     },
@@ -133,7 +137,7 @@ export const MatchListing: FC<MatchListingProps> = ({
 
       <div className="match-listing__search">
         <InputGroup
-          leftIcon={<SearchIcon />}
+          leftIcon={<MagnifyingGlassIcon />}
           fill
           value={search}
           onChange={handleSearchChange}
@@ -159,7 +163,7 @@ export const MatchListing: FC<MatchListingProps> = ({
             loading={loading}
             disabled={loading}
             onClick={loadMore}
-            icon={<RefreshIcon />}
+            icon={<ArrowClockwiseIcon />}
             intent={Intent.SUCCESS}
             text="Load more"
           />

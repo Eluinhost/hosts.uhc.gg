@@ -1,5 +1,5 @@
 import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { AddIcon, RefreshIcon, RemoveIcon } from '@blueprintjs/icons';
+import { PlusIcon, ArrowClockwiseIcon, MinusIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -13,7 +13,7 @@ const renderRow = (row: PermissionModerationLogEntry) => (
     className={`moderation-log-entry ${Classes.MONOSPACE_TEXT}`}
     intent={row.added ? Intent.SUCCESS : Intent.DANGER}
     title={`${row.permission} /u/${row.username}`}
-    icon={row.added ? <AddIcon /> : <RemoveIcon />}
+    icon={row.added ? <PlusIcon /> : <MinusIcon />}
   >
     Actioned by {row.modifier} @ <MatchOpens time={row.at} />
   </Callout>
@@ -33,7 +33,12 @@ export const ModerationLog: React.FC = () => {
           <H5>{error.message}</H5>
         </div>
       )}
-      <Button disabled={isFetching} onClick={() => void refetch()} icon={<RefreshIcon />} intent={Intent.SUCCESS}>
+      <Button
+        disabled={isFetching}
+        onClick={() => void refetch()}
+        icon={<ArrowClockwiseIcon />}
+        intent={Intent.SUCCESS}
+      >
         Refresh
       </Button>
     </div>
