@@ -1,5 +1,5 @@
-import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
-import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react';
+import { Collapse, Button, Group, Title, Card, Alert } from '@mantine/core';
+import { CaretDownIcon, CaretRightIcon, WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
@@ -7,6 +7,7 @@ import { Markdown } from '../../components/Markdown';
 import { WithPermission } from '../../components/WithPermission';
 import { HostingRulesData } from '../api';
 
+import styles from './HostingRules.module.css';
 import { SetRulesDialog } from './SetRulesDialog';
 
 export const HostingRules: React.FC = () => {
@@ -28,8 +29,9 @@ export const HostingRules: React.FC = () => {
   };
 
   return (
-    <div className="hosting-rules">
-      <H3
+    <Card p={0} shadow="sm" withBorder>
+      <Group
+        p="sm"
         role="button"
         onClick={() => {
           setAreRulesOpen(prev => !prev);
@@ -39,20 +41,29 @@ export const HostingRules: React.FC = () => {
             setAreRulesOpen(prev => !prev);
           }
         }}
+        className={styles.trigger}
       >
         {areRulesOpen ? <CaretDownIcon /> : <CaretRightIcon />}
-        <span className="hosting-rules_title">Hosting Rules</span>
+        <Title order={3} flex={1}>
+          Hosting Rules
+        </Title>
         <span className="hosting-rules_last-modified">{lastModified()}</span>
-      </H3>
-      <Collapse isOpen={areRulesOpen} className="hosting-rules_content">
+      </Group>
+      <Collapse expanded={areRulesOpen} p="lg" pt={0}>
+        {!!error && <Alert variant="light" color="red" title={error.message} icon={<WarningIcon />} />}
+        {!!data && <Markdown markdown={data.content} />}
         <WithPermission permission="hosting advisor">
-          <Button
-            intent={Intent.PRIMARY}
-            text="Edit Rules"
-            onClick={() => {
-              setIsEditing(true);
-            }}
-          />
+          <Group justify="end" mt="sm">
+            <Button
+              size="compact-sm"
+              variant="primary"
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            >
+              Edit Rules
+            </Button>
+          </Group>
           {isEditing && (
             <SetRulesDialog
               current={data?.content ?? ''}
@@ -62,9 +73,7 @@ export const HostingRules: React.FC = () => {
             />
           )}
         </WithPermission>
-        {!!error && <Callout intent={Intent.DANGER}>{error.message}</Callout>}
-        {!!data && <Markdown markdown={data.content} />}
       </Collapse>
-    </div>
+    </Card>
   );
 };

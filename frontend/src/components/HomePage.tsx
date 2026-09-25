@@ -1,33 +1,25 @@
-import { Card, H4 } from '@blueprintjs/core';
+import { Card, Stack, Title, Text } from '@mantine/core';
 import React from 'react';
 import { Link } from 'react-router';
 
-import { HostingRules } from '../hosting-rules/components';
+import { HostingRules } from '../hosting-rules/components/HostingRules';
+
+import styles from './HomePage.module.css';
+
+const HomePageLink = ({ to, title, text }: { to: string; title: string; text: string }) => (
+  <Card component={Link} to={to} withBorder shadow="sm" className={styles.homePageLink}>
+    <Title order={4}>{title}</Title>
+    <Text>{text}</Text>
+  </Card>
+);
 
 export const HomePage: React.FC = () => (
-  <div className="home-page">
+  <Stack w="100%" align="stretch">
     <title>uhc.gg | Home</title>
     <HostingRules />
 
-    <Link to="/host">
-      <Card interactive>
-        <H4>Create a match</H4>
-        <p>Create a new match post</p>
-      </Card>
-    </Link>
-
-    <Link to="/matches">
-      <Card interactive>
-        <H4>Matches</H4>
-        <p>View a list of upcoming + removed matches</p>
-      </Card>
-    </Link>
-
-    <Link to="/members">
-      <Card interactive>
-        <H4>Members</H4>
-        <p>View member roles and member moderation log</p>
-      </Card>
-    </Link>
-  </div>
+    <HomePageLink to="/host" title="Create a match" text="Create a new match post" />
+    <HomePageLink to="/matches" title="Matches" text="View a list of upcoming + removed matches" />
+    <HomePageLink to="/members" title="Members" text="View member roles and member moderation log" />
+  </Stack>
 );

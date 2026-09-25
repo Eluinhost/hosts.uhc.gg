@@ -1,10 +1,7 @@
-import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { PlusIcon, ArrowLeftIcon, LightningIcon } from '@phosphor-icons/react';
-import { useAtomValue } from 'jotai';
+import { Button, Group, Modal, Stack } from '@mantine/core';
+import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
 import { create, enforce, test } from 'vest';
 
-import { isDarkModeAtom } from '../../atoms/isDarkMode';
-import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
 import { HostingRulesData } from '../api';
 
@@ -25,7 +22,6 @@ const suite = create(data => {
 
 export const SetRulesDialog = ({ current, onClose }: { current: string; onClose: () => void }) => {
   const { mutateAsync } = HostingRulesData.mutations.useSetHostingRules();
-  const isDarkMode = useAtomValue(isDarkModeAtom);
 
   const form = useAppForm({
     defaultValues: { rules: current },
@@ -42,48 +38,35 @@ export const SetRulesDialog = ({ current, onClose }: { current: string; onClose:
   });
 
   return (
-    <Dialog
-      icon={<LightningIcon />}
-      isOpen
-      onClose={onClose}
-      title="Modify Rules"
-      className={isDarkMode ? Classes.DARK : ''}
-    >
-      <div className={Classes.DIALOG_BODY}>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            void form.handleSubmit();
-          }}
-        >
-          <form.Field name="rules">
-            {field => (
-              <FormLabel field={field} showRequiredStar label="Rules">
-                <RulesField field={field} className={Classes.FILL} />
-              </FormLabel>
-            )}
-          </form.Field>
-        </form>
-      </div>
-      <div className={Classes.DIALOG_FOOTER}>
-        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
+    <Modal opened onClose={onClose} title="Modify Rules" centered size="lg">
+      <Stack
+        component="form"
+        onSubmit={e => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+      >
+        <form.Field name="rules">{field => <RulesField field={field} />}</form.Field>
+
+        <Group justify="end">
+          <Button variant="light" color="red" onClick={onClose} leftSection={<ArrowLeftIcon />}>
             Cancel
           </Button>
           <form.Subscribe selector={state => state.canSubmit}>
             {canSubmit => (
               <Button
-                intent={Intent.SUCCESS}
+                variant="light"
+                color="green"
                 onClick={() => void form.handleSubmit()}
                 disabled={!canSubmit}
-                icon={<PlusIcon />}
+                leftSection={<PlusIcon />}
               >
                 Update Rules
               </Button>
             )}
           </form.Subscribe>
-        </div>
-      </div>
-    </Dialog>
+        </Group>
+      </Stack>
+    </Modal>
   );
 };
