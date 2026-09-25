@@ -1,5 +1,5 @@
 import { Classes } from '@blueprintjs/core';
-import { AddIcon } from '@blueprintjs/icons';
+import { PlusIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { type ReactNode, useState } from 'react';
@@ -55,7 +55,7 @@ export const PermissionNode = ({ permission, count }: PermissionNodeProps) => {
         isLoading={isFetching}
         rightIcon={
           canModify && (
-            <AddIcon
+            <PlusIcon
               aria-label={`Add a user to role: ${permission}`}
               className={Classes.INTENT_SUCCESS}
               onClick={e => {

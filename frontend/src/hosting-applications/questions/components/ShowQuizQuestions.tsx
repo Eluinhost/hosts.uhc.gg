@@ -1,5 +1,5 @@
 import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
-import { HelpIcon } from '@blueprintjs/icons';
+import { QuestionIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 
 import { QuizQuestionsData } from '../api';
@@ -20,7 +20,7 @@ export const ShowQuizQuestions = () => {
   } else if (isFetching) {
     top = <NonIdealState icon={<Spinner />} title="Loading...." />;
   } else if (data && data.length === 0) {
-    top = <NonIdealState icon={<HelpIcon />} title="No questions setup" />;
+    top = <NonIdealState icon={<QuestionIcon />} title="No questions setup" />;
   } else {
     top = (
       <div>

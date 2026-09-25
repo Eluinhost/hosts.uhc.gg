@@ -1,13 +1,5 @@
 import { Button, Classes, H4, Intent, Tag } from '@blueprintjs/core';
-import {
-  ConfirmIcon,
-  CubeIcon,
-  PeopleIcon,
-  TagIcon,
-  TickIcon,
-  TimelineBarChartIcon,
-  TrashIcon,
-} from '@blueprintjs/icons';
+import { ChartBarIcon, CheckIcon, CubeIcon, TagIcon, TrashIcon, UsersIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router';
@@ -79,7 +71,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
         <TagList intent={Intent.PRIMARY} title="Tag" items={match.tags} icon={<TagIcon />} />
         {match.tournament && (
           <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
-            <TimelineBarChartIcon /> Tournament
+            <ChartBarIcon /> Tournament
           </Tag>
         )}
       </div>
@@ -96,7 +88,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
             &nbsp;&nbsp;<b>{match.version}</b>
           </Tag>
           <Tag intent={Intent.DANGER} size="large">
-            <PeopleIcon /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
+            <UsersIcon /> <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
           </Tag>
           <TagList intent={Intent.NONE} title="Scenario" items={match.scenarios} />
         </div>
@@ -117,7 +109,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
             {!disableApproval && canApprove && !match.approvedBy && (
               <Button
                 intent={Intent.SUCCESS}
-                icon={<ConfirmIcon />}
+                icon={<CheckIcon />}
                 title="Approve Match"
                 onClick={e => {
                   e.stopPropagation();
@@ -128,7 +120,12 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
             )}
 
             {!!match.approvedBy && (
-              <Button intent={Intent.SUCCESS} title={`Approved by /u/${match.approvedBy}`} active icon={<TickIcon />} />
+              <Button
+                intent={Intent.SUCCESS}
+                title={`Approved by /u/${match.approvedBy}`}
+                active
+                icon={<CheckIcon />}
+              />
             )}
 
             {!disableRemoval && canRemove && (

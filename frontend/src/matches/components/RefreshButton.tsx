@@ -1,5 +1,5 @@
 import { Classes, Intent, Button } from '@blueprintjs/core';
-import { RefreshIcon } from '@blueprintjs/icons';
+import { ArrowClockwiseIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -30,7 +30,7 @@ export const RefreshButton: React.FC<OwnProps> = ({ lastUpdated, onClick, loadin
       size="large"
       onClick={onClick}
       disabled={loading}
-      icon={<RefreshIcon className={loading ? Classes.SPINNER_ANIMATION : ''} />}
+      icon={<ArrowClockwiseIcon className={loading ? Classes.SPINNER_ANIMATION : ''} />}
       text={buttonContent}
     />
   );

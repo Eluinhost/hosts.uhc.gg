@@ -1,5 +1,5 @@
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
-import { ArrowLeftIcon, TickIcon } from '@blueprintjs/icons';
+import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
 import { clsx } from 'clsx';
 import { useAtomValue } from 'jotai';
 import React from 'react';
@@ -23,7 +23,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ id, onClose }) => 
 
   return (
     <Dialog
-      icon={<TickIcon />}
+      icon={<CheckIcon />}
       isOpen
       onClose={onClose}
       title="Approve match"
@@ -41,7 +41,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ id, onClose }) => 
             onClick={() => {
               void handleClick();
             }}
-            icon={<TickIcon />}
+            icon={<CheckIcon />}
             text="Confirm Approval"
           />
         </div>

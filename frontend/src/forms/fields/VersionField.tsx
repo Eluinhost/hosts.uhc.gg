@@ -8,7 +8,7 @@ import {
   SegmentedControl,
   Spinner,
 } from '@blueprintjs/core';
-import { WarningSignIcon } from '@blueprintjs/icons';
+import { WarningIcon } from '@phosphor-icons/react';
 import { type FieldWithValue } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import { clsx } from 'clsx';
@@ -87,7 +87,7 @@ export const VersionField: React.FC<VersionFieldProps> = ({ field }) => {
   if (error) {
     return (
       <NonIdealState
-        icon={<WarningSignIcon />}
+        icon={<WarningIcon />}
         title="Failed to load versions list"
         action={
           <Button

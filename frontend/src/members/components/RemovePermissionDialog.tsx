@@ -1,5 +1,5 @@
 import { Button, Classes, Dialog, H5, Intent } from '@blueprintjs/core';
-import { ArrowLeftIcon, RemoveIcon } from '@blueprintjs/icons';
+import { ArrowLeftIcon, MinusIcon } from '@phosphor-icons/react';
 import { clsx } from 'clsx';
 import { useAtomValue } from 'jotai';
 
@@ -18,7 +18,7 @@ export const RemovePermissionDialog = ({ permission, username, onClose }: Remove
 
   return (
     <Dialog
-      icon={<RemoveIcon />}
+      icon={<MinusIcon />}
       isOpen
       onClose={onClose}
       title="Remove role"
@@ -39,7 +39,7 @@ export const RemovePermissionDialog = ({ permission, username, onClose }: Remove
             onClick={() => {
               mutate({ permission, username });
             }}
-            icon={<RemoveIcon />}
+            icon={<MinusIcon />}
             disabled={isPending}
           >
             Remove permission

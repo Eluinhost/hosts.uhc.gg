@@ -1,5 +1,5 @@
 import { NonIdealState } from '@blueprintjs/core';
-import { WarningSignIcon } from '@blueprintjs/icons';
+import { WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import qs from 'query-string';
 import React, { useEffect, useState } from 'react';
@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { authenticationAtom, isLoggedInAtom } from '../atoms/authentication';
 
 const InvalidToken: React.FunctionComponent = () => (
-  <NonIdealState title="Invalid login token" icon={<WarningSignIcon />} />
+  <NonIdealState title="Invalid login token" icon={<WarningIcon />} />
 );
 
 const zeroth = (t: string | (string | null)[] | null | undefined): string | null | undefined =>

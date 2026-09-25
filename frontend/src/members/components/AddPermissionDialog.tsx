@@ -1,5 +1,5 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
-import { AddIcon, ArrowLeftIcon } from '@blueprintjs/icons';
+import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
 import { clsx } from 'clsx';
 import { useAtomValue } from 'jotai';
 import { enforce, create, test } from 'vest';
@@ -49,7 +49,7 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
 
   return (
     <Dialog
-      icon={<AddIcon />}
+      icon={<PlusIcon />}
       isOpen
       onClose={onClose}
       title={`Add '${permission}' role`}
@@ -83,7 +83,7 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
               void form.handleSubmit();
             }}
             disabled={!form.state.canSubmit}
-            icon={<AddIcon />}
+            icon={<PlusIcon />}
           >
             Add Permission
           </Button>

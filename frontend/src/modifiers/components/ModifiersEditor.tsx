@@ -1,5 +1,5 @@
 import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { WarningSignIcon } from '@blueprintjs/icons';
+import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -20,7 +20,7 @@ export const ModifiersEditor: React.FC = () => {
   if (error) {
     return (
       <NonIdealState
-        icon={<WarningSignIcon />}
+        icon={<WarningIcon />}
         title="Failed to lookup modifiers"
         action={
           <Button

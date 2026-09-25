@@ -1,16 +1,15 @@
 import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
 import {
-  ConfirmIcon,
+  ChartBarIcon,
+  CheckIcon,
   CubeIcon,
-  GeosearchIcon,
   GlobeIcon,
-  PeopleIcon,
+  MagnifyingGlassIcon,
   TagIcon,
-  TickIcon,
-  TimelineBarChartIcon,
   TrashIcon,
-  WarningSignIcon,
-} from '@blueprintjs/icons';
+  UsersIcon,
+  WarningIcon,
+} from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
@@ -72,10 +71,10 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
 
   if (error) {
     if (error instanceof HTTPError && error.response.status === 404) {
-      return <NonIdealState icon={<GeosearchIcon />} title="Not found" />;
+      return <NonIdealState icon={<MagnifyingGlassIcon />} title="Not found" />;
     }
 
-    return <NonIdealState icon={<WarningSignIcon />} title="Error loading data" />;
+    return <NonIdealState icon={<WarningIcon />} title="Error loading data" />;
   }
 
   if (!data) {
@@ -120,7 +119,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
           <HostStatus roles={roles} />
           {tournament && (
             <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
-              <TimelineBarChartIcon /> Tournament
+              <ChartBarIcon /> Tournament
             </Tag>
           )}
           <RemovedTag match={data} />
@@ -139,7 +138,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
         <div className="match-details__header__floating-tags__bottom">
           <div>
             <Tag intent={Intent.DANGER} title="Team style" className={Classes.LARGE}>
-              <PeopleIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
+              <UsersIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
             </Tag>
             <Tag intent={Intent.PRIMARY} title={`Server version: ${version}`} size="large">
               <CubeIcon /> {version}
@@ -189,7 +188,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
         {!removed && !!approvedBy && (
           <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
             <H5>
-              <TickIcon /> Approved by /u/{approvedBy}
+              <CheckIcon /> Approved by /u/{approvedBy}
             </H5>
           </div>
         )}
@@ -199,7 +198,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
             {canApprove && (
               <Button
                 intent={Intent.SUCCESS}
-                icon={<ConfirmIcon />}
+                icon={<CheckIcon />}
                 title="Approve Match"
                 onClick={() => {
                   setIsApproving(true);

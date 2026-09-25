@@ -1,5 +1,5 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { BanCircleIcon, HelpIcon, TickCircleIcon, TickIcon } from '@blueprintjs/icons';
+import { ProhibitIcon, QuestionIcon, CheckCircleIcon, CheckIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import React from 'react';
@@ -21,7 +21,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (isBanned) {
     return (
       <NonIdealState
-        icon={<BanCircleIcon />}
+        icon={<ProhibitIcon />}
         title="You cannot apply"
         description="You are banned from hosting and cannot submit an application."
         action={
@@ -36,7 +36,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (!canApply) {
     return (
       <NonIdealState
-        icon={<TickCircleIcon />}
+        icon={<CheckCircleIcon />}
         title="You don't need to apply"
         description="You're already a host, or you're not logged in."
         action={
@@ -51,7 +51,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
   if (isSuccess) {
     return (
       <NonIdealState
-        icon={<TickIcon />}
+        icon={<CheckIcon />}
         title="Application submitted"
         description="Head back to Host Applications to check on its status."
         action={
@@ -73,7 +73,7 @@ export const ApplyHostApplicationPage: React.FC = () => {
       {isFetching ? (
         <Spinner />
       ) : !data || data.length === 0 ? (
-        <NonIdealState icon={<HelpIcon />} title="No quiz questions have been configured yet" />
+        <NonIdealState icon={<QuestionIcon />} title="No quiz questions have been configured yet" />
       ) : (
         <HostApplicationForm questions={data} />
       )}

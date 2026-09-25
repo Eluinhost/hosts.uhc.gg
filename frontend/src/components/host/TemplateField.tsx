@@ -17,17 +17,17 @@ import {
   TextArea,
 } from '@blueprintjs/core';
 import {
-  ChevronDownIcon,
+  ArrowCounterClockwiseIcon,
   BookmarkIcon,
-  ChevronUpIcon,
+  BoxArrowDownIcon,
+  BoxArrowUpIcon,
+  CaretDownIcon,
+  CaretUpIcon,
   FloppyDiskIcon,
-  TrashIcon,
+  InfoIcon,
   PlusIcon,
-  ExportIcon,
-  ImportIcon,
-  InfoSignIcon,
-  ResetIcon,
-} from '@blueprintjs/icons';
+  TrashIcon,
+} from '@phosphor-icons/react';
 import type { FieldWithValue } from '@tanstack/react-form';
 import { useAtom } from 'jotai';
 import * as Mark from 'markup-js';
@@ -196,7 +196,7 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
                     />
                     <MenuItem
                       text="Export"
-                      icon={<ExportIcon />}
+                      icon={<BoxArrowUpIcon />}
                       onClick={() => {
                         setExportContent(template);
                       }}
@@ -227,13 +227,13 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
                 />
                 <MenuItem
                   text="Import Preset"
-                  icon={<ImportIcon />}
+                  icon={<BoxArrowDownIcon />}
                   onClick={() => {
                     setIsShowingImportPopover(true);
                   }}
                 />
                 <MenuItem
-                  icon={<ResetIcon />}
+                  icon={<ArrowCounterClockwiseIcon />}
                   text="Reset to Default"
                   onClick={() => {
                     field.handleChange(defaultPreset);
@@ -246,7 +246,7 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
           >
             <Button
               icon={<BookmarkIcon />}
-              endIcon={isPresetMenuOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              endIcon={isPresetMenuOpen ? <CaretUpIcon /> : <CaretDownIcon />}
               onClick={() => {
                 setIsPresetMenuOpen(prev => !prev);
               }}
@@ -256,7 +256,7 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
           </PopoverNext>
           <Button
             size="large"
-            icon={<InfoSignIcon />}
+            icon={<InfoIcon />}
             onClick={() => {
               setIsShowingHelpPopover(true);
             }}

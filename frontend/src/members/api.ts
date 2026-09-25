@@ -1,5 +1,5 @@
 import { Intent } from '@blueprintjs/core';
-import { WarningSignIcon } from '@blueprintjs/icons';
+import { WarningIcon } from '@phosphor-icons/react';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createElement } from 'react';
 import { enforce } from 'vest';
@@ -89,7 +89,7 @@ export const MembersData = {
         onError: async (_error, variables) => {
           await showToast({
             intent: Intent.DANGER,
-            icon: createElement(WarningSignIcon),
+            icon: createElement(WarningIcon),
             message: `Failed to add permission to /u/${variables.username}`,
           });
         },
@@ -113,7 +113,7 @@ export const MembersData = {
         onError: async (_error, { username, permission }) => {
           await showToast({
             intent: Intent.DANGER,
-            icon: createElement(WarningSignIcon),
+            icon: createElement(WarningIcon),
             message: `Failed to remove permission '${permission}' from /u/${username}`,
           });
         },

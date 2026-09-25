@@ -1,5 +1,5 @@
 import { Classes, Intent, Tag } from '@blueprintjs/core';
-import { RefreshIcon, TrashIcon } from '@blueprintjs/icons';
+import { ArrowClockwiseIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { type ReactNode, useCallback, useState } from 'react';
 
 import { ModifiersData } from '../api';
@@ -25,7 +25,7 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
   let icon: ReactNode | null = null;
 
   if (isPending) {
-    icon = <RefreshIcon className={Classes.SPINNER_ANIMATION} />;
+    icon = <ArrowClockwiseIcon className={Classes.SPINNER_ANIMATION} />;
   } else if (isHovered) {
     icon = <TrashIcon />;
   }

@@ -1,5 +1,5 @@
 import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
-import { ChevronDownIcon, ChevronUpIcon, CrossIcon, TickIcon } from '@blueprintjs/icons';
+import { CaretDownIcon, CaretUpIcon, XIcon, CheckIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -64,7 +64,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
       <div style={{ marginTop: 10 }}>
         <Button
           variant="minimal"
-          icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          icon={isExpanded ? <CaretUpIcon /> : <CaretDownIcon />}
           onClick={() => {
             setIsExpanded(prev => !prev);
           }}
@@ -110,7 +110,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
         <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
           <Button
             intent={Intent.SUCCESS}
-            icon={<TickIcon />}
+            icon={<CheckIcon />}
             loading={isReviewing}
             onClick={() => {
               void review({ id: application.id, decision: 'approve' });
@@ -118,7 +118,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
           >
             Approve
           </Button>
-          <Button intent={Intent.DANGER} icon={<CrossIcon />} loading={isReviewing} onClick={openDeclineDialog}>
+          <Button intent={Intent.DANGER} icon={<XIcon />} loading={isReviewing} onClick={openDeclineDialog}>
             Decline
           </Button>
         </div>

@@ -1,5 +1,5 @@
 import { Classes } from '@blueprintjs/core';
-import { TrashIcon, UserIcon } from '@blueprintjs/icons';
+import { TrashIcon, UserIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 

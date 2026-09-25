@@ -1,5 +1,5 @@
 import { Button, Callout, Collapse, H3, Intent } from '@blueprintjs/core';
-import { ChevronDownIcon, ChevronRightIcon } from '@blueprintjs/icons';
+import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
@@ -40,7 +40,7 @@ export const HostingRules: React.FC = () => {
           }
         }}
       >
-        {areRulesOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+        {areRulesOpen ? <CaretDownIcon /> : <CaretRightIcon />}
         <span className="hosting-rules_title">Hosting Rules</span>
         <span className="hosting-rules_last-modified">{lastModified()}</span>
       </H3>

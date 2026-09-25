@@ -1,5 +1,5 @@
 import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { AddIcon, InboxIcon } from '@blueprintjs/icons';
+import { PlusIcon, FileTextIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -49,7 +49,7 @@ export const HostApplicationsPage = () => {
       {canApply && (
         <div style={{ marginBottom: 20 }}>
           <Link to="/host-applications/apply">
-            <Button intent={Intent.PRIMARY} icon={<AddIcon />}>
+            <Button intent={Intent.PRIMARY} icon={<PlusIcon />}>
               Apply to host
             </Button>
           </Link>
@@ -60,7 +60,7 @@ export const HostApplicationsPage = () => {
         <Spinner />
       ) : data?.length === 0 ? (
         <NonIdealState
-          icon={<InboxIcon />}
+          icon={<FileTextIcon />}
           title="No host applications yet"
           description="There are no host applications to see yet."
         />

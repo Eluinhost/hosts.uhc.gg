@@ -1,5 +1,5 @@
 import { Button, ControlGroup, Intent } from '@blueprintjs/core';
-import { UploadIcon } from '@blueprintjs/icons';
+import { ArrowUpIcon } from '@phosphor-icons/react';
 import { create, enforce, test } from 'vest';
 
 import { FormLabel } from '../../forms/FormLabel';
@@ -66,7 +66,7 @@ export const CreateModifierForm = ({ existing }: { existing: Array<string> }) =>
                     onClick={() => {
                       void form.handleSubmit();
                     }}
-                    icon={<UploadIcon />}
+                    icon={<ArrowUpIcon />}
                     size="large"
                     disabled={!valid}
                   />

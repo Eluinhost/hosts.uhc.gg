@@ -1,5 +1,5 @@
 import { Classes, Collapse } from '@blueprintjs/core';
-import { ChevronRightIcon } from '@blueprintjs/icons';
+import { CaretRightIcon } from '@phosphor-icons/react';
 import { clsx } from 'clsx';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
@@ -61,8 +61,8 @@ export const TreeNode = ({
     <li className={classes}>
       <div className={contentClasses}>
         {onOpenChange && (
-          <ChevronRightIcon
-            title={isOpen ? 'Collapse group' : 'Expand group'}
+          <CaretRightIcon
+            alt={isOpen ? 'Collapse group' : 'Expand group'}
             className={caretClasses}
             onClick={toggleOpen}
             tabIndex={0}

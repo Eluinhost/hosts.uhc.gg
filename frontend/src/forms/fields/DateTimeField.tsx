@@ -1,5 +1,5 @@
 import { Callout, Intent } from '@blueprintjs/core';
-import { InfoSignIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { InfoIcon, WarningIcon } from '@phosphor-icons/react';
 import { PickerPanel, type PickerPanelProps } from '@rc-component/picker';
 import generateDayjsConfig from '@rc-component/picker/lib/generate/dayjs';
 import enGB from '@rc-component/picker/lib/locale/en_GB';
@@ -80,12 +80,12 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
       />
       {field.meta.isInvalid && (
         <Callout intent={Intent.DANGER} icon={false}>
-          <WarningSignIcon />
+          <WarningIcon />
           <span>{field.meta.errors.map(x => x.message).join(', ')}</span>
         </Callout>
       )}
       <Callout intent={Intent.PRIMARY} icon={false}>
-        <InfoSignIcon />
+        <InfoIcon />
         <span>All times must be entered in your chosen timezone</span>
         <strong> ({field.value.format('zzz / Z')})</strong>
       </Callout>

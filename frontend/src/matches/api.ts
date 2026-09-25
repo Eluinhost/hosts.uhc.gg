@@ -1,5 +1,5 @@
 import { Intent } from '@blueprintjs/core';
-import { TickIcon, WarningSignIcon } from '@blueprintjs/icons';
+import { CheckIcon, WarningIcon } from '@phosphor-icons/react';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
@@ -173,7 +173,7 @@ export const MatchesData = {
         onSuccess: (_data, id) => {
           void showToast({
             intent: Intent.SUCCESS,
-            icon: createElement(TickIcon),
+            icon: createElement(CheckIcon),
             message: `Approved match #${id}`,
           });
 
@@ -192,7 +192,7 @@ export const MatchesData = {
         onError: (_error, id) => {
           void showToast({
             intent: Intent.DANGER,
-            icon: createElement(WarningSignIcon),
+            icon: createElement(WarningIcon),
             message: `Failed to approve match #${id}`,
           });
         },

@@ -1,6 +1,6 @@
 import { NonIdealState, Spinner } from '@blueprintjs/core';
-import { GeosearchIcon } from '@blueprintjs/icons';
 import { AppShell } from '@mantine/core';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { type PropsWithChildren, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import * as reactGa from 'react-ga';
@@ -49,7 +49,7 @@ const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePag
 const NotFoundPage: React.FC = () => (
   <>
     <title>uhc.gg | Not Found</title>
-    <NonIdealState title="Not Found" icon={<GeosearchIcon />} />
+    <NonIdealState title="Not Found" icon={<MagnifyingGlassIcon />} />
   </>
 );
 
