@@ -11,7 +11,7 @@ import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
 import type { Dayjs } from '../../dayjs';
 
-import '@mantine/dates/styles.layer.css';
+import '@mantine/dates/styles.css';
 
 export type DateTimeFieldProps = Omit<
   InlineDateTimePickerProps,
@@ -66,11 +66,12 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
         onClose={() => {
           setIsOpen(false);
         }}
+        size="xl"
       >
         <InlineDateTimePicker
           numberOfColumns={2}
           fullWidth
-          size="xs"
+          size="lg"
           maxLevel="month"
           monthLabelFormat="MMMM"
           maxDate={maxDate?.format('YYYY-MM-DD')}
