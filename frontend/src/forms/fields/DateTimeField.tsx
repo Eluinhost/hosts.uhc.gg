@@ -1,4 +1,4 @@
-import { Callout, Intent } from '@blueprintjs/core';
+import { Alert, Divider, Group, Stack, Text } from '@mantine/core';
 import { InfoIcon, WarningIcon } from '@phosphor-icons/react';
 import { PickerPanel, type PickerPanelProps } from '@rc-component/picker';
 import generateDayjsConfig from '@rc-component/picker/lib/generate/dayjs';
@@ -10,7 +10,8 @@ import React, { useCallback } from 'react';
 import { is12hAtom, timeFormatAtom } from '../../atoms/timeFormatting';
 import type { Dayjs } from '../../dayjs';
 
-import './DateTimeField.sass';
+// not module.css intentionally, global styles
+import './DateTimeField.css';
 
 export type DateTimeFieldProps = Omit<
   PickerPanelProps<Dayjs>,
@@ -25,6 +26,7 @@ export type DateTimeFieldProps = Omit<
   | 'minuteStep'
   | 'use12Hours'
   | 'showNow'
+  | 'classNames'
 > & {
   field: FieldWithValue<Dayjs>;
   disabled?: boolean;
@@ -58,8 +60,11 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
   );
 
   return (
-    <div className="date-time-field">
-      <span className="date-time-field-preview">{field.value.format(`ddd D MMM - ${format}`)}</span>
+    <Stack mb="md" justify="center" align="stretch">
+      <Group justify="center">
+        <Text size="xl">{field.value.format(`ddd D MMM - ${format}`)}</Text>
+      </Group>
+      <Divider />
       <PickerPanel
         {...datePickerProps}
         picker="date"
@@ -79,16 +84,16 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
         showNow
       />
       {field.meta.isInvalid && (
-        <Callout intent={Intent.DANGER} icon={false}>
+        <Alert color="red" icon={false}>
           <WarningIcon />
           <span>{field.meta.errors.map(x => x.message).join(', ')}</span>
-        </Callout>
+        </Alert>
       )}
-      <Callout intent={Intent.PRIMARY} icon={false}>
+      <Alert color="blue" icon={false}>
         <InfoIcon />
         <span>All times must be entered in your chosen timezone</span>
         <strong> ({field.value.format('zzz / Z')})</strong>
-      </Callout>
-    </div>
+      </Alert>
+    </Stack>
   );
 };
