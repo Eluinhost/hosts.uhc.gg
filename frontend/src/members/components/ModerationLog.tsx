@@ -1,46 +1,54 @@
-import { Button, Callout, Classes, H2, H5, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
-import { PlusIcon, ArrowClockwiseIcon, MinusIcon } from '@phosphor-icons/react';
+import { Alert, Button, EmptyState, Group, Loader, Stack, Title } from '@mantine/core';
+import { PlusIcon, ArrowClockwiseIcon, MinusIcon, WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { type ReactNode } from 'react';
 
 import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
 import { MatchOpens } from '../../time/components/MatchOpens';
 import { MembersData } from '../api';
 
 const renderRow = (row: PermissionModerationLogEntry) => (
-  <Callout
+  <Alert
     key={row.id}
-    className={`moderation-log-entry ${Classes.MONOSPACE_TEXT}`}
-    intent={row.added ? Intent.SUCCESS : Intent.DANGER}
+    color={row.added ? 'green' : 'red'}
     title={`${row.permission} /u/${row.username}`}
     icon={row.added ? <PlusIcon /> : <MinusIcon />}
   >
     Actioned by {row.modifier} @ <MatchOpens time={row.at} />
-  </Callout>
+  </Alert>
 );
 
 export const ModerationLog: React.FC = () => {
   const { data, isFetching, error, refetch } = useQuery(MembersData.fetchPermissionModerationLog);
 
-  if (isFetching) return <NonIdealState icon={<Spinner />} title="Loading..." />;
+  let content: ReactNode;
+
+  if (isFetching) {
+    content = <EmptyState icon={<Loader />} title="Loading..." />;
+  } else {
+    content = (
+      <>
+        {data?.map(renderRow)}
+        {!!error && <Alert icon={<WarningIcon />} title={error.message} />}
+      </>
+    );
+  }
 
   return (
-    <div className="moderation-log">
-      <H2>Moderation Log</H2>
-      {data?.map(renderRow)}
-      {!!error && (
-        <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-          <H5>{error.message}</H5>
-        </div>
-      )}
-      <Button
-        disabled={isFetching}
-        onClick={() => void refetch()}
-        icon={<ArrowClockwiseIcon />}
-        intent={Intent.SUCCESS}
-      >
-        Refresh
-      </Button>
-    </div>
+    <Stack flex={1}>
+      <Title order={2}>Moderation Log</Title>
+      {content}
+      <Group justify="end">
+        <Button
+          disabled={isFetching}
+          onClick={() => void refetch()}
+          leftSection={<ArrowClockwiseIcon />}
+          variant="filled"
+          color="green"
+        >
+          Refresh
+        </Button>
+      </Group>
+    </Stack>
   );
 };

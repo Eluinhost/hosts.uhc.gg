@@ -1,15 +1,13 @@
-import { Classes, Collapse } from '@blueprintjs/core';
-import { CaretRightIcon } from '@phosphor-icons/react';
-import { clsx } from 'clsx';
+import { Collapse, Group, List } from '@mantine/core';
+import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
-import './TreeNode.sass';
 import { LoadingNode } from './LoadingNode';
+import styles from './TreeNode.module.css';
 
 export interface TreeNodeProps {
   className?: string;
   disabled?: boolean;
-  depth: number;
   icon?: ReactNode;
   label: string;
   isOpen: boolean;
@@ -21,80 +19,68 @@ export interface TreeNodeProps {
 }
 
 export const TreeNode = ({
-  className,
   disabled,
-  depth,
   icon,
   label,
   isOpen,
   onOpenChange,
-  labelClass,
   rightIcon,
   isLoading,
   'aria-label': ariaLabel,
   children,
 }: PropsWithChildren<TreeNodeProps>) => {
-  const classes = clsx(
-    Classes.TREE_NODE,
-    {
-      [Classes.DISABLED]: disabled,
-      [Classes.TREE_NODE_EXPANDED]: isOpen,
-    },
-    'custom-tree-node',
-    className,
-  );
-
-  const contentClasses = clsx(Classes.TREE_NODE_CONTENT, `${Classes.TREE_NODE_CONTENT}-${depth}`);
-
-  const caretClasses = clsx(
-    Classes.TREE_NODE_CARET,
-    isOpen ? Classes.TREE_NODE_CARET_OPEN : Classes.TREE_NODE_CARET_CLOSED,
-  );
-
   const toggleOpen = () => {
     if (!disabled) {
       onOpenChange?.(!isOpen);
     }
   };
 
+  const CaretIcon = isOpen ? CaretDownIcon : CaretRightIcon;
+
   return (
-    <li className={classes}>
-      <div className={contentClasses}>
-        {onOpenChange && (
-          <CaretRightIcon
-            alt={isOpen ? 'Collapse group' : 'Expand group'}
-            className={caretClasses}
-            onClick={toggleOpen}
-            tabIndex={0}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                toggleOpen();
-              }
-            }}
-            role="button"
-          />
-        )}
-        <span
-          className={clsx(Classes.TREE_NODE_LABEL, labelClass)}
+    <>
+      <Group align="center" h={30} component="li" className={styles.treeNode} mt={4} pr="xs" pl="xs">
+        <Group
+          align="center"
+          flex={1}
+          role="button"
+          aria-label={ariaLabel}
           onClick={toggleOpen}
           onKeyDown={e => {
             if (e.key === 'Enter') {
               toggleOpen();
             }
           }}
-          role="button"
-          tabIndex={0}
-          aria-label={ariaLabel}
+          className={styles.treeNodeLabel}
         >
-          {icon}
-          <span className="custom-tree-node_label">{label}</span>
-          {rightIcon && <span className="custom-tree-node_action">{rightIcon}</span>}
-        </span>
-      </div>
-      <Collapse isOpen={isOpen}>
-        {isLoading && <LoadingNode depth={depth + 1} />}
-        {children}
-      </Collapse>
-    </li>
+          {icon ?? (
+            <CaretIcon
+              alt={isOpen ? 'Collapse group' : 'Expand group'}
+              onClick={toggleOpen}
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  toggleOpen();
+                }
+              }}
+            />
+          )}
+          {label}
+        </Group>
+        {rightIcon}
+      </Group>
+      {onOpenChange && (
+        <Collapse expanded={isOpen} component={List} pl={0} ml="lg">
+          {isLoading && (
+            <>
+              <LoadingNode />
+              <LoadingNode />
+              <LoadingNode />
+            </>
+          )}
+          {children}
+        </Collapse>
+      )}
+    </>
   );
 };

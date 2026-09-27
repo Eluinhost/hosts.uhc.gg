@@ -1,4 +1,4 @@
-import { Classes } from '@blueprintjs/core';
+import { ActionIcon } from '@mantine/core';
 import { TrashIcon, UserIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
@@ -12,10 +12,9 @@ import { TreeNode } from './TreeNode';
 export interface UsernameNodeProps {
   username: string;
   permission: string;
-  depth: number;
 }
 
-export const UsernameNode = ({ username, permission, depth }: UsernameNodeProps) => {
+export const UsernameNode = ({ username, permission }: UsernameNodeProps) => {
   const [isRemoving, setIsRemoving] = useState(false);
 
   const userPermissions = useAtomValue(permissionsAtom);
@@ -24,15 +23,17 @@ export const UsernameNode = ({ username, permission, depth }: UsernameNodeProps)
   return (
     <>
       <TreeNode
-        depth={depth}
         label={username}
         icon={<UserIcon />}
         aria-label={`User: ${username}, click to remove permission '${permission}'`}
         rightIcon={
           canModify && (
-            <TrashIcon
+            <ActionIcon
+              color="red"
+              size="sm"
+              bdrs={100}
+              variant="filled"
               aria-label={`Remove user: ${username} from role: ${permission}`}
-              className={Classes.INTENT_DANGER}
               onClick={e => {
                 e.stopPropagation();
                 setIsRemoving(true);
@@ -43,7 +44,9 @@ export const UsernameNode = ({ username, permission, depth }: UsernameNodeProps)
                   setIsRemoving(true);
                 }
               }}
-            />
+            >
+              <TrashIcon size={14} />
+            </ActionIcon>
           )
         }
         isOpen
