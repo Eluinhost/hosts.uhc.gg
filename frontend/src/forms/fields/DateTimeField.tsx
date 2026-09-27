@@ -1,5 +1,5 @@
-import { Alert, Button, Modal, Stack, Text } from '@mantine/core';
-import { InlineDateTimePicker, type InlineDateTimePickerProps } from '@mantine/dates';
+import { Alert, Button, Indicator, Modal, Stack, Text } from '@mantine/core';
+import { type DatePickerProps, InlineDateTimePicker, type InlineDateTimePickerProps } from '@mantine/dates';
 import { ClockIcon, InfoIcon, WarningIcon } from '@phosphor-icons/react';
 import { type FieldWithValue } from '@tanstack/react-form';
 import { useAtomValue } from 'jotai';
@@ -15,11 +15,23 @@ import '@mantine/dates/styles.css';
 
 export type DateTimeFieldProps = Omit<
   InlineDateTimePickerProps,
-  'value' | 'onChange' | 'maxDate' | 'minDate' | 'classNames' | 'onSubmit'
+  'value' | 'onChange' | 'maxDate' | 'minDate' | 'classNames' | 'onSubmit' | 'renderDay'
 > & {
   field: FieldWithValue<Dayjs>;
   minDate?: Dayjs;
   maxDate?: Dayjs;
+};
+
+const dayRenderer: DatePickerProps['renderDay'] = date => {
+  const parsed = dayjs(date);
+
+  const isToday = dayjs().isSame(parsed, 'day');
+
+  return (
+    <Indicator size={6} color="red" offset={-5} disabled={!isToday}>
+      <div>{parsed.date()}</div>
+    </Indicator>
+  );
 };
 
 export const DateTimeField: React.FC<DateTimeFieldProps> = ({
@@ -77,6 +89,7 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
           maxDate={maxDate?.format('YYYY-MM-DD')}
           minDate={minDate?.format('YYYY-MM-DD')}
           {...datePickerProps}
+          renderDay={dayRenderer}
           value={field.value.format('YYYY-MM-DD HH:mm:ss')}
           onChange={value => {
             field.handleChange(dayjs.tz(value, timezone));
