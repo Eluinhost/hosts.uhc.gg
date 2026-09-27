@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css';
-import '@rc-component/picker/assets/index.css';
 
 import { HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 import { MantineProvider } from '@mantine/core';
