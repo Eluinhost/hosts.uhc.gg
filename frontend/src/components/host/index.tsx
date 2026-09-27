@@ -159,7 +159,14 @@ export const HostingPage: React.FC = () => {
       </fieldset>
 
       <form.Field name="opens">
-        {field => <field.DateTimeField field={field} minDate={minDate} maxDate={maxDate} />}
+        {field => (
+          <field.DateTimeField
+            field={field}
+            minDate={minDate}
+            maxDate={maxDate}
+            timePickerProps={{ minutesStep: 15 }}
+          />
+        )}
       </form.Field>
 
       <fieldset>

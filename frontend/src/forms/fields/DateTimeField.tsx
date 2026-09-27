@@ -1,99 +1,112 @@
-import { Alert, Divider, Group, Stack, Text } from '@mantine/core';
-import { InfoIcon, WarningIcon } from '@phosphor-icons/react';
-import { PickerPanel, type PickerPanelProps } from '@rc-component/picker';
-import generateDayjsConfig from '@rc-component/picker/lib/generate/dayjs';
-import enGB from '@rc-component/picker/lib/locale/en_GB';
+import { Alert, Button, Modal, Stack, Text } from '@mantine/core';
+import { InlineDateTimePicker, type InlineDateTimePickerProps } from '@mantine/dates';
+import { ClockIcon, InfoIcon, WarningIcon } from '@phosphor-icons/react';
 import { type FieldWithValue } from '@tanstack/react-form';
 import { useAtomValue } from 'jotai';
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { is12hAtom, timeFormatAtom } from '../../atoms/timeFormatting';
+import { timezoneAtom } from '../../atoms/timezone';
+import dayjs from '../../dayjs';
 import type { Dayjs } from '../../dayjs';
 
-// not module.css intentionally, global styles
-import './DateTimeField.css';
+import '@mantine/dates/styles.layer.css';
 
 export type DateTimeFieldProps = Omit<
-  PickerPanelProps<Dayjs>,
-  | 'picker'
-  | 'locale'
-  | 'generateConfig'
-  | 'value'
-  | 'onPickerValueChange'
-  | 'disabledDate'
-  | 'showTime'
-  | 'showSecond'
-  | 'minuteStep'
-  | 'use12Hours'
-  | 'showNow'
-  | 'classNames'
+  InlineDateTimePickerProps,
+  'value' | 'onChange' | 'maxDate' | 'minDate' | 'classNames' | 'onSubmit'
 > & {
   field: FieldWithValue<Dayjs>;
-  disabled?: boolean;
   minDate?: Dayjs;
   maxDate?: Dayjs;
 };
 
 export const DateTimeField: React.FC<DateTimeFieldProps> = ({
-  disabled,
   minDate,
   maxDate,
   field,
+  timePickerProps,
+  submitButtonProps,
   ...datePickerProps
 }) => {
   const is12h = useAtomValue(is12hAtom);
+  const isDarkMode = useAtomValue(isDarkModeAtom);
   const format = useAtomValue(timeFormatAtom);
-
-  const isDayBlocked = useCallback(
-    (day: Dayjs) => {
-      if (minDate && minDate.isAfter(day)) {
-        return true;
-      }
-
-      if (maxDate && maxDate.isBefore(day)) {
-        return true;
-      }
-
-      return false;
-    },
-    [minDate, maxDate],
-  );
+  const timezone = useAtomValue(timezoneAtom);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Stack mb="md" justify="center" align="stretch">
-      <Group justify="center">
-        <Text size="xl">{field.value.format(`ddd D MMM - ${format}`)}</Text>
-      </Group>
-      <Divider />
-      <PickerPanel
-        {...datePickerProps}
-        picker="date"
-        locale={enGB}
-        generateConfig={generateDayjsConfig}
-        value={field.value}
-        onPickerValueChange={day => {
-          if (!disabled) {
-            field.handleChange(day);
-          }
+      <Button
+        size="xl"
+        variant="gradient"
+        gradient={
+          isDarkMode
+            ? {
+                from: 'red',
+                to: 'yellow',
+              }
+            : {
+                from: 'green',
+                to: 'blue',
+              }
+        }
+        onClick={() => {
+          setIsOpen(true);
         }}
-        disabledDate={isDayBlocked}
-        showTime
-        showSecond={false}
-        minuteStep={15}
-        use12Hours={is12h}
-        showNow
-      />
+      >
+        <Text size="xl" fw={700}>
+          {field.value.format(`ddd D MMM - ${format}`)}
+        </Text>
+      </Button>
+      <Modal
+        centered
+        opened={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <InlineDateTimePicker
+          numberOfColumns={2}
+          fullWidth
+          size="xs"
+          maxLevel="month"
+          monthLabelFormat="MMMM"
+          maxDate={maxDate?.format('YYYY-MM-DD')}
+          minDate={minDate?.format('YYYY-MM-DD')}
+          {...datePickerProps}
+          value={field.value.format('YYYY-MM-DD HH:mm:ss')}
+          onChange={value => {
+            field.handleChange(dayjs.tz(value, timezone));
+          }}
+          onSubmit={() => {
+            setIsOpen(false);
+          }}
+          timePickerProps={{
+            format: is12h ? '12h' : '24h',
+            leftSection: <ClockIcon size={16} />,
+            withDropdown: true,
+            ...timePickerProps,
+          }}
+          submitButtonProps={{
+            variant: 'filled',
+            color: 'green',
+            ...submitButtonProps,
+          }}
+        />
+        <Alert color="blue" icon={false} mt="sm">
+          <InfoIcon />
+          <span>All times must be entered in your chosen timezone</span>
+          <strong> ({field.value.format('zzz / Z')})</strong>
+        </Alert>
+      </Modal>
       {field.meta.isInvalid && (
         <Alert color="red" icon={false}>
           <WarningIcon />
           <span>{field.meta.errors.map(x => x.message).join(', ')}</span>
         </Alert>
       )}
-      <Alert color="blue" icon={false}>
-        <InfoIcon />
-        <span>All times must be entered in your chosen timezone</span>
-        <strong> ({field.value.format('zzz / Z')})</strong>
-      </Alert>
     </Stack>
   );
 };
