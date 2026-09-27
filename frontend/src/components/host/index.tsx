@@ -1,4 +1,5 @@
 import { Button, Callout, Intent } from '@blueprintjs/core';
+import { Fieldset } from '@mantine/core';
 import { CloudArrowUpIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
@@ -132,9 +133,7 @@ export const HostingPage: React.FC = () => {
       className="host-form"
     >
       <title>uhc.gg | Create Match</title>
-      <fieldset className="host-form-preview">
-        <legend>Game preview</legend>
-
+      <Fieldset className="host-form-preview" legend="Game preview">
         <div style={{ paddingLeft: 10, paddingRight: 10 }}>
           <form.Subscribe selector={state => state.values}>
             {state => {
@@ -156,22 +155,22 @@ export const HostingPage: React.FC = () => {
             }}
           </form.Subscribe>
         </div>
-      </fieldset>
+      </Fieldset>
 
-      <form.Field name="opens">
-        {field => (
-          <field.DateTimeField
-            field={field}
-            minDate={minDate}
-            maxDate={maxDate}
-            timePickerProps={{ minutesStep: 15 }}
-          />
-        )}
-      </form.Field>
+      <Fieldset legend="Opening Time">
+        <form.Field name="opens">
+          {field => (
+            <field.DateTimeField
+              field={field}
+              minDate={minDate}
+              maxDate={maxDate}
+              timePickerProps={{ minutesStep: 15 }}
+            />
+          )}
+        </form.Field>
+      </Fieldset>
 
-      <fieldset>
-        <legend>Host Details</legend>
-
+      <Fieldset legend="Host Details">
         <div className="host-form-row">
           <form.Field name="hostingName">
             {field => (
@@ -188,10 +187,9 @@ export const HostingPage: React.FC = () => {
             )}
           </form.Field>
         </div>
-      </fieldset>
+      </Fieldset>
 
-      <fieldset>
-        <legend>Game Details</legend>
+      <Fieldset legend="Game Details">
         <div className="host-form-row host-form-row--tournament">
           <form.Field name="tournament">
             {field => <field.SwitchField field={field} label="Is this a Tournament?" size="large" />}
@@ -299,11 +297,9 @@ export const HostingPage: React.FC = () => {
             )}
           </form.Field>
         </div>
-      </fieldset>
+      </Fieldset>
 
-      <fieldset>
-        <legend>Server Details</legend>
-
+      <Fieldset legend="Server Details">
         <div className="host-form-row">
           <form.Field name="region">
             {field => (
@@ -373,11 +369,9 @@ export const HostingPage: React.FC = () => {
             )}
           </form.Field>
         </div>
-      </fieldset>
+      </Fieldset>
 
-      <fieldset>
-        <legend>Content Preview</legend>
-
+      <Fieldset legend="Content Preview">
         <form.Field name="content">
           {field => <field.TemplateField field={field} context={templateContext} />}
         </form.Field>
@@ -392,7 +386,7 @@ export const HostingPage: React.FC = () => {
             )
           }
         </form.Subscribe>
-      </fieldset>
+      </Fieldset>
 
       <form.Subscribe
         selector={state => ({
@@ -410,8 +404,7 @@ export const HostingPage: React.FC = () => {
         })}
       >
         {props => (
-          <fieldset>
-            <legend>Potential Conflicts</legend>
+          <Fieldset legend="Potential Conflicts">
             <p>
               Here you can see all games in the region +- 15 minutes of the chosen time in your chosen region (
               {props.region}) and version ({props.version}). Please review any conflicts to avoid your game being
@@ -420,7 +413,7 @@ export const HostingPage: React.FC = () => {
             <div style={{ paddingLeft: 10, paddingRight: 10 }}>
               <PotentialConflicts {...props} />
             </div>
-          </fieldset>
+          </Fieldset>
         )}
       </form.Subscribe>
 
