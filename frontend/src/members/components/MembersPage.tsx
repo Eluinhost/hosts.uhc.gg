@@ -1,14 +1,15 @@
+import { Group } from '@mantine/core';
+
 import { ModerationLog } from './ModerationLog';
 import { MembersTree } from './tree/MembersTree';
 
 export const MembersPage = () => {
   return (
-    <div>
+    <Group justify="start" align="start" gap="xl">
       <title>uhc.gg | Members</title>
-      <div className="members-page">
-        <MembersTree />
-        <ModerationLog />
-      </div>
-    </div>
+
+      <MembersTree />
+      <ModerationLog />
+    </Group>
   );
 };

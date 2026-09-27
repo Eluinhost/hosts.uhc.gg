@@ -1,0 +1,21 @@
+.treeNode {
+    list-style: none;
+
+
+    :global(.mantine-ActionIcon-root) {
+        opacity: 0;
+        transition: opacity 100ms ease;
+    }
+
+    &:hover, &:focus-within {
+        background-color: rgba(255, 255, 255, .1);
+
+        :global(.mantine-ActionIcon-root) {
+            opacity: 1;
+        }
+    }
+}
+
+.treeNodeLabel {
+    cursor: pointer;
+}

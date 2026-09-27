@@ -10,10 +10,9 @@ export interface LetterNodeProps {
   permission: string;
   letter: string;
   count: number;
-  depth: number;
 }
 
-export const LetterNode = ({ permission, letter, count, depth }: LetterNodeProps) => {
+export const LetterNode = ({ permission, letter, count }: LetterNodeProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data, isFetching } = useQuery({
     enabled: isOpen,
@@ -23,14 +22,13 @@ export const LetterNode = ({ permission, letter, count, depth }: LetterNodeProps
   return (
     <TreeNode
       label={`${letter} (${count})`}
-      depth={depth}
       aria-label={`Permission: ${permission}, users beginning with ${letter} count: ${count}`}
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       isLoading={isFetching}
     >
       {(data ?? []).map(username => (
-        <UsernameNode key={username} username={username} permission={permission} depth={depth + 1} />
+        <UsernameNode key={username} username={username} permission={permission} />
       ))}
     </TreeNode>
   );

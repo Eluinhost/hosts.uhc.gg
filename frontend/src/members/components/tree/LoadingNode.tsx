@@ -1,7 +1,5 @@
-import { Classes } from '@blueprintjs/core';
+import { Skeleton, List } from '@mantine/core';
 
-import { TreeNode } from './TreeNode';
-
-export const LoadingNode = ({ depth }: { depth: number }) => (
-  <TreeNode isOpen depth={depth} label="Loading" aria-label="Loading" labelClass={Classes.SKELETON} />
-);
+export const LoadingNode = () => {
+  return <Skeleton w="100%" h={30} aria-label="Loading" component={List.Item} mt={4} />;
+};

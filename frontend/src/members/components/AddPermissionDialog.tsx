@@ -1,11 +1,7 @@
-import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
+import { Button, Group, Modal } from '@mantine/core';
 import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
-import { clsx } from 'clsx';
-import { useAtomValue } from 'jotai';
 import { enforce, create, test } from 'vest';
 
-import { isDarkModeAtom } from '../../atoms/isDarkMode';
-import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
 import { MembersData } from '../api';
 
@@ -26,7 +22,6 @@ export interface AddPermissionDialogProps {
 
 export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialogProps) => {
   const { mutateAsync } = MembersData.mutations.useAddPermission();
-  const isDarkMode = useAtomValue(isDarkModeAtom);
 
   const form = useAppForm({
     defaultValues: {
@@ -48,47 +43,38 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
   });
 
   return (
-    <Dialog
-      icon={<PlusIcon />}
-      isOpen
-      onClose={onClose}
-      title={`Add '${permission}' role`}
-      className={clsx({ [Classes.DARK]: isDarkMode })}
-    >
-      <div className={clsx(Classes.DIALOG_BODY, 'add-permission-body')}>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            void form.handleSubmit();
-          }}
-        >
-          <form.Field name="username">
-            {field => (
-              <FormLabel field={field} label="Username" showRequiredStar fill>
-                <field.TextField field={field} fill />
-              </FormLabel>
-            )}
-          </form.Field>
-        </form>
-      </div>
-      <div className={Classes.DIALOG_FOOTER}>
-        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
+    <Modal opened onClose={onClose} title={`Add '${permission}' role`}>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+      >
+        <form.Field name="username">
+          {field => <field.TextField field={field} w="100%" label="Username" error={field.errors[0]?.message} />}
+        </form.Field>
+        <Group justify="flex-end" mt="md">
+          <Button variant="outline" onClick={onClose} leftSection={<ArrowLeftIcon />}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            intent={Intent.SUCCESS}
-            onClick={() => {
-              void form.handleSubmit();
-            }}
-            disabled={!form.state.canSubmit}
-            icon={<PlusIcon />}
-          >
-            Add Permission
-          </Button>
-        </div>
-      </div>
-    </Dialog>
+          <form.Subscribe selector={state => state.canSubmit}>
+            {canSubmit => (
+              <Button
+                variant="filled"
+                color="green"
+                type="submit"
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+                disabled={!canSubmit}
+                leftSection={<PlusIcon />}
+              >
+                Add Permission
+              </Button>
+            )}
+          </form.Subscribe>
+        </Group>
+      </form>
+    </Modal>
   );
 };

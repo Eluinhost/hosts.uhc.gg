@@ -1,4 +1,4 @@
-import { Classes } from '@blueprintjs/core';
+import { ActionIcon } from '@mantine/core';
 import { PlusIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -34,12 +34,10 @@ export const PermissionNode = ({ permission, count }: PermissionNodeProps) => {
   if (data === undefined) {
     content = null;
   } else if (Array.isArray(data)) {
-    content = data.map(username => (
-      <UsernameNode key={username} username={username} permission={permission} depth={1} />
-    ));
+    content = data.map(username => <UsernameNode key={username} username={username} permission={permission} />);
   } else {
     content = Object.entries(data).map(([letter, count]) => (
-      <LetterNode key={letter} permission={permission} letter={letter} count={count} depth={1} />
+      <LetterNode key={letter} permission={permission} letter={letter} count={count} />
     ));
   }
 
@@ -48,27 +46,26 @@ export const PermissionNode = ({ permission, count }: PermissionNodeProps) => {
       <TreeNode
         key={permission}
         label={`${permission} (${count})`}
-        depth={0}
         aria-label={`Permission: ${permission}, Count: ${count}`}
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         isLoading={isFetching}
         rightIcon={
           canModify && (
-            <PlusIcon
-              aria-label={`Add a user to role: ${permission}`}
-              className={Classes.INTENT_SUCCESS}
+            <ActionIcon
+              size="sm"
+              variant="filled"
+              color="green"
+              bdrs={100}
               onClick={e => {
                 e.stopPropagation();
                 setIsAddingPermission(true);
               }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.stopPropagation();
-                  setIsAddingPermission(true);
-                }
-              }}
-            />
+
+              aria-label={`Add a user to role: ${permission}`}
+            >
+              <PlusIcon size={14} />
+            </ActionIcon>
           )
         }
       >
