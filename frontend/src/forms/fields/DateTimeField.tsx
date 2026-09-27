@@ -27,7 +27,7 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({ minDate, maxDate, 
   const timezone = useAtomValue(timezoneAtom);
 
   return (
-    <Stack mb="md" justify="center" align="stretch">
+    <Stack justify="center" align="stretch">
       <Group justify="center">
         <Text size="xl" fw={700}>
           {field.value.format(`ddd D MMM - ${format}`)}
@@ -60,7 +60,7 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({ minDate, maxDate, 
           {...timePickerProps}
         />
       </Group>
-      <Alert color="blue" icon={<InfoIcon />} mt="sm">
+      <Alert color="blue" icon={<InfoIcon />}>
         <span>All times must be entered in your chosen timezone</span>
         <strong> ({field.value.format('zzz / Z')})</strong>
       </Alert>
