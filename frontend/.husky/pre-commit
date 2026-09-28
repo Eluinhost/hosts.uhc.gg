@@ -1,4 +1,5 @@
 cd frontend
+pnpm typecheck
 pnpm prettier:fix
 pnpm lint
 pnpm knip
