@@ -1,8 +1,8 @@
 import { Button, Intent } from '@blueprintjs/core';
+import { InputWrapper } from '@mantine/core';
 import { PlusIcon } from '@phosphor-icons/react';
 import React, { useMemo } from 'react';
 
-import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
 import { QuestionType, type QuizQuestion } from '../../models/QuizQuestion';
 import { HostApplicationsData } from '../api';
@@ -91,7 +91,7 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
       {questions.map(question => (
         <form.Field key={question.id} name={question.id.toString(10)}>
           {field => (
-            <FormLabel field={field} label={question.prompt}>
+            <InputWrapper label={question.prompt}>
               {question.questionType === QuestionType.MULTIPLE_CHOICE ? (
                 <field.SegmentedField
                   field={field}
@@ -103,7 +103,7 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
                   data={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
                 />
               )}
-            </FormLabel>
+            </InputWrapper>
           )}
         </form.Field>
       ))}
