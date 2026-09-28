@@ -149,7 +149,11 @@ export const MatchesData = {
 
       return useMutation({
         mutationFn: ({ id, reason }: { id: number; reason: string }) =>
-          apiClient.delete(`/api/matches/${id}`, { body: JSON.stringify({ reason }), signal: null }),
+          apiClient.delete(`/api/matches/${id}`, {
+            body: JSON.stringify({ reason }),
+            headers: { 'Content-Type': 'application/json' },
+            signal: null,
+          }),
         onSuccess: (_data, { id }) => {
           // invalidate upcoming matches only if it's in there
           if (client.getQueryData(MatchesData.upcoming.queryKey)?.some(x => x.id === id)) {
