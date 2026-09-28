@@ -1,4 +1,3 @@
-import { Intent } from '@blueprintjs/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createElement } from 'react';
@@ -78,17 +77,17 @@ export const MembersData = {
       return useMutation({
         mutationFn: ({ permission, username }: { permission: string; username: string }) =>
           apiClient.post(`/api/permissions/${permission}/${username}`, { signal: null }),
-        onSuccess: async (_response, { permission, username }) => {
+        onSuccess: (_response, { permission, username }) => {
           invalidate(permission, username);
 
-          await showToast({
-            intent: Intent.SUCCESS,
+          showToast({
+            color: 'green',
             message: `Added permission '${permission}' to /u/${username}`,
           });
         },
-        onError: async (_error, variables) => {
-          await showToast({
-            intent: Intent.DANGER,
+        onError: (_error, variables) => {
+          showToast({
+            color: 'red',
             icon: createElement(WarningIcon),
             message: `Failed to add permission to /u/${variables.username}`,
           });
@@ -102,17 +101,17 @@ export const MembersData = {
       return useMutation({
         mutationFn: ({ permission, username }: { permission: string; username: string }) =>
           apiClient.delete(`/api/permissions/${permission}/${username}`, { signal: null }),
-        onSuccess: async (_, { permission, username }) => {
+        onSuccess: (_, { permission, username }) => {
           invalidate(permission, username);
 
-          await showToast({
-            intent: Intent.SUCCESS,
+          showToast({
+            color: 'green',
             message: `Removed permission '${permission}' from /u/${username}`,
           });
         },
-        onError: async (_error, { username, permission }) => {
-          await showToast({
-            intent: Intent.DANGER,
+        onError: (_error, { username, permission }) => {
+          showToast({
+            color: 'red',
             icon: createElement(WarningIcon),
             message: `Failed to remove permission '${permission}' from /u/${username}`,
           });

@@ -1,4 +1,3 @@
-import { Intent } from '@blueprintjs/core';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enforce } from 'vest';
 
@@ -34,8 +33,8 @@ export const ModifiersData = {
           void client.invalidateQueries(ModifiersData.getAllModifiers);
         },
         onError: () => {
-          void showToast({
-            intent: Intent.DANGER,
+          showToast({
+            color: 'red',
             message: 'Failed to delete modifier',
           });
         },
@@ -64,8 +63,8 @@ export const ModifiersData = {
           void client.invalidateQueries(ModifiersData.getAllModifiers);
         },
         onError: () => {
-          void showToast({
-            intent: Intent.DANGER,
+          showToast({
+            color: 'red',
             message: 'Failed to create new modifier',
           });
         },

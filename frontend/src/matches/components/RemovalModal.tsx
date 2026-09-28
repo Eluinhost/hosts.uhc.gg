@@ -1,11 +1,11 @@
 import { Button, Group, Modal, Stack, Title } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import { ArrowLeftIcon, TrashIcon } from '@phosphor-icons/react';
 import React from 'react';
 import { enforce, test, create } from 'vest';
 
 import { useAppForm } from '../../forms/useAppForm';
 import { MatchesData } from '../../matches/api';
+import { showToast } from '../../services/AppToaster';
 
 const schema = enforce.shape({
   reason: enforce.isString(),
@@ -38,11 +38,11 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
       console.log('Submitting removal form with reason:', value.reason);
       try {
         await mutateAsync({ id, reason: value.reason });
-        notifications.show({ color: 'green', message: `Removed match #${id}` });
+        showToast({ color: 'green', message: `Removed match #${id}` });
 
         onClose();
       } catch {
-        notifications.show({
+        showToast({
           message: `Failed to remove match #${id}`,
           color: 'red',
         });
