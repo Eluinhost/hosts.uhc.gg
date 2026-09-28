@@ -1,0 +1,15 @@
+.hostForm {
+  position: relative;
+
+  fieldset {
+    margin-bottom: var(--mantine-spacing-sm);
+  }
+}
+
+.preview {
+  position: sticky;
+  top: 50px;
+  z-index: calc(var(--mantine-z-index-app) - 1);
+  background-color: var(--mantine-color-body);
+  width: 100%;
+}

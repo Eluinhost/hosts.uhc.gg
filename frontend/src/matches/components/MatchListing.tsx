@@ -1,4 +1,5 @@
 import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
+import { Stack } from '@mantine/core';
 import { XIcon, MagnifyingGlassIcon, ArrowClockwiseIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, useState } from 'react';
@@ -155,7 +156,9 @@ export const MatchListing: FC<MatchListingProps> = ({
 
       {loading && matches.length === 0 && <NonIdealState icon={<Spinner />} title="Loading..." />}
 
-      <div className="match-listing__matches">{renderedMatches}</div>
+      <Stack gap="xl" mt="xl">
+        {renderedMatches}
+      </Stack>
 
       {hasMore && (
         <div className="match-listing__footer-actions">
