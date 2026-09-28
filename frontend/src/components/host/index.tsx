@@ -420,7 +420,7 @@ export const HostingPage: React.FC = () => {
         }
       </form.Subscribe>
 
-      <div className="host-form-actions">
+      <Group justify="center" mt="lg">
         <form.Subscribe
           selector={({ isSubmitting, isValid, canSubmit }) => ({
             isSubmitting,
@@ -431,6 +431,7 @@ export const HostingPage: React.FC = () => {
           {({ isSubmitting, isValid, canSubmit }) => (
             <Button
               type="submit"
+              size="lg"
               disabled={!canSubmit}
               leftSection={<CloudArrowUpIcon />}
               loading={isSubmitting}
@@ -440,7 +441,7 @@ export const HostingPage: React.FC = () => {
             </Button>
           )}
         </form.Subscribe>
-      </div>
+      </Group>
     </form>
   );
 };
