@@ -159,10 +159,11 @@ export const CreateQuizQuestionForm = () => {
             }
           }}
           disabled={isPending}
-        >
-          <option value="multiple choice">Multiple choice</option>
-          <option value="text">Text answer</option>
-        </Select>
+          data={[
+            { value: QuestionType.MULTIPLE_CHOICE, label: 'Multiple choice' },
+            { value: QuestionType.TEXT, label: 'Text answer' },
+          ]}
+        />
       </div>
 
       {questionType === QuestionType.MULTIPLE_CHOICE && (
