@@ -1,4 +1,4 @@
-import { Classes, H5 } from '@blueprintjs/core';
+import { Alert } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
@@ -23,14 +23,8 @@ export const RemovedInfo: React.FC<{ match: Match }> = ({
   }
 
   return (
-    <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-      <H5>
-        <WarningIcon /> REMOVED
-      </H5>
-      <p>This game is no longer on the calendar:</p>
-      <p>
-        {removedReason} - /u/{removedBy} {removedAtFormatted && `@ ${removedAtFormatted}`}
-      </p>
-    </div>
+    <Alert flex={1} color="red" title="This game is no longer on the calendar" icon={<WarningIcon />}>
+      {removedReason} - /u/{removedBy} {removedAtFormatted && `@ ${removedAtFormatted}`}
+    </Alert>
   );
 };
