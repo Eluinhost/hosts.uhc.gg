@@ -1,4 +1,4 @@
-import { H1 } from '@blueprintjs/core';
+import { Title } from '@mantine/core';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
@@ -22,7 +22,7 @@ export const HistoryPage = () => {
   return (
     <div>
       <title>{`uhc.gg | Hosting History - ${host}`}</title>
-      <H1>Hosting history for /u/{host}</H1>
+      <Title order={1}>Hosting history for /u/{host}</Title>
 
       <p>
         Matches are in reverse order by date they were <em>created.</em>
