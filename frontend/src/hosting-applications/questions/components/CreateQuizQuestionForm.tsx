@@ -1,4 +1,4 @@
-import { Button, Classes, HTMLSelect, InputGroup, Intent, Radio, RadioGroup } from '@blueprintjs/core';
+import { Button, Select, Group, Stack, Radio, RadioGroup, TextInput } from '@mantine/core';
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -46,9 +46,9 @@ const Choice: React.FC<ChoiceProps> = ({
   }, [onRemove, index]);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+    <Group justify="center">
       <Radio value={index} checked={isCorrect} onChange={handleChange} style={{ marginBottom: 0, marginRight: 10 }} />
-      <InputGroup
+      <TextInput
         placeholder={`Choice ${index + 1}`}
         value={text}
         onChange={handleTextChange}
@@ -57,14 +57,14 @@ const Choice: React.FC<ChoiceProps> = ({
       />
       {canRemove && (
         <Button
-          icon={<TrashIcon />}
-          variant="minimal"
+          leftSection={<TrashIcon />}
+          color="red"
           onClick={handleRemove}
           disabled={isDisabled}
           style={{ marginLeft: 5 }}
         />
       )}
-    </div>
+    </Group>
   );
 };
 
@@ -87,10 +87,6 @@ export const CreateQuizQuestionForm = () => {
 
   const handlePromptChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(e.target.value);
-  }, []);
-
-  const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setQuestionType(e.target.value as QuestionType);
   }, []);
 
   const handleChoiceTextChange = useCallback((index: number, text: string) => {
@@ -145,9 +141,9 @@ export const CreateQuizQuestionForm = () => {
   }, [choices, prompt, questionType]);
 
   return (
-    <div>
-      <InputGroup
-        className={Classes.LARGE}
+    <Stack>
+      <TextInput
+        size="lg"
         placeholder="Question prompt"
         value={prompt}
         onChange={handlePromptChange}
@@ -155,14 +151,22 @@ export const CreateQuizQuestionForm = () => {
       />
 
       <div style={{ marginTop: 10 }}>
-        <HTMLSelect value={questionType} onChange={handleTypeChange} disabled={isPending}>
+        <Select
+          value={questionType}
+          onChange={value => {
+            if (value) {
+              setQuestionType(value);
+            }
+          }}
+          disabled={isPending}
+        >
           <option value="multiple choice">Multiple choice</option>
           <option value="text">Text answer</option>
-        </HTMLSelect>
+        </Select>
       </div>
 
       {questionType === QuestionType.MULTIPLE_CHOICE && (
-        <RadioGroup label="Choices (select the correct answer)" onChange={() => undefined} selectedValue={correctIndex}>
+        <RadioGroup label="Choices (select the correct answer)" onChange={() => undefined} value={correctIndex}>
           {choices.map((choice, index) => (
             <Choice
               key={index}
@@ -180,15 +184,15 @@ export const CreateQuizQuestionForm = () => {
       )}
 
       {questionType === QuestionType.MULTIPLE_CHOICE && (
-        <Button icon={<PlusIcon />} variant="minimal" onClick={handleAddChoice} disabled={isPending}>
+        <Button leftSection={<PlusIcon />} color="green" onClick={handleAddChoice} disabled={isPending}>
           Add choice
         </Button>
       )}
 
       <div style={{ marginTop: 10 }}>
         <Button
-          intent={Intent.PRIMARY}
-          icon={<PlusIcon />}
+          color="green"
+          leftSection={<PlusIcon />}
           disabled={isPending || !isValid}
           onClick={() => {
             void handleSubmit();
@@ -197,6 +201,6 @@ export const CreateQuizQuestionForm = () => {
           Create question
         </Button>
       </div>
-    </div>
+    </Stack>
   );
 };

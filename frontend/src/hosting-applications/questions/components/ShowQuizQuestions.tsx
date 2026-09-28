@@ -1,4 +1,4 @@
-import { Classes, H3, H5, NonIdealState, Spinner } from '@blueprintjs/core';
+import { Title, Stack, EmptyState, Loader, Alert } from '@mantine/core';
 import { QuestionIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -12,15 +12,11 @@ export const ShowQuizQuestions = () => {
 
   let top;
   if (error) {
-    top = (
-      <div className={`${Classes.CALLOUT} ${Classes.INTENT_DANGER}`}>
-        <H5>Error: {error.message}</H5>
-      </div>
-    );
+    top = <Alert color="red" title={`Error: ${error.message}`} />;
   } else if (isFetching) {
-    top = <NonIdealState icon={<Spinner />} title="Loading...." />;
+    top = <EmptyState icon={<Loader />} title="Loading...." />;
   } else if (data && data.length === 0) {
-    top = <NonIdealState icon={<QuestionIcon />} title="No questions setup" />;
+    top = <EmptyState icon={<QuestionIcon />} title="No questions setup" />;
   } else {
     top = (
       <div>
@@ -32,11 +28,11 @@ export const ShowQuizQuestions = () => {
   }
 
   return (
-    <div>
+    <Stack>
       {top}
 
-      <H3>Create new question</H3>
+      <Title order={3}>Create new question</Title>
       <CreateQuizQuestionForm />
-    </div>
+    </Stack>
   );
 };
