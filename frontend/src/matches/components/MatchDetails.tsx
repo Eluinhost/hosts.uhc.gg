@@ -112,7 +112,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
       <title>{`uhc.gg | ${hostingName || author}'s #${count}`}</title>
       <div className="match-details__header">
         <div className="match-details__header__floating-tags__top">
-          <TimeFromNowTag time={opens} className={Classes.LARGE} title="Opens" />
+          <TimeFromNowTag time={opens} title="Opens" />
           <Tag intent={Intent.SUCCESS} title="Region - Location" className={Classes.LARGE}>
             <GlobeIcon /> {region} - {location}
           </Tag>
