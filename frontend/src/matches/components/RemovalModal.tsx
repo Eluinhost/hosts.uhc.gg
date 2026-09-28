@@ -5,7 +5,6 @@ import React, { createElement } from 'react';
 import { enforce, test, create } from 'vest';
 
 import { isDarkModeAtom } from '../../atoms/isDarkMode';
-import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm } from '../../forms/useAppForm';
 import { MatchesData } from '../../matches/api';
 import { showToast } from '../../services/AppToaster';
@@ -79,9 +78,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
           <form.Field name="reason">
             {field => (
               <ControlGroup fill>
-                <FormLabel field={field} label="Reason" showRequiredStar>
-                  <field.TextField field={field} />
-                </FormLabel>
+                <field.TextField field={field} label="Reason" required />
               </ControlGroup>
             )}
           </form.Field>
