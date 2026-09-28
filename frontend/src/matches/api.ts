@@ -102,6 +102,7 @@ export const MatchesData = {
     }),
   getPotentialConflicts: (region: string, time: Dayjs, version: string) =>
     queryOptions({
+      gcTime: 0,
       queryKey: ['potentialConflicts', { region, time, version }],
       queryFn: async ({ signal }) => {
         const result = await apiClient

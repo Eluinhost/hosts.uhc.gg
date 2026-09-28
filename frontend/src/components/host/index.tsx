@@ -1,5 +1,6 @@
 import { Alert, Box, Button, Fieldset, Group, InputWrapper, Stack } from '@mantine/core';
 import { CloudArrowUpIcon, WarningIcon } from '@phosphor-icons/react';
+import { useDebouncedCallback, useDebouncedValue } from '@tanstack/react-pacer';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -37,6 +38,34 @@ const createTemplateContext = (values: CreateMatchData, author: string): Templat
   };
 };
 
+const MatchPreview: React.FC<{ values: CreateMatchData; author: string; roles: string[] }> = ({
+  values,
+  author,
+  roles,
+}) => {
+  // render the match preview with a debounce so it doesn't re-render on every key press
+  const [debouncedValues] = useDebouncedValue(values, { wait: 300 });
+
+  const preview: Match = useMemo(
+    () => ({
+      ...debouncedValues,
+      id: 0,
+      author,
+      removed: false,
+      removedAt: null,
+      removedBy: null,
+      removedReason: null,
+      approvedBy: null,
+      created: dayjs.utc(),
+      version: debouncedValues.version,
+      roles,
+    }),
+    [debouncedValues, author, roles],
+  );
+
+  return <MatchRow match={preview} disableRemoval disableApproval disableLink />;
+};
+
 export const HostingPage: React.FC = () => {
   const username = useAtomValue(usernameAtom) ?? 'Unknown User';
   const roles = useAtomValue(permissionsAtom) ?? [];
@@ -56,6 +85,7 @@ export const HostingPage: React.FC = () => {
       {
         run: suite,
         triggers: ['change'],
+        triggerDebounceMs: 200,
       },
     ],
     onSubmit: async state => {
@@ -82,9 +112,14 @@ export const HostingPage: React.FC = () => {
     },
   });
 
-  useFormSelector(form.atom, ({ values: { opens: _opens, ...others } }) => {
-    setSavedValues(others);
-  });
+  const values = useFormSelector(form.atom, state => state.values);
+
+  // using a debouce so we don't persist to storage every keypress
+  const debouncedSetSavedValues = useDebouncedCallback(setSavedValues, { wait: 500 });
+  useEffect(() => {
+    const { opens: _opens, ...others } = values;
+    debouncedSetSavedValues(others);
+  }, [values, debouncedSetSavedValues]);
 
   // updates visible TZ of opening time when global tz changes
   useEffect(() => {
@@ -114,8 +149,7 @@ export const HostingPage: React.FC = () => {
     }
   }, [form, scenarios]);
 
-  // preview Markdown modifications
-  const templateContext = useFormSelector(form.atom, state => createTemplateContext(state.values, username));
+  const templateContext = useMemo(() => createTemplateContext(values, username), [values, username]);
 
   const minDate = useMemo(() => defaultValues.opens.utc().hour(0), [defaultValues.opens]);
   const maxDate = useMemo(() => defaultValues.opens.utc().add(30, 'days').hour(23), [defaultValues.opens]);
@@ -133,23 +167,7 @@ export const HostingPage: React.FC = () => {
 
       <Box className={styles.preview} p="xs" pt="lg">
         <form.Subscribe selector={state => state.values}>
-          {state => {
-            const preview: Match = {
-              ...state,
-              id: 0,
-              author: username,
-              removed: false,
-              removedAt: null,
-              removedBy: null,
-              removedReason: null,
-              approvedBy: null,
-              created: dayjs.utc(),
-              version: state.version,
-              roles,
-            };
-
-            return <MatchRow match={preview} disableRemoval disableApproval disableLink />;
-          }}
+          {state => <MatchPreview values={state} author={username} roles={roles} />}
         </form.Subscribe>
       </Box>
 

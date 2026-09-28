@@ -25,9 +25,10 @@ import {
   TrashIcon,
 } from '@phosphor-icons/react';
 import type { FieldWithValue } from '@tanstack/react-form';
+import { useDebouncedValue } from '@tanstack/react-pacer';
 import { useAtom } from 'jotai';
 import * as Mark from 'markup-js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { presetsAtom } from '../../atoms/presets';
 import type { Dayjs } from '../../dayjs';
@@ -162,6 +163,11 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
 
   const saved = Object.entries(localPresets);
 
+  // debounce the rendered markdown so typing in the template (or any other field) doesn't
+  // re-parse + re-render the whole preview on every keystroke
+  const markdown = useMemo(() => renderToMarkdown(field.value, context), [field.value, context]);
+  const [debouncedMarkdown] = useDebouncedValue(markdown, { wait: 300 });
+
   return (
     <Stack>
       <Group justify="end">
@@ -266,7 +272,7 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
           flex={1}
         />
         <Box flex={1}>
-          <Markdown markdown={renderToMarkdown(field.value, context)} />
+          <Markdown markdown={debouncedMarkdown} />
         </Box>
       </Group>
 
