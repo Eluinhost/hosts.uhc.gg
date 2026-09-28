@@ -36,8 +36,6 @@ import { Markdown } from '../Markdown';
 
 import { defaultPreset } from './defaultPreset';
 
-import './TemplateField.sass';
-
 export type TemplateContext = CreateMatchData & { author: string };
 
 export type TemplateFieldProps = {
