@@ -1,4 +1,4 @@
-import { Button, EmptyState, List, Loader } from '@mantine/core';
+import { Button, EmptyState, List, Loader, Stack } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -39,8 +39,8 @@ export const ModifiersEditor: React.FC = () => {
   }
 
   return (
-    <div>
-      <List unstyled listStyleType="none">
+    <Stack>
+      <List listStyleType="none" spacing="xs">
         {data.map(modifier => (
           <List.Item key={modifier.id}>
             <ModifierEditorRow modifier={modifier} />
@@ -48,6 +48,6 @@ export const ModifiersEditor: React.FC = () => {
         ))}
       </List>
       <CreateModifierForm existing={data.map(x => x.displayName.toLowerCase())} />
-    </div>
+    </Stack>
   );
 };
