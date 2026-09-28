@@ -14,7 +14,6 @@ import styles from './App.module.css';
 import { Footer } from './footer/Footer';
 import { Navbar } from './Navbar';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { useGlobalHotkeys } from './useGlobalHotkeys';
 import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
@@ -143,7 +142,6 @@ const AppRoutes: React.FC = () => {
 
 export const App: React.FC = () => {
   useAuthRefresh();
-  useGlobalHotkeys();
 
   return (
     <Stack w="100vw" h="100vh" align="stretch" gap={0} className={styles.app}>
