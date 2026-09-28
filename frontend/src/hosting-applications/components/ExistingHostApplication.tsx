@@ -1,4 +1,4 @@
-import { Button, Classes, Dialog, H4, Intent, Spinner, Tag, TextArea } from '@blueprintjs/core';
+import { Button, Stack, Group, Modal, Title, Loader, Badge, Textarea, type MantineColor, Card } from '@mantine/core';
 import { CaretDownIcon, CaretUpIcon, XIcon, CheckIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -33,21 +33,18 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
     setIsDeclineDialogOpen(false);
   }, []);
 
-  const intent = useMemo((): Intent => {
-    if (application.status === HostApplicationStatus.APPROVED) return Intent.SUCCESS;
-    if (application.status === HostApplicationStatus.DECLINED) return Intent.DANGER;
-    return Intent.WARNING;
+  const intent = useMemo((): MantineColor => {
+    if (application.status === HostApplicationStatus.APPROVED) return 'green';
+    if (application.status === HostApplicationStatus.DECLINED) return 'red';
+    return 'yellow';
   }, [application.status]);
 
   return (
-    <div
-      className={`${Classes.CARD} ${Classes.ELEVATION_1}`}
-      style={isOwn ? { marginBottom: 15, borderLeft: '4px solid #2B95D6' } : { marginBottom: 15 }}
-    >
-      <H4>
-        /u/{application.username} <Tag intent={intent}>{application.status}</Tag>{' '}
-        {isOwn && <Tag intent={Intent.PRIMARY}>Your application</Tag>}
-      </H4>
+    <Card withBorder style={isOwn ? { marginBottom: 15, borderLeft: '4px solid #2B95D6' } : { marginBottom: 15 }}>
+      <Title order={4}>
+        /u/{application.username} <Badge color={intent}>{application.status}</Badge>{' '}
+        {isOwn && <Badge>Your application</Badge>}
+      </Title>
       <small>{dayjs.utc(application.created).format('MMM Do YYYY, HH:mm z')}</small>
       {application.reviewedBy && (
         <p>
@@ -63,8 +60,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
 
       <div style={{ marginTop: 10 }}>
         <Button
-          variant="minimal"
-          icon={isExpanded ? <CaretUpIcon /> : <CaretDownIcon />}
+          leftSection={isExpanded ? <CaretUpIcon /> : <CaretDownIcon />}
           onClick={() => {
             setIsExpanded(prev => !prev);
           }}
@@ -75,8 +71,8 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
 
       {isExpanded && (
         <>
-          {isFetching && <Spinner size={20} />}
-          {error && <p className={Classes.TEXT_MUTED}>{error.message}</p>}
+          {isFetching && <Loader size={20} />}
+          {error && <p>{error.message}</p>}
           {data && (
             <div style={{ marginTop: 10 }}>
               {data.answers.map((answer, index) => (
@@ -89,9 +85,9 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
                         {canReview && answer.choiceCorrect !== null && (
                           <>
                             {' '}
-                            <Tag intent={answer.choiceCorrect ? Intent.SUCCESS : Intent.DANGER}>
+                            <Badge color={answer.choiceCorrect ? 'green' : 'red'}>
                               {answer.choiceCorrect ? 'correct' : 'incorrect'}
-                            </Tag>
+                            </Badge>
                           </>
                         )}
                       </>
@@ -109,8 +105,8 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
       {canReview && application.status === HostApplicationStatus.PENDING && (
         <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
           <Button
-            intent={Intent.SUCCESS}
-            icon={<CheckIcon />}
+            color="green"
+            leftSection={<CheckIcon />}
             loading={isReviewing}
             onClick={() => {
               void review({ id: application.id, decision: 'approve' });
@@ -118,29 +114,27 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
           >
             Approve
           </Button>
-          <Button intent={Intent.DANGER} icon={<XIcon />} loading={isReviewing} onClick={openDeclineDialog}>
+          <Button color="red" leftSection={<XIcon />} loading={isReviewing} onClick={openDeclineDialog}>
             Decline
           </Button>
         </div>
       )}
 
-      <Dialog isOpen={isDeclineDialogOpen} title="Decline application" onClose={closeDeclineDialog}>
-        <div className={Classes.DIALOG_BODY}>
+      <Modal opened={isDeclineDialogOpen} title="Decline application" onClose={closeDeclineDialog}>
+        <Stack>
           <p>Please provide a reason for declining this application. This will be visible to the applicant.</p>
-          <TextArea
-            fill
+          <Textarea
+            autosize
             value={declineReason}
             onChange={e => {
               setDeclineReason(e.target.value);
             }}
             placeholder="Reason for declining"
           />
-        </div>
-        <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          <Group justify="end">
             <Button onClick={closeDeclineDialog}>Cancel</Button>
             <Button
-              intent={Intent.DANGER}
+              color="red"
               loading={isReviewing}
               disabled={declineReason.trim().length === 0}
               onClick={() => {
@@ -152,9 +146,9 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
             >
               Decline
             </Button>
-          </div>
-        </div>
-      </Dialog>
-    </div>
+          </Group>
+        </Stack>
+      </Modal>
+    </Card>
   );
 };

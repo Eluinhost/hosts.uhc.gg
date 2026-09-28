@@ -1,4 +1,4 @@
-import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { Button, Alert, Title, EmptyState, Loader, Stack, Group } from '@mantine/core';
 import { PlusIcon, FileTextIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -34,32 +34,32 @@ export const HostApplicationsPage = () => {
   }, [data, username]);
 
   return (
-    <div>
+    <Stack>
       <title>uhc.gg | Host Applications</title>
-      <H1>Host Applications</H1>
+      <Title order={1}>Host Applications</Title>
 
-      {error && <Callout intent={Intent.DANGER}>{error.message}</Callout>}
+      {error && <Alert color="red">{error.message}</Alert>}
 
       {isBanned && (
-        <Callout intent={Intent.DANGER} style={{ marginBottom: 20 }}>
+        <Alert color="red" mb={20}>
           You are banned from hosting and cannot submit an application.
-        </Callout>
+        </Alert>
       )}
 
       {canApply && (
-        <div style={{ marginBottom: 20 }}>
+        <Group mb={20}>
           <Link to="/host-applications/apply">
-            <Button intent={Intent.PRIMARY} icon={<PlusIcon />}>
+            <Button color="green" leftSection={<PlusIcon />}>
               Apply to host
             </Button>
           </Link>
-        </div>
+        </Group>
       )}
 
       {isFetching ? (
-        <Spinner />
+        <Loader />
       ) : data?.length === 0 ? (
-        <NonIdealState
+        <EmptyState
           icon={<FileTextIcon />}
           title="No host applications yet"
           description="There are no host applications to see yet."
@@ -74,6 +74,6 @@ export const HostApplicationsPage = () => {
           />
         ))
       )}
-    </div>
+    </Stack>
   );
 };

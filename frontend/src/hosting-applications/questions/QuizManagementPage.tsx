@@ -1,14 +1,14 @@
-import { H1 } from '@blueprintjs/core';
+import { Title, Stack, Group } from '@mantine/core';
 import React from 'react';
 
 import { ShowQuizQuestions } from './components/ShowQuizQuestions';
 
 export const QuizManagementPage: React.FC = () => (
-  <div>
+  <Stack>
     <title>uhc.gg | Host Application Quiz</title>
-    <H1>Host Application Quiz</H1>
-    <div style={{ margin: 30 }}>
+    <Title order={1}>Host Application Quiz</Title>
+    <Group m={30}>
       <ShowQuizQuestions />
-    </div>
-  </div>
+    </Group>
+  </Stack>
 );

@@ -1,5 +1,4 @@
-import { Button, Intent } from '@blueprintjs/core';
-import { InputWrapper } from '@mantine/core';
+import { Button, InputWrapper } from '@mantine/core';
 import { PlusIcon } from '@phosphor-icons/react';
 import React, { useMemo } from 'react';
 
@@ -112,8 +111,8 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
         {disabled => (
           <Button
             type="submit"
-            intent={Intent.PRIMARY}
-            icon={<PlusIcon />}
+            color="green"
+            leftSection={<PlusIcon />}
             disabled={disabled}
             onClick={() => {
               void form.handleSubmit();

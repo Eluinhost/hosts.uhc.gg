@@ -1,4 +1,4 @@
-import { Button, Callout, H1, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { Button, Alert, Stack, Title, EmptyState, Loader } from '@mantine/core';
 import { ProhibitIcon, QuestionIcon, CheckCircleIcon, CheckIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -20,63 +20,60 @@ export const ApplyHostApplicationPage: React.FC = () => {
 
   if (isBanned) {
     return (
-      <NonIdealState
+      <EmptyState
         icon={<ProhibitIcon />}
         title="You cannot apply"
         description="You are banned from hosting and cannot submit an application."
-        action={
-          <Link to="/host-applications">
-            <Button>Back to Host Applications</Button>
-          </Link>
-        }
-      />
+      >
+        <Link to="/host-applications">
+          <Button>Back to Host Applications</Button>
+        </Link>
+      </EmptyState>
     );
   }
 
   if (!canApply) {
     return (
-      <NonIdealState
+      <EmptyState
         icon={<CheckCircleIcon />}
         title="You don't need to apply"
         description="You're already a host, or you're not logged in."
-        action={
-          <Link to="/host-applications">
-            <Button>Back to Host Applications</Button>
-          </Link>
-        }
-      />
+      >
+        <Link to="/host-applications">
+          <Button>Back to Host Applications</Button>
+        </Link>
+      </EmptyState>
     );
   }
 
   if (isSuccess) {
     return (
-      <NonIdealState
+      <EmptyState
         icon={<CheckIcon />}
         title="Application submitted"
         description="Head back to Host Applications to check on its status."
-        action={
-          <Link to="/host-applications">
-            <Button intent={Intent.PRIMARY}>Back to Host Applications</Button>
-          </Link>
-        }
-      />
+      >
+        <Link to="/host-applications">
+          <Button>Back to Host Applications</Button>
+        </Link>
+      </EmptyState>
     );
   }
 
   return (
-    <div>
+    <Stack>
       <title>uhc.gg | Apply to Host</title>
-      <H1>Apply to Host</H1>
+      <Title order={1}>Apply to Host</Title>
 
-      {error && <Callout intent={Intent.DANGER}>{error.message}</Callout>}
+      {error && <Alert color="red" title={error.message} />}
 
       {isFetching ? (
-        <Spinner />
+        <Loader />
       ) : !data || data.length === 0 ? (
-        <NonIdealState icon={<QuestionIcon />} title="No quiz questions have been configured yet" />
+        <EmptyState icon={<QuestionIcon />} title="No quiz questions have been configured yet" />
       ) : (
         <HostApplicationForm questions={data} />
       )}
-    </div>
+    </Stack>
   );
 };

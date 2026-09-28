@@ -1,4 +1,4 @@
-import { Alert, Button, Classes, Intent, Tag } from '@blueprintjs/core';
+import { Button, Badge, Stack, Modal, Group, Card, List } from '@mantine/core';
 import { TrashIcon } from '@phosphor-icons/react';
 import React, { useState } from 'react';
 
@@ -16,48 +16,60 @@ export const ExistingQuizQuestion: React.FC<ExistingQuizQuestionProps> = ({ ques
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   return (
-    <div className={`${Classes.CARD} ${Classes.ELEVATION_1}`} style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Card withBorder mb={10}>
+      <Group justify="space-between" align="center">
         <strong>{question.prompt}</strong>
         <Button
-          icon={<TrashIcon />}
-          intent={Intent.DANGER}
-          variant="minimal"
+          leftSection={<TrashIcon />}
+          color="red"
           onClick={() => {
             setIsAlertOpen(true);
           }}
         />
-      </div>
+      </Group>
 
-      <Tag minimal style={{ marginTop: 5 }}>
-        {question.questionType}
-      </Tag>
+      <Badge>{question.questionType}</Badge>
 
       {question.questionType === QuestionType.MULTIPLE_CHOICE && (
-        <ul>
+        <List unstyled>
           {question.choices.map(choice => (
-            <li key={choice.id}>
-              {choice.text} {choice.correct && <Tag intent={Intent.SUCCESS}>correct</Tag>}
-            </li>
+            <List.Item key={choice.id}>
+              {choice.text} {choice.correct && <Badge color="green">correct</Badge>}
+            </List.Item>
           ))}
-        </ul>
+        </List>
       )}
 
-      <Alert
-        isOpen={isAlertOpen}
-        onConfirm={() => {
-          setIsAlertOpen(false);
-          deleteQuestion({ id: question.id });
-        }}
-        onCancel={() => {
+      <Modal
+        opened={isAlertOpen}
+        onClose={() => {
           setIsAlertOpen(false);
         }}
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
-        intent={Intent.DANGER}
+        centered
       >
-        <p>Are you sure you want to delete this question?</p>
-      </Alert>
-    </div>
+        <Stack>
+          <p>Are you sure you want to delete this question?</p>
+        </Stack>
+        <Group justify="end">
+          <Button
+            variant="subtle"
+            onClick={() => {
+              setIsAlertOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="red"
+            onClick={() => {
+              setIsAlertOpen(false);
+              deleteQuestion({ id: question.id });
+            }}
+          >
+            Delete
+          </Button>
+        </Group>
+      </Modal>
+    </Card>
   );
 };
