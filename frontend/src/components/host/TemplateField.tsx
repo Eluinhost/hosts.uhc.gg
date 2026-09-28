@@ -1,28 +1,24 @@
 import {
   Alert,
-  Blockquote,
-  Button,
-  ButtonGroup,
-  Callout,
-  Classes,
-  Dialog,
-  H5,
-  HTMLTable,
-  InputGroup,
-  Intent,
+  Table,
+  Title,
+  Code,
+  Group,
   Menu,
-  MenuDivider,
-  MenuItem,
-  PopoverNext,
-  TextArea,
-} from '@blueprintjs/core';
+  Button,
+  Textarea,
+  Stack,
+  Box,
+  Modal,
+  Blockquote,
+  TextInput,
+} from '@mantine/core';
 import {
   ArrowCounterClockwiseIcon,
+  ArrowLeftIcon,
   BookmarkIcon,
   BoxArrowDownIcon,
   BoxArrowUpIcon,
-  CaretDownIcon,
-  CaretUpIcon,
   FloppyDiskIcon,
   InfoIcon,
   PlusIcon,
@@ -87,16 +83,18 @@ const samples = [
 
 const renderSamples = (context: TemplateContext): React.ReactElement[] =>
   samples.map((sample, index) => (
-    <tr key={index}>
-      <td className={Classes.MONOSPACE_TEXT}>{sample[0]}</td>
-      <td>{sample[1]}</td>
-      <td>{Mark.up(sample[0], context)}</td>
-    </tr>
+    <Table.Tr key={index}>
+      <Table.Td>
+        <Code>{sample[0]}</Code>
+      </Table.Td>
+      <Table.Td>{sample[1]}</Table.Td>
+      <Table.Td>{Mark.up(sample[0], context)}</Table.Td>
+    </Table.Tr>
   ));
 
 const HelpTab: React.FC<{ context: TemplateContext }> = ({ context }) => (
-  <Callout intent={Intent.PRIMARY}>
-    <H5>Template information</H5>
+  <Alert color="blue">
+    <Title order={5}>Template information</Title>
     <div>
       <span>Templates can use Markdown as well as </span>
       <a href="https://github.com/adammark/Markup.js/blob/master/README.md" target="_blank" rel="noopener noreferrer">
@@ -104,22 +102,21 @@ const HelpTab: React.FC<{ context: TemplateContext }> = ({ context }) => (
       </a>
       <span> for generating content. Here are some template examples and what they would output:</span>
     </div>
-    <HTMLTable bordered striped>
-      <thead>
-        <tr>
-          <th>Example</th>
-          <th>Description</th>
-          <th>Output</th>
-        </tr>
-      </thead>
-      <tbody>{renderSamples(context)}</tbody>
-    </HTMLTable>
-  </Callout>
+    <Table withTableBorder striped>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Example</Table.Th>
+          <Table.Th>Description</Table.Th>
+          <Table.Th>Output</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>{renderSamples(context)}</Table.Tbody>
+    </Table>
+  </Alert>
 );
 
 export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ disabled, context, field }) => {
   const [localPresets, setLocalPresets] = useAtom(presetsAtom);
-  const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
   const [isShowingImportPopover, setIsShowingImportPopover] = useState(false);
   const [isShowingHelpPopover, setIsShowingHelpPopover] = useState(false);
   const [exportContent, setExportContent] = useState<string | null>(null);
@@ -168,186 +165,198 @@ export const TemplateField: React.FunctionComponent<TemplateFieldProps> = ({ dis
   const saved = Object.entries(localPresets);
 
   return (
-    <div className="template-field">
-      <div className="presets-bar">
-        <ButtonGroup size="large">
-          <PopoverNext
-            onClose={() => {
-              setIsPresetMenuOpen(false);
-            }}
-            isOpen={isPresetMenuOpen}
-            content={
-              <Menu size="large">
-                <MenuDivider title={saved.length === 0 ? 'No saved presets' : 'Saved Presets'} />
-                {saved.map(([name, template]) => (
-                  <MenuItem
-                    key={name}
-                    text={name}
+    <Stack>
+      <Group justify="end">
+        <Menu closeOnClickOutside closeOnEscape closeOnItemClick>
+          <Menu.Target>
+            <Button variant="outline" leftSection={<BookmarkIcon />}>
+              Presets
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Label>{saved.length === 0 ? 'No saved presets' : 'Saved Presets'}</Menu.Label>
+            {saved.map(([name, template]) => (
+              <Menu.Sub key={name} openDelay={120} closeDelay={150}>
+                <Menu.Sub.Target>
+                  <Menu.Sub.Item>{name}</Menu.Sub.Item>
+                </Menu.Sub.Target>
+
+                <Menu.Sub.Dropdown>
+                  <Menu.Item
+                    leftSection={<PlusIcon />}
                     onClick={() => {
                       field.handleChange(template);
                     }}
                   >
-                    <MenuItem
-                      text="Apply"
-                      icon={<PlusIcon />}
-                      onClick={() => {
-                        field.handleChange(template);
-                      }}
-                    />
-                    <MenuItem
-                      text="Export"
-                      icon={<BoxArrowUpIcon />}
-                      onClick={() => {
-                        setExportContent(template);
-                      }}
-                    />
-                    <MenuItem
-                      text="Delete"
-                      icon={<TrashIcon />}
-                      onClick={() => {
-                        onDeleteLocalPreset(name);
-                      }}
-                    />
-                    <MenuItem
-                      text="Overwrite"
-                      icon={<FloppyDiskIcon />}
-                      onClick={() => {
-                        overwrite(name);
-                      }}
-                    />
-                  </MenuItem>
-                ))}
-                <MenuDivider />
-                <MenuItem
-                  text="Save as new preset"
-                  icon={<FloppyDiskIcon />}
-                  onClick={() => {
-                    onSaveCurrentAsPreset();
-                  }}
-                />
-                <MenuItem
-                  text="Import Preset"
-                  icon={<BoxArrowDownIcon />}
-                  onClick={() => {
-                    setIsShowingImportPopover(true);
-                  }}
-                />
-                <MenuItem
-                  icon={<ArrowCounterClockwiseIcon />}
-                  text="Reset to Default"
-                  onClick={() => {
-                    field.handleChange(defaultPreset);
-                  }}
-                />
-              </Menu>
-            }
-            placement="bottom"
-            arrow={false}
-          >
-            <Button
-              icon={<BookmarkIcon />}
-              endIcon={isPresetMenuOpen ? <CaretUpIcon /> : <CaretDownIcon />}
+                    Apply
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<BoxArrowUpIcon />}
+                    onClick={() => {
+                      setExportContent(template);
+                    }}
+                  >
+                    Export
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<TrashIcon />}
+                    onClick={() => {
+                      onDeleteLocalPreset(name);
+                    }}
+                  >
+                    Delete
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<FloppyDiskIcon />}
+                    onClick={() => {
+                      overwrite(name);
+                    }}
+                  >
+                    Overwrite
+                  </Menu.Item>
+                </Menu.Sub.Dropdown>
+              </Menu.Sub>
+            ))}
+            <Menu.Divider />
+            <Menu.Item
+              leftSection={<FloppyDiskIcon />}
               onClick={() => {
-                setIsPresetMenuOpen(prev => !prev);
+                onSaveCurrentAsPreset();
               }}
             >
-              Presets
-            </Button>
-          </PopoverNext>
-          <Button
-            size="large"
-            icon={<InfoIcon />}
-            onClick={() => {
-              setIsShowingHelpPopover(true);
-            }}
-          >
-            Help
-          </Button>
-        </ButtonGroup>
-      </div>
-      <div className="host-form-template-editor">
-        <TextArea
+              Save as new preset
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<BoxArrowDownIcon />}
+              onClick={() => {
+                setIsShowingImportPopover(true);
+              }}
+            >
+              Import Preset
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<ArrowCounterClockwiseIcon />}
+              onClick={() => {
+                field.handleChange(defaultPreset);
+              }}
+            >
+              Reset to Default
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+        <Button
+          variant="outline"
+          leftSection={<InfoIcon />}
+          onClick={() => {
+            setIsShowingHelpPopover(true);
+          }}
+        >
+          Help
+        </Button>
+      </Group>
+
+      <Group align="start">
+        <Textarea
           disabled={disabled}
-          rows={15}
+          minRows={15}
+          autosize
           onChange={e => {
             field.handleChange(e.target.value);
           }}
           onBlur={field.handleBlur}
           value={field.value}
+          flex={1}
         />
-        <Markdown markdown={renderToMarkdown(field.value, context)} />
-      </div>
+        <Box flex={1}>
+          <Markdown markdown={renderToMarkdown(field.value, context)} />
+        </Box>
+      </Group>
 
-      {exportContent && (
-        <Alert
-          isOpen
-          onClose={() => {
-            setExportContent(null);
-          }}
-        >
-          {/* TODO improve UI with max height + copy button */}
-          <Blockquote>{btoa(JSON.stringify(exportContent, null, 2))}</Blockquote>
-        </Alert>
-      )}
+      <Modal
+        size="lg"
+        centered
+        opened={!!exportContent}
+        onClose={() => {
+          setExportContent(null);
+        }}
+        title="Export Code:"
+      >
+        {/* TODO improve UI with max height + copy button */}
+        <Blockquote textWrap="wrap" style={{ overflowWrap: 'anywhere' }}>
+          {btoa(JSON.stringify(exportContent, null, 2))}
+        </Blockquote>
+      </Modal>
 
-      {/* TODO increase width */}
-      {isShowingHelpPopover && (
-        <Dialog
-          isOpen={isShowingHelpPopover}
-          onClose={() => {
-            setIsShowingHelpPopover(false);
-          }}
-        >
-          <HelpTab context={context} />
-        </Dialog>
-      )}
+      <Modal
+        size="xl"
+        opened={isShowingHelpPopover}
+        onClose={() => {
+          setIsShowingHelpPopover(false);
+        }}
+      >
+        <HelpTab context={context} />
+      </Modal>
 
       {isShowingImportPopover && (
-        <Alert
-          isOpen={isShowingImportPopover}
-          confirmButtonText="Import"
-          cancelButtonText="Cancel"
-          onCancel={() => {
+        <Modal
+          opened={isShowingImportPopover}
+          onClose={() => {
             setIsShowingImportPopover(false);
           }}
-          onConfirm={() => {
-            let values: unknown = null;
-
-            try {
-              values = JSON.parse(atob(importText));
-            } catch (err) {
-              console.error(err);
-            }
-
-            if (
-              !values ||
-              typeof values !== 'object' ||
-              !Object.values(values).every(value => typeof value === 'string')
-            ) {
-              window.alert('Invalid import data format');
-            } else {
-              setLocalPresets({
-                ...localPresets,
-                ...values,
-              });
-              setIsShowingImportPopover(false);
-              setIsPresetMenuOpen(true);
-            }
-          }}
+          title="Import Preset"
+          // onCancel={() => {
+          //   setIsShowingImportPopover(false);
+          // }}
+          // onConfirm={() => {
+          //   let values: unknown = null;
+          //
+          //   try {
+          //     values = JSON.parse(atob(importText));
+          //   } catch (err) {
+          //     console.error(err);
+          //   }
+          //
+          //   if (
+          //     !values ||
+          //     typeof values !== 'object' ||
+          //     !Object.values(values).every(value => typeof value === 'string')
+          //   ) {
+          //     window.alert('Invalid import data format');
+          //   } else {
+          //     setLocalPresets({
+          //       ...localPresets,
+          //       ...values,
+          //     });
+          //     setIsShowingImportPopover(false);
+          //     setIsPresetMenuOpen(true);
+          //   }
+          // }}
         >
           {/* TODO move into own components, field validation + preview, hookup data properly*/}
-          <InputGroup placeholder="Template name" />
-          <TextArea
-            placeholder="Paste template data here"
-            style={{ width: '100%' }}
-            fill
-            value={importText}
-            onChange={e => {
-              setImportText(e.target.value);
-            }}
-          />
-        </Alert>
+          <Stack>
+            <TextInput placeholder="Template name" />
+            <Textarea
+              placeholder="Paste template data here"
+              style={{ width: '100%' }}
+              autosize
+              minRows={15}
+              flex={1}
+              value={importText}
+              onChange={e => {
+                setImportText(e.target.value);
+              }}
+            />
+            <Group justify="end">
+              <Button variant="subtle" leftSection={<ArrowLeftIcon />}>
+                Cancel
+              </Button>
+              <Button color="green" leftSection={<PlusIcon />}>
+                Add
+              </Button>
+            </Group>
+          </Stack>
+        </Modal>
       )}
-    </div>
+    </Stack>
   );
 };

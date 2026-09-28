@@ -1,29 +1,24 @@
-import { Classes, HTMLSelect, type HTMLSelectProps } from '@blueprintjs/core';
+import { Select, type SelectProps } from '@mantine/core';
 import { type FieldWithValue } from '@tanstack/react-form';
-import { clsx } from 'clsx';
 import React from 'react';
 
-export type SelectFieldProps = Omit<HTMLSelectProps, 'name' | 'value' | 'onChange' | 'onBlur' | 'fill'> & {
+export type SelectFieldProps = Omit<SelectProps, 'name' | 'value' | 'onChange' | 'onBlur' | 'error'> & {
   field: FieldWithValue<string>;
 };
 
 export const SelectField: React.FC<SelectFieldProps> = ({ field, ...props }) => {
   return (
-    <HTMLSelect
+    <Select
       {...props}
       name={field.name as string}
+      error={field.errors[0]?.message}
       value={field.value}
-      className={clsx(
-        {
-          [Classes.INTENT_DANGER]: field.meta.isValid,
-        },
-        props.className,
-      )}
-      onChange={e => {
-        field.handleChange(e.target.value);
+      onChange={value => {
+        if (value) {
+          field.handleChange(value);
+        }
       }}
       onBlur={field.handleBlur}
-      fill
     />
   );
 };

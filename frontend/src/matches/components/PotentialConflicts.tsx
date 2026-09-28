@@ -1,4 +1,4 @@
-import { NonIdealState, Spinner } from '@blueprintjs/core';
+import { EmptyState, Loader } from '@mantine/core';
 import { XCircleIcon, CheckIcon, WarningIcon } from '@phosphor-icons/react';
 import { useDebouncedValue } from '@tanstack/react-pacer';
 import { useQuery } from '@tanstack/react-query';
@@ -24,17 +24,17 @@ export const PotentialConflicts: React.FC<{
 
   if (props.isInvalid)
     return (
-      <NonIdealState
+      <EmptyState
         icon={<XCircleIcon />}
         title="Cannot search for conflicts until opens/region/version fields are valid"
       />
     );
 
-  if (isFetching || isDebouncing) return <NonIdealState icon={<Spinner />} title="Checking..." />;
+  if (isFetching || isDebouncing) return <EmptyState icon={<Loader />} title="Checking..." />;
 
-  if (error) return <NonIdealState icon={<WarningIcon />} title="Failed to check for potential conflicts" />;
+  if (error) return <EmptyState icon={<WarningIcon />} title="Failed to check for potential conflicts" />;
 
-  if (!data || data.length === 0) return <NonIdealState icon={<CheckIcon />} title="No conflicts found" />;
+  if (!data || data.length === 0) return <EmptyState icon={<CheckIcon />} title="No conflicts found" />;
 
   return (
     <div>

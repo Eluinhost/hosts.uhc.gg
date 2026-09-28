@@ -1,29 +1,29 @@
-import { Intent, NumericInput, type NumericInputProps } from '@blueprintjs/core';
+import { NumberInput, type NumberInputProps } from '@mantine/core';
 import { type FieldWithValue } from '@tanstack/react-form';
 import React from 'react';
 
 export type NumberFieldProps = Omit<
-  NumericInputProps,
-  'allowNumericCharactersOnly' | 'name' | 'type' | 'value' | 'intent' | 'onValueChange' | 'onBlur' | 'buttonPosition'
+  NumberInputProps,
+  'name' | 'value' | 'onChange' | 'onValueChange' | 'onBlur' | 'error'
 > & {
   field: FieldWithValue<number>;
 };
 
 export const NumberField: React.FC<NumberFieldProps> = ({ field, ...props }) => {
   return (
-    <NumericInput
+    <NumberInput
       {...props}
-      allowNumericCharactersOnly
       name={field.name as string}
-      type="number"
-      value={field.value.toString(10)}
-      intent={!field.meta.isValid ? Intent.DANGER : undefined}
-      onValueChange={asNumber => {
-        field.handleChange(asNumber);
+      value={field.value}
+      error={field.errors[0]?.message}
+      onValueChange={({ floatValue }) => {
+        if (typeof floatValue === 'undefined') {
+          return;
+        }
+
+        field.handleChange(floatValue);
       }}
       onBlur={field.handleBlur}
-      fill
-      buttonPosition="none"
     />
   );
 };

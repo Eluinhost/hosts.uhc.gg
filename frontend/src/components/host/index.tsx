@@ -1,6 +1,5 @@
-import { Button, Callout, Intent } from '@blueprintjs/core';
-import { Box, Fieldset } from '@mantine/core';
-import { CloudArrowUpIcon } from '@phosphor-icons/react';
+import { Alert, Box, Button, Fieldset, Group, InputWrapper, Stack } from '@mantine/core';
+import { CloudArrowUpIcon, WarningIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -10,7 +9,6 @@ import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
 import { hostFormDataAtom } from '../../atoms/hostFormData';
 import { timezoneAtom } from '../../atoms/timezone';
 import dayjs from '../../dayjs';
-import { FormLabel } from '../../forms/FormLabel';
 import { useAppForm, useFormSelector } from '../../forms/useAppForm';
 import { MatchesData } from '../../matches/api';
 import { MatchRow } from '../../matches/components/MatchRow';
@@ -169,204 +167,198 @@ export const HostingPage: React.FC = () => {
       </Fieldset>
 
       <Fieldset legend="Host Details">
-        <div className="host-form-row">
-          <form.Field name="hostingName">
-            {field => (
-              <FormLabel field={field} label="Hosting Name">
-                <field.TextField field={field} />
-              </FormLabel>
-            )}
-          </form.Field>
-          <form.Field name="count">
-            {field => (
-              <FormLabel field={field} label="Game Number" showRequiredStar>
-                <field.NumberField field={field} min={1} />
-              </FormLabel>
-            )}
-          </form.Field>
-        </div>
+        <form.Field name="hostingName">
+          {field => <field.TextField label="Hosting Name (optional)" field={field} />}
+        </form.Field>
+        <form.Field name="count">
+          {field => (
+            <field.NumberField
+              label="Game Number"
+              required
+              field={field}
+              min={1}
+              allowDecimal={false}
+              allowNegative={false}
+              selectAllOnFocus
+            />
+          )}
+        </form.Field>
       </Fieldset>
 
       <Fieldset legend="Game Details">
-        <div className="host-form-row host-form-row--tournament">
+        <Stack>
           <form.Field name="tournament">
-            {field => <field.SwitchField field={field} label="Is this a Tournament?" size="large" />}
+            {field => (
+              <field.SwitchField
+                field={field}
+                onLabel="Yes"
+                offLabel="No"
+                label="Tournament?"
+                labelPosition="left"
+                size="lg"
+              />
+            )}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
           <form.Field name="scenarios">
             {field => (
-              <FormLabel
+              <field.TagsField
                 field={field}
                 label="Scenarios"
-                showRequiredStar
-                subLabel="Press Enter after each scenario to add it to the list"
-              >
-                <field.TagsField field={field} />
-              </FormLabel>
+                description="Press Enter after each scenario to add it to the list"
+              />
             )}
           </form.Field>
-        </div>
 
-        <div className="host-form-row host-form-row--modifiers">
           <form.Field name="scenarios">
             {field => (
-              <FormLabel
-                field={field}
-                label="Here are the scenarios that will not cause conflicts with surrounding matches:"
-                hideOptionalityLabel
-              >
-                <ModifierSelector
-                  onAdded={modifier => {
-                    field.handleChange(prev => [...prev, modifier]);
-                  }}
-                  onRemoved={modifier => {
-                    field.handleChange(prev => prev.filter(x => x !== modifier));
-                  }}
-                  selected={scenarios}
-                />
-              </FormLabel>
+              <ModifierSelector
+                onAdded={modifier => {
+                  field.handleChange(prev => [...prev, modifier]);
+                }}
+                onRemoved={modifier => {
+                  field.handleChange(prev => prev.filter(x => x !== modifier));
+                }}
+                selected={scenarios}
+              />
             )}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
-          <form.Field name="teams">
-            {field => (
-              <FormLabel field={field} label="Team Style" showRequiredStar>
+          <Group align="flex-start">
+            <form.Field name="teams">
+              {field => (
                 <field.SelectField
                   field={field}
-                  options={TeamStyles.map(t => ({ label: t.display, value: t.value }))}
+                  label="Team Style"
+                  required
+                  data={TeamStyles.map(t => ({ label: t.display, value: t.value }))}
+                  flex={1}
                 />
-              </FormLabel>
-            )}
-          </form.Field>
-          <form.Subscribe selector={state => state.values.teams}>
-            {teams => {
-              const teamStyle = TeamStyles.find(x => x.value === teams);
+              )}
+            </form.Field>
+            <form.Subscribe selector={state => state.values.teams}>
+              {teams => {
+                const teamStyle = TeamStyles.find(x => x.value === teams);
 
-              return (
-                <>
-                  {teamStyle?.requiresTeamSize && (
-                    <form.Field name="size">
-                      {field => (
-                        <FormLabel field={field} label="Team size (0 for 'ToX')" showRequiredStar>
-                          <field.NumberField field={field} min={0} max={32767} />
-                        </FormLabel>
-                      )}
-                    </form.Field>
-                  )}
-                  {teamStyle?.value === 'custom' && (
-                    <form.Field name="customStyle">
-                      {field => (
-                        <FormLabel field={field} label="Custom Team Style" showRequiredStar>
-                          <field.TextField field={field} />
-                        </FormLabel>
-                      )}
-                    </form.Field>
-                  )}
-                </>
-              );
-            }}
-          </form.Subscribe>
-        </div>
+                return (
+                  <>
+                    {teamStyle?.requiresTeamSize && (
+                      <form.Field name="size">
+                        {field => (
+                          <field.NumberField
+                            field={field}
+                            label="Team size (0 for 'ToX')"
+                            required
+                            min={0}
+                            max={32767}
+                            flex={1}
+                            allowDecimal={false}
+                          />
+                        )}
+                      </form.Field>
+                    )}
+                    {teamStyle?.value === 'custom' && (
+                      <form.Field name="customStyle">
+                        {field => <field.TextField field={field} label="Custom Team Style" required flex={1} />}
+                      </form.Field>
+                    )}
+                  </>
+                );
+              }}
+            </form.Subscribe>
+          </Group>
 
-        <div className="host-form-row">
-          <form.Field name="mapSize">
-            {field => (
-              <FormLabel field={field} label="Map size (diameter)" showRequiredStar>
-                <field.NumberField field={field} min={1} />
-              </FormLabel>
-            )}
-          </form.Field>
-          <form.Field name="length">
-            {field => (
-              <FormLabel field={field} label="Meetup @ (minutes)" showRequiredStar>
-                <field.NumberField field={field} min={30} />
-              </FormLabel>
-            )}
-          </form.Field>
-          <form.Field name="pvpEnabledAt">
-            {field => (
-              <FormLabel field={field} label="PVP Enabled (minutes)" showRequiredStar>
-                <field.NumberField field={field} min={0} />
-              </FormLabel>
-            )}
-          </form.Field>
-        </div>
+          <Group align="flex-start">
+            <form.Field name="mapSize">
+              {field => (
+                <field.NumberField
+                  allowDecimal={false}
+                  field={field}
+                  flex={1}
+                  label="Map size (diameter)"
+                  required
+                  min={1}
+                />
+              )}
+            </form.Field>
+            <form.Field name="length">
+              {field => (
+                <field.NumberField
+                  allowDecimal={false}
+                  field={field}
+                  flex={1}
+                  label="Meetup @ (minutes)"
+                  required
+                  min={30}
+                />
+              )}
+            </form.Field>
+            <form.Field name="pvpEnabledAt">
+              {field => (
+                <field.NumberField
+                  allowDecimal={false}
+                  flex={1}
+                  field={field}
+                  label="PVP Enabled (minutes)"
+                  required
+                  min={0}
+                />
+              )}
+            </form.Field>
+          </Group>
+        </Stack>
       </Fieldset>
 
       <Fieldset legend="Server Details">
-        <div className="host-form-row">
+        <Stack>
           <form.Field name="region">
             {field => (
-              <FormLabel field={field} label="Region" showRequiredStar>
+              <InputWrapper required error={field.errors[0]?.message}>
                 <field.SegmentedField
+                  fullWidth
+                  color="primary"
                   field={field}
-                  options={Regions.map(x => ({ label: x.display, value: x.value }))}
+                  data={Regions.map(x => ({ label: x.display, value: x.value }))}
                 />
-              </FormLabel>
+              </InputWrapper>
             )}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
           <form.Field name="location">
-            {field => (
-              <FormLabel field={field} label="Location" showRequiredStar>
-                <field.TextField field={field} />
-              </FormLabel>
-            )}
+            {field => <field.TextField field={field} label="Location" required />}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
-          <form.Field name="ip">
-            {field => (
-              <FormLabel field={field} label="Server IP Address">
-                <field.TextField field={field} />
-              </FormLabel>
-            )}
-          </form.Field>
-          <form.Field name="address">
-            {field => (
-              <FormLabel field={field} label="Server Address">
-                <field.TextField field={field} />
-              </FormLabel>
-            )}
-          </form.Field>
-        </div>
+          <Group align="flex-start">
+            <form.Field name="ip">
+              {field => <field.TextField flex={1} field={field} label="Server IP Address" />}
+            </form.Field>
+            <form.Field name="address">
+              {field => <field.TextField flex={1} field={field} label="Server Address" />}
+            </form.Field>
+          </Group>
 
-        <div className="host-form-row">
           <form.Field name="tags">
             {field => (
-              <FormLabel field={field} label="Tags" subLabel="Press Enter after each tag to add it to the list">
-                <field.TagsField field={field} />
-              </FormLabel>
+              <field.TagsField
+                field={field}
+                label="Tags"
+                description="Press Enter after each tag to add it to the list"
+              />
             )}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
           <form.Field name="slots">
-            {field => (
-              <FormLabel field={field} label="Available Slots" showRequiredStar>
-                <field.NumberField field={field} min={2} />
-              </FormLabel>
-            )}
+            {field => <field.NumberField field={field} min={2} label="Available Slots" required />}
           </form.Field>
-        </div>
 
-        <div className="host-form-row">
           <form.Field name="version">
             {field => (
-              <FormLabel field={field} label="Version" showRequiredStar>
+              <InputWrapper label="Version" required>
                 <field.VersionField field={field} />
-              </FormLabel>
+              </InputWrapper>
             )}
           </form.Field>
-        </div>
+        </Stack>
       </Fieldset>
 
       <Fieldset legend="Content Preview">
@@ -377,10 +369,12 @@ export const HostingPage: React.FC = () => {
         <form.Subscribe selector={state => state.values.content}>
           {content =>
             content === defaultPreset && (
-              <Callout intent={Intent.WARNING}>
-                This is the default preset. You may want to customize it and save it in the Presets menu before
-                submitting.
-              </Callout>
+              <Alert
+                color="yellow"
+                icon={<WarningIcon />}
+                title="This is the default preset. You may want to customize it and save it in the Presets menu before
+                submitting."
+              />
             )
           }
         </form.Subscribe>
@@ -408,9 +402,7 @@ export const HostingPage: React.FC = () => {
               {props.region}) and version ({props.version}). Please review any conflicts to avoid your game being
               removed
             </p>
-            <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-              <PotentialConflicts {...props} />
-            </div>
+            <PotentialConflicts {...props} />
           </Fieldset>
         )}
       </form.Subscribe>
@@ -423,7 +415,7 @@ export const HostingPage: React.FC = () => {
               return null;
             }
 
-            return <Callout key={index} intent={Intent.DANGER} title={error.message} />;
+            return <Alert color="red" key={index} icon={<WarningIcon />} title={error.message} />;
           })
         }
       </form.Subscribe>
@@ -440,9 +432,9 @@ export const HostingPage: React.FC = () => {
             <Button
               type="submit"
               disabled={!canSubmit}
-              icon={<CloudArrowUpIcon />}
+              leftSection={<CloudArrowUpIcon />}
               loading={isSubmitting}
-              intent={isValid ? Intent.SUCCESS : Intent.WARNING}
+              color={isValid ? 'green' : 'yellow'}
             >
               {isSubmitting ? 'Creating...' : 'Create Match'}
             </Button>
