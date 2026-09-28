@@ -1,4 +1,4 @@
-import { Classes, Intent, Tag } from '@blueprintjs/core';
+import { Badge } from '@mantine/core';
 import { ArrowClockwiseIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { type ReactNode, useCallback, useState } from 'react';
 
@@ -25,27 +25,25 @@ export const ModifierEditorRow: React.FC<ModifiersEditorRowProps> = (props: Modi
   let icon: ReactNode | null = null;
 
   if (isPending) {
-    icon = <ArrowClockwiseIcon className={Classes.SPINNER_ANIMATION} />;
+    icon = <ArrowClockwiseIcon />;
   } else if (isHovered) {
     icon = <TrashIcon />;
   }
 
   return (
     <span onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className="modifiers-editor_entry">
-      <span>-</span>
-      <Tag
-        interactive
+      <Badge
         title="Delete modifier"
         onClick={() => {
           mutate(modifier.id);
         }}
-        size="large"
-        endIcon={icon}
-        intent={isHovered ? Intent.DANGER : Intent.NONE}
+        size="lg"
+        rightSection={icon}
+        color={isHovered ? 'red' : 'grey'}
         className="modifiers-editor_entry_tag"
       >
         {modifier.displayName}
-      </Tag>
+      </Badge>
     </span>
   );
 };

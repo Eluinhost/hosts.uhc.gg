@@ -1,4 +1,4 @@
-import { Button, Classes, Intent, NonIdealState, Spinner } from '@blueprintjs/core';
+import { Button, EmptyState, List, Loader } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -14,17 +14,17 @@ export const ModifiersEditor: React.FC = () => {
   const { data, isFetching, error, refetch } = useQuery(ModifiersData.getAllModifiers);
 
   if (isFetching) {
-    return <Spinner />;
+    return <Loader />;
   }
 
   if (error) {
     return (
-      <NonIdealState
+      <EmptyState
         icon={<WarningIcon />}
         title="Failed to lookup modifiers"
-        action={
+        description={
           <Button
-            intent={Intent.PRIMARY}
+            color="red"
             onClick={() => {
               void refetch();
             }}
@@ -42,13 +42,13 @@ export const ModifiersEditor: React.FC = () => {
 
   return (
     <div>
-      <ul className={`${Classes.LIST_UNSTYLED} modifiers-editor_list`}>
+      <List unstyled listStyleType="none">
         {data.map(modifier => (
-          <li key={modifier.id}>
+          <List.Item key={modifier.id}>
             <ModifierEditorRow modifier={modifier} />
-          </li>
+          </List.Item>
         ))}
-      </ul>
+      </List>
       <CreateModifierForm existing={data.map(x => x.displayName.toLowerCase())} />
     </div>
   );

@@ -1,4 +1,4 @@
-import { Button, ControlGroup, Intent } from '@blueprintjs/core';
+import { ActionIcon } from '@mantine/core';
 import { ArrowUpIcon } from '@phosphor-icons/react';
 import { create, enforce, test } from 'vest';
 
@@ -54,23 +54,25 @@ export const CreateModifierForm = ({ existing }: { existing: Array<string> }) =>
     >
       <form.Field name="modifier">
         {field => (
-          <ControlGroup>
-            <field.TextField field={field} size="lg" label="Create new modifier" required />
-            <form.Subscribe selector={state => state.isValid}>
-              {valid => (
-                <Button
-                  intent={valid ? Intent.SUCCESS : Intent.DANGER}
-                  type="submit"
-                  onClick={() => {
-                    void form.handleSubmit();
-                  }}
-                  icon={<ArrowUpIcon />}
-                  size="large"
-                  disabled={!valid}
-                />
-              )}
-            </form.Subscribe>
-          </ControlGroup>
+          <field.TextField
+            field={field}
+            size="lg"
+            label="Create new modifier"
+            required
+            rightSection={
+              <ActionIcon
+                color={field.meta.isValid ? 'green' : 'red'}
+                type="submit"
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+                size="lg"
+                disabled={!field.meta.isValid}
+              >
+                <ArrowUpIcon />
+              </ActionIcon>
+            }
+          />
         )}
       </form.Field>
     </form>
