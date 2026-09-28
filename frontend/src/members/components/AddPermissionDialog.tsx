@@ -50,9 +50,7 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
           void form.handleSubmit();
         }}
       >
-        <form.Field name="username">
-          {field => <field.TextField field={field} w="100%" label="Username" error={field.errors[0]?.message} />}
-        </form.Field>
+        <form.Field name="username">{field => <field.TextField field={field} w="100%" label="Username" />}</form.Field>
         <Group justify="flex-end" mt="md">
           <Button variant="outline" onClick={onClose} leftSection={<ArrowLeftIcon />}>
             Cancel

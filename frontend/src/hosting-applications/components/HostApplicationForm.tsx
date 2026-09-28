@@ -95,12 +95,12 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
               {question.questionType === QuestionType.MULTIPLE_CHOICE ? (
                 <field.SegmentedField
                   field={field}
-                  options={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
+                  data={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
                 />
               ) : (
                 <field.SegmentedField
                   field={field}
-                  options={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
+                  data={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
                 />
               )}
             </FormLabel>
