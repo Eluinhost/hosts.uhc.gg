@@ -1,13 +1,11 @@
-import { Button, Classes, ControlGroup, Dialog, H5, Intent } from '@blueprintjs/core';
-import { ArrowLeftIcon, TrashIcon, CheckIcon, WarningIcon } from '@phosphor-icons/react';
-import { useAtomValue } from 'jotai';
-import React, { createElement } from 'react';
+import { Button, Group, Modal, Stack, Title } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { ArrowLeftIcon, TrashIcon } from '@phosphor-icons/react';
+import React from 'react';
 import { enforce, test, create } from 'vest';
 
-import { isDarkModeAtom } from '../../atoms/isDarkMode';
 import { useAppForm } from '../../forms/useAppForm';
 import { MatchesData } from '../../matches/api';
-import { showToast } from '../../services/AppToaster';
 
 const schema = enforce.shape({
   reason: enforce.isString(),
@@ -26,7 +24,6 @@ const suite = create(data => {
 }, schema);
 
 export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
-  const isDarkMode = useAtomValue(isDarkModeAtom);
   const { mutateAsync } = MatchesData.mutations.useRemoveMatch();
 
   const form = useAppForm({
@@ -41,18 +38,13 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
       console.log('Submitting removal form with reason:', value.reason);
       try {
         await mutateAsync({ id, reason: value.reason });
-        await showToast({
-          intent: Intent.SUCCESS,
-          icon: createElement(CheckIcon),
-          message: `Removed match #${id}`,
-        });
+        notifications.show({ color: 'green', message: `Removed match #${id}` });
 
         onClose();
       } catch {
-        await showToast({
-          intent: Intent.DANGER,
-          icon: createElement(WarningIcon),
+        notifications.show({
           message: `Failed to remove match #${id}`,
+          color: 'red',
         });
 
         return createValidationError(`Failed to remove match #${id}`);
@@ -61,52 +53,39 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
   });
 
   return (
-    <Dialog
-      icon={<TrashIcon />}
-      isOpen
-      onClose={onClose}
-      title="Remove match"
-      className={isDarkMode ? Classes.DARK : ''}
-    >
-      <div className={`${Classes.DIALOG_BODY} remove-modal-body`}>
+    <Modal opened onClose={onClose} title="Remove match" size="md" centered>
+      <Stack>
         <form
           onSubmit={e => {
             e.preventDefault();
             void form.handleSubmit();
           }}
         >
-          <form.Field name="reason">
-            {field => (
-              <ControlGroup fill>
-                <field.TextField field={field} label="Reason" required />
-              </ControlGroup>
-            )}
-          </form.Field>
-          <H5>This cannot be undone once confirmed</H5>
+          <form.Field name="reason">{field => <field.TextField field={field} label="Reason" required />}</form.Field>
+          <Title order={5}>This cannot be undone once confirmed</Title>
         </form>
-      </div>
-      <div className={Classes.DIALOG_FOOTER}>
-        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button onClick={onClose} icon={<ArrowLeftIcon />}>
+        <Group justify="end">
+          <Button onClick={onClose} leftSection={<ArrowLeftIcon />} variant="subtle">
             Cancel
           </Button>
           <form.Subscribe selector={state => state.canSubmit}>
             {canSubmit => (
               <Button
-                intent={Intent.DANGER}
+                color="red"
                 type="submit"
+                variant="filled"
                 onClick={() => {
                   void form.handleSubmit();
                 }}
                 disabled={!canSubmit}
-                icon={<TrashIcon />}
+                leftSection={<TrashIcon />}
               >
                 Confirm Removal
               </Button>
             )}
           </form.Subscribe>
-        </div>
-      </div>
-    </Dialog>
+        </Group>
+      </Stack>
+    </Modal>
   );
 };
