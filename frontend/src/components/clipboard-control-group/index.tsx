@@ -1,4 +1,4 @@
-import { Button, Classes, ControlGroup, Intent } from '@blueprintjs/core';
+import { Button, Classes, ControlGroup } from '@blueprintjs/core';
 import { ClipboardIcon } from '@phosphor-icons/react';
 import React, { useCallback, useRef } from 'react';
 
@@ -16,15 +16,15 @@ export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
       inputRef.current?.select();
       // eslint-disable-next-line @typescript-eslint/no-deprecated
       document.execCommand('copy');
-      void showToast({
-        intent: Intent.SUCCESS,
+      showToast({
+        color: 'green',
         message: `Added \`${inputRef.current?.value}\` to clipboard`,
       });
     } catch (e) {
       console.error(e);
 
-      void showToast({
-        intent: Intent.DANGER,
+      showToast({
+        color: 'red',
         message: 'Your browser does not support copy, you must copy manually',
       });
     }

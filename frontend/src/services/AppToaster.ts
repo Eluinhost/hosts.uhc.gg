@@ -1,7 +1,7 @@
-import { Position, OverlayToaster, type ToastProps } from '@blueprintjs/core';
+import { type NotificationData, notifications } from '@mantine/notifications';
 
-const toaster = OverlayToaster.create({
-  position: Position.TOP,
-});
-
-export const showToast = async (options: ToastProps) => (await toaster).show(options);
+export const showToast = (options: NotificationData) =>
+  notifications.show({
+    position: 'top-center',
+    ...options,
+  });

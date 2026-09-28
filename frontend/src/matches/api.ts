@@ -1,4 +1,3 @@
-import { Intent } from '@blueprintjs/core';
 import { CheckIcon, WarningIcon } from '@phosphor-icons/react';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -175,8 +174,8 @@ export const MatchesData = {
       return useMutation({
         mutationFn: async (id: number) => apiClient.post(`/api/matches/${id}/approve`, { signal: null }),
         onSuccess: (_data, id) => {
-          void showToast({
-            intent: Intent.SUCCESS,
+          showToast({
+            color: 'green',
             icon: createElement(CheckIcon),
             message: `Approved match #${id}`,
           });
@@ -194,8 +193,8 @@ export const MatchesData = {
           void client.invalidateQueries(MatchesData.getById(id));
         },
         onError: (_error, id) => {
-          void showToast({
-            intent: Intent.DANGER,
+          showToast({
+            color: 'red',
             icon: createElement(WarningIcon),
             message: `Failed to approve match #${id}`,
           });
