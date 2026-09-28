@@ -1,5 +1,4 @@
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
+import './styles';
 
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
@@ -13,8 +12,6 @@ import { isDarkModeAtom } from './atoms/isDarkMode';
 import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
 import { App } from './components/App';
 import { theme } from './theme';
-
-import './main.css';
 
 const queryClient = new QueryClient();
 
