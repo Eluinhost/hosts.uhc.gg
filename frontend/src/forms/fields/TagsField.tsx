@@ -1,18 +1,16 @@
-import { Intent, TagInput, type TagInputProps } from '@blueprintjs/core';
+import { TagsInput, type TagsInputProps } from '@mantine/core';
 import { type FieldWithValue } from '@tanstack/react-form';
 import React from 'react';
 
-export type TagsFieldProps = Omit<TagInputProps, 'fill' | 'intent' | 'values' | 'onAdd' | 'onRemove'> & {
+export type TagsFieldProps = Omit<TagsInputProps, 'values' | 'onAdd' | 'onRemove' | 'error'> & {
   field: FieldWithValue<Array<string>>;
 };
 
-const combineTags = (a: string[], b: string[]) => {
+const combineTags = (tags: string[]) => {
   const results = [] as string[];
   const set = new Set<string>();
 
-  const combined = [...a, ...b];
-
-  for (const tag of combined) {
+  for (const tag of tags) {
     if (!set.has(tag.toLowerCase())) {
       set.add(tag.toLowerCase());
       results.push(tag);
@@ -24,24 +22,12 @@ const combineTags = (a: string[], b: string[]) => {
 
 export const TagsField: React.FC<TagsFieldProps> = ({ field, ...props }) => {
   return (
-    <TagInput
+    <TagsInput
       {...props}
-      fill
-      intent={field.meta.isValid ? Intent.NONE : Intent.DANGER}
-      values={field.value}
-      onAdd={newTags => {
-        field.handleChange(prev => combineTags(prev, newTags));
-      }}
-      onRemove={(_: unknown, removed: number) => {
-        const newValues = field.value.filter((_, index) => index !== removed);
-
-        if (newValues.length !== field.value.length) {
-          field.handleChange(newValues);
-        }
-      }}
-      onKeyDown={e => {
-        // Stops enter key from submitting the outer form
-        e.stopPropagation();
+      error={field.errors[0]?.message}
+      value={field.value}
+      onChange={newTags => {
+        field.handleChange(combineTags(newTags));
       }}
     />
   );

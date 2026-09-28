@@ -1,17 +1,7 @@
-import {
-  Button,
-  Classes,
-  ControlGroup,
-  HTMLSelect,
-  InputGroup,
-  NonIdealState,
-  SegmentedControl,
-  Spinner,
-} from '@blueprintjs/core';
+import { Group, SegmentedControl, Select, TextInput, Loader, EmptyState, Button } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { type FieldWithValue } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
-import { clsx } from 'clsx';
 import React, { useState } from 'react';
 
 import { VersionsData } from '../../versions/api';
@@ -26,8 +16,6 @@ const LoadedVersionField = ({ field, data }: VersionFieldProps & { data: Array<s
 
   const shouldShowAsCustom = isCustom || !isInVersionList;
 
-  const versionOptions: { display: string; value: string }[] = data.map(item => ({ display: item, value: item }));
-
   const handleCustomToggle = (choice: string) => {
     const isWantingCustom = choice === 'Custom';
 
@@ -41,39 +29,38 @@ const LoadedVersionField = ({ field, data }: VersionFieldProps & { data: Array<s
   };
 
   return (
-    <ControlGroup fill>
+    <Group align="flex-start">
       <SegmentedControl
-        size="small"
-        className={Classes.FIXED}
-        options={[{ value: 'Presets' }, { value: 'Custom' }]}
+        size="sm"
+        data={['Presets', 'Custom']}
         value={shouldShowAsCustom ? 'Custom' : 'Presets'}
-        onValueChange={handleCustomToggle}
+        onChange={handleCustomToggle}
       />
       {shouldShowAsCustom ? (
-        <InputGroup
-          className={clsx({
-            [Classes.INTENT_DANGER]: field.meta.isInvalid,
-          })}
+        <TextInput
+          error={field.errors[0]?.message}
           value={field.value}
           onChange={e => {
             field.handleChange(e.target.value);
           }}
           onBlur={field.handleBlur}
+          flex={1}
         />
       ) : (
-        <HTMLSelect
-          className={clsx({
-            [Classes.INTENT_DANGER]: field.meta.isInvalid,
-          })}
-          options={versionOptions}
+        <Select
+          data={data}
+          error={field.errors[0]?.message}
           value={field.value}
-          onChange={e => {
-            field.handleChange(e.target.value);
+          onChange={value => {
+            if (value) {
+              field.handleChange(value);
+            }
           }}
           onBlur={field.handleBlur}
+          flex={1}
         />
       )}
-    </ControlGroup>
+    </Group>
   );
 };
 
@@ -81,24 +68,20 @@ export const VersionField: React.FC<VersionFieldProps> = ({ field }) => {
   const { isPending, error, data, refetch } = useQuery(VersionsData.getAllVersions);
 
   if (isPending) {
-    return <Spinner />;
+    return <Loader />;
   }
 
   if (error) {
     return (
-      <NonIdealState
-        icon={<WarningIcon />}
-        title="Failed to load versions list"
-        action={
-          <Button
-            onClick={() => {
-              void refetch();
-            }}
-          >
-            Try Again
-          </Button>
-        }
-      />
+      <EmptyState icon={<WarningIcon />} title="Failed to load versions list">
+        <Button
+          onClick={() => {
+            void refetch();
+          }}
+        >
+          Try Again
+        </Button>
+      </EmptyState>
     );
   }
 
