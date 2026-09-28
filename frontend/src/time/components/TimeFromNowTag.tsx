@@ -1,4 +1,4 @@
-import { Intent, Tag, type TagProps } from '@blueprintjs/core';
+import { Badge, type MantineColor } from '@mantine/core';
 import { ClockIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -9,9 +9,10 @@ import { TimeData } from '../api';
 export type TimeFromNowTagProps = {
   time: Dayjs;
   hideSuffix?: boolean;
-} & TagProps;
+  title?: string;
+};
 
-export const TimeFromNowTag: React.FC<TimeFromNowTagProps> = ({ time, hideSuffix, ...props }) => {
+export const TimeFromNowTag: React.FC<TimeFromNowTagProps> = ({ time, hideSuffix, title }) => {
   const { data: offset } = useQuery(TimeData.serverOffset);
   const [currentTime, setCurrentTime] = useState(dayjs.utc());
 
@@ -28,23 +29,23 @@ export const TimeFromNowTag: React.FC<TimeFromNowTagProps> = ({ time, hideSuffix
     const now = currentTime.add(offset ?? 0, 'milliseconds');
     const text = time.from(now, hideSuffix);
 
-    let intent: Intent = Intent.SUCCESS;
+    let intent: MantineColor = 'green';
     const diff = time.diff(now, 'minutes');
 
     if (diff < 0) {
-      intent = Intent.WARNING;
+      intent = 'yellow';
     }
 
     if (diff < -30) {
-      intent = Intent.DANGER;
+      intent = 'red';
     }
 
     return { text, intent };
   }, [time, currentTime, offset, hideSuffix]);
 
   return (
-    <Tag {...props} intent={intent}>
-      <ClockIcon /> {text}
-    </Tag>
+    <Badge size="lg" bdrs="sm" color={intent} leftSection={<ClockIcon />} title={title}>
+      {text}
+    </Badge>
   );
 };

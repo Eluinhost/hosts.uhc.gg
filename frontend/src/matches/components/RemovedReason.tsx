@@ -1,3 +1,4 @@
+import { Alert, Text } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
 
@@ -15,12 +16,11 @@ export const RemovedReason: React.FC<{ match: Match }> = ({ match: { removedBy, 
   );
 
   return (
-    <div className="removed-reason">
-      <div className="removed-reason-reason">Removed: {removedReason}</div>
-      <div className="removed-reason-remover">
-        /u/{removedBy}
-        {removedAtFormatted && ` @ ${removedAtFormatted}`}
-      </div>
-    </div>
+    <Alert color="red" mt="xs">
+      <Text fw={700}>Removed: {removedReason}</Text>
+      <Text>
+        /u/{removedBy} {removedAtFormatted && ` @ ${removedAtFormatted}`}
+      </Text>
+    </Alert>
   );
 };

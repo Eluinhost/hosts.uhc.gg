@@ -1,4 +1,4 @@
-import { Intent, Tag } from '@blueprintjs/core';
+import { Badge } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -16,13 +16,8 @@ export const MatchOpensTag: React.FC<Props> = ({ opens, created }) => {
   const format = useAtomValue(tagDateTimeFormatAtom);
 
   return (
-    <Tag
-      intent={Intent.SUCCESS}
-      size="large"
-      className="match-opens"
-      title={`Created @ ${created.tz(timezone).format(format)}`}
-    >
+    <Badge bdrs="sm" color="green" size="lg" title={`Created @ ${created.tz(timezone).format(format)}`}>
       {opens.tz(timezone).format(format)}
-    </Tag>
+    </Badge>
   );
 };

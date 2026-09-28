@@ -1,5 +1,5 @@
 import { Button, Callout, Intent } from '@blueprintjs/core';
-import { Fieldset } from '@mantine/core';
+import { Box, Fieldset } from '@mantine/core';
 import { CloudArrowUpIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
@@ -22,12 +22,11 @@ import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
 import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
 
 import { defaultPreset } from './defaultPreset';
+import styles from './index.module.css';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { applyScenarioRules } from './scenarioRules';
 import { suite } from './schema';
 import { renderToMarkdown, type TemplateContext } from './TemplateField';
-
-import './index.sass';
 
 const createTemplateContext = (values: CreateMatchData, author: string): TemplateContext => {
   const style = TeamStyles.find(x => x.value === values.teams);
@@ -130,32 +129,31 @@ export const HostingPage: React.FC = () => {
         e.stopPropagation();
         void form.handleSubmit();
       }}
-      className="host-form"
+      className={styles.hostForm}
     >
       <title>uhc.gg | Create Match</title>
-      <Fieldset className="host-form-preview" legend="Game preview">
-        <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-          <form.Subscribe selector={state => state.values}>
-            {state => {
-              const preview: Match = {
-                ...state,
-                id: 0,
-                author: username,
-                removed: false,
-                removedAt: null,
-                removedBy: null,
-                removedReason: null,
-                approvedBy: null,
-                created: dayjs.utc(),
-                version: state.version,
-                roles,
-              };
 
-              return <MatchRow match={preview} disableRemoval disableApproval disableLink />;
-            }}
-          </form.Subscribe>
-        </div>
-      </Fieldset>
+      <Box className={styles.preview} p="xs" pt="lg">
+        <form.Subscribe selector={state => state.values}>
+          {state => {
+            const preview: Match = {
+              ...state,
+              id: 0,
+              author: username,
+              removed: false,
+              removedAt: null,
+              removedBy: null,
+              removedReason: null,
+              approvedBy: null,
+              created: dayjs.utc(),
+              version: state.version,
+              roles,
+            };
+
+            return <MatchRow match={preview} disableRemoval disableApproval disableLink />;
+          }}
+        </form.Subscribe>
+      </Box>
 
       <Fieldset legend="Opening Time">
         <form.Field name="opens">

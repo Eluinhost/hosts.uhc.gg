@@ -1,13 +1,13 @@
-import { Classes, Intent, Tag } from '@blueprintjs/core';
+import { Badge } from '@mantine/core';
 import React from 'react';
 
-type Props = {
-  readonly title: string;
-  readonly text: string;
-};
+interface ServerTagProps {
+  title: string;
+  text: string;
+}
 
-export const ServerTag: React.FC<Props> = ({ title, text }) => (
-  <Tag intent={Intent.PRIMARY} className={Classes.MINIMAL} title={title}>
+export const ServerTag: React.FC<ServerTagProps> = ({ title, text }) => (
+  <Badge color="blue" variant="outline" title={title}>
     {text}
-  </Tag>
+  </Badge>
 );

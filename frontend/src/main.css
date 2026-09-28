@@ -1,5 +1,3 @@
-:root:where([data-mantine-color-scheme='dark']) .bp6-icon svg {
-    /*fill: var(--mantine-color-white);*/
+a {
+  text-decoration: none;
 }
-
-

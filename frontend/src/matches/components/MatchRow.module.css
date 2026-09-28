@@ -1,0 +1,25 @@
+.matchRow {
+  position: relative;
+  overflow: visible;
+
+  :global(.mantine-Badge-label) {
+    text-transform: none;
+  }
+
+  .tags {
+    position: absolute;
+    top: -15px;
+    left: -10px;
+    right: -10px;
+  }
+
+  .actions {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  &a {
+    text-decoration: none;
+  }
+}
