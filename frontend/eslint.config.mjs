@@ -6,7 +6,6 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importx from 'eslint-plugin-import-x';
-import blueprint from '@blueprintjs/eslint-plugin';
 import { defaultConditionNames } from 'eslint-import-resolver-typescript';
 
 import requireAtomWithStorageGetoninit from './eslint/rules/require-atom-with-storage-getoninit.mjs';
@@ -47,7 +46,6 @@ export default tseslint.config(
       ]),
     ),
   },
-  blueprint.flatConfigs.recommended,
   importx.flatConfigs.recommended,
   importx.flatConfigs.react,
   importx.flatConfigs.typescript,
