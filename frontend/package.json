@@ -19,8 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@blueprintjs/core": "6.20.0",
-    "@mantine/core": "9.6.2",
-    "@mantine/dates": "9.6.2",
+    "@mantine/core": "9.6.3",
+    "@mantine/dates": "9.6.3",
+    "@mantine/notifications": "9.6.3",
     "@phosphor-icons/react": "2.1.10",
     "@tanstack/markdown": "0.0.15",
     "@tanstack/react-form": "2.0.0-alpha.2",

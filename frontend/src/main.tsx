@@ -1,7 +1,9 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 import { HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import React, { Suspense, lazy } from 'react';
@@ -31,6 +33,7 @@ const Root = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} forceColorScheme={isDarkMode ? 'dark' : 'light'}>
+        <Notifications />
         <OverlaysProvider>
           <HotkeysProvider>
             <BrowserRouter>
