@@ -1,4 +1,4 @@
-import { Classes, Intent, NonIdealState, Spinner, Tag, Button, H2, H4, H5 } from '@blueprintjs/core';
+import { EmptyState, Loader, Badge, Button, Title, Card, Stack, Group, Alert, TextInput } from '@mantine/core';
 import {
   ChartBarIcon,
   CheckIcon,
@@ -50,9 +50,9 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
   const renderTags = useCallback(
     (tags: string[]): React.ReactElement[] =>
       tags.map((tag, index) => (
-        <Tag intent={Intent.PRIMARY} className={Classes.LARGE} title="Tag" key={index}>
-          <TagIcon /> {tag}
-        </Tag>
+        <Badge size="lg" bdrs="sm" color="blue" leftSection={<TagIcon />} title={`Tag: ${tag}`} key={index}>
+          {tag}
+        </Badge>
       )),
     [],
   );
@@ -60,21 +60,21 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
   const renderScenarios = useCallback(
     (scenarios: string[]): React.ReactElement[] =>
       scenarios.map((scenario, index) => (
-        <Tag intent={Intent.NONE} className={Classes.LARGE} title="Scenario" key={index}>
+        <Badge color="grey" size="lg" bdrs="sm" title={`Scenario: ${scenario}`} key={index}>
           {scenario}
-        </Tag>
+        </Badge>
       )),
     [],
   );
 
-  if (isFetching) return <Spinner />;
+  if (isFetching) return <Loader />;
 
   if (error) {
     if (error instanceof HTTPError && error.response.status === 404) {
-      return <NonIdealState icon={<MagnifyingGlassIcon />} title="Not found" />;
+      return <EmptyState icon={<MagnifyingGlassIcon />} title="Not found" />;
     }
 
-    return <NonIdealState icon={<WarningIcon />} title="Error loading data" />;
+    return <EmptyState icon={<WarningIcon />} title="Error loading data" />;
   }
 
   if (!data) {
@@ -107,117 +107,100 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
     roles,
   } = data;
 
+  const approvalsGroup = (
+    <Group justify="end">
+      {(canApprove || canRemove) && (
+        <Group justify="end">
+          {canApprove && (
+            <Button
+              color="green"
+              leftSection={<CheckIcon />}
+              onClick={() => {
+                setIsApproving(true);
+              }}
+            >
+              Approve Match
+            </Button>
+          )}
+          {canRemove && (
+            <Button
+              color="red"
+              leftSection={<TrashIcon />}
+              onClick={() => {
+                setIsRemoving(true);
+              }}
+            >
+              Remove
+            </Button>
+          )}
+        </Group>
+      )}
+    </Group>
+  );
+
   return (
-    <div className={`${Classes.CARD} match-details`}>
-      <title>{`uhc.gg | ${hostingName || author}'s #${count}`}</title>
-      <div className="match-details__header">
-        <div className="match-details__header__floating-tags__top">
+    <Card withBorder>
+      <Stack align="stretch">
+        <title>{`uhc.gg | ${hostingName || author}'s #${count}`}</title>
+        <Group>
           <TimeFromNowTag time={opens} title="Opens" />
-          <Tag intent={Intent.SUCCESS} title="Region - Location" className={Classes.LARGE}>
-            <GlobeIcon /> {region} - {location}
-          </Tag>
+          <Badge bdrs="sm" color="green" title="Region - Location" size="lg" leftSection={<GlobeIcon />}>
+            {region} - {location}
+          </Badge>
           <HostStatus roles={roles} />
           {tournament && (
-            <Tag intent={Intent.PRIMARY} className={Classes.LARGE}>
-              <ChartBarIcon /> Tournament
-            </Tag>
+            <Badge bdrs="sm" color="blue" size="lg" leftSection={<ChartBarIcon />}>
+              Tournament
+            </Badge>
           )}
           <RemovedTag match={data} />
-        </div>
+        </Group>
 
-        <div className="match-details__header__content">
-          <H2>
+        <Stack align="center">
+          <Title order={2}>
             {hostingName || author}&#39;s #{count}
-          </H2>
-          <H4>
+          </Title>
+          <Title order={4}>
             <MatchOpens time={opens} />
-          </H4>
+          </Title>
           <UsernameLink username={author} />
-        </div>
+        </Stack>
 
-        <div className="match-details__header__floating-tags__bottom">
-          <div>
-            <Tag intent={Intent.DANGER} title="Team style" className={Classes.LARGE}>
-              <UsersIcon /> <TeamStyle size={size} style={teams} custom={customStyle} />
-            </Tag>
-            <Tag intent={Intent.PRIMARY} title={`Server version: ${version}`} size="large">
-              <CubeIcon /> {version}
-            </Tag>
-            {renderTags(tags)}
-          </div>
-          <div className="match-details__scenarios">{renderScenarios(scenarios)}</div>
-        </div>
-      </div>
-      <div className="match-details__server-address">
-        {!!ip && <ClipboardControlGroup value={ip} />}
+        <Group>
+          <Badge color="red" size="lg" bdrs="sm" title="Team style" leftSection={<UsersIcon />}>
+            <TeamStyle size={size} style={teams} custom={customStyle} />
+          </Badge>
+          <Badge size="lg" bdrs="sm" color="blue" title={`Server version: ${version}`} leftSection={<CubeIcon />}>
+            {version}
+          </Badge>
+          {renderTags(tags)}
+        </Group>
+        <Group>{renderScenarios(scenarios)}</Group>
 
-        {!!address && <ClipboardControlGroup value={address} />}
-      </div>
-      <div className="match-details__extra-info">
-        <label className={Classes.LABEL}>
-          PVP @
-          <input
-            className={`${Classes.INPUT} ${Classes.FILL}`}
-            type="text"
-            value={`${pvpEnabledAt} minutes`}
-            readOnly
-          />
-        </label>
+        <Group>
+          <TextInput flex={1} label="PVP @" value={`${pvpEnabledAt} minutes`} readOnly />
+          <TextInput flex={1} label="Meetup @" value={`${length} minutes`} readOnly />
+          <TextInput flex={1} label="Map" value={`${mapSize} x ${mapSize}`} readOnly />
+          <TextInput flex={1} label="Slots" value={`${slots} slots`} readOnly />
+        </Group>
 
-        <label className={Classes.LABEL}>
-          Meetup @
-          <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${length} minutes`} readOnly />
-        </label>
+        <Group justify="center">
+          {!!ip && <ClipboardControlGroup value={ip} label="IP Address" />}
 
-        <label className={Classes.LABEL}>
-          Map
-          <input
-            className={`${Classes.INPUT} ${Classes.FILL}`}
-            type="text"
-            value={`${mapSize} x ${mapSize}`}
-            readOnly
-          />
-        </label>
-        <label className={Classes.LABEL}>
-          Slots
-          <input className={`${Classes.INPUT} ${Classes.FILL}`} type="text" value={`${slots} slots`} readOnly />
-        </label>
-      </div>
-      <div className="match-details__content">
-        <RemovedInfo match={data} />
-        {!removed && !!approvedBy && (
-          <div className={`${Classes.CALLOUT} ${Classes.INTENT_SUCCESS}`}>
-            <H5>
-              <CheckIcon /> Approved by /u/{approvedBy}
-            </H5>
-          </div>
-        )}
+          {!!address && <ClipboardControlGroup value={address} label="Server Address" />}
+        </Group>
 
-        {(canApprove || canRemove) && (
-          <div className={`${Classes.BUTTON_GROUP} ${Classes.MINIMAL} ${Classes.LARGE}`}>
-            {canApprove && (
-              <Button
-                intent={Intent.SUCCESS}
-                icon={<CheckIcon />}
-                title="Approve Match"
-                onClick={() => {
-                  setIsApproving(true);
-                }}
-              />
-            )}
-            {canRemove && (
-              <Button
-                intent={Intent.DANGER}
-                icon={<TrashIcon />}
-                onClick={() => {
-                  setIsRemoving(true);
-                }}
-                title="Remove"
-              />
-            )}
-          </div>
-        )}
+        <Group>
+          <RemovedInfo match={data} />
+          {!removed && !!approvedBy && (
+            <Alert flex={1} color="green" title={`Approved by /u/${approvedBy}`} icon={<CheckIcon />} />
+          )}
+        </Group>
+
+        {approvalsGroup}
+
         <Markdown markdown={content} />
+
         {isRemoving && (
           <RemovalModal
             id={data.id}
@@ -234,7 +217,9 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
             }}
           />
         )}
-      </div>
-    </div>
+
+        {approvalsGroup}
+      </Stack>
+    </Card>
   );
 };

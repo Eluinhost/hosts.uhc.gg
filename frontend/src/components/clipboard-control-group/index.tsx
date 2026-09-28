@@ -1,14 +1,15 @@
-import { Button, Classes, ControlGroup } from '@blueprintjs/core';
+import { ActionIcon, TextInput } from '@mantine/core';
 import { ClipboardIcon } from '@phosphor-icons/react';
 import React, { useCallback, useRef } from 'react';
 
 import { showToast } from '../../services/AppToaster';
 
-type Props = {
-  readonly value: string;
-};
+interface ClipboardControlGroupProps {
+  value: string;
+  label?: string;
+}
 
-export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
+export const ClipboardControlGroup: React.FC<ClipboardControlGroupProps> = ({ value, label }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const triggerCopy = useCallback(() => {
@@ -31,9 +32,17 @@ export const ClipboardControlGroup: React.FC<Props> = ({ value }) => {
   }, []);
 
   return (
-    <ControlGroup fill>
-      <input type="text" className={`${Classes.INPUT} ${Classes.LARGE}`} value={value} readOnly ref={inputRef} />
-      <Button size="large" variant="minimal" icon={<ClipboardIcon />} className={Classes.FIXED} onClick={triggerCopy} />
-    </ControlGroup>
+    <TextInput
+      size="lg"
+      value={value}
+      readOnly
+      ref={inputRef}
+      label={label}
+      rightSection={
+        <ActionIcon size="lg" bdrs={100} variant="subtle" color="green" onClick={triggerCopy}>
+          <ClipboardIcon />
+        </ActionIcon>
+      }
+    />
   );
 };

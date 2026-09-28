@@ -1,4 +1,4 @@
-import { Classes, Intent, Tag } from '@blueprintjs/core';
+import { Badge } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
@@ -21,8 +21,8 @@ export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, remov
   }
 
   return (
-    <Tag intent={Intent.DANGER} className={Classes.LARGE} title={removedAtFormatted || undefined}>
-      <WarningIcon /> REMOVED
-    </Tag>
+    <Badge bdrs="sm" color="red" size="lg" title={removedAtFormatted || undefined} leftSection={<WarningIcon />}>
+      REMOVED
+    </Badge>
   );
 };
