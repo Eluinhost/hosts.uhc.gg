@@ -8,8 +8,6 @@ import { ModifiersData } from '../api';
 import { CreateModifierForm } from './CreateModifierForm';
 import { ModifierEditorRow } from './ModifiersEditorRow';
 
-import './ModifiersEditor.sass';
-
 export const ModifiersEditor: React.FC = () => {
   const { data, isFetching, error, refetch } = useQuery(ModifiersData.getAllModifiers);
 

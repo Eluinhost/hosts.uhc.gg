@@ -11,8 +11,6 @@ import type { Match } from '../../models/Match';
 
 import { RefreshButton } from './RefreshButton';
 
-import './MatchListing.sass';
-
 type MatchListingProps = {
   readonly matches: Match[];
   readonly loading: boolean;
