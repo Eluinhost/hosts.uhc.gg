@@ -1,5 +1,4 @@
-import { Button, Callout, H5, InputGroup, Intent, NonIdealState, Spinner, Switch } from '@blueprintjs/core';
-import { Stack } from '@mantine/core';
+import { Alert, Button, EmptyState, Group, Loader, Switch, TextInput, Stack } from '@mantine/core';
 import { XIcon, MagnifyingGlassIcon, ArrowClockwiseIcon } from '@phosphor-icons/react';
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, useState } from 'react';
@@ -53,7 +52,7 @@ export const MatchListing: FC<MatchListingProps> = ({
   const noMatches = useMemo(
     () =>
       !loading && (
-        <NonIdealState
+        <EmptyState
           title="Nothing to see!"
           icon={<MagnifyingGlassIcon />}
           description="There are currently no matches"
@@ -96,7 +95,7 @@ export const MatchListing: FC<MatchListingProps> = ({
       return (
         <>
           Showing {showing} of {outOf}.
-          <Button variant="minimal" icon={<XIcon />} onClick={clearSearch} />
+          <Button variant="subtle" leftSection={<XIcon />} onClick={clearSearch} />
         </>
       );
     },
@@ -116,8 +115,8 @@ export const MatchListing: FC<MatchListingProps> = ({
   );
 
   return (
-    <div className="match-listing">
-      <div className="match-listing__filters">
+    <Stack mt="lg">
+      <Group>
         <Switch
           checked={hideRemoved}
           label="Hide Removed"
@@ -134,44 +133,42 @@ export const MatchListing: FC<MatchListingProps> = ({
             }}
           />
         )}
-      </div>
+      </Group>
 
-      <div className="match-listing__search">
-        <InputGroup
-          leftIcon={<MagnifyingGlassIcon />}
-          fill
+      <Group>
+        <TextInput
+          leftSection={<MagnifyingGlassIcon />}
           value={search}
           onChange={handleSearchChange}
           placeholder="Search"
-          rightElement={renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
+          size="lg"
+          rightSection={renderSearchTotals(afterSearchQuery.length, afterRemovedFilter.length)}
+          flex={1}
         />
         <RefreshButton lastUpdated={lastUpdated} onClick={refetch} loading={loading} />
-      </div>
+      </Group>
 
-      {!loading && !!error && (
-        <Callout intent={Intent.DANGER}>
-          <H5>{error.message}</H5>
-        </Callout>
-      )}
+      {!loading && !!error && <Alert color="red" title={error.message} />}
 
-      {loading && matches.length === 0 && <NonIdealState icon={<Spinner />} title="Loading..." />}
+      {loading && matches.length === 0 && <EmptyState icon={<Loader />} title="Loading..." />}
 
       <Stack gap="xl" mt="xl">
         {renderedMatches}
       </Stack>
 
       {hasMore && (
-        <div className="match-listing__footer-actions">
+        <Group justify="center">
           <Button
             loading={loading}
             disabled={loading}
             onClick={loadMore}
-            icon={<ArrowClockwiseIcon />}
-            intent={Intent.SUCCESS}
-            text="Load more"
-          />
-        </div>
+            leftSection={<ArrowClockwiseIcon />}
+            color="green"
+          >
+            Load more
+          </Button>
+        </Group>
       )}
-    </div>
+    </Stack>
   );
 };

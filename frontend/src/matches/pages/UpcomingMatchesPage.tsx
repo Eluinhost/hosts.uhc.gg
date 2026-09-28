@@ -1,4 +1,4 @@
-import { H1 } from '@blueprintjs/core';
+import { Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 
 import dayjs from '../../dayjs';
@@ -15,7 +15,7 @@ export const UpcomingMatchesPage = () => {
   return (
     <div>
       <title>uhc.gg | Upcoming Matches</title>
-      <H1>Upcoming Matches</H1>
+      <Title order={1}>Upcoming Matches</Title>
       <MatchListing
         matches={data ?? []}
         error={error}
