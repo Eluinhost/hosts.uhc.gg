@@ -1,6 +1,6 @@
 import { ActionIcon, TextInput } from '@mantine/core';
 import { ClipboardIcon } from '@phosphor-icons/react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 
 import { showToast } from '../../services/AppToaster';
 
@@ -10,16 +10,12 @@ interface ClipboardControlGroupProps {
 }
 
 export const ClipboardControlGroup: React.FC<ClipboardControlGroupProps> = ({ value, label }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const triggerCopy = useCallback(() => {
+  const triggerCopy = useCallback(async () => {
     try {
-      inputRef.current?.select();
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      document.execCommand('copy');
+      await navigator.clipboard.writeText(value);
       showToast({
         color: 'green',
-        message: `Added \`${inputRef.current?.value}\` to clipboard`,
+        message: `Added \`${value}\` to clipboard`,
       });
     } catch (e) {
       console.error(e);
@@ -29,17 +25,24 @@ export const ClipboardControlGroup: React.FC<ClipboardControlGroupProps> = ({ va
         message: 'Your browser does not support copy, you must copy manually',
       });
     }
-  }, []);
+  }, [value]);
 
   return (
     <TextInput
       size="lg"
       value={value}
       readOnly
-      ref={inputRef}
       label={label}
       rightSection={
-        <ActionIcon size="lg" bdrs={100} variant="subtle" color="green" onClick={triggerCopy}>
+        <ActionIcon
+          size="lg"
+          bdrs={100}
+          variant="subtle"
+          color="green"
+          onClick={() => {
+            void triggerCopy();
+          }}
+        >
           <ClipboardIcon />
         </ActionIcon>
       }
