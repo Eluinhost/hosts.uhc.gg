@@ -14,11 +14,7 @@
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "paths": {
-      "react-redux-original": ["./node_modules/react-redux"],
-      "react-redux": ["./src/react-redux"]
-    }
+    "jsx": "react-jsx"
   },
   "include": ["src", "typings"]
 }
