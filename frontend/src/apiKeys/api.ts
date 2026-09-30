@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 
@@ -8,8 +8,8 @@ export const ApiKeysData = {
     queryKey: ['apiKey'],
     queryFn: ({ signal }) =>
       apiClient.get('/api/key', { signal }).json(
-        enforce.shape({
-          key: enforce.anyOf(enforce.isString(), enforce.isNull()),
+        v.object({
+          key: v.nullable(v.string()),
         }),
       ),
   }),
@@ -20,8 +20,8 @@ export const ApiKeysData = {
       return useMutation({
         mutationFn: async () => {
           const result = await apiClient.post('/api/key', { signal: null }).json(
-            enforce.shape({
-              key: enforce.isString(),
+            v.object({
+              key: v.string(),
             }),
           );
 

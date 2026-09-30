@@ -227,9 +227,9 @@ importers:
       react-router:
         specifier: 8.4.0
         version: 8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      vest:
-        specifier: 6.3.2
-        version: 6.3.2
+      valibot:
+        specifier: 1.5.0
+        version: 1.5.0(typescript@6.0.3)
     devDependencies:
       '@eslint/js':
         specifier: 9.39.5
@@ -1903,9 +1903,6 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  context@4.0.17:
-    resolution: {integrity: sha512-SM/Rmr9egp0N3+t0kfIFz1Dayfcl+8bussTdW0lw9gU+KUe3v+QPVyxvr+KzVx13U5Ac0dCdjGacWION6NuRUQ==}
-
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
@@ -2632,9 +2629,6 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  n4s@6.2.1:
-    resolution: {integrity: sha512-j1kYy6fD0wfIsvUiaSnKGQxKJ9ZWJDwwbX8muh2/Y1j+qDADFc+e/Ggy/Hvj3dYU3zQsvuSpViOsNY/nkNCDZQ==}
-
   nanoid@3.3.19:
     resolution: {integrity: sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -3163,14 +3157,13 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  vest-utils@2.0.17:
-    resolution: {integrity: sha512-12gNz4I3oXKO12sp4B0UBgY1b/m4Zmd7e7x1EDQkIDf/N+DHCOk1h16YGM6g/zZS1ZoJMvL35SADcEsZ+YMN3g==}
-
-  vest@6.3.2:
-    resolution: {integrity: sha512-gpXsKohvbntw2Z4VKNw04tax3EG4Av7z/8JyAe5qmpRUn2mxzPUh2OhmEf485i8v+oiCH49R+R6owVHYYlreGw==}
-
-  vestjs-runtime@2.0.17:
-    resolution: {integrity: sha512-6U2jLwvqtVSOE/kS0YFDZFLBT6a5TJEod787MVE4w691M32bW0y8uWZWquIJ7a96929/p/afH5lcVt4XGef1YQ==}
+  valibot@1.5.0:
+    resolution: {integrity: sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   vite@8.3.1:
     resolution: {integrity: sha512-/bvH9E9tmCXRGp2uXY3WbOldqpTwFkbha/8ANaEQ6VkxhH60KyqLwgZq6lG2y+4uT55x9+9eUHMpQ7uGnOCKjA==}
@@ -4299,8 +4292,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.70.0(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.70.0(typescript@6.0.3)
-      '@typescript-eslint/types': 8.70.0
+      '@typescript-eslint/tsconfig-utils': 8.70.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.70.1
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -5242,10 +5235,6 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  context@4.0.17:
-    dependencies:
-      vest-utils: 2.0.17
-
   convert-source-map@2.0.0: {}
 
   cookie-es@3.1.1: {}
@@ -6067,11 +6056,6 @@ snapshots:
 
   ms@2.1.3: {}
 
-  n4s@6.2.1:
-    dependencies:
-      context: 4.0.17
-      vest-utils: 2.0.17
-
   nanoid@3.3.19: {}
 
   napi-postinstall@0.3.4: {}
@@ -6731,19 +6715,9 @@ snapshots:
     dependencies:
       react: 19.3.0
 
-  vest-utils@2.0.17: {}
-
-  vest@6.3.2:
-    dependencies:
-      context: 4.0.17
-      n4s: 6.2.1
-      vest-utils: 2.0.17
-      vestjs-runtime: 2.0.17
-
-  vestjs-runtime@2.0.17:
-    dependencies:
-      context: 4.0.17
-      vest-utils: 2.0.17
+  valibot@1.5.0(typescript@6.0.3):
+    optionalDependencies:
+      typescript: 6.0.3
 
   vite@8.3.1(@types/node@26.5.1)(jiti@1.21.7)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1):
     dependencies:

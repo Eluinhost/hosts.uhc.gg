@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 import dayjs, { type Dayjs } from '../dayjs';
@@ -13,21 +13,18 @@ export type HostingRules = {
 export const HostingRulesData = {
   fetchHostingRules: queryOptions({
     queryKey: ['hostingRules'],
-    queryFn: async ({ signal }): Promise<HostingRules> => {
-      const response = await apiClient.get('/api/rules', { signal }).json(
-        enforce.shape({
-          id: enforce.isNumber(),
-          content: enforce.isString(),
-          modified: enforce.isString(),
-          author: enforce.isString(),
+    queryFn: async ({ signal }): Promise<HostingRules> =>
+      apiClient.get('/api/rules', { signal }).json(
+        v.object({
+          id: v.number(),
+          content: v.string(),
+          modified: v.pipe(
+            v.string(),
+            v.transform(value => dayjs.utc(value)),
+          ),
+          author: v.string(),
         }),
-      );
-
-      return {
-        ...response,
-        modified: dayjs.utc(response.modified),
-      };
-    },
+      ),
   }),
   mutations: {
     useSetHostingRules: () => {

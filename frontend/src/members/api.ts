@@ -1,7 +1,7 @@
 import { WarningIcon } from '@phosphor-icons/react';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createElement } from 'react';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 import dayjs from '../dayjs';
@@ -28,47 +28,45 @@ export const MembersData = {
   fetchUserCountPerPermission: queryOptions({
     queryKey: [BASE_KEY, 'countPerPermission'],
     queryFn: async ({ signal }): Promise<UserCountPerPermission> =>
-      apiClient.get(`/api/permissions`, { signal }).json(enforce.record(enforce.isNumber())),
+      apiClient.get(`/api/permissions`, { signal }).json(v.record(v.string(), v.number())),
   }),
   fetchUsersInPermission: (permission: string) =>
     queryOptions({
       queryKey: [BASE_KEY, 'permissions', permission, 'users'],
       queryFn: async ({ signal }): Promise<UsersInPermission> =>
         apiClient.get(`/api/permissions/${permission}`, { signal }).json(
-          enforce.anyOf(
+          v.union([
             // count per letter
-            enforce.record(enforce.isNumber()),
+            v.record(v.string(), v.number()),
             // usernames
-            enforce.isArrayOf(enforce.isString()),
-          ),
+            v.array(v.string()),
+          ]),
         ),
     }),
   fetchUsersInPermissionLetter: (permission: string, letter: string) =>
     queryOptions({
       queryKey: [BASE_KEY, 'permissions', permission, 'letter', letter, 'users'],
       queryFn: async ({ signal }): Promise<Array<string>> =>
-        apiClient
-          .get(`/api/permissions/${permission}/${letter}`, { signal })
-          .json(enforce.isArrayOf(enforce.isString())),
+        apiClient.get(`/api/permissions/${permission}/${letter}`, { signal }).json(v.array(v.string())),
     }),
   fetchPermissionModerationLog: queryOptions({
     queryKey: [BASE_KEY, 'moderationLog'],
-    queryFn: async ({ signal }): Promise<Array<PermissionModerationLogEntry>> => {
-      const response = await apiClient.get(`/api/permissions/log`, { signal }).json(
-        enforce.isArrayOf(
-          enforce.shape({
-            id: enforce.isNumber(),
-            modifier: enforce.isString(),
-            username: enforce.isString(),
-            at: enforce.isString(),
-            permission: enforce.isString(),
-            added: enforce.isBoolean(),
+    queryFn: async ({ signal }): Promise<Array<PermissionModerationLogEntry>> =>
+      apiClient.get(`/api/permissions/log`, { signal }).json(
+        v.array(
+          v.object({
+            id: v.number(),
+            modifier: v.string(),
+            username: v.string(),
+            at: v.pipe(
+              v.string(),
+              v.transform(x => dayjs.utc(x)),
+            ),
+            permission: v.string(),
+            added: v.boolean(),
           }),
         ),
-      );
-
-      return response.map(x => ({ ...x, at: dayjs.utc(x.at) }));
-    },
+      ),
   }),
   mutations: {
     useAddPermission: () => {

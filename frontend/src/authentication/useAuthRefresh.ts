@@ -1,7 +1,7 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { getDefaultStore, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 import {
@@ -14,9 +14,9 @@ import dayjs from '../dayjs';
 
 const store = getDefaultStore();
 
-const tokensSchema = enforce.shape({
-  accessToken: enforce.isString(),
-  refreshToken: enforce.isString(),
+const tokensSchema = v.object({
+  accessToken: v.string(),
+  refreshToken: v.string(),
 });
 
 export const useAuthRefresh = () => {
@@ -63,7 +63,7 @@ export const useAuthRefresh = () => {
               },
               signal,
             })
-            .json(enforce.anyOf(enforce.isNull(), tokensSchema));
+            .json(v.nullable(tokensSchema));
 
           store.set(authenticationAtom, data);
 

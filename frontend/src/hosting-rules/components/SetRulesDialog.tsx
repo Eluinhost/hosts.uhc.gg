@@ -1,24 +1,15 @@
 import { Button, Group, Modal, Stack } from '@mantine/core';
 import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
-import { create, enforce, test } from 'vest';
+import * as v from 'valibot';
 
 import { useAppForm } from '../../forms/useAppForm';
 import { HostingRulesData } from '../api';
 
 import { RulesField } from './RulesField';
 
-const schema = enforce.shape({
-  rules: enforce.isString(),
+const schema = v.object({
+  rules: v.pipe(v.string(), v.nonEmpty('This field is required'), v.minLength(3, 'Must be at least 3 characters long')),
 });
-
-const suite = create(data => {
-  test('rules', 'This field is required', () => {
-    enforce(data.rules).isString().isNotEmpty();
-  });
-  test('rules', 'Must be at least 3 characters long', () => {
-    enforce(data.rules).isString().min(3);
-  });
-}, schema);
 
 export const SetRulesDialog = ({ current, onClose }: { current: string; onClose: () => void }) => {
   const { mutateAsync } = HostingRulesData.mutations.useSetHostingRules();
@@ -27,7 +18,7 @@ export const SetRulesDialog = ({ current, onClose }: { current: string; onClose:
     defaultValues: { rules: current },
     validators: [
       {
-        run: suite,
+        run: schema,
         triggers: ['change'],
       },
     ],

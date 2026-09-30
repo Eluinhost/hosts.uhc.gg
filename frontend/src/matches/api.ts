@@ -3,7 +3,7 @@ import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from 
 import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import { createElement } from 'react';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 import { usernameAtom } from '../atoms/authentication';
@@ -12,67 +12,64 @@ import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 import { showToast } from '../services/AppToaster';
 
-const singleMatchSchema = enforce.shape({
-  id: enforce.isNumber(),
-  author: enforce.isString(),
-  opens: enforce.isString(),
-  address: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  ip: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  scenarios: enforce.isArrayOf(enforce.isString()),
-  tags: enforce.isArrayOf(enforce.isString()),
-  teams: enforce.isString(),
-  size: enforce.anyOf(enforce.isNull(), enforce.isNumber()),
-  customStyle: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  count: enforce.isNumber(),
-  content: enforce.isString(),
-  region: enforce.isString(),
-  removed: enforce.isBoolean(),
-  removedAt: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  removedBy: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  removedReason: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  created: enforce.isString(),
-  location: enforce.isString(),
-  version: enforce.isString(),
-  slots: enforce.isNumber(),
-  length: enforce.isNumber(),
-  mapSize: enforce.isNumber(),
-  pvpEnabledAt: enforce.isNumber(),
-  approvedBy: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  hostingName: enforce.anyOf(enforce.isNull(), enforce.isString()),
-  tournament: enforce.isBoolean(),
-  roles: enforce.isArrayOf(enforce.isString()),
-});
-
-const transformMatch = (match: ReturnType<(typeof singleMatchSchema)['parse']>): Match => ({
-  ...match,
-  opens: dayjs.utc(match.opens),
-  created: dayjs.utc(match.created),
-  removedAt: match.removedAt ? dayjs.utc(match.removedAt) : null,
+const singleMatchSchema = v.object({
+  id: v.number(),
+  author: v.string(),
+  opens: v.pipe(
+    v.string(),
+    v.transform(value => dayjs.utc(value)),
+  ),
+  address: v.nullable(v.string()),
+  ip: v.nullable(v.string()),
+  scenarios: v.array(v.string()),
+  tags: v.array(v.string()),
+  teams: v.string(),
+  size: v.nullable(v.number()),
+  customStyle: v.nullable(v.string()),
+  count: v.number(),
+  content: v.string(),
+  region: v.string(),
+  removed: v.boolean(),
+  removedAt: v.nullable(
+    v.pipe(
+      v.string(),
+      v.transform(value => dayjs.utc(value)),
+    ),
+  ),
+  removedBy: v.nullable(v.string()),
+  removedReason: v.nullable(v.string()),
+  created: v.pipe(
+    v.string(),
+    v.transform(value => dayjs.utc(value)),
+  ),
+  location: v.string(),
+  version: v.string(),
+  slots: v.number(),
+  length: v.number(),
+  mapSize: v.number(),
+  pvpEnabledAt: v.number(),
+  approvedBy: v.nullable(v.string()),
+  hostingName: v.nullable(v.string()),
+  tournament: v.boolean(),
+  roles: v.array(v.string()),
 });
 
 export const MatchesData = {
   upcoming: queryOptions({
     queryKey: ['matches', 'upcoming'],
-    queryFn: async ({ signal }) => {
-      const data = await apiClient.get('/api/matches/upcoming', { signal }).json(enforce.isArrayOf(singleMatchSchema));
-
-      return data.map(transformMatch);
-    },
+    queryFn: async ({ signal }) => apiClient.get('/api/matches/upcoming', { signal }).json(v.array(singleMatchSchema)),
     refetchInterval: 60 * 1000,
   }),
   hostHistory: (username: string) =>
     infiniteQueryOptions({
       queryKey: ['matches', 'hostHistory', username],
-      queryFn: async ({ signal, pageParam }) => {
-        const data = await apiClient
+      queryFn: async ({ signal, pageParam }) =>
+        apiClient
           .get(`/api/hosts/${username}/matches`, {
             searchParams: { before: pageParam },
             signal,
           })
-          .json(enforce.isArrayOf(singleMatchSchema));
-
-        return data.map(transformMatch);
-      },
+          .json(v.array(singleMatchSchema)),
       initialPageParam: undefined as number | undefined,
       getNextPageParam: lastPage => {
         // using default page size of 20, so if less than 20 items in the page we're at the end
@@ -94,18 +91,14 @@ export const MatchesData = {
         // matches default 'try 3 times'
         return failureCount < 2;
       },
-      queryFn: async ({ signal }) => {
-        const data = await apiClient.get<Match>(`/api/matches/${id}`, { signal }).json(singleMatchSchema);
-
-        return transformMatch(data);
-      },
+      queryFn: async ({ signal }) => apiClient.get<Match>(`/api/matches/${id}`, { signal }).json(singleMatchSchema),
     }),
   getPotentialConflicts: (region: string, time: Dayjs, version: string) =>
     queryOptions({
       gcTime: 0,
       queryKey: ['potentialConflicts', { region, time, version }],
-      queryFn: async ({ signal }) => {
-        const result = await apiClient
+      queryFn: async ({ signal }) =>
+        apiClient
           .get('/api/matches/conflicts', {
             searchParams: {
               region,
@@ -114,10 +107,7 @@ export const MatchesData = {
             },
             signal,
           })
-          .json(enforce.isArrayOf(singleMatchSchema));
-
-        return result.map(transformMatch);
-      },
+          .json(v.array(singleMatchSchema)),
     }),
   mutations: {
     useCreateMatch: () => {

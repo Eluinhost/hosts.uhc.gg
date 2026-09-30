@@ -1,41 +1,37 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
-import { isValueOf } from '../forms/rules';
 
 import { HostApplicationStatus, type SubmitAnswerData } from './HostApplication';
 
-const commonFields = {
-  id: enforce.isNumber(),
-  username: enforce.isString(),
-  created: enforce.isString(),
-  status: isValueOf(HostApplicationStatus),
-  reviewedBy: enforce.anyOf(enforce.isString(), enforce.isNull()),
-  reviewedAt: enforce.anyOf(enforce.isString(), enforce.isNull()),
-  reviewReason: enforce.anyOf(enforce.isString(), enforce.isNull()),
-};
-
-const hostApplication = enforce.shape(commonFields);
-
-const hostApplicationAnswer = enforce.shape({
-  questionPrompt: enforce.isString(),
-  questionType: enforce.isString().inside(['multiple choice', 'text']),
-  choiceText: enforce.anyOf(enforce.isString(), enforce.isNull()),
-  choiceCorrect: enforce.anyOf(enforce.isBoolean(), enforce.isNull()),
-  textAnswer: enforce.anyOf(enforce.isString(), enforce.isNull()),
+const hostApplication = v.object({
+  id: v.number(),
+  username: v.string(),
+  created: v.string(),
+  status: v.enum(HostApplicationStatus),
+  reviewedBy: v.nullable(v.string()),
+  reviewedAt: v.nullable(v.string()),
+  reviewReason: v.nullable(v.string()),
 });
 
-const hostApplicationDetails = enforce.shape({
-  ...commonFields,
-  answers: enforce.isArrayOf(hostApplicationAnswer),
+const hostApplicationAnswer = v.object({
+  questionPrompt: v.string(),
+  questionType: v.pipe(v.string(), v.picklist(['multiple choice', 'text'])),
+  choiceText: v.nullable(v.string()),
+  choiceCorrect: v.nullable(v.boolean()),
+  textAnswer: v.nullable(v.string()),
+});
+
+const hostApplicationDetails = v.object({
+  ...hostApplication.entries,
+  answers: v.array(hostApplicationAnswer),
 });
 
 export const HostApplicationsData = {
   getAll: queryOptions({
     queryKey: ['hostApplications', 'list'],
-    queryFn: ({ signal }) =>
-      apiClient.get('/api/host-applications', { signal }).json(enforce.isArrayOf(hostApplication)),
+    queryFn: ({ signal }) => apiClient.get('/api/host-applications', { signal }).json(v.array(hostApplication)),
   }),
   getById: (id: number) =>
     queryOptions({

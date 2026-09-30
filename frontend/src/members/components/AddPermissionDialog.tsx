@@ -1,19 +1,13 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
-import { enforce, create, test } from 'vest';
+import * as v from 'valibot';
 
 import { useAppForm } from '../../forms/useAppForm';
 import { MembersData } from '../api';
 
-const schema = enforce.shape({
-  username: enforce.isString(),
+const schema = v.object({
+  username: v.pipe(v.string(), v.minLength(1, 'This field is required')),
 });
-
-const suite = create(data => {
-  test('username', 'This field is required', () => {
-    enforce(data.username).isString().min(1);
-  });
-}, schema);
 
 export interface AddPermissionDialogProps {
   permission: string;
@@ -29,7 +23,7 @@ export const AddPermissionDialog = ({ permission, onClose }: AddPermissionDialog
     },
     validators: [
       {
-        run: suite,
+        run: schema,
         triggers: ['change'],
       },
     ],

@@ -24,7 +24,7 @@ import { defaultPreset } from './defaultPreset';
 import styles from './index.module.css';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { applyScenarioRules } from './scenarioRules';
-import { suite } from './schema';
+import { withOpeningTimeValidation } from './schema';
 import { renderToMarkdown, type TemplateContext } from './TemplateField';
 
 const createTemplateContext = (values: CreateMatchData, author: string): TemplateContext => {
@@ -79,13 +79,14 @@ export const HostingPage: React.FC = () => {
     opens: nextAvailableSlot().tz(timezone),
   }));
 
+  const schema = useMemo(() => withOpeningTimeValidation(), []);
+
   const form = useAppForm({
     defaultValues,
     validators: [
       {
-        run: suite,
+        run: schema,
         triggers: ['change'],
-        triggerDebounceMs: 200,
       },
     ],
     onSubmit: async state => {

@@ -1,19 +1,13 @@
 import { ActionIcon } from '@mantine/core';
 import { ArrowUpIcon } from '@phosphor-icons/react';
-import { create, enforce, test } from 'vest';
+import * as v from 'valibot';
 
 import { useAppForm } from '../../forms/useAppForm';
 import { ModifiersData } from '../api';
 
-const schema = enforce.shape({
-  modifier: enforce.isString(),
+const schema = v.object({
+  modifier: v.pipe(v.string(), v.nonEmpty('This field is required')),
 });
-
-const suite = create(data => {
-  test('modifier', 'This field is required', () => {
-    enforce(data.modifier).isString().isNotEmpty();
-  });
-}, schema);
 
 export const CreateModifierForm = ({ existing }: { existing: Array<string> }) => {
   const { mutateAsync } = ModifiersData.mutations.useCreateModifier();
@@ -24,7 +18,7 @@ export const CreateModifierForm = ({ existing }: { existing: Array<string> }) =>
     },
     validators: [
       {
-        run: suite,
+        run: schema,
         triggers: ['change'],
       },
       {

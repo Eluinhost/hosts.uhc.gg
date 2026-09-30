@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { enforce } from 'vest';
+import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
 import { showToast } from '../services/AppToaster';
@@ -13,10 +13,10 @@ export const ModifiersData = {
     queryKey: [BASE_KEY],
     queryFn: ({ signal }): Promise<Modifier[]> =>
       apiClient.get('/api/modifiers', { signal }).json(
-        enforce.isArrayOf(
-          enforce.shape({
-            id: enforce.isNumber(),
-            displayName: enforce.isString(),
+        v.array(
+          v.object({
+            id: v.number(),
+            displayName: v.string(),
           }),
         ),
       ),
@@ -54,9 +54,9 @@ export const ModifiersData = {
               signal: null,
             })
             .json(
-              enforce.shape({
-                id: enforce.isNumber(),
-                displayName: enforce.isString(),
+              v.object({
+                id: v.number(),
+                displayName: v.string(),
               }),
             ),
         onSuccess: () => {

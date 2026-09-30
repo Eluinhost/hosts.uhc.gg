@@ -1,27 +1,19 @@
 import { Button, Group, Modal, Stack, Title } from '@mantine/core';
 import { ArrowLeftIcon, TrashIcon } from '@phosphor-icons/react';
 import React from 'react';
-import { enforce, test, create } from 'vest';
+import * as v from 'valibot';
 
 import { useAppForm } from '../../forms/useAppForm';
 import { MatchesData } from '../../matches/api';
 import { showToast } from '../../services/AppToaster';
 
-const schema = enforce.shape({
-  reason: enforce.isString(),
+const schema = v.object({
+  reason: v.pipe(
+    v.string(),
+    v.minLength(3, 'Must be at least 3 characters long'),
+    v.maxLength(256, 'Must be at most 256 characters long'),
+  ),
 });
-
-const suite = create(data => {
-  test('reason', 'This field is required', () => {
-    enforce(data.reason).isString().min(1);
-  });
-  test('reason', 'Must be at least 3 characters long', () => {
-    enforce(data.reason).isString().min(3);
-  });
-  test('reason', 'Must be at most 256 characters long', () => {
-    enforce(data.reason).isString().max(256);
-  });
-}, schema);
 
 export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
   const { mutateAsync } = MatchesData.mutations.useRemoveMatch();
@@ -30,7 +22,7 @@ export const RemovalModal: React.FC<{ id: number; onClose: () => void }> = ({ id
     defaultValues: { reason: '' },
     validators: [
       {
-        run: suite,
+        run: schema,
         triggers: ['change'],
       },
     ],
