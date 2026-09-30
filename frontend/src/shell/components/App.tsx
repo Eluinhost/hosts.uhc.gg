@@ -2,7 +2,7 @@ import { Container, EmptyState, Loader, Stack } from '@mantine/core';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { type PropsWithChildren, lazy, Suspense, useEffect } from 'react';
-import * as reactGa from 'react-ga';
+import reactGa from 'react-ga4';
 import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '@/authentication/atoms/authentication';
@@ -14,7 +14,7 @@ import { Footer } from '@/shell/components/Footer';
 import { Navbar } from '@/shell/components/Navbar';
 import { TimeSettings } from '@/time/components/TimeSettings';
 
-reactGa.initialize('UA-71696797-2');
+reactGa.initialize('G-J9VRXDDL1P');
 
 const HostingPage = lazy(() => import('@/host/HostingPage').then(m => ({ default: m.HostingPage })));
 const MatchDetailsPage = lazy(() =>
@@ -89,7 +89,10 @@ const AppRoutes: React.FC = () => {
     const path = pathname + search;
 
     reactGa.set({ page: path });
-    reactGa.pageview(path);
+    reactGa.send({
+      hitType: 'pageview',
+      page: path,
+    });
   }, [pathname, search]);
 
   return (
