@@ -1,5 +1,5 @@
+import { Link } from '@tanstack/react-router';
 import React from 'react';
-import { Link } from 'react-router';
 
 export type UsernameLinkProps = {
   readonly username: string;
@@ -11,7 +11,7 @@ const stopProp = (e: React.MouseEvent) => {
 };
 
 export const UsernameLink: React.FunctionComponent<UsernameLinkProps> = ({ username, override }) => (
-  <Link to={`/matches/${username}`} onClick={stopProp}>
+  <Link to="/matches/$host" params={{ host: username }} onClick={stopProp}>
     {override || `/u/${username}`}
   </Link>
 );

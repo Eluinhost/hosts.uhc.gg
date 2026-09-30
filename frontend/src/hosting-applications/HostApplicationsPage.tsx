@@ -1,9 +1,9 @@
 import { Button, Alert, Title, EmptyState, Loader, Stack, Group } from '@mantine/core';
 import { PlusIcon, FileTextIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
-import { Link } from 'react-router';
 
 import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '@/authentication/atoms/authentication';
 import { HostApplicationsData } from '@/hosting-applications/api';

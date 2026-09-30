@@ -15,7 +15,7 @@ type MatchListingProps = {
   readonly loading: boolean;
   readonly error: Error | null;
   readonly refetch: () => void;
-  readonly loadMore: () => void;
+  readonly loadMore?: () => void;
   readonly lastUpdated: Dayjs | null;
   readonly hasMore: boolean;
   readonly disableRemove?: boolean;
@@ -153,7 +153,7 @@ export const MatchListing: FC<MatchListingProps> = ({
         {renderedMatches}
       </Stack>
 
-      {hasMore && (
+      {hasMore && loadMore && (
         <Group justify="center">
           <Button
             loading={loading}

@@ -1,6 +1,7 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 const formDevTools = formDevtoolsPlugin();
 
@@ -9,6 +10,7 @@ export function DevTools() {
     <>
       <ReactQueryDevtools />
       <TanStackDevtools plugins={[formDevTools]} />
+      <TanStackRouterDevtools />
     </>
   );
 }

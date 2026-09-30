@@ -1,7 +1,7 @@
 import { Anchor, Button } from '@mantine/core';
 import { UserIcon } from '@phosphor-icons/react';
+import { useLocation } from '@tanstack/react-router';
 import React from 'react';
-import { useLocation } from 'react-router';
 
 export const LoginButton: React.FC = () => {
   const location = useLocation();

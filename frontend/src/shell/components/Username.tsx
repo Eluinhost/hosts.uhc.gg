@@ -1,8 +1,8 @@
 import { Menu, Button } from '@mantine/core';
 import { UserIcon, GearIcon, SignOutIcon } from '@phosphor-icons/react';
+import { useNavigate, Link } from '@tanstack/react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
-import { useNavigate, Link } from 'react-router';
 
 import { authenticationAtom, isLoggedInAtom, usernameAtom } from '@/authentication/atoms/authentication';
 import { LoginButton } from '@/shell/components/LoginButton';
@@ -15,7 +15,7 @@ export const Username: React.FC = () => {
 
   const logout = useCallback(() => {
     setAuthentication(null);
-    void navigate('/');
+    void navigate({ to: '/' });
   }, [setAuthentication, navigate]);
 
   if (isLoggedIn) {

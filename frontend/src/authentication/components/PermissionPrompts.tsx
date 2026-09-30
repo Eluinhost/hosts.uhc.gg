@@ -1,7 +1,7 @@
 import { EmptyState, Button } from '@mantine/core';
 import { PlusIcon, UserPlusIcon, WarningIcon } from '@phosphor-icons/react';
+import { Link } from '@tanstack/react-router';
 import React from 'react';
-import { Link } from 'react-router';
 
 import { LoginButton } from '@/shell/components/LoginButton';
 

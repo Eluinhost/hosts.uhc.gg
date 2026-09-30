@@ -1,8 +1,8 @@
 import { Badge, Card, Group, Stack, Title, Text, ActionIcon } from '@mantine/core';
 import { ChartBarIcon, CheckIcon, CubeIcon, TagIcon, TrashIcon, UsersIcon } from '@phosphor-icons/react';
+import { Link } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
-import { Link } from 'react-router';
 
 import { permissionsAtom, usernameAtom } from '@/authentication/atoms/authentication';
 import { HostStatus } from '@/components/HostStatus';
@@ -181,7 +181,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
 
   return (
     <>
-      <Link to={`/m/${match.id}`} className="match-row-link">
+      <Link to="/m/$id" params={{ id: match.id.toString(10) }}>
         {card}
       </Link>
       {removal}

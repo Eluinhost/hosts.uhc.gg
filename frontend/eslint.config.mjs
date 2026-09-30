@@ -14,7 +14,7 @@ import requireAtomWithStorageGetoninit from './eslint/rules/require-atom-with-st
 const { parserOptions: a11yParserOptions, ...a11yRecommended } = jsxA11y.configs.recommended;
 
 export default tseslint.config(
-  { ignores: ['build/**'] },
+  { ignores: ['build/**', 'src/routeTree.gen.ts'] },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   react.configs.flat.recommended,

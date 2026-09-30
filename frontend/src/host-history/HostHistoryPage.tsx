@@ -1,23 +1,14 @@
 import { Title } from '@mantine/core';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
 
 import dayjs from '@/dayjs';
 import { MatchesData } from '@/matches/api';
 import { MatchListing } from '@/matches/components/MatchListing';
 
-type RouteParams = {
-  readonly host: string;
-};
-
-export const HistoryPage = () => {
-  const { host } = useParams<RouteParams>();
-  const { data, error, isPending, hasNextPage, fetchNextPage, refetch, dataUpdatedAt } = useInfiniteQuery({
-    enabled: !!host,
-    ...MatchesData.hostHistory(host ?? ''),
-  });
-
-  if (!host) return null;
+export const HostHistoryPage = ({ host }: { host: string }) => {
+  const { data, error, isPending, hasNextPage, fetchNextPage, refetch, dataUpdatedAt } = useInfiniteQuery(
+    MatchesData.hostHistory(host),
+  );
 
   return (
     <div>

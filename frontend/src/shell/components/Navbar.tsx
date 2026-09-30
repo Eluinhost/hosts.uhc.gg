@@ -9,10 +9,10 @@ import {
   ToggleLeftIcon,
   UsersIcon,
 } from '@phosphor-icons/react';
+import { useLocation, Link } from '@tanstack/react-router';
 import { clsx } from 'clsx';
 import { useAtom } from 'jotai';
 import React, { type ReactNode } from 'react';
-import { useLocation, Link } from 'react-router';
 
 import { isDarkModeAtom } from '@/atoms/isDarkMode';
 import { WithPermission } from '@/authentication/components/WithPermission';

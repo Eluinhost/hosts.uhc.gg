@@ -1,43 +1,38 @@
 import { EmptyState } from '@mantine/core';
 import { WarningIcon } from '@phosphor-icons/react';
+import { useNavigate } from '@tanstack/react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-import qs from 'query-string';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 
 import { authenticationAtom, isLoggedInAtom } from '@/authentication/atoms/authentication';
 
 const InvalidToken: React.FunctionComponent = () => <EmptyState title="Invalid login token" icon={<WarningIcon />} />;
 
-const zeroth = (t: string | (string | null)[] | null | undefined): string | null | undefined =>
-  Array.isArray(t) ? t[0] : t;
+export interface LoginPageProps {
+  path: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+}
 
-export const LoginPage: React.FC = () => {
+export const LoginPage = ({ path, accessToken, refreshToken }: LoginPageProps) => {
   const loggedIn = useAtomValue(isLoggedInAtom);
   const setAuthentication = useSetAtom(authenticationAtom);
-  const location = useLocation();
   const navigate = useNavigate();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
   useEffect(() => {
     if (loggedIn) {
-      void navigate(redirectPath || '/');
+      void navigate({ to: redirectPath || '/', replace: true });
     }
   }, [loggedIn, redirectPath, navigate]);
 
   useEffect(() => {
-    const { path, token, refresh } = qs.parse(location.search);
-
-    const redirectPath = zeroth(path);
-    const accessToken = zeroth(token);
-    const refreshToken = zeroth(refresh);
-
-    if (redirectPath && accessToken && refreshToken && redirectPath.startsWith('/')) {
+    if (path && accessToken && refreshToken && path.startsWith('/')) {
       setAuthentication({ accessToken, refreshToken });
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRedirectPath(redirectPath);
     } else {
-      console.error('Invalid token parameters', path, token, refresh);
+      console.error('Invalid token parameters', path, accessToken, refreshToken);
     }
     // make sure it runs just once to match old componentDidMount
     // eslint-disable-next-line react-hooks/exhaustive-deps

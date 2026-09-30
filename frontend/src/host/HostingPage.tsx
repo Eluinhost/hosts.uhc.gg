@@ -1,10 +1,10 @@
 import { Alert, Box, Button, Fieldset, Group, InputWrapper, Stack } from '@mantine/core';
 import { CloudArrowUpIcon, WarningIcon } from '@phosphor-icons/react';
 import { useDebouncedCallback, useDebouncedValue } from '@tanstack/react-pacer';
+import { useNavigate } from '@tanstack/react-router';
 import { useAtom, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 
 import { timezoneAtom } from '@/atoms/timezone';
 import { permissionsAtom, usernameAtom } from '@/authentication/atoms/authentication';
@@ -105,7 +105,7 @@ export const HostingPage: React.FC = () => {
       }
 
       // if success send them to the matches page to view it
-      void navigate('/matches');
+      void navigate({ to: '/matches' });
     },
   });
 

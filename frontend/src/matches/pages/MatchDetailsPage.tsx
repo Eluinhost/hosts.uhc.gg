@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router';
+import { useState } from 'react';
 
 import { ApprovalModal } from '@/matches/components/ApprovalModal';
 import { MatchDetails } from '@/matches/components/MatchDetails';
 
-export type MatchDetailsPageParams = {
-  id: string | undefined;
-};
+export interface MatchDetailsPageProps {
+  id: number;
+}
 
-export const MatchDetailsPage: React.FC = () => {
-  const params = useParams<MatchDetailsPageParams>();
+export const MatchDetailsPage = ({ id }: MatchDetailsPageProps) => {
   const [isApproving, setIsApproving] = useState(false);
-
-  if (!params.id) {
-    return null;
-  }
 
   return (
     <div>
-      <MatchDetails id={Number(params.id)} />
+      <MatchDetails id={id} />
       {isApproving && (
         <ApprovalModal
-          id={Number(params.id)}
+          id={id}
           onClose={() => {
             setIsApproving(false);
           }}

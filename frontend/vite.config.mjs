@@ -3,11 +3,17 @@ import { defineConfig } from 'vite';
 import jotaiBabel from 'jotai-babel/preset';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import babel from '@rolldown/plugin-babel';
+import tanstackRouter from '@tanstack/router-plugin/vite';
+
 import { caddyTemplateBlocks } from './vite/caddyTemplateBlocks.mjs';
 
 export default defineConfig({
   plugins: [
     caddyTemplateBlocks(),
+    tanstackRouter({
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
     react(),
     babel({
       presets: [reactCompilerPreset(), jotaiBabel],

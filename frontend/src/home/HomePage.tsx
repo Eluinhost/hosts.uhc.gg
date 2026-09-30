@@ -1,16 +1,8 @@
-import { Card, Stack, Title, Text } from '@mantine/core';
+import { Stack } from '@mantine/core';
 import React from 'react';
-import { Link } from 'react-router';
 
-import styles from '@/home/HomePage.module.css';
+import { HomePageLink } from '@/home/HomePageLink';
 import { HostingRules } from '@/hosting-rules/components/HostingRules';
-
-const HomePageLink = ({ to, title, text }: { to: string; title: string; text: string }) => (
-  <Card component={Link} to={to} withBorder shadow="sm" className={styles.homePageLink}>
-    <Title order={4}>{title}</Title>
-    <Text>{text}</Text>
-  </Card>
-);
 
 export const HomePage: React.FC = () => (
   <Stack w="100%" align="stretch">
