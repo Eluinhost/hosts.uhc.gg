@@ -115,6 +115,7 @@ export default tseslint.config(
       'no-restricted-imports': [
         'error',
         {
+          patterns: [{ group: ['./', '../'], message: 'Use @/ alias import instead' }],
           paths: [
             {
               name: 'react',

@@ -2,7 +2,7 @@ import { Tabs, Textarea } from '@mantine/core';
 import { ChatCircleIcon } from '@phosphor-icons/react';
 import type { FieldWithValue } from '@tanstack/react-form';
 
-import { Markdown } from '../../components/Markdown';
+import { Markdown } from '@/components/Markdown';
 
 export const RulesField = ({ field }: { field: FieldWithValue<string> }) => {
   return (

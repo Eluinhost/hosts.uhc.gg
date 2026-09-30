@@ -30,11 +30,11 @@ import { useAtom } from 'jotai';
 import * as Mark from 'markup-js';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Markdown } from '../../components/Markdown';
-import type { Dayjs } from '../../dayjs';
-import { presetsAtom } from '../atoms/presets';
-import { defaultPreset } from '../defaultPreset';
-import type { CreateMatchData } from '../schema';
+import { Markdown } from '@/components/Markdown';
+import type { Dayjs } from '@/dayjs';
+import { presetsAtom } from '@/host/atoms/presets';
+import { defaultPreset } from '@/host/defaultPreset';
+import type { CreateMatchData } from '@/host/schema';
 
 export type TemplateContext = CreateMatchData & { author: string };
 

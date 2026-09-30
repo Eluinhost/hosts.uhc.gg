@@ -4,7 +4,7 @@ import { type FieldWithValue } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
-import { VersionsData } from '../../versions/api';
+import { VersionsData } from '@/versions/api';
 
 export type VersionFieldProps = {
   field: FieldWithValue<string>;

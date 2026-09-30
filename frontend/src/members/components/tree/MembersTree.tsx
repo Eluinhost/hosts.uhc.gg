@@ -1,10 +1,9 @@
 import { List, Stack, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 
-import { MembersData } from '../../api';
-
-import { LoadingNode } from './LoadingNode';
-import { PermissionNode } from './PermissionNode';
+import { MembersData } from '@/members/api';
+import { LoadingNode } from '@/members/components/tree/LoadingNode';
+import { PermissionNode } from '@/members/components/tree/PermissionNode';
 
 export const MembersTree = () => {
   const { data, isFetching } = useQuery(MembersData.fetchUserCountPerPermission);

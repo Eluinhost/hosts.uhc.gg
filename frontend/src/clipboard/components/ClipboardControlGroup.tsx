@@ -2,7 +2,7 @@ import { ActionIcon, TextInput } from '@mantine/core';
 import { ClipboardIcon } from '@phosphor-icons/react';
 import React, { useCallback } from 'react';
 
-import { showToast } from '../../services/AppToaster';
+import { showToast } from '@/services/AppToaster';
 
 interface ClipboardControlGroupProps {
   value: string;

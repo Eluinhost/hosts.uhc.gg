@@ -1,9 +1,9 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../../apiClient';
-import dayjs from '../../dayjs';
-import { type CreateQuizQuestionData, QuestionType } from '../../models/QuizQuestion';
+import { apiClient } from '@/apiClient';
+import dayjs from '@/dayjs';
+import { type CreateQuizQuestionData, QuestionType } from '@/models/QuizQuestion';
 
 const quizChoiceSchema = v.object({
   id: v.number(),

@@ -3,11 +3,10 @@ import { CaretRightIcon, CaretUpDownIcon, ClockIcon, GearIcon } from '@phosphor-
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 
-import { is12hAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-
-import { CurrentTime } from './CurrentTime';
-import styles from './TimeSettings.module.css';
+import { is12hAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import { CurrentTime } from '@/time/components/CurrentTime';
+import styles from '@/time/components/TimeSettings.module.css';
 
 const tzs = Intl.supportedValuesOf('timeZone');
 

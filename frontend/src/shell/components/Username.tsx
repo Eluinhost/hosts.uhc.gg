@@ -4,9 +4,8 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
 import { useNavigate, Link } from 'react-router';
 
-import { authenticationAtom, isLoggedInAtom, usernameAtom } from '../../authentication/atoms/authentication';
-
-import { LoginButton } from './LoginButton';
+import { authenticationAtom, isLoggedInAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import { LoginButton } from '@/shell/components/LoginButton';
 
 export const Username: React.FC = () => {
   const setAuthentication = useSetAtom(authenticationAtom);

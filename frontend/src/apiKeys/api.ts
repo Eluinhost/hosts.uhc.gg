@@ -1,7 +1,7 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
+import { apiClient } from '@/apiClient';
 
 export const ApiKeysData = {
   apiKey: queryOptions({

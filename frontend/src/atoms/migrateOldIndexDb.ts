@@ -1,14 +1,13 @@
 import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 
-import { authenticationAtom } from '../authentication/atoms/authentication';
-import { hostFormDataAtom } from '../host/atoms/hostFormData';
-import { defaultPreset } from '../host/defaultPreset';
-import type { CreateMatchData } from '../host/schema';
-import { hideRemovedAtom, showOwnRemovedAtom } from '../matches/atoms/removedMatches';
-
-import { isDarkModeAtom } from './isDarkMode';
-import { is12hAtom } from './timeFormatting';
-import { timezoneAtom } from './timezone';
+import { isDarkModeAtom } from '@/atoms/isDarkMode';
+import { is12hAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import { authenticationAtom } from '@/authentication/atoms/authentication';
+import { hostFormDataAtom } from '@/host/atoms/hostFormData';
+import { defaultPreset } from '@/host/defaultPreset';
+import type { CreateMatchData } from '@/host/schema';
+import { hideRemovedAtom, showOwnRemovedAtom } from '@/matches/atoms/removedMatches';
 
 const DB_NAME = 'hosts-uhcgg-data';
 const STORE_NAME = 'hosts-uhcgg-data';

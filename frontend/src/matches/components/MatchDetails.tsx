@@ -15,20 +15,19 @@ import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useCallback, useState } from 'react';
 
-import { isHostingAdvisorAtom, usernameAtom } from '../../authentication/atoms/authentication';
-import { ClipboardControlGroup } from '../../clipboard/components/ClipboardControlGroup';
-import { HostStatus } from '../../components/HostStatus';
-import { Markdown } from '../../components/Markdown';
-import { UsernameLink } from '../../components/UsernameLink';
-import { MatchesData } from '../../matches/api';
-import { renderTeamStyle } from '../../models/TeamStyles';
-import { MatchOpens } from '../../time/components/MatchOpens';
-import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
-
-import { ApprovalModal } from './ApprovalModal';
-import { RemovalModal } from './RemovalModal';
-import { RemovedInfo } from './RemovedInfo';
-import { RemovedTag } from './RemovedTag';
+import { isHostingAdvisorAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import { ClipboardControlGroup } from '@/clipboard/components/ClipboardControlGroup';
+import { HostStatus } from '@/components/HostStatus';
+import { Markdown } from '@/components/Markdown';
+import { UsernameLink } from '@/components/UsernameLink';
+import { MatchesData } from '@/matches/api';
+import { ApprovalModal } from '@/matches/components/ApprovalModal';
+import { RemovalModal } from '@/matches/components/RemovalModal';
+import { RemovedInfo } from '@/matches/components/RemovedInfo';
+import { RemovedTag } from '@/matches/components/RemovedTag';
+import { renderTeamStyle } from '@/models/TeamStyles';
+import { MatchOpens } from '@/time/components/MatchOpens';
+import { TimeFromNowTag } from '@/time/components/TimeFromNowTag';
 
 export interface MatchDetailsProps {
   id: number;

@@ -3,7 +3,7 @@ import { PlusIcon, UserPlusIcon, WarningIcon } from '@phosphor-icons/react';
 import React from 'react';
 import { Link } from 'react-router';
 
-import { LoginButton } from '../../shell/components/LoginButton';
+import { LoginButton } from '@/shell/components/LoginButton';
 
 /**
  * Shown when the user is logged out, regardless of which permissions the page requires.

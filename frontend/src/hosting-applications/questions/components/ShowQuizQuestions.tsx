@@ -2,10 +2,9 @@ import { Title, Stack, EmptyState, Loader, Alert } from '@mantine/core';
 import { QuestionIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 
-import { QuizQuestionsData } from '../api';
-
-import { CreateQuizQuestionForm } from './CreateQuizQuestionForm';
-import { ExistingQuizQuestion } from './ExistingQuizQuestion';
+import { QuizQuestionsData } from '@/hosting-applications/questions/api';
+import { CreateQuizQuestionForm } from '@/hosting-applications/questions/components/CreateQuizQuestionForm';
+import { ExistingQuizQuestion } from '@/hosting-applications/questions/components/ExistingQuizQuestion';
 
 export const ShowQuizQuestions = () => {
   const { data, isFetching, error } = useQuery(QuizQuestionsData.getQuestionsForManagement);

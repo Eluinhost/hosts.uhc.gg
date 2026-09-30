@@ -2,8 +2,8 @@ import { Button, Badge, Stack, Modal, Group, Card, List } from '@mantine/core';
 import { TrashIcon } from '@phosphor-icons/react';
 import React, { useState } from 'react';
 
-import { type ManageQuizQuestion, QuestionType } from '../../../models/QuizQuestion';
-import { QuizQuestionsData } from '../api';
+import { QuizQuestionsData } from '@/hosting-applications/questions/api';
+import { type ManageQuizQuestion, QuestionType } from '@/models/QuizQuestion';
 
 interface ExistingQuizQuestionProps {
   question: ManageQuizQuestion;

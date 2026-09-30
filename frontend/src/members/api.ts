@@ -3,11 +3,11 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import { createElement } from 'react';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import dayjs from '../dayjs';
-import type { PermissionModerationLogEntry } from '../models/PermissionModerationLogEntry';
-import type { UserCountPerPermission, UsersInPermission } from '../models/Permissions';
-import { showToast } from '../services/AppToaster';
+import { apiClient } from '@/apiClient';
+import dayjs from '@/dayjs';
+import type { PermissionModerationLogEntry } from '@/models/PermissionModerationLogEntry';
+import type { UserCountPerPermission, UsersInPermission } from '@/models/Permissions';
+import { showToast } from '@/services/AppToaster';
 
 const BASE_KEY = 'members';
 

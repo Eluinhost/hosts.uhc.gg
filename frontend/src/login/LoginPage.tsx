@@ -5,7 +5,7 @@ import qs from 'query-string';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
-import { authenticationAtom, isLoggedInAtom } from '../authentication/atoms/authentication';
+import { authenticationAtom, isLoggedInAtom } from '@/authentication/atoms/authentication';
 
 const InvalidToken: React.FunctionComponent = () => <EmptyState title="Invalid login token" icon={<WarningIcon />} />;
 

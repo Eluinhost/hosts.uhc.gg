@@ -1,9 +1,8 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-
-import { HostApplicationStatus, type SubmitAnswerData } from './HostApplication';
+import { apiClient } from '@/apiClient';
+import { HostApplicationStatus, type SubmitAnswerData } from '@/hosting-applications/HostApplication';
 
 const hostApplication = v.object({
   id: v.number(),

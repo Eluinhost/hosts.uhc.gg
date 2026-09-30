@@ -4,10 +4,9 @@ import { useDebouncedValue } from '@tanstack/react-pacer';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { type Dayjs } from '../../dayjs';
-import { MatchesData } from '../../matches/api';
-
-import { MatchRow } from './MatchRow';
+import { type Dayjs } from '@/dayjs';
+import { MatchesData } from '@/matches/api';
+import { MatchRow } from '@/matches/components/MatchRow';
 
 export const PotentialConflicts: React.FC<{
   region: string;

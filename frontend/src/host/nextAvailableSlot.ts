@@ -1,4 +1,4 @@
-import dayjs, { type Dayjs } from '../dayjs';
+import dayjs, { type Dayjs } from '@/dayjs';
 
 export const nextAvailableSlot = (): Dayjs => {
   // set seconds + millis to zero and add 31 minutes to find the next whole minute in 30 minutes time

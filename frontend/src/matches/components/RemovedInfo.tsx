@@ -3,9 +3,9 @@ import { WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
 
-import { timeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Match } from '../../models/Match';
+import { timeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Match } from '@/models/Match';
 
 export const RemovedInfo: React.FC<{ match: Match }> = ({
   match: { removed, removedAt, removedBy, removedReason },

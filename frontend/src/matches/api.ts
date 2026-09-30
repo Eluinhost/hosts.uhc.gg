@@ -4,10 +4,10 @@ import { HTTPError } from 'ky';
 import { createElement } from 'react';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import dayjs, { type Dayjs } from '../dayjs';
-import type { Match } from '../models/Match';
-import { showToast } from '../services/AppToaster';
+import { apiClient } from '@/apiClient';
+import dayjs, { type Dayjs } from '@/dayjs';
+import type { Match } from '@/models/Match';
+import { showToast } from '@/services/AppToaster';
 
 const singleMatchSchema = v.object({
   id: v.number(),

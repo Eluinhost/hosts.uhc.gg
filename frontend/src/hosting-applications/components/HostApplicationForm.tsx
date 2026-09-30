@@ -2,9 +2,9 @@ import { Button, InputWrapper } from '@mantine/core';
 import { PlusIcon } from '@phosphor-icons/react';
 import React, { useMemo } from 'react';
 
-import { useAppForm } from '../../forms/useAppForm';
-import { QuestionType, type QuizQuestion } from '../../models/QuizQuestion';
-import { HostApplicationsData } from '../api';
+import { useAppForm } from '@/forms/useAppForm';
+import { HostApplicationsData } from '@/hosting-applications/api';
+import { QuestionType, type QuizQuestion } from '@/models/QuizQuestion';
 
 // interface MultiChoiceProps {
 //   question: QuizQuestion;

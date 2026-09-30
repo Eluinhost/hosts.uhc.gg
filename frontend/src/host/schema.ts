@@ -1,9 +1,9 @@
 import * as v from 'valibot';
 
-import dayjs from '../dayjs';
-import { emptyString, ipWithOptionalPort, isDayjs, maxDate, minDate } from '../forms/rules';
-import { Regions } from '../models/Regions';
-import { TeamStyles } from '../models/TeamStyles';
+import dayjs from '@/dayjs';
+import { emptyString, ipWithOptionalPort, isDayjs, maxDate, minDate } from '@/forms/rules';
+import { Regions } from '@/models/Regions';
+import { TeamStyles } from '@/models/TeamStyles';
 
 const badServerAddressAndIp = v.looseObject({
   ip: emptyString(),

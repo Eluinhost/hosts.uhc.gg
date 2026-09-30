@@ -1,4 +1,4 @@
-import { type Dayjs } from '../dayjs';
+import { type Dayjs } from '@/dayjs';
 
 export enum QuestionType {
   MULTIPLE_CHOICE = 'multiple choice',

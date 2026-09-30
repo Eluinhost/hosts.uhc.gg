@@ -5,10 +5,10 @@ import { type FieldWithValue } from '@tanstack/react-form';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { is12hAtom, timeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import dayjs from '../../dayjs';
-import type { Dayjs } from '../../dayjs';
+import { is12hAtom, timeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import dayjs from '@/dayjs';
+import type { Dayjs } from '@/dayjs';
 
 import '@mantine/dates/styles.css';
 

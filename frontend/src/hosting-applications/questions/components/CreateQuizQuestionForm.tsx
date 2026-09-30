@@ -2,8 +2,8 @@ import { Button, Select, Group, Stack, Radio, RadioGroup, TextInput } from '@man
 import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { type CreateQuizQuestionData, QuestionType } from '../../../models/QuizQuestion';
-import { QuizQuestionsData } from '../api';
+import { QuizQuestionsData } from '@/hosting-applications/questions/api';
+import { type CreateQuizQuestionData, QuestionType } from '@/models/QuizQuestion';
 
 type ChoiceDraft = {
   readonly text: string;

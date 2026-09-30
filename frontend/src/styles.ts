@@ -52,4 +52,4 @@ import '@mantine/core/styles/Title.css';
 import '@mantine/core/styles/Notification.css';
 import '@mantine/notifications/styles.css';
 
-import './main.css';
+import '@/main.css';

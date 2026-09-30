@@ -2,7 +2,7 @@ import { Button, Group, Paper } from '@mantine/core';
 import { CodeIcon, ChatCircleDotsIcon, GitBranchIcon, BugIcon } from '@phosphor-icons/react';
 import React from 'react';
 
-import styles from './Footer.module.css';
+import styles from '@/shell/components/Footer.module.css';
 
 export const Footer: React.FC = () => {
   return (

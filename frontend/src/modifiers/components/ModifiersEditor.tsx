@@ -3,10 +3,9 @@ import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { ModifiersData } from '../api';
-
-import { CreateModifierForm } from './CreateModifierForm';
-import { ModifierEditorRow } from './ModifiersEditorRow';
+import { ModifiersData } from '@/modifiers/api';
+import { CreateModifierForm } from '@/modifiers/components/CreateModifierForm';
+import { ModifierEditorRow } from '@/modifiers/components/ModifiersEditorRow';
 
 export const ModifiersEditor: React.FC = () => {
   const { data, isFetching, error, refetch } = useQuery(ModifiersData.getAllModifiers);

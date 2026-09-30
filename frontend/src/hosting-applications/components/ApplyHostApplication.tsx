@@ -5,12 +5,11 @@ import { useAtomValue } from 'jotai';
 import React from 'react';
 import { Link } from 'react-router';
 
-import { isHostingBannedAtom } from '../../authentication/atoms/authentication';
-import { HostApplicationsData } from '../api';
-import { canApplyToHostAtom } from '../atoms';
-import { QuizQuestionsData } from '../questions/api';
-
-import { HostApplicationForm } from './HostApplicationForm';
+import { isHostingBannedAtom } from '@/authentication/atoms/authentication';
+import { HostApplicationsData } from '@/hosting-applications/api';
+import { canApplyToHostAtom } from '@/hosting-applications/atoms';
+import { HostApplicationForm } from '@/hosting-applications/components/HostApplicationForm';
+import { QuizQuestionsData } from '@/hosting-applications/questions/api';
 
 export const ApplyHostApplicationPage: React.FC = () => {
   const { error, data, isFetching } = useQuery(QuizQuestionsData.getQuestions);

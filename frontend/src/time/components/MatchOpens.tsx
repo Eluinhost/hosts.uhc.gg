@@ -1,9 +1,9 @@
 import { atom, useAtomValue } from 'jotai';
 import React from 'react';
 
-import { timeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Dayjs } from '../../dayjs';
+import { timeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Dayjs } from '@/dayjs';
 
 const detailsDateTimeFormatAtom = atom(get => `MMM Do YYYY - ${get(timeFormatAtom)} z`);
 

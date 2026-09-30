@@ -3,12 +3,11 @@ import { CaretDownIcon, CaretRightIcon, WarningIcon } from '@phosphor-icons/reac
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
-import { WithPermission } from '../../authentication/components/WithPermission';
-import { Markdown } from '../../components/Markdown';
-import { HostingRulesData } from '../api';
-
-import styles from './HostingRules.module.css';
-import { SetRulesDialog } from './SetRulesDialog';
+import { WithPermission } from '@/authentication/components/WithPermission';
+import { Markdown } from '@/components/Markdown';
+import { HostingRulesData } from '@/hosting-rules/api';
+import styles from '@/hosting-rules/components/HostingRules.module.css';
+import { SetRulesDialog } from '@/hosting-rules/components/SetRulesDialog';
 
 export const HostingRules: React.FC = () => {
   const [areRulesOpen, setAreRulesOpen] = useState(false);

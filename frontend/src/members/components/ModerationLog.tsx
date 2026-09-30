@@ -3,9 +3,9 @@ import { PlusIcon, ArrowClockwiseIcon, MinusIcon, WarningIcon } from '@phosphor-
 import { useQuery } from '@tanstack/react-query';
 import React, { type ReactNode } from 'react';
 
-import type { PermissionModerationLogEntry } from '../../models/PermissionModerationLogEntry';
-import { MatchOpens } from '../../time/components/MatchOpens';
-import { MembersData } from '../api';
+import { MembersData } from '@/members/api';
+import type { PermissionModerationLogEntry } from '@/models/PermissionModerationLogEntry';
+import { MatchOpens } from '@/time/components/MatchOpens';
 
 const renderRow = (row: PermissionModerationLogEntry) => (
   <Alert

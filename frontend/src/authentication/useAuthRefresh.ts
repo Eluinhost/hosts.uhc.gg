@@ -3,15 +3,14 @@ import { getDefaultStore, useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import dayjs from '../dayjs';
-
+import { apiClient } from '@/apiClient';
 import {
   accessTokenClaimsAtom,
   authenticationAtom,
   isLoggedInAtom,
   refreshTokenClaimsAtom,
-} from './atoms/authentication';
+} from '@/authentication/atoms/authentication';
+import dayjs from '@/dayjs';
 
 const store = getDefaultStore();
 

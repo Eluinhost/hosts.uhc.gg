@@ -4,14 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { type ReactNode, useState } from 'react';
 
-import { permissionsAtom } from '../../../authentication/atoms/authentication';
-import { MembersData } from '../../api';
-import { isAbleToModify } from '../../isAbleToModify';
-import { AddPermissionDialog } from '../AddPermissionDialog';
-
-import { LetterNode } from './LetterNode';
-import { TreeNode } from './TreeNode';
-import { UsernameNode } from './UsernameNode';
+import { permissionsAtom } from '@/authentication/atoms/authentication';
+import { MembersData } from '@/members/api';
+import { AddPermissionDialog } from '@/members/components/AddPermissionDialog';
+import { LetterNode } from '@/members/components/tree/LetterNode';
+import { TreeNode } from '@/members/components/tree/TreeNode';
+import { UsernameNode } from '@/members/components/tree/UsernameNode';
+import { isAbleToModify } from '@/members/isAbleToModify';
 
 export interface PermissionNodeProps {
   permission: string;

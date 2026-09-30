@@ -2,10 +2,9 @@ import { Button, Group, Modal, Stack } from '@mantine/core';
 import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
 import * as v from 'valibot';
 
-import { useAppForm } from '../../forms/useAppForm';
-import { HostingRulesData } from '../api';
-
-import { RulesField } from './RulesField';
+import { useAppForm } from '@/forms/useAppForm';
+import { HostingRulesData } from '@/hosting-rules/api';
+import { RulesField } from '@/hosting-rules/components/RulesField';
 
 const schema = v.object({
   rules: v.pipe(v.string(), v.nonEmpty('This field is required'), v.minLength(3, 'Must be at least 3 characters long')),

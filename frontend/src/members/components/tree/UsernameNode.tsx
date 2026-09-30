@@ -3,11 +3,10 @@ import { TrashIcon, UserIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 
-import { permissionsAtom } from '../../../authentication/atoms/authentication';
-import { isAbleToModify } from '../../isAbleToModify';
-import { RemovePermissionDialog } from '../RemovePermissionDialog';
-
-import { TreeNode } from './TreeNode';
+import { permissionsAtom } from '@/authentication/atoms/authentication';
+import { RemovePermissionDialog } from '@/members/components/RemovePermissionDialog';
+import { TreeNode } from '@/members/components/tree/TreeNode';
+import { isAbleToModify } from '@/members/isAbleToModify';
 
 export interface UsernameNodeProps {
   username: string;

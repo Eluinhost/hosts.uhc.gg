@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { MembersData } from '../../api';
-
-import { TreeNode } from './TreeNode';
-import { UsernameNode } from './UsernameNode';
+import { MembersData } from '@/members/api';
+import { TreeNode } from '@/members/components/tree/TreeNode';
+import { UsernameNode } from '@/members/components/tree/UsernameNode';
 
 export interface LetterNodeProps {
   permission: string;

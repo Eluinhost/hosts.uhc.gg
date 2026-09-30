@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-import { isHostAtom, isHostingBannedAtom, isTrialHostAtom, usernameAtom } from '../authentication/atoms/authentication';
+import { isHostAtom, isHostingBannedAtom, isTrialHostAtom, usernameAtom } from '@/authentication/atoms/authentication';
 
 export const canApplyToHostAtom = atom(get => {
   const username = get(usernameAtom);

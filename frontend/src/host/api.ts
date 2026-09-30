@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 
-import { apiClient } from '../apiClient';
-import { usernameAtom } from '../authentication/atoms/authentication';
-import { MatchesData } from '../matches/api';
-
-import type { CreateMatchData } from './schema';
+import { apiClient } from '@/apiClient';
+import { usernameAtom } from '@/authentication/atoms/authentication';
+import type { CreateMatchData } from '@/host/schema';
+import { MatchesData } from '@/matches/api';
 
 export const HostApi = {
   mutations: {

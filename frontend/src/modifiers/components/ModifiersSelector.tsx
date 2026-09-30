@@ -3,7 +3,7 @@ import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import { ModifiersData } from '../api';
+import { ModifiersData } from '@/modifiers/api';
 
 export type ModifiersSelectorProps = {
   onAdded: (selected: string) => void;

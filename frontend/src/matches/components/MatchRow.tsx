@@ -4,20 +4,19 @@ import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router';
 
-import { permissionsAtom, usernameAtom } from '../../authentication/atoms/authentication';
-import { HostStatus } from '../../components/HostStatus';
-import { HoverSwap } from '../../components/HoverSwap';
-import { UsernameLink } from '../../components/UsernameLink';
-import type { Match } from '../../models/Match';
-import { renderTeamStyle } from '../../models/TeamStyles';
-import { MatchOpensTag } from '../../time/components/MatchOpensTag';
-import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
-
-import { ApprovalModal } from './ApprovalModal';
-import styles from './MatchRow.module.css';
-import { RemovalModal } from './RemovalModal';
-import { RemovedReason } from './RemovedReason';
-import { ServerTag } from './ServerTag';
+import { permissionsAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import { HostStatus } from '@/components/HostStatus';
+import { HoverSwap } from '@/components/HoverSwap';
+import { UsernameLink } from '@/components/UsernameLink';
+import { ApprovalModal } from '@/matches/components/ApprovalModal';
+import styles from '@/matches/components/MatchRow.module.css';
+import { RemovalModal } from '@/matches/components/RemovalModal';
+import { RemovedReason } from '@/matches/components/RemovedReason';
+import { ServerTag } from '@/matches/components/ServerTag';
+import type { Match } from '@/models/Match';
+import { renderTeamStyle } from '@/models/TeamStyles';
+import { MatchOpensTag } from '@/time/components/MatchOpensTag';
+import { TimeFromNowTag } from '@/time/components/TimeFromNowTag';
 
 type MatchRowProps = {
   readonly match: Match;

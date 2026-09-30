@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
 
-import { ApprovalModal } from '../components/ApprovalModal';
-import { MatchDetails } from '../components/MatchDetails';
+import { ApprovalModal } from '@/matches/components/ApprovalModal';
+import { MatchDetails } from '@/matches/components/MatchDetails';
 
 export type MatchDetailsPageParams = {
   id: string | undefined;

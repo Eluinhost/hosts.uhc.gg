@@ -2,7 +2,7 @@ import { getDefaultStore } from 'jotai';
 import ky from 'ky';
 import type { Input, Options } from 'ky';
 
-import { accessTokenAtom } from './authentication/atoms/authentication';
+import { accessTokenAtom } from '@/authentication/atoms/authentication';
 
 const store = getDefaultStore();
 

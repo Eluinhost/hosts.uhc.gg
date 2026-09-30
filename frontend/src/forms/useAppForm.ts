@@ -1,15 +1,14 @@
 import { createFormHook, useSelector } from '@tanstack/react-form';
 
-import { TemplateField } from '../host/components/TemplateField';
-
-import { DateTimeField } from './fields/DateTimeField';
-import { NumberField } from './fields/NumberField';
-import { SegmentedField } from './fields/SegmentedField';
-import { SelectField } from './fields/SelectField';
-import { SwitchField } from './fields/SwitchField';
-import { TagsField } from './fields/TagsField';
-import { TextField } from './fields/TextField';
-import { VersionField } from './fields/VersionField';
+import { DateTimeField } from '@/forms/fields/DateTimeField';
+import { NumberField } from '@/forms/fields/NumberField';
+import { SegmentedField } from '@/forms/fields/SegmentedField';
+import { SelectField } from '@/forms/fields/SelectField';
+import { SwitchField } from '@/forms/fields/SwitchField';
+import { TagsField } from '@/forms/fields/TagsField';
+import { TextField } from '@/forms/fields/TextField';
+import { VersionField } from '@/forms/fields/VersionField';
+import { TemplateField } from '@/host/components/TemplateField';
 
 /* @beta - unused exports but here for discoverability */
 export const { useAppForm, useFormContext, appFormOptions, defineAppFieldGroup } = createFormHook({

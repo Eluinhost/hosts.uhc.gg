@@ -2,8 +2,8 @@ import { Button, Group, Modal } from '@mantine/core';
 import { PlusIcon, ArrowLeftIcon } from '@phosphor-icons/react';
 import * as v from 'valibot';
 
-import { useAppForm } from '../../forms/useAppForm';
-import { MembersData } from '../api';
+import { useAppForm } from '@/forms/useAppForm';
+import { MembersData } from '@/members/api';
 
 const schema = v.object({
   username: v.pipe(v.string(), v.minLength(1, 'This field is required')),

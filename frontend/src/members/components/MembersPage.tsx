@@ -1,7 +1,7 @@
 import { Group } from '@mantine/core';
 
-import { ModerationLog } from './ModerationLog';
-import { MembersTree } from './tree/MembersTree';
+import { ModerationLog } from '@/members/components/ModerationLog';
+import { MembersTree } from '@/members/components/tree/MembersTree';
 
 export const MembersPage = () => {
   return (

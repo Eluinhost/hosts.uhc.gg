@@ -3,9 +3,9 @@ import { CaretDownIcon, CaretUpIcon, XIcon, CheckIcon } from '@phosphor-icons/re
 import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import dayjs from '../../dayjs';
-import { HostApplicationsData } from '../api';
-import { type HostApplication, HostApplicationStatus } from '../HostApplication';
+import dayjs from '@/dayjs';
+import { HostApplicationsData } from '@/hosting-applications/api';
+import { type HostApplication, HostApplicationStatus } from '@/hosting-applications/HostApplication';
 
 interface ExistingHostApplicationProps {
   application: HostApplication;

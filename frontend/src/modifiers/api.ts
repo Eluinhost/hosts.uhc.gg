@@ -1,10 +1,9 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import { showToast } from '../services/AppToaster';
-
-import type { Modifier } from './Modifier';
+import { apiClient } from '@/apiClient';
+import type { Modifier } from '@/modifiers/Modifier';
+import { showToast } from '@/services/AppToaster';
 
 const BASE_KEY = 'modifiers';
 

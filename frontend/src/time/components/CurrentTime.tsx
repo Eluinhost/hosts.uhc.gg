@@ -4,12 +4,11 @@ import { clsx } from 'clsx';
 import { atom, useAtomValue } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { is12hAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import dayjs from '../../dayjs';
-import { TimeData } from '../api';
-
-import styles from './CurrentTime.module.css';
+import { is12hAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import dayjs from '@/dayjs';
+import { TimeData } from '@/time/api';
+import styles from '@/time/components/CurrentTime.module.css';
 
 const MILLIS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;

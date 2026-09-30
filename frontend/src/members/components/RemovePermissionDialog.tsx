@@ -1,7 +1,7 @@
 import { Button, Group, Modal, Title } from '@mantine/core';
 import { ArrowLeftIcon, MinusIcon } from '@phosphor-icons/react';
 
-import { MembersData } from '../api';
+import { MembersData } from '@/members/api';
 
 export interface RemovePermissionDialogProps {
   permission: string;

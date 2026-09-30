@@ -1,8 +1,8 @@
 import { queryOptions } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import dayjs from '../dayjs';
+import { apiClient } from '@/apiClient';
+import dayjs from '@/dayjs';
 
 export const TimeData = {
   serverOffset: queryOptions({

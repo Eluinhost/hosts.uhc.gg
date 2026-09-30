@@ -1,8 +1,8 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as v from 'valibot';
 
-import { apiClient } from '../apiClient';
-import dayjs, { type Dayjs } from '../dayjs';
+import { apiClient } from '@/apiClient';
+import dayjs, { type Dayjs } from '@/dayjs';
 
 export type HostingRules = {
   content: string;

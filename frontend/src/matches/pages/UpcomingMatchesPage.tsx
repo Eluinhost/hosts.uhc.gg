@@ -1,9 +1,9 @@
 import { Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 
-import dayjs from '../../dayjs';
-import { MatchListing } from '../../matches/components/MatchListing';
-import { MatchesData } from '../api';
+import dayjs from '@/dayjs';
+import { MatchesData } from '@/matches/api';
+import { MatchListing } from '@/matches/components/MatchListing';
 
 const dontLoadMore = () => {
   throw new Error('Should not be called');

@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { apiClient } from '../apiClient';
+import { apiClient } from '@/apiClient';
 
 const compareVersion = (a: VersionMinMax, b: VersionMinMax): number => {
   return b.min.dataVersion - a.min.dataVersion;

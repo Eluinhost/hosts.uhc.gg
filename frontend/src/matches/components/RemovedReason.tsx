@@ -2,9 +2,9 @@ import { Alert, Text } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
 
-import { tagDateTimeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Match } from '../../models/Match';
+import { tagDateTimeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Match } from '@/models/Match';
 
 export const RemovedReason: React.FC<{ match: Match }> = ({ match: { removedBy, removedAt, removedReason } }) => {
   const format = useAtomValue(tagDateTimeFormatAtom);

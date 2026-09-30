@@ -2,8 +2,8 @@ import { ActionIcon } from '@mantine/core';
 import { ArrowUpIcon } from '@phosphor-icons/react';
 import * as v from 'valibot';
 
-import { useAppForm } from '../../forms/useAppForm';
-import { ModifiersData } from '../api';
+import { useAppForm } from '@/forms/useAppForm';
+import { ModifiersData } from '@/modifiers/api';
 
 const schema = v.object({
   modifier: v.pipe(v.string(), v.nonEmpty('This field is required')),

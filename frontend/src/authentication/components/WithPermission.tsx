@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { isLoggedInAtom, permissionsAtom } from '../atoms/authentication';
+import { isLoggedInAtom, permissionsAtom } from '@/authentication/atoms/authentication';
 
 export type WithPermissionProps = {
   readonly permission: string | string[];

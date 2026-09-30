@@ -3,8 +3,8 @@ import { ClockIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import dayjs, { type Dayjs } from '../../dayjs';
-import { TimeData } from '../api';
+import dayjs, { type Dayjs } from '@/dayjs';
+import { TimeData } from '@/time/api';
 
 export type TimeFromNowTagProps = {
   time: Dayjs;

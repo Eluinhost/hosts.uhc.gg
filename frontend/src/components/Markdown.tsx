@@ -1,7 +1,7 @@
 import { Title, Anchor, Blockquote, Code, Divider, List, Table } from '@mantine/core';
 import { Markdown as TanstackMarkdown, type MarkdownComponents } from '@tanstack/markdown/react';
 
-import styles from './Markdown.module.css';
+import styles from '@/components/Markdown.module.css';
 
 export interface MarkdownProps {
   markdown: string;

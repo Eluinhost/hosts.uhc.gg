@@ -5,11 +5,10 @@ import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 
-import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../authentication/atoms/authentication';
-
-import { HostApplicationsData } from './api';
-import { canApplyToHostAtom } from './atoms';
-import { ExistingHostApplication } from './components/ExistingHostApplication';
+import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import { HostApplicationsData } from '@/hosting-applications/api';
+import { canApplyToHostAtom } from '@/hosting-applications/atoms';
+import { ExistingHostApplication } from '@/hosting-applications/components/ExistingHostApplication';
 
 export const HostApplicationsPage = () => {
   const username = useAtomValue(usernameAtom);

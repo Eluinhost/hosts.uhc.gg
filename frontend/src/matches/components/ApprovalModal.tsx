@@ -2,7 +2,7 @@ import { Button, Group, Modal, Stack, Title } from '@mantine/core';
 import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
 import React from 'react';
 
-import { MatchesData } from '../api';
+import { MatchesData } from '@/matches/api';
 
 export interface ApprovalModalProps {
   id: number;

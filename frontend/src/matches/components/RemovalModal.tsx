@@ -3,9 +3,9 @@ import { ArrowLeftIcon, TrashIcon } from '@phosphor-icons/react';
 import React from 'react';
 import * as v from 'valibot';
 
-import { useAppForm } from '../../forms/useAppForm';
-import { MatchesData } from '../../matches/api';
-import { showToast } from '../../services/AppToaster';
+import { useAppForm } from '@/forms/useAppForm';
+import { MatchesData } from '@/matches/api';
+import { showToast } from '@/services/AppToaster';
 
 const schema = v.object({
   reason: v.pipe(

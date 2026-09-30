@@ -6,25 +6,24 @@ import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { timezoneAtom } from '../atoms/timezone';
-import { permissionsAtom, usernameAtom } from '../authentication/atoms/authentication';
-import dayjs from '../dayjs';
-import { useAppForm, useFormSelector } from '../forms/useAppForm';
-import { MatchRow } from '../matches/components/MatchRow';
-import { PotentialConflicts } from '../matches/components/PotentialConflicts';
-import type { Match } from '../models/Match';
-import { Regions } from '../models/Regions';
-import { renderTeamStyle, TeamStyles } from '../models/TeamStyles';
-import { ModifierSelector } from '../modifiers/components/ModifiersSelector';
-
-import { HostApi } from './api';
-import { hostFormDataAtom } from './atoms/hostFormData';
-import { renderToMarkdown, type TemplateContext } from './components/TemplateField';
-import { defaultPreset } from './defaultPreset';
-import styles from './HostingPage.module.css';
-import { nextAvailableSlot } from './nextAvailableSlot';
-import { applyScenarioRules } from './scenarioRules';
-import { type CreateMatchData, withOpeningTimeValidation } from './schema';
+import { timezoneAtom } from '@/atoms/timezone';
+import { permissionsAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import dayjs from '@/dayjs';
+import { useAppForm, useFormSelector } from '@/forms/useAppForm';
+import { HostApi } from '@/host/api';
+import { hostFormDataAtom } from '@/host/atoms/hostFormData';
+import { renderToMarkdown, type TemplateContext } from '@/host/components/TemplateField';
+import { defaultPreset } from '@/host/defaultPreset';
+import styles from '@/host/HostingPage.module.css';
+import { nextAvailableSlot } from '@/host/nextAvailableSlot';
+import { applyScenarioRules } from '@/host/scenarioRules';
+import { type CreateMatchData, withOpeningTimeValidation } from '@/host/schema';
+import { MatchRow } from '@/matches/components/MatchRow';
+import { PotentialConflicts } from '@/matches/components/PotentialConflicts';
+import type { Match } from '@/models/Match';
+import { Regions } from '@/models/Regions';
+import { renderTeamStyle, TeamStyles } from '@/models/TeamStyles';
+import { ModifierSelector } from '@/modifiers/components/ModifiersSelector';
 
 const createTemplateContext = (values: CreateMatchData, author: string): TemplateContext => {
   return {

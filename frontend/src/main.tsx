@@ -1,4 +1,4 @@
-import './styles';
+import '@/styles';
 
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
@@ -8,14 +8,14 @@ import React, { Suspense, lazy } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
-import { isDarkModeAtom } from './atoms/isDarkMode';
-import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
-import { App } from './shell/components/App';
-import { theme } from './theme';
+import { isDarkModeAtom } from '@/atoms/isDarkMode';
+import { migrateOldIndexDb } from '@/atoms/migrateOldIndexDb';
+import { App } from '@/shell/components/App';
+import { theme } from '@/theme';
 
 const queryClient = new QueryClient();
 
-const DevTools = import.meta.env.DEV ? lazy(() => import('./dev/DevTools').then(m => ({ default: m.DevTools }))) : null;
+const DevTools = import.meta.env.DEV ? lazy(() => import('@/dev/DevTools').then(m => ({ default: m.DevTools }))) : null;
 
 const root = document.getElementById('root');
 

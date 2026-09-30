@@ -3,9 +3,9 @@ import { ArrowClockwiseIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { timeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Dayjs } from '../../dayjs';
+import { timeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Dayjs } from '@/dayjs';
 
 type OwnProps = {
   readonly lastUpdated: Dayjs | null;

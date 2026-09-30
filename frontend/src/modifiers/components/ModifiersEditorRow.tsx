@@ -2,8 +2,8 @@ import { Badge } from '@mantine/core';
 import { ArrowClockwiseIcon, TrashIcon } from '@phosphor-icons/react';
 import React, { type ReactNode, useCallback, useState } from 'react';
 
-import { ModifiersData } from '../api';
-import type { Modifier } from '../Modifier';
+import { ModifiersData } from '@/modifiers/api';
+import type { Modifier } from '@/modifiers/Modifier';
 
 export type ModifiersEditorRowProps = {
   modifier: Modifier;

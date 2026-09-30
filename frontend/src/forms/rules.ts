@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-import dayjs, { type Dayjs } from '../dayjs';
+import dayjs, { type Dayjs } from '@/dayjs';
 
 const IP_REGEX = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::(\d{1,5}))?$/;
 

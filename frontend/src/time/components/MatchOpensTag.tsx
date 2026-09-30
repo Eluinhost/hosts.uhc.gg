@@ -2,9 +2,9 @@ import { Badge } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { tagDateTimeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Dayjs } from '../../dayjs';
+import { tagDateTimeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Dayjs } from '@/dayjs';
 
 type Props = {
   readonly opens: Dayjs;

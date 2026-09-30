@@ -3,9 +3,9 @@ import { WarningIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import React, { useMemo } from 'react';
 
-import { tagDateTimeFormatAtom } from '../../atoms/timeFormatting';
-import { timezoneAtom } from '../../atoms/timezone';
-import type { Match } from '../../models/Match';
+import { tagDateTimeFormatAtom } from '@/atoms/timeFormatting';
+import { timezoneAtom } from '@/atoms/timezone';
+import type { Match } from '@/models/Match';
 
 export const RemovedTag: React.FC<{ match: Match }> = ({ match: { removed, removedAt } }) => {
   const format = useAtomValue(tagDateTimeFormatAtom);

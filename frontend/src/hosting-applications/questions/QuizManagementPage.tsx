@@ -1,7 +1,7 @@
 import { Title, Stack, Group } from '@mantine/core';
 import React from 'react';
 
-import { ShowQuizQuestions } from './components/ShowQuizQuestions';
+import { ShowQuizQuestions } from '@/hosting-applications/questions/components/ShowQuizQuestions';
 
 export const QuizManagementPage: React.FC = () => (
   <Stack>

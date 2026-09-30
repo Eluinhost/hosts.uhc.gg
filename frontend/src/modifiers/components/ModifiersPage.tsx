@@ -1,7 +1,7 @@
 import { Title } from '@mantine/core';
 import React from 'react';
 
-import { ModifiersEditor } from './ModifiersEditor';
+import { ModifiersEditor } from '@/modifiers/components/ModifiersEditor';
 
 export const ModifiersPage: React.FC = () => (
   <div>

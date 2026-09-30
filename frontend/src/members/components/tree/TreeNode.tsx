@@ -2,8 +2,8 @@ import { Collapse, Group, List } from '@mantine/core';
 import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
-import { LoadingNode } from './LoadingNode';
-import styles from './TreeNode.module.css';
+import { LoadingNode } from '@/members/components/tree/LoadingNode';
+import styles from '@/members/components/tree/TreeNode.module.css';
 
 export interface TreeNodeProps {
   className?: string;
