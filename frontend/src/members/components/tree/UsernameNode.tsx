@@ -3,7 +3,7 @@ import { TrashIcon, UserIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 
-import { permissionsAtom } from '../../../atoms/authentication';
+import { permissionsAtom } from '../../../authentication/atoms/authentication';
 import { isAbleToModify } from '../../isAbleToModify';
 import { RemovePermissionDialog } from '../RemovePermissionDialog';
 

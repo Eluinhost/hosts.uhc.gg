@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 
-import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../atoms/authentication';
+import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '../authentication/atoms/authentication';
 
 import { HostApplicationsData } from './api';
 import { canApplyToHostAtom } from './atoms';

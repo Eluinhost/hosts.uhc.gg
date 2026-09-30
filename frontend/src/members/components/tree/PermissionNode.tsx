@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { type ReactNode, useState } from 'react';
 
-import { permissionsAtom } from '../../../atoms/authentication';
+import { permissionsAtom } from '../../../authentication/atoms/authentication';
 import { MembersData } from '../../api';
 import { isAbleToModify } from '../../isAbleToModify';
 import { AddPermissionDialog } from '../AddPermissionDialog';

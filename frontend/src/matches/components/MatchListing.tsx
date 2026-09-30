@@ -3,11 +3,11 @@ import { XIcon, MagnifyingGlassIcon, ArrowClockwiseIcon } from '@phosphor-icons/
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, type FC, type ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { usernameAtom } from '../../atoms/authentication';
-import { hideRemovedAtom, showOwnRemovedAtom } from '../../atoms/removedMatches';
+import { usernameAtom } from '../../authentication/atoms/authentication';
 import { type Dayjs } from '../../dayjs';
 import { MatchRow } from '../../matches/components/MatchRow';
 import type { Match } from '../../models/Match';
+import { hideRemovedAtom, showOwnRemovedAtom } from '../atoms/removedMatches';
 
 import { RefreshButton } from './RefreshButton';
 

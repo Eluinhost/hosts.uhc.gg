@@ -1,12 +1,12 @@
 import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 
+import { authenticationAtom } from '../authentication/atoms/authentication';
 import { hostFormDataAtom } from '../host/atoms/hostFormData';
 import { defaultPreset } from '../host/defaultPreset';
 import type { CreateMatchData } from '../host/schema';
+import { hideRemovedAtom, showOwnRemovedAtom } from '../matches/atoms/removedMatches';
 
-import { authenticationAtom } from './authentication';
 import { isDarkModeAtom } from './isDarkMode';
-import { hideRemovedAtom, showOwnRemovedAtom } from './removedMatches';
 import { is12hAtom } from './timeFormatting';
 import { timezoneAtom } from './timezone';
 

@@ -1,11 +1,11 @@
 import { useResetAtom } from 'jotai/utils';
 
+import { authenticationAtom } from '../authentication/atoms/authentication';
 import { hostFormDataAtom } from '../host/atoms/hostFormData';
+import { presetsAtom } from '../host/atoms/presets';
+import { hideRemovedAtom, showOwnRemovedAtom } from '../matches/atoms/removedMatches';
 
-import { authenticationAtom } from './authentication';
 import { isDarkModeAtom } from './isDarkMode';
-import { presetsAtom } from './presets';
-import { hideRemovedAtom, showOwnRemovedAtom } from './removedMatches';
 import { is12hAtom } from './timeFormatting';
 import { timezoneAtom } from './timezone';
 

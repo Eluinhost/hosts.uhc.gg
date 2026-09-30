@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { jwtDecode } from 'jwt-decode';
 
-import dayjs from '../dayjs';
+import dayjs from '../../dayjs';
 
 export const authenticationAtom = atomWithStorage<{ accessToken: string; refreshToken: string } | null>(
   'uhcgg.settings.authentication',

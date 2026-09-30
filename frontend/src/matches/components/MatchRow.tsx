@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router';
 
-import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
+import { permissionsAtom, usernameAtom } from '../../authentication/atoms/authentication';
 import { HostStatus } from '../../components/HostStatus';
 import { HoverSwap } from '../../components/HoverSwap';
 import { UsernameLink } from '../../components/UsernameLink';

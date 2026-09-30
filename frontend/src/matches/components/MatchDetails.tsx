@@ -15,7 +15,7 @@ import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import React, { useCallback, useState } from 'react';
 
-import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
+import { isHostingAdvisorAtom, usernameAtom } from '../../authentication/atoms/authentication';
 import { ClipboardControlGroup } from '../../clipboard/components/ClipboardControlGroup';
 import { HostStatus } from '../../components/HostStatus';
 import { Markdown } from '../../components/Markdown';

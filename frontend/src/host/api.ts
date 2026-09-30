@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 
 import { apiClient } from '../apiClient';
-import { usernameAtom } from '../atoms/authentication';
+import { usernameAtom } from '../authentication/atoms/authentication';
 import { MatchesData } from '../matches/api';
 
 import type { CreateMatchData } from './schema';

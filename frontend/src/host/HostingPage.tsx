@@ -6,8 +6,8 @@ import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { permissionsAtom, usernameAtom } from '../atoms/authentication';
 import { timezoneAtom } from '../atoms/timezone';
+import { permissionsAtom, usernameAtom } from '../authentication/atoms/authentication';
 import dayjs from '../dayjs';
 import { useAppForm, useFormSelector } from '../forms/useAppForm';
 import { MatchRow } from '../matches/components/MatchRow';

@@ -5,7 +5,7 @@ import React, { type PropsWithChildren, lazy, Suspense, useEffect } from 'react'
 import * as reactGa from 'react-ga';
 import { Route, Routes, useLocation } from 'react-router';
 
-import { isLoggedInAtom } from '../../atoms/authentication';
+import { isLoggedInAtom } from '../../authentication/atoms/authentication';
 import { NotAllowed, PromptToApplyForHost, PromptToLogin } from '../../authentication/components/PermissionPrompts';
 import { WithPermission } from '../../authentication/components/WithPermission';
 import { useAuthRefresh } from '../../authentication/useAuthRefresh';

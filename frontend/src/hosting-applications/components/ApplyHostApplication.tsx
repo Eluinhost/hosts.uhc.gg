@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai';
 import React from 'react';
 import { Link } from 'react-router';
 
-import { isHostingBannedAtom } from '../../atoms/authentication';
+import { isHostingBannedAtom } from '../../authentication/atoms/authentication';
 import { HostApplicationsData } from '../api';
 import { canApplyToHostAtom } from '../atoms';
 import { QuizQuestionsData } from '../questions/api';
