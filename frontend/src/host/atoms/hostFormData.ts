@@ -1,9 +1,9 @@
 import { atomWithStorage } from 'jotai/utils';
 
-import { defaultPreset } from '../host/defaultPreset';
-import type { CreateMatchData } from '../models/CreateMatchData';
-import { Regions } from '../models/Regions';
-import { TeamStyles } from '../models/TeamStyles';
+import { Regions } from '../../models/Regions';
+import { TeamStyles } from '../../models/TeamStyles';
+import { defaultPreset } from '../defaultPreset';
+import type { CreateMatchData } from '../schema';
 
 export const hostFormDataAtom = atomWithStorage<Omit<CreateMatchData, 'opens'> & { opens?: never }>(
   'uhcgg.settings.savedMatchData',

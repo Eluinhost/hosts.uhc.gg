@@ -1,14 +1,11 @@
 import { CheckIcon, WarningIcon } from '@phosphor-icons/react';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAtomValue } from 'jotai';
 import { HTTPError } from 'ky';
 import { createElement } from 'react';
 import * as v from 'valibot';
 
 import { apiClient } from '../apiClient';
-import { usernameAtom } from '../atoms/authentication';
 import dayjs, { type Dayjs } from '../dayjs';
-import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 import { showToast } from '../services/AppToaster';
 
@@ -110,28 +107,6 @@ export const MatchesData = {
           .json(v.array(singleMatchSchema)),
     }),
   mutations: {
-    useCreateMatch: () => {
-      const client = useQueryClient();
-      const username = useAtomValue(usernameAtom);
-
-      return useMutation({
-        mutationFn: (data: CreateMatchData) =>
-          apiClient.post('/api/matches', {
-            body: JSON.stringify({
-              ...data,
-              opens: data.opens.utc(),
-            }),
-            headers: { 'Content-Type': 'application/json' },
-            signal: null,
-          }),
-        onSuccess: () => {
-          void client.invalidateQueries(MatchesData.upcoming);
-          if (username) {
-            void client.invalidateQueries(MatchesData.hostHistory(username));
-          }
-        },
-      });
-    },
     useRemoveMatch: () => {
       const client = useQueryClient();
 

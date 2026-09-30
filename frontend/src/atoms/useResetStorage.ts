@@ -1,7 +1,8 @@
 import { useResetAtom } from 'jotai/utils';
 
+import { hostFormDataAtom } from '../host/atoms/hostFormData';
+
 import { authenticationAtom } from './authentication';
-import { hostFormDataAtom } from './hostFormData';
 import { isDarkModeAtom } from './isDarkMode';
 import { presetsAtom } from './presets';
 import { hideRemovedAtom, showOwnRemovedAtom } from './removedMatches';

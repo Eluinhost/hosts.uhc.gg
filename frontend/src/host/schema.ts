@@ -31,7 +31,6 @@ const schema = v.pipe(
         'Minutes must be on exactly xx:00 xx:15 xx:30 or xx:45 in an hour (UTC)',
       ),
     ),
-    modifiers: v.array(v.pipe(v.string(), v.nonEmpty())),
     scenarios: v.pipe(
       v.array(v.pipe(v.string(), v.nonEmpty())),
       v.minLength(1, 'Must supply at least 1 scenario'),
@@ -118,3 +117,5 @@ export const withOpeningTimeValidation = () =>
       ),
     }),
   ]);
+
+export type CreateMatchData = v.InferInput<typeof schema>;

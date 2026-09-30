@@ -1,10 +1,10 @@
 import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 
+import { hostFormDataAtom } from '../host/atoms/hostFormData';
 import { defaultPreset } from '../host/defaultPreset';
-import type { CreateMatchData } from '../models/CreateMatchData';
+import type { CreateMatchData } from '../host/schema';
 
 import { authenticationAtom } from './authentication';
-import { hostFormDataAtom } from './hostFormData';
 import { isDarkModeAtom } from './isDarkMode';
 import { hideRemovedAtom, showOwnRemovedAtom } from './removedMatches';
 import { is12hAtom } from './timeFormatting';

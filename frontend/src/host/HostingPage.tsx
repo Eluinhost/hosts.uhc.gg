@@ -7,25 +7,24 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { permissionsAtom, usernameAtom } from '../atoms/authentication';
-import { hostFormDataAtom } from '../atoms/hostFormData';
 import { timezoneAtom } from '../atoms/timezone';
 import dayjs from '../dayjs';
 import { useAppForm, useFormSelector } from '../forms/useAppForm';
-import { MatchesData } from '../matches/api';
 import { MatchRow } from '../matches/components/MatchRow';
 import { PotentialConflicts } from '../matches/components/PotentialConflicts';
-import type { CreateMatchData } from '../models/CreateMatchData';
 import type { Match } from '../models/Match';
 import { Regions } from '../models/Regions';
 import { renderTeamStyle, TeamStyles } from '../models/TeamStyles';
 import { ModifierSelector } from '../modifiers/components/ModifiersSelector';
 
+import { HostApi } from './api';
+import { hostFormDataAtom } from './atoms/hostFormData';
 import { renderToMarkdown, type TemplateContext } from './components/TemplateField';
 import { defaultPreset } from './defaultPreset';
 import styles from './HostingPage.module.css';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { applyScenarioRules } from './scenarioRules';
-import { withOpeningTimeValidation } from './schema';
+import { type CreateMatchData, withOpeningTimeValidation } from './schema';
 
 const createTemplateContext = (values: CreateMatchData, author: string): TemplateContext => {
   return {
@@ -70,7 +69,7 @@ export const HostingPage: React.FC = () => {
   const timezone = useAtomValue(timezoneAtom);
   const [savedValues, setSavedValues] = useAtom(hostFormDataAtom);
   const navigate = useNavigate();
-  const { mutateAsync: createMatch } = MatchesData.mutations.useCreateMatch();
+  const { mutateAsync: createMatch } = HostApi.mutations.useCreateMatch();
 
   const [defaultValues] = useState<CreateMatchData>(() => ({
     ...savedValues,
