@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
 import React from 'react';
 
-import { HomePageLink } from '@/home/HomePageLink';
+import { HomePageLink } from '@/home/components/HomePageLink';
 import { HostingRules } from '@/hosting-rules/components/HostingRules';
 
 export const HomePage: React.FC = () => (

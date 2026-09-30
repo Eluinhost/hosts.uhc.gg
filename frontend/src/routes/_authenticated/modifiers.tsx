@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { ModifiersPage } from '@/modifiers/components/ModifiersPage';
+import { ModifiersPage } from '@/modifiers/ModifiersPage';
 
 export const Route = createFileRoute('/_authenticated/modifiers')({
   component: RouteComponent,
