@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { defineConfig } from 'vite';
 import jotaiBabel from 'jotai-babel/preset';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
@@ -12,6 +13,11 @@ export default defineConfig({
       presets: [reactCompilerPreset(), jotaiBabel],
     }),
   ],
+  resolve: {
+    alias: {
+      '@': path.join(import.meta.dirname, 'src'),
+    },
+  },
   server: {
     port: 3000,
     host: '0.0.0.0',

@@ -123,7 +123,7 @@ export default tseslint.config(
             },
             {
               name: 'dayjs',
-              message: "Import the configured dayjs instance from 'src/dayjs' instead of 'dayjs'",
+              message: "Import the configured dayjs instance from '@/dayjs' instead of 'dayjs'",
             },
           ],
         },
