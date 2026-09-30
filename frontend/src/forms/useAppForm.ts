@@ -1,6 +1,6 @@
 import { createFormHook, useSelector } from '@tanstack/react-form';
 
-import { TemplateField } from '../components/host/TemplateField';
+import { TemplateField } from '../host/components/TemplateField';
 
 import { DateTimeField } from './fields/DateTimeField';
 import { NumberField } from './fields/NumberField';

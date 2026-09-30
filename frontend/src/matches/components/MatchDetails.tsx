@@ -16,12 +16,12 @@ import { HTTPError } from 'ky';
 import React, { useCallback, useState } from 'react';
 
 import { isHostingAdvisorAtom, usernameAtom } from '../../atoms/authentication';
-import { ClipboardControlGroup } from '../../components/clipboard-control-group';
-import { HostStatus } from '../../components/host-status';
+import { ClipboardControlGroup } from '../../clipboard/components/ClipboardControlGroup';
+import { HostStatus } from '../../components/HostStatus';
 import { Markdown } from '../../components/Markdown';
-import { TeamStyle } from '../../components/team-style';
 import { UsernameLink } from '../../components/UsernameLink';
 import { MatchesData } from '../../matches/api';
+import { renderTeamStyle } from '../../models/TeamStyles';
 import { MatchOpens } from '../../time/components/MatchOpens';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 
@@ -168,7 +168,7 @@ export const MatchDetails: React.FC<MatchDetailsProps> = ({ id }) => {
 
         <Group>
           <Badge color="red" size="lg" bdrs="sm" title="Team style" leftSection={<UsersIcon />}>
-            <TeamStyle size={size} style={teams} custom={customStyle} />
+            {renderTeamStyle(teams, size, customStyle) ?? 'Unknown Team Style'}
           </Badge>
           <Badge size="lg" bdrs="sm" color="blue" title={`Server version: ${version}`} leftSection={<CubeIcon />}>
             {version}

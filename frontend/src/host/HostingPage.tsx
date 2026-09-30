@@ -6,34 +6,32 @@ import { HTTPError } from 'ky';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
-import { hostFormDataAtom } from '../../atoms/hostFormData';
-import { timezoneAtom } from '../../atoms/timezone';
-import dayjs from '../../dayjs';
-import { useAppForm, useFormSelector } from '../../forms/useAppForm';
-import { MatchesData } from '../../matches/api';
-import { MatchRow } from '../../matches/components/MatchRow';
-import { PotentialConflicts } from '../../matches/components/PotentialConflicts';
-import type { CreateMatchData } from '../../models/CreateMatchData';
-import type { Match } from '../../models/Match';
-import { Regions } from '../../models/Regions';
-import { renderTeamStyle, TeamStyles } from '../../models/TeamStyles';
-import { ModifierSelector } from '../../modifiers/components/ModifiersSelector';
+import { permissionsAtom, usernameAtom } from '../atoms/authentication';
+import { hostFormDataAtom } from '../atoms/hostFormData';
+import { timezoneAtom } from '../atoms/timezone';
+import dayjs from '../dayjs';
+import { useAppForm, useFormSelector } from '../forms/useAppForm';
+import { MatchesData } from '../matches/api';
+import { MatchRow } from '../matches/components/MatchRow';
+import { PotentialConflicts } from '../matches/components/PotentialConflicts';
+import type { CreateMatchData } from '../models/CreateMatchData';
+import type { Match } from '../models/Match';
+import { Regions } from '../models/Regions';
+import { renderTeamStyle, TeamStyles } from '../models/TeamStyles';
+import { ModifierSelector } from '../modifiers/components/ModifiersSelector';
 
+import { renderToMarkdown, type TemplateContext } from './components/TemplateField';
 import { defaultPreset } from './defaultPreset';
-import styles from './index.module.css';
+import styles from './HostingPage.module.css';
 import { nextAvailableSlot } from './nextAvailableSlot';
 import { applyScenarioRules } from './scenarioRules';
 import { withOpeningTimeValidation } from './schema';
-import { renderToMarkdown, type TemplateContext } from './TemplateField';
 
 const createTemplateContext = (values: CreateMatchData, author: string): TemplateContext => {
-  const style = TeamStyles.find(x => x.value === values.teams);
-
   return {
     ...values,
     // overwite teams value with rendered version
-    teams: !style ? '' : renderTeamStyle(style, values.size, values.customStyle),
+    teams: renderTeamStyle(values.teams, values.size, values.customStyle) ?? '',
     author,
   };
 };

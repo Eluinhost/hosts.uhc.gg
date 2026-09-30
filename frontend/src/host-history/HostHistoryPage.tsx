@@ -2,9 +2,9 @@ import { Title } from '@mantine/core';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
-import dayjs from '../../dayjs';
-import { MatchesData } from '../../matches/api';
-import { MatchListing } from '../../matches/components/MatchListing';
+import dayjs from '../dayjs';
+import { MatchesData } from '../matches/api';
+import { MatchListing } from '../matches/components/MatchListing';
 
 type RouteParams = {
   readonly host: string;

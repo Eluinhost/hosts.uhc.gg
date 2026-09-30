@@ -14,11 +14,11 @@ import { useAtom } from 'jotai';
 import React, { type ReactNode } from 'react';
 import { useLocation, Link } from 'react-router';
 
-import { isDarkModeAtom } from '../atoms/isDarkMode';
+import { isDarkModeAtom } from '../../atoms/isDarkMode';
+import { WithPermission } from '../../authentication/components/WithPermission';
 
 import styles from './Navbar.module.css';
 import { Username } from './Username';
-import { WithPermission } from './WithPermission';
 
 type NavBarButtonProps = {
   readonly text: string;

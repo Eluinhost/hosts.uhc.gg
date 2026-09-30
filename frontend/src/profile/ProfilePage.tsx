@@ -3,8 +3,8 @@ import { WarningIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import React, { type ReactNode } from 'react';
 
-import { ApiKeysData } from '../../apiKeys/api';
-import { useResetStorage } from '../../atoms/useResetStorage';
+import { ApiKeysData } from '../apiKeys/api';
+import { useResetStorage } from '../atoms/useResetStorage';
 
 const ApiKeys = () => {
   const { data: apiKey, error, isFetching, refetch: refreshApiKey } = useQuery(ApiKeysData.apiKey);

@@ -31,11 +31,10 @@ import * as Mark from 'markup-js';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { presetsAtom } from '../../atoms/presets';
+import { Markdown } from '../../components/Markdown';
 import type { Dayjs } from '../../dayjs';
 import type { CreateMatchData } from '../../models/CreateMatchData';
-import { Markdown } from '../Markdown';
-
-import { defaultPreset } from './defaultPreset';
+import { defaultPreset } from '../defaultPreset';
 
 export type TemplateContext = CreateMatchData & { author: string };
 

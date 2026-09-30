@@ -4,7 +4,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
 import { useNavigate, Link } from 'react-router';
 
-import { authenticationAtom, isLoggedInAtom, usernameAtom } from '../atoms/authentication';
+import { authenticationAtom, isLoggedInAtom, usernameAtom } from '../../atoms/authentication';
 
 import { LoginButton } from './LoginButton';
 

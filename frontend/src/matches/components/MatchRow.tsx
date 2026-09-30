@@ -5,11 +5,11 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router';
 
 import { permissionsAtom, usernameAtom } from '../../atoms/authentication';
-import { HostStatus } from '../../components/host-status';
+import { HostStatus } from '../../components/HostStatus';
 import { HoverSwap } from '../../components/HoverSwap';
-import { TeamStyle } from '../../components/team-style';
 import { UsernameLink } from '../../components/UsernameLink';
 import type { Match } from '../../models/Match';
+import { renderTeamStyle } from '../../models/TeamStyles';
 import { MatchOpensTag } from '../../time/components/MatchOpensTag';
 import { TimeFromNowTag } from '../../time/components/TimeFromNowTag';
 
@@ -74,7 +74,7 @@ export const MatchRow: React.FC<MatchRowProps> = props => {
             <Text fw={700}>{match.version}</Text>
           </Badge>
           <Badge color="red" size="lg" bdrs="sm" leftSection={<UsersIcon />}>
-            <TeamStyle size={match.size} style={match.teams} custom={match.customStyle} />
+            {renderTeamStyle(match.teams, match.size, match.customStyle) ?? 'Unknown Team Style'}
           </Badge>
         </Group>
       </Group>

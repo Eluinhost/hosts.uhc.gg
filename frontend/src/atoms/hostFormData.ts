@@ -1,6 +1,6 @@
 import { atomWithStorage } from 'jotai/utils';
 
-import { defaultPreset } from '../components/host/defaultPreset';
+import { defaultPreset } from '../host/defaultPreset';
 import type { CreateMatchData } from '../models/CreateMatchData';
 import { Regions } from '../models/Regions';
 import { TeamStyles } from '../models/TeamStyles';

@@ -5,46 +5,46 @@ import React, { type PropsWithChildren, lazy, Suspense, useEffect } from 'react'
 import * as reactGa from 'react-ga';
 import { Route, Routes, useLocation } from 'react-router';
 
-import { isLoggedInAtom } from '../atoms/authentication';
-import { useAuthRefresh } from '../authentication/useAuthRefresh';
-import { TimeSettings } from '../time/components/TimeSettings';
+import { isLoggedInAtom } from '../../atoms/authentication';
+import { NotAllowed, PromptToApplyForHost, PromptToLogin } from '../../authentication/components/PermissionPrompts';
+import { WithPermission } from '../../authentication/components/WithPermission';
+import { useAuthRefresh } from '../../authentication/useAuthRefresh';
+import { TimeSettings } from '../../time/components/TimeSettings';
 
 import styles from './App.module.css';
-import { Footer } from './footer/Footer';
+import { Footer } from './Footer';
 import { Navbar } from './Navbar';
-import { NotAllowed, PromptToApplyForHost, PromptToLogin } from './PermissionPrompts';
-import { WithPermission } from './WithPermission';
 
 reactGa.initialize('UA-71696797-2');
 
-const HostingPage = lazy(() => import('./host').then(m => ({ default: m.HostingPage })));
+const HostingPage = lazy(() => import('../../host/HostingPage').then(m => ({ default: m.HostingPage })));
 const MatchDetailsPage = lazy(() =>
-  import('../matches/pages/MatchDetailsPage').then(m => ({ default: m.MatchDetailsPage })),
+  import('../../matches/pages/MatchDetailsPage').then(m => ({ default: m.MatchDetailsPage })),
 );
 const UpcomingMatchesPage = lazy(() =>
-  import('../matches/pages/UpcomingMatchesPage').then(m => ({ default: m.UpcomingMatchesPage })),
+  import('../../matches/pages/UpcomingMatchesPage').then(m => ({ default: m.UpcomingMatchesPage })),
 );
-const HistoryPage = lazy(() => import('./host-history-page').then(m => ({ default: m.HistoryPage })));
+const HistoryPage = lazy(() => import('../../host-history/HostHistoryPage').then(m => ({ default: m.HistoryPage })));
 const ApplyHostApplicationPage = lazy(() =>
-  import('../hosting-applications/components/ApplyHostApplication').then(m => ({
+  import('../../hosting-applications/components/ApplyHostApplication').then(m => ({
     default: m.ApplyHostApplicationPage,
   })),
 );
 const HostApplicationsPage = lazy(() =>
-  import('../hosting-applications/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
+  import('../../hosting-applications/HostApplicationsPage').then(m => ({ default: m.HostApplicationsPage })),
 );
-const MembersPage = lazy(() => import('../members/components/MembersPage').then(m => ({ default: m.MembersPage })));
-const LoginPage = lazy(() => import('./LoginPage').then(m => ({ default: m.LoginPage })));
-const ProfilePage = lazy(() => import('./profile').then(m => ({ default: m.ProfilePage })));
+const MembersPage = lazy(() => import('../../members/components/MembersPage').then(m => ({ default: m.MembersPage })));
+const LoginPage = lazy(() => import('../../login/LoginPage').then(m => ({ default: m.LoginPage })));
+const ProfilePage = lazy(() => import('../../profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const ModifiersPage = lazy(() =>
-  import('../modifiers/components/ModifiersPage').then(m => ({ default: m.ModifiersPage })),
+  import('../../modifiers/components/ModifiersPage').then(m => ({ default: m.ModifiersPage })),
 );
 const QuizManagementPage = lazy(() =>
-  import('../hosting-applications/questions/QuizManagementPage').then(m => ({
+  import('../../hosting-applications/questions/QuizManagementPage').then(m => ({
     default: m.QuizManagementPage,
   })),
 );
-const HomePage = lazy(() => import('./HomePage').then(m => ({ default: m.HomePage })));
+const HomePage = lazy(() => import('../../home/HomePage').then(m => ({ default: m.HomePage })));
 
 const NotFoundPage: React.FC = () => (
   <Stack flex={1} justify="center" align="center">

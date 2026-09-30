@@ -1,9 +1,15 @@
-export const renderTeamStyle = (style: TeamStyle, size: number | null, custom: string | null): string => {
-  if (style.value === 'custom') return custom ?? '';
+export const renderTeamStyle = (style: string, size: number | null, custom: string | null): string | undefined => {
+  const lookup = TeamStyles.find(it => it.value === style);
 
-  if (style.requiresTeamSize) return `${style.display} To${size ? size.toString(10) : 'X'}`;
+  if (!lookup) {
+    return undefined;
+  }
 
-  return style.display;
+  if (lookup.value === 'custom') return custom ?? '';
+
+  if (lookup.requiresTeamSize) return `${lookup.display} To${size ? size.toString(10) : 'X'}`;
+
+  return lookup.display;
 };
 
 export class TeamStyle {

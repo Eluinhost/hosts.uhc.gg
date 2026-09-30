@@ -1,6 +1,6 @@
 import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 
-import { defaultPreset } from '../components/host/defaultPreset';
+import { defaultPreset } from '../host/defaultPreset';
 import type { CreateMatchData } from '../models/CreateMatchData';
 
 import { authenticationAtom } from './authentication';

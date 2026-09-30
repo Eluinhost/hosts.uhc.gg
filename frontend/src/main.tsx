@@ -10,7 +10,7 @@ import { BrowserRouter } from 'react-router';
 
 import { isDarkModeAtom } from './atoms/isDarkMode';
 import { migrateOldIndexDb } from './atoms/migrateOldIndexDb';
-import { App } from './components/App';
+import { App } from './shell/components/App';
 import { theme } from './theme';
 
 const queryClient = new QueryClient();
