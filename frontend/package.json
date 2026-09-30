@@ -24,12 +24,12 @@
     "@phosphor-icons/react": "2.1.10",
     "@tanstack/markdown": "0.0.15",
     "@tanstack/react-form": "2.0.0-alpha.2",
-    "@tanstack/react-pacer": "0.23.0",
+    "@tanstack/react-pacer": "0.24.0",
     "@tanstack/react-query": "5.104.0",
     "@tanstack/react-router": "1.170.41",
     "clsx": "2.1.1",
     "dayjs": "1.11.23",
-    "jotai": "3.0.0",
+    "jotai": "3.0.1",
     "jwt-decode": "4.0.0",
     "ky": "2.1.0",
     "markup-js": "1.5.21",
@@ -41,13 +41,13 @@
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "@rolldown/plugin-babel": "0.2.4",
+    "@tanstack/devtools-vite": "0.8.5",
     "@tanstack/eslint-plugin-query": "5.104.0",
     "@tanstack/react-devtools": "0.10.13",
     "@tanstack/react-form-devtools": "1.0.0-alpha.2",
     "@tanstack/react-query-devtools": "5.104.0",
     "@tanstack/react-router-devtools": "1.167.2",
     "@tanstack/router-plugin": "1.168.42",
-    "@tanstack/devtools-vite": "0.8.5",
     "@types/markup-js": "1.5.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
@@ -65,7 +65,7 @@
     "knip": "6.38.0",
     "prettier": "3.9.9",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.70.1",
+    "typescript-eslint": "8.71.0",
     "vite": "8.3.1"
   }
 }
