@@ -7,7 +7,6 @@ import { Route, Routes, useLocation } from 'react-router';
 
 import { isLoggedInAtom } from '../atoms/authentication';
 import { useAuthRefresh } from '../authentication/useAuthRefresh';
-import { UpcomingMatchesPage } from '../matches/pages/UpcomingMatchesPage';
 import { TimeSettings } from '../time/components/TimeSettings';
 
 import styles from './App.module.css';
@@ -21,6 +20,9 @@ reactGa.initialize('UA-71696797-2');
 const HostingPage = lazy(() => import('./host').then(m => ({ default: m.HostingPage })));
 const MatchDetailsPage = lazy(() =>
   import('../matches/pages/MatchDetailsPage').then(m => ({ default: m.MatchDetailsPage })),
+);
+const UpcomingMatchesPage = lazy(() =>
+  import('../matches/pages/UpcomingMatchesPage').then(m => ({ default: m.UpcomingMatchesPage })),
 );
 const HistoryPage = lazy(() => import('./host-history-page').then(m => ({ default: m.HistoryPage })));
 const ApplyHostApplicationPage = lazy(() =>
