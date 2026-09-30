@@ -10,7 +10,6 @@ export const hostFormDataAtom = atomWithStorage<Omit<CreateMatchData, 'opens'> &
   {
     region: Regions[0].value,
     teams: TeamStyles[0].value,
-    modifiers: [],
     scenarios: ['Vanilla+'],
     tags: [],
     size: 0,

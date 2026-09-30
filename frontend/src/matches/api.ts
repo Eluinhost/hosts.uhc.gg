@@ -120,8 +120,6 @@ export const MatchesData = {
             body: JSON.stringify({
               ...data,
               opens: data.opens.utc(),
-              // convert the modifiers into scenarios
-              scenarios: [...data.modifiers, ...data.scenarios],
             }),
             headers: { 'Content-Type': 'application/json' },
             signal: null,

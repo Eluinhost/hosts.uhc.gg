@@ -4,7 +4,6 @@ export type CreateMatchData = {
   opens: Dayjs;
   address: string;
   ip: string;
-  modifiers: string[];
   scenarios: string[];
   tags: string[];
   teams: string;
