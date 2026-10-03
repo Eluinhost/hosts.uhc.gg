@@ -1,52 +1,17 @@
-import { Button, InputWrapper } from '@mantine/core';
+import { Button, InputWrapper, Stack } from '@mantine/core';
 import { PlusIcon } from '@phosphor-icons/react';
+import { useNavigate } from '@tanstack/react-router';
 import React, { useMemo } from 'react';
 
-import { useAppForm } from '@/forms/useAppForm';
+import { appFormOptions, useAppForm } from '@/forms/useAppForm';
 import { HostApplicationsData } from '@/hosting-applications/api';
-import { QuestionType, type QuizQuestion } from '@/models/QuizQuestion';
-
-// interface MultiChoiceProps {
-//   question: QuizQuestion;
-//   value?: number;
-//   onChange: (questionId: number, choice: number) => void;
-//   isDisabled: boolean;
-// }
-
-// const MultiChoice: React.FC<MultiChoiceProps> = ({ question, value, onChange, isDisabled }) => {
-//   const handleChange = useCallback(
-//     (evt: React.ChangeEvent<HTMLInputElement>) => {
-//       onChange(question.id, Number(evt.currentTarget.value));
-//     },
-//     [question.id, onChange],
-//   );
-//
-//   return (
-//     <RadioGroup onChange={handleChange} selectedValue={value}>
-//       {question.choices.map(choice => (
-//         <Radio key={choice.id} label={choice.text} value={choice.id} disabled={isDisabled} />
-//       ))}
-//     </RadioGroup>
-//   );
-// };
-
-// interface FreeTextProps {
-//   question: QuizQuestion;
-//   value: string;
-//   onChange: (questionId: number, text: string) => void;
-//   isDisabled: boolean;
-// }
-
-// const FreeText: React.FC<FreeTextProps> = ({ question, value, onChange, isDisabled }) => {
-//   const handleChange = useCallback(
-//     (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-//       onChange(question.id, evt.target.value);
-//     },
-//     [question.id, onChange],
-//   );
-//
-//   return <TextArea className={Classes.FILL} fill value={value} onChange={handleChange} disabled={isDisabled} />;
-// };
+import {
+  createHostApplicationSchema,
+  type CreateHostApplicationSchema,
+} from '@/hosting-applications/components/createHostApplicationSchema';
+import styles from '@/hosting-applications/components/HostApplicationForm.module.css';
+import type { QuizQuestion } from '@/hosting-applications/questions/schema';
+import { QuestionType } from '@/hosting-applications/QuestionType';
 
 interface HostApplicationFormProps {
   questions: Array<QuizQuestion>;
@@ -54,31 +19,34 @@ interface HostApplicationFormProps {
 
 export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questions }) => {
   const { mutateAsync: createApplication } = HostApplicationsData.mutations.useCreateHostApplication();
+  const navigate = useNavigate();
 
   // building defaults based on the actual questions inputted
-  const defaults = useMemo(
-    () =>
-      questions.reduce<Record<string, string>>((acc, question) => {
-        const id = question.id.toString(10);
-        acc[id] = '';
-        return acc;
-      }, {}),
+  const defaults: CreateHostApplicationSchema = useMemo(
+    () => ({
+      answers: questions.map(question => ({
+        questionId: question.id,
+        answer: question.questionType === QuestionType.MULTIPLE_CHOICE ? question.choices[0].text : '',
+      })),
+    }),
     [questions],
   );
 
-  // not using form-level validation as we're better off with per-field validation
-  const form = useAppForm({
-    defaultValues: defaults,
-    onSubmit: async ({ value }) => {
-      await createApplication({
-        answers: questions.map(({ id, questionType }) => ({
-          questionId: id,
-          choiceId: questionType === QuestionType.MULTIPLE_CHOICE ? parseInt(value[id], 10) : undefined,
-          textAnswer: questionType === QuestionType.TEXT ? value[id] : undefined,
-        })),
-      });
-    },
-  });
+  const form = useAppForm(
+    appFormOptions.strictSchema(createHostApplicationSchema, {
+      defaultValues: defaults,
+      validators: [
+        {
+          run: createHostApplicationSchema,
+          triggers: ['change'],
+        },
+      ],
+      onSubmit: async ({ value }) => {
+        await createApplication(value);
+        void navigate({ to: '/host-applications' });
+      },
+    }),
+  );
 
   return (
     <form
@@ -87,41 +55,57 @@ export const HostApplicationForm: React.FC<HostApplicationFormProps> = ({ questi
         void form.handleSubmit();
       }}
     >
-      {questions.map(question => (
-        <form.Field key={question.id} name={question.id.toString(10)}>
-          {field => (
-            <InputWrapper label={question.prompt}>
-              {question.questionType === QuestionType.MULTIPLE_CHOICE ? (
-                <field.SegmentedField
-                  field={field}
-                  data={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
-                />
-              ) : (
-                <field.SegmentedField
-                  field={field}
-                  data={question.choices.map(c => ({ label: c.text, value: c.id.toString(10) }))}
-                />
-              )}
-            </InputWrapper>
-          )}
-        </form.Field>
-      ))}
-
-      <form.Subscribe selector={state => state.isSubmitting || state.isInvalid}>
-        {disabled => (
-          <Button
-            type="submit"
-            color="green"
-            leftSection={<PlusIcon />}
-            disabled={disabled}
-            onClick={() => {
-              void form.handleSubmit();
+      <Stack>
+        {questions.map((question, index) => (
+          <form.Field name={`answers[${index}].answer`} key={question.id}>
+            {field => {
+              switch (question.questionType) {
+                case QuestionType.MULTIPLE_CHOICE:
+                  return (
+                    <InputWrapper size="md" error={field.errors[0]?.message} label={question.prompt} required>
+                      <field.SegmentedField
+                        field={field}
+                        fullWidth
+                        orientation="vertical"
+                        size="md"
+                        data={question.choices.map(c => ({ label: c.text, value: c.text }))}
+                        classNames={{
+                          label: styles.segmentedFieldLabel,
+                        }}
+                      />
+                    </InputWrapper>
+                  );
+                case QuestionType.TEXT:
+                  return (
+                    <field.TextField
+                      field={field}
+                      label={question.prompt}
+                      size="md"
+                      required
+                      placeholder="Enter your answer"
+                    />
+                  );
+              }
             }}
-          >
-            Submit Application
-          </Button>
-        )}
-      </form.Subscribe>
+          </form.Field>
+        ))}
+
+        <form.Subscribe selector={state => state.isSubmitting || state.isInvalid}>
+          {disabled => (
+            <Button
+              type="submit"
+              color="green"
+              leftSection={<PlusIcon />}
+              disabled={disabled}
+              onClick={() => {
+                void form.handleSubmit();
+              }}
+            >
+              Submit Application
+            </Button>
+          )}
+        </form.Subscribe>
+      </Stack>
     </form>
   );
 };

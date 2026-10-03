@@ -1,13 +1,13 @@
-import { Title, Stack, EmptyState, Loader, Alert } from '@mantine/core';
+import { Stack, EmptyState, Loader, Alert } from '@mantine/core';
 import { QuestionIcon } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 
 import { QuizQuestionsData } from '@/hosting-applications/questions/api';
-import { CreateQuizQuestionForm } from '@/hosting-applications/questions/components/CreateQuizQuestionForm';
+import { CreateQuizQuestion } from '@/hosting-applications/questions/components/CreateQuizQuestion';
 import { ExistingQuizQuestion } from '@/hosting-applications/questions/components/ExistingQuizQuestion';
 
 export const ShowQuizQuestions = () => {
-  const { data, isFetching, error } = useQuery(QuizQuestionsData.getQuestionsForManagement);
+  const { data, isFetching, error } = useQuery(QuizQuestionsData.getQuestions);
 
   let top;
   if (error) {
@@ -19,8 +19,8 @@ export const ShowQuizQuestions = () => {
   } else {
     top = (
       <div>
-        {data?.map(question => (
-          <ExistingQuizQuestion question={question} key={question.id} />
+        {data?.map((question, index) => (
+          <ExistingQuizQuestion question={question} key={question.id} index={index} />
         ))}
       </div>
     );
@@ -29,9 +29,7 @@ export const ShowQuizQuestions = () => {
   return (
     <Stack>
       {top}
-
-      <Title order={3}>Create new question</Title>
-      <CreateQuizQuestionForm />
+      <CreateQuizQuestion />
     </Stack>
   );
 };

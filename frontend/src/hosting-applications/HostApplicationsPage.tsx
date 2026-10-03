@@ -5,15 +5,22 @@ import { Link } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 
-import { isHostingAdvisorAtom, isHostingBannedAtom, usernameAtom } from '@/authentication/atoms/authentication';
+import {
+  isHostAtom,
+  isHostingAdvisorAtom,
+  isHostingBannedAtom,
+  isTrialHostAtom,
+  usernameAtom,
+} from '@/authentication/atoms/authentication';
 import { HostApplicationsData } from '@/hosting-applications/api';
-import { canApplyToHostAtom } from '@/hosting-applications/atoms';
 import { ExistingHostApplication } from '@/hosting-applications/components/ExistingHostApplication';
+import { LoginButton } from '@/shell/components/LoginButton';
 
 export const HostApplicationsPage = () => {
   const username = useAtomValue(usernameAtom);
-  const canApply = useAtomValue(canApplyToHostAtom);
   const isBanned = useAtomValue(isHostingBannedAtom);
+  const isHost = useAtomValue(isHostAtom);
+  const isTrialHost = useAtomValue(isTrialHostAtom);
   const isHostingAdvisor = useAtomValue(isHostingAdvisorAtom);
 
   const { data, error, isFetching } = useQuery(HostApplicationsData.getAll);
@@ -32,10 +39,36 @@ export const HostApplicationsPage = () => {
     return [...mine, ...others];
   }, [data, username]);
 
+  const renderApplyButton = () => {
+    if (!username) {
+      return (
+        <Group mb={20}>
+          <LoginButton label="Login to apply to host" />
+        </Group>
+      );
+    }
+
+    if (isHost || isTrialHost) {
+      return null;
+    }
+
+    return (
+      <Group mb={20}>
+        <Link to="/host-applications/apply">
+          <Button color="green" leftSection={<PlusIcon />}>
+            Apply to host
+          </Button>
+        </Link>
+      </Group>
+    );
+  };
+
   return (
-    <Stack>
+    <Stack justify="center">
       <title>uhc.gg | Host Applications</title>
-      <Title order={1}>Host Applications</Title>
+      <Title order={1} ta="center" mb="lg">
+        Host Applications
+      </Title>
 
       {error && <Alert color="red">{error.message}</Alert>}
 
@@ -45,15 +78,7 @@ export const HostApplicationsPage = () => {
         </Alert>
       )}
 
-      {canApply && (
-        <Group mb={20}>
-          <Link to="/host-applications/apply">
-            <Button color="green" leftSection={<PlusIcon />}>
-              Apply to host
-            </Button>
-          </Link>
-        </Group>
-      )}
+      {renderApplyButton()}
 
       {isFetching ? (
         <Loader />

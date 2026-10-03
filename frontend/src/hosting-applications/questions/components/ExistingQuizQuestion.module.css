@@ -1,0 +1,6 @@
+.correct {
+  border-color: var(--mantine-color-green-6);
+}
+.incorrect {
+  border-color: var(--mantine-color-red-6);
+}

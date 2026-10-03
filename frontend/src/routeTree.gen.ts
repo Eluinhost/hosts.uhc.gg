@@ -18,10 +18,10 @@ import { Route as AuthenticatedModifiersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
 import { Route as HostApplicationsIndexRouteImport } from './routes/host-applications/index'
-import { Route as HostApplicationsApplyRouteImport } from './routes/host-applications/apply'
 import { Route as MIdRouteImport } from './routes/m.$id'
 import { Route as MatchesIndexRouteImport } from './routes/matches/index'
 import { Route as MatchesHostRouteImport } from './routes/matches/$host'
+import { Route as HostApplicationsAuthenticatedApplyRouteImport } from './routes/host-applications/_authenticated.apply'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,11 +67,6 @@ const HostApplicationsIndexRoute = HostApplicationsIndexRouteImport.update({
   path: '/host-applications/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HostApplicationsApplyRoute = HostApplicationsApplyRouteImport.update({
-  id: '/host-applications/apply',
-  path: '/host-applications/apply',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MIdRoute = MIdRouteImport.update({
   id: '/m/$id',
   path: '/m/$id',
@@ -87,6 +82,12 @@ const MatchesHostRoute = MatchesHostRouteImport.update({
   path: '/matches/$host',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HostApplicationsAuthenticatedApplyRoute =
+  HostApplicationsAuthenticatedApplyRouteImport.update({
+    id: '/host-applications/_authenticated/apply',
+    path: '/host-applications/apply',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,11 +97,11 @@ export interface FileRoutesByFullPath {
   '/modifiers': typeof AuthenticatedModifiersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quiz': typeof AuthenticatedQuizRoute
-  '/host-applications/apply': typeof HostApplicationsApplyRoute
   '/m/$id': typeof MIdRoute
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications/': typeof HostApplicationsIndexRoute
   '/matches/': typeof MatchesIndexRoute
+  '/host-applications/apply': typeof HostApplicationsAuthenticatedApplyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,11 +111,11 @@ export interface FileRoutesByTo {
   '/modifiers': typeof AuthenticatedModifiersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quiz': typeof AuthenticatedQuizRoute
-  '/host-applications/apply': typeof HostApplicationsApplyRoute
   '/m/$id': typeof MIdRoute
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications': typeof HostApplicationsIndexRoute
   '/matches': typeof MatchesIndexRoute
+  '/host-applications/apply': typeof HostApplicationsAuthenticatedApplyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -126,11 +127,11 @@ export interface FileRoutesById {
   '/_authenticated/modifiers': typeof AuthenticatedModifiersRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
-  '/host-applications/apply': typeof HostApplicationsApplyRoute
   '/m/$id': typeof MIdRoute
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications/': typeof HostApplicationsIndexRoute
   '/matches/': typeof MatchesIndexRoute
+  '/host-applications/_authenticated/apply': typeof HostApplicationsAuthenticatedApplyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,11 +143,11 @@ export interface FileRouteTypes {
     | '/modifiers'
     | '/profile'
     | '/quiz'
-    | '/host-applications/apply'
     | '/m/$id'
     | '/matches/$host'
     | '/host-applications/'
     | '/matches/'
+    | '/host-applications/apply'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -156,11 +157,11 @@ export interface FileRouteTypes {
     | '/modifiers'
     | '/profile'
     | '/quiz'
-    | '/host-applications/apply'
     | '/m/$id'
     | '/matches/$host'
     | '/host-applications'
     | '/matches'
+    | '/host-applications/apply'
   id:
     | '__root__'
     | '/'
@@ -171,11 +172,11 @@ export interface FileRouteTypes {
     | '/_authenticated/modifiers'
     | '/_authenticated/profile'
     | '/_authenticated/quiz'
-    | '/host-applications/apply'
     | '/m/$id'
     | '/matches/$host'
     | '/host-applications/'
     | '/matches/'
+    | '/host-applications/_authenticated/apply'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,11 +184,11 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   MembersRoute: typeof MembersRoute
-  HostApplicationsApplyRoute: typeof HostApplicationsApplyRoute
   MIdRoute: typeof MIdRoute
   MatchesHostRoute: typeof MatchesHostRoute
   HostApplicationsIndexRoute: typeof HostApplicationsIndexRoute
   MatchesIndexRoute: typeof MatchesIndexRoute
+  HostApplicationsAuthenticatedApplyRoute: typeof HostApplicationsAuthenticatedApplyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -255,13 +256,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostApplicationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/host-applications/apply': {
-      id: '/host-applications/apply'
-      path: '/host-applications/apply'
-      fullPath: '/host-applications/apply'
-      preLoaderRoute: typeof HostApplicationsApplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/m/$id': {
       id: '/m/$id'
       path: '/m/$id'
@@ -281,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/matches/$host'
       fullPath: '/matches/$host'
       preLoaderRoute: typeof MatchesHostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/host-applications/_authenticated/apply': {
+      id: '/host-applications/_authenticated/apply'
+      path: '/host-applications/apply'
+      fullPath: '/host-applications/apply'
+      preLoaderRoute: typeof HostApplicationsAuthenticatedApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -308,11 +309,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   MembersRoute: MembersRoute,
-  HostApplicationsApplyRoute: HostApplicationsApplyRoute,
   MIdRoute: MIdRoute,
   MatchesHostRoute: MatchesHostRoute,
   HostApplicationsIndexRoute: HostApplicationsIndexRoute,
   MatchesIndexRoute: MatchesIndexRoute,
+  HostApplicationsAuthenticatedApplyRoute:
+    HostApplicationsAuthenticatedApplyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

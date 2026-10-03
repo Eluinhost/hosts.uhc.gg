@@ -2,7 +2,9 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import * as v from 'valibot';
 
 import { apiClient } from '@/apiClient';
-import { HostApplicationStatus, type SubmitAnswerData } from '@/hosting-applications/HostApplication';
+import type { CreateHostApplicationSchema } from '@/hosting-applications/components/createHostApplicationSchema';
+import { HostApplicationStatus } from '@/hosting-applications/HostApplication';
+import { QuestionType } from '@/hosting-applications/QuestionType';
 
 const hostApplication = v.object({
   id: v.number(),
@@ -15,11 +17,10 @@ const hostApplication = v.object({
 });
 
 const hostApplicationAnswer = v.object({
-  questionPrompt: v.string(),
-  questionType: v.pipe(v.string(), v.picklist(['multiple choice', 'text'])),
-  choiceText: v.nullable(v.string()),
+  prompt: v.string(),
+  questionType: v.pipe(v.string(), v.enum(QuestionType)),
+  answer: v.string(),
   choiceCorrect: v.nullable(v.boolean()),
-  textAnswer: v.nullable(v.string()),
 });
 
 const hostApplicationDetails = v.object({
@@ -42,9 +43,9 @@ export const HostApplicationsData = {
       const client = useQueryClient();
 
       return useMutation({
-        mutationFn: ({ answers }: { answers: SubmitAnswerData[] }) =>
+        mutationFn: (data: CreateHostApplicationSchema) =>
           apiClient.post('/api/host-applications', {
-            body: JSON.stringify({ answers }),
+            body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' },
             signal: null,
           }),

@@ -394,10 +394,11 @@ components:
     HostApplicationAnswerResponse:
       type: object
       required:
-        - questionPrompt
+        - prompt
         - questionType
+        - answer
       properties:
-        questionPrompt:
+        prompt:
           type: string
           description: The prompt of the question at the time it was answered
         questionType:
@@ -405,19 +406,19 @@ components:
           enum:
             - multiple choice
             - text
-        choiceText:
+        answer:
           type: string
-          description: The text of the choice picked, only present for `multiple choice` questions
+          description: The answer given, the text of the picked choice for `multiple choice` questions, the free-text
+            answer for `text` questions
         choiceCorrect:
           type: boolean
-          description: Whether the picked choice was correct. Only ever present when requested with a `hosting advisor` token, otherwise omitted
-        textAnswer:
-          type: string
-          description: The free-text answer given, only present for `text` questions
+          nullable: true
+          description: Whether the picked choice was correct, only defined for `multiple choice` questions and only
+            when requested with a `hosting advisor` permission, otherwise null
       example:
-        questionPrompt: What is the maximum allowed border size?
+        prompt: What is the maximum allowed border size?
         questionType: multiple choice
-        choiceText: '1500'
+        answer: '1500'
         choiceCorrect: true
     HostApplicationDetailsResponse:
       allOf:
@@ -437,26 +438,27 @@ components:
       properties:
         answers:
           type: array
+          description: One entry per quiz question, every question must be answered, answers for unknown question
+            IDs are ignored
           items:
             type: object
             required:
               - questionId
+              - answer
             properties:
               questionId:
                 type: integer
                 description: The ID of the quiz question being answered
-              choiceId:
-                type: integer
-                description: The ID of the choice picked, required for `multiple choice` questions
-              textAnswer:
+              answer:
                 type: string
-                description: The free-text answer, required for `text` questions
+                description: The answer to the question, the free-text answer for `text` questions (must not be
+                  blank), the exact text of the picked choice for `multiple choice` questions
       example:
         answers:
           - questionId: 1
-            choiceId: 3
+            answer: '1500'
           - questionId: 2
-            textAnswer: My answer to the question
+            answer: My answer to the question
     ReviewHostApplicationRequest:
       type: object
       properties:
@@ -477,6 +479,10 @@ components:
         text:
           type: string
           description: The text shown for this choice
+        correct:
+          type: boolean
+          nullable: true
+          description: Whether this is the correct choice, only defined when authenticated with a `hosting advisor` token, otherwise null
     QuizQuestionResponse:
       type: object
       required:
@@ -498,9 +504,20 @@ components:
             - text
         choices:
           type: array
-          description: Only populated for `multiple choice` questions
+          description: The available choices, empty for `text` questions
           items:
             $ref: '#/components/schemas/QuizQuestionChoiceResponse'
+        metadata:
+          type: object
+          nullable: true
+          description: Only defined when authenticated with a `hosting advisor` token, otherwise null
+          properties:
+            createdBy:
+              type: string
+              description: Username of whoever created this question
+            created:
+              type: string
+              description: The date + time the question was created
       example:
         id: 1
         prompt: What is the maximum allowed border size?
@@ -508,56 +525,13 @@ components:
         choices:
           - id: 1
             text: '1000'
+            correct: false
           - id: 2
             text: '1500'
-    QuizQuestionManageChoiceResponse:
-      type: object
-      required:
-        - id
-        - text
-        - correct
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this choice
-        text:
-          type: string
-          description: The text shown for this choice
-        correct:
-          type: boolean
-          description: Whether this is the correct choice
-    QuizQuestionManageResponse:
-      type: object
-      required:
-        - id
-        - prompt
-        - questionType
-        - createdBy
-        - created
-        - choices
-      properties:
-        id:
-          type: integer
-          description: The unique ID of this question
-        prompt:
-          type: string
-          description: The question being asked
-        questionType:
-          type: string
-          enum:
-            - multiple choice
-            - text
-        createdBy:
-          type: string
-          description: Username of whoever created this question
-        created:
-          type: string
-          description: The date + time the question was created
-        choices:
-          type: array
-          description: Only populated for `multiple choice` questions
-          items:
-            $ref: '#/components/schemas/QuizQuestionManageChoiceResponse'
+            correct: true
+        metadata:
+          createdBy: ghowden
+          created: '2017-08-07T10:22:11.145415Z'
     CreateQuizQuestionRequest:
       type: object
       required:
@@ -567,7 +541,8 @@ components:
       properties:
         prompt:
           type: string
-          description: The question being asked
+          description: The question being asked, must be at least 5 characters after trimming
+          minLength: 5
         questionType:
           type: string
           enum:
@@ -575,7 +550,8 @@ components:
             - text
         choices:
           type: array
-          description: Required for `multiple choice` questions (at least 2, exactly 1 correct), must be empty for `text` questions
+          description: Required for `multiple choice` questions (at least 2, exactly 1 correct), must be an empty
+            array for `text` questions
           items:
             type: object
             required:
@@ -1154,7 +1130,10 @@ paths:
       tags:
         - Host Applications
       summary: Submit a host application
-      description: Submits a new host application answering every configured quiz question. Requires the user to not already be a `host`/`trial host`, to not have the `hosting banned` permission, and to not already have a pending application
+      description: Submits a new host application answering every configured quiz question, multiple choice answers
+        must exactly match the text of one of the choices, text answers must not be blank, validation errors are
+        returned as a comma-separated list in the 400 body. Requires the user to not already be a `host`/`trial
+        host`, to not have the `hosting banned` permission, and to not already have a pending application
       security:
         - SiteApiToken: []
         - UserApiToken: []
@@ -1183,7 +1162,9 @@ paths:
       tags:
         - Host Applications
       summary: Get a specific host application
-      description: Returns full details of an application including submitted answers. Public endpoint, however `choiceCorrect` on each answer is only included when authenticated with a `hosting advisor` token
+      description: Returns full details of an application including submitted answers. Public endpoint, however
+        `choiceCorrect` on each answer is only defined (non-null) for `multiple choice` questions when authenticated
+        with a `hosting advisor` token
       security:
         - SiteApiToken: []
         - UserApiToken: []
@@ -1270,7 +1251,9 @@ paths:
       tags:
         - Quiz
       summary: List quiz questions
-      description: Lists all quiz questions that must be answered to submit a host application. Public endpoint, does not indicate which choice is correct
+      description: Lists all quiz questions that must be answered to submit a host application. Public endpoint,
+        `choices` is empty for `text` questions, `correct` and `metadata` are only defined when authenticated with a
+        `hosting advisor` token
       responses:
         '200':
           description: 'Successful query'
@@ -1284,7 +1267,9 @@ paths:
       tags:
         - Quiz
       summary: Create a quiz question
-      description: Creates a new quiz question, requires `hosting advisor` permission. `multiple choice` questions require at least 2 choices with exactly 1 correct, `text` questions must not have any choices
+      description: Creates a new quiz question, requires `hosting advisor` permission. The prompt must be at least
+        5 characters, `multiple choice` questions require at least 2 choices with exactly 1 correct, `text` questions
+        must have an empty `choices` array
       security:
         - SiteApiToken: []
         - UserApiToken: []
@@ -1306,28 +1291,6 @@ paths:
                     type: integer
         '400':
           $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-  /quiz/manage:
-    get:
-      tags:
-        - Quiz
-      summary: List quiz questions for management
-      description: Lists all quiz questions including which choice is correct, requires `hosting advisor` permission
-      security:
-        - SiteApiToken: []
-        - UserApiToken: []
-      responses:
-        '200':
-          description: 'Successful query'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/QuizQuestionManageResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':

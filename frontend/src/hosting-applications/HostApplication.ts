@@ -13,9 +13,3 @@ export type HostApplication = {
   readonly reviewedAt: string | null;
   readonly reviewReason: string | null;
 };
-
-export type SubmitAnswerData = {
-  readonly questionId: number;
-  readonly choiceId?: number;
-  readonly textAnswer?: string;
-};

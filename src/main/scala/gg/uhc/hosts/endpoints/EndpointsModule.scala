@@ -15,7 +15,6 @@ import gg.uhc.hosts.endpoints.hostapplications.{
   GetHostApplicationDetails,
   GetHostApplications,
   GetQuizQuestions,
-  GetQuizQuestionsForManagement,
   HostApplicationsRoute,
   QuizRoute,
   ReviewHostApplication
@@ -64,7 +63,6 @@ trait EndpointsModule extends RedditModule {
   lazy val createHostApplication: CreateHostApplication = wire[CreateHostApplication]
   lazy val reviewHostApplication: ReviewHostApplication = wire[ReviewHostApplication]
   lazy val getQuizQuestions: GetQuizQuestions = wire[GetQuizQuestions]
-  lazy val getQuizQuestionsForManagement: GetQuizQuestionsForManagement = wire[GetQuizQuestionsForManagement]
   lazy val createQuizQuestion: CreateQuizQuestion = wire[CreateQuizQuestion]
   lazy val deleteQuizQuestion: DeleteQuizQuestion = wire[DeleteQuizQuestion]
   lazy val showPermissionsForUser: ShowPermissionsForUser = wire[ShowPermissionsForUser]

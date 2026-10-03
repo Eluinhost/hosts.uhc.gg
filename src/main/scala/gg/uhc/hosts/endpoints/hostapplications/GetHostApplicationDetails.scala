@@ -13,14 +13,13 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
   import CustomJsonCodec._
   import customDirectives._
 
-  case class AnswerResponse(
-      questionPrompt: String,
-      questionType: String,
-      choiceText: Option[String],
-      choiceCorrect: Option[Boolean],
-      textAnswer: Option[String])
+  private case class AnswerResponse(
+                                     prompt: String,
+                                     answer: String,
+                                     questionType: QuestionType,
+                                     choiceCorrect: Option[Boolean])
 
-  case class HostApplicationDetailsResponse(
+  private case class HostApplicationDetailsResponse(
       id: Long,
       username: String,
       created: Instant,
@@ -51,11 +50,10 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
                   answers = answers.map(
                     answer =>
                       AnswerResponse(
-                        questionPrompt = answer.questionPrompt,
+                        prompt = answer.questionPrompt,
+                        answer = answer.answer,
                         questionType = answer.questionType,
-                        choiceText = answer.choiceText,
                         choiceCorrect = if (canReview) answer.choiceCorrect else None,
-                        textAnswer = answer.textAnswer
                     ))
                 )
               )

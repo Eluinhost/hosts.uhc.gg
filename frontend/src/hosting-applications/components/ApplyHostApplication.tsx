@@ -5,17 +5,18 @@ import { Link } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { isHostingBannedAtom } from '@/authentication/atoms/authentication';
+import { isHostAtom, isHostingBannedAtom, isTrialHostAtom } from '@/authentication/atoms/authentication';
 import { HostApplicationsData } from '@/hosting-applications/api';
-import { canApplyToHostAtom } from '@/hosting-applications/atoms';
 import { HostApplicationForm } from '@/hosting-applications/components/HostApplicationForm';
 import { QuizQuestionsData } from '@/hosting-applications/questions/api';
 
 export const ApplyHostApplicationPage: React.FC = () => {
   const { error, data, isFetching } = useQuery(QuizQuestionsData.getQuestions);
-  const canApply = useAtomValue(canApplyToHostAtom);
-  const isBanned = useAtomValue(isHostingBannedAtom);
   const { isSuccess } = HostApplicationsData.mutations.useCreateHostApplication();
+
+  const isBanned = useAtomValue(isHostingBannedAtom);
+  const isTrialHost = useAtomValue(isTrialHostAtom);
+  const isHost = useAtomValue(isHostAtom);
 
   if (isBanned) {
     return (
@@ -31,13 +32,9 @@ export const ApplyHostApplicationPage: React.FC = () => {
     );
   }
 
-  if (!canApply) {
+  if (isTrialHost || isHost) {
     return (
-      <EmptyState
-        icon={<CheckCircleIcon />}
-        title="You don't need to apply"
-        description="You're already a host, or you're not logged in."
-      >
+      <EmptyState icon={<CheckCircleIcon />} title="You don't need to apply" description="You're already a host">
         <Link to="/host-applications">
           <Button>Back to Host Applications</Button>
         </Link>

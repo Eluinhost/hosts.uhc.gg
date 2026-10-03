@@ -3,6 +3,8 @@ package gg.uhc.hosts.endpoints.hostapplications
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
+import io.circe.{Codec, Decoder}
+import io.circe.derivation.{Configuration, ConfiguredDecoder}
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, QuizQuestionRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
@@ -13,26 +15,27 @@ class CreateQuizQuestion(database: Database, customDirectives: CustomDirectives)
   import CustomJsonCodec._
   import customDirectives._
 
-  case class ChoicePayload(text: String, correct: Boolean)
-  case class CreateQuizQuestionPayload(prompt: String, questionType: String, choices: List[ChoicePayload])
+  private case class Choice(text: String, correct: Boolean)
 
-  private val validTypes = Set("multiple choice", "text")
+  private case class QuestionPayload(prompt: String, questionType: QuestionType, choices: List[Choice])
 
-  private def validatePayload(payload: CreateQuizQuestionPayload): Directive0 =
+  private def validatePayload(payload: QuestionPayload): Directive0 =
     validate(payload.prompt.trim.nonEmpty, "Prompt cannot be empty") &
-      validate(validTypes.contains(payload.questionType), "Invalid question type") &
-      validate(payload.choices.forall(_.text.trim.nonEmpty), "Choices cannot be empty") &
-      validate(
-        payload.questionType != "multiple choice" || (payload.choices.size >= 2 && payload.choices.count(_.correct) == 1),
-        "Multiple choice questions require at least 2 choices with exactly one correct answer"
-      ) &
-      validate(payload.questionType != "text" || payload.choices.isEmpty, "Text questions cannot have choices")
+      validate(payload.prompt.trim.length >= 5, "Prompt must be at least 5 characters") &
+      (payload.questionType match {
+        case QuestionType.MULTIPLE_CHOICE =>
+          validate(payload.choices.nonEmpty && payload.choices.forall(_.text.trim.nonEmpty), "Choices cannot be empty") &
+            validate(payload.choices.size >= 2, "Multiple choice questions require at least 2 choices") &
+            validate(payload.choices.count(_.correct) == 1, "Multiple choice questions require exactly one correct answer")
+        case QuestionType.TEXT =>
+          validate(payload.choices.isEmpty, "Text questions cannot have choices")
+      })
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {
       requireAuthentication { session =>
         requirePermission("hosting advisor", session.username) {
-          entity(as[CreateQuizQuestionPayload]) { payload =>
+          entity(as[QuestionPayload]) { payload =>
             validatePayload(payload) {
               val question = QuizQuestionRow(
                 id = -1,
@@ -41,6 +44,7 @@ class CreateQuizQuestion(database: Database, customDirectives: CustomDirectives)
                 createdBy = session.username,
                 created = Instant.now()
               )
+
               val choices = payload.choices.map(c => c.text.trim -> c.correct)
 
               requireSucessfulQuery(database.createQuizQuestionWithChoices(question, choices)) { id =>

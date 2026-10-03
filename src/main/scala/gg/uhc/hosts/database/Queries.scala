@@ -84,14 +84,14 @@ class Queries(logger: LogHandler) {
   def createHostApplicationAnswer(applicationId: Long, answer: HostApplicationAnswerRow): Update0 =
     sql"""
       INSERT INTO host_application_answers
-        (applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer)
+        (applicationId, questionPrompt, questionType, answer, choiceCorrect)
       VALUES
-        ($applicationId, ${answer.questionPrompt}, ${answer.questionType}, ${answer.choiceText}, ${answer.choiceCorrect}, ${answer.textAnswer})
+        ($applicationId, ${answer.questionPrompt}, ${answer.questionType}, ${answer.answer}, ${answer.choiceCorrect})
     """.update
 
   def getHostApplicationAnswers(applicationId: Long): Query0[HostApplicationAnswerRow] =
     sql"""
-      SELECT id, applicationId, questionPrompt, questionType, choiceText, choiceCorrect, textAnswer
+      SELECT id, applicationId, questionPrompt, questionType, answer, choiceCorrect
       FROM host_application_answers
       WHERE applicationId = $applicationId
       ORDER BY id ASC
