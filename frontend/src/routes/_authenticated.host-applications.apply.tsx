@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { ApplyHostApplicationPage } from '@/hosting-applications/components/ApplyHostApplication';
 
-export const Route = createFileRoute('/host-applications/_authenticated/apply')({
+export const Route = createFileRoute('/_authenticated/host-applications/apply')({
   component: RouteComponent,
 });
 

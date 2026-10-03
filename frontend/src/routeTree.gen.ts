@@ -10,25 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MembersRouteImport } from './routes/members'
-import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated/host'
-import { Route as AuthenticatedModifiersRouteImport } from './routes/_authenticated/modifiers'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
+import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated.host'
+import { Route as AuthenticatedModifiersRouteImport } from './routes/_authenticated.modifiers'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
+import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated.quiz'
 import { Route as HostApplicationsIndexRouteImport } from './routes/host-applications/index'
 import { Route as MIdRouteImport } from './routes/m.$id'
 import { Route as MatchesIndexRouteImport } from './routes/matches/index'
 import { Route as MatchesHostRouteImport } from './routes/matches/$host'
-import { Route as HostApplicationsAuthenticatedApplyRouteImport } from './routes/host-applications/_authenticated.apply'
+import { Route as AuthenticatedHostApplicationsApplyRouteImport } from './routes/_authenticated.host-applications.apply'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -45,22 +45,22 @@ const MembersRoute = MembersRouteImport.update({
 const AuthenticatedHostRoute = AuthenticatedHostRouteImport.update({
   id: '/host',
   path: '/host',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedModifiersRoute = AuthenticatedModifiersRouteImport.update({
   id: '/modifiers',
   path: '/modifiers',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedQuizRoute = AuthenticatedQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const HostApplicationsIndexRoute = HostApplicationsIndexRouteImport.update({
   id: '/host-applications/',
@@ -82,11 +82,11 @@ const MatchesHostRoute = MatchesHostRouteImport.update({
   path: '/matches/$host',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HostApplicationsAuthenticatedApplyRoute =
-  HostApplicationsAuthenticatedApplyRouteImport.update({
-    id: '/host-applications/_authenticated/apply',
+const AuthenticatedHostApplicationsApplyRoute =
+  AuthenticatedHostApplicationsApplyRouteImport.update({
+    id: '/host-applications/apply',
     path: '/host-applications/apply',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -101,7 +101,7 @@ export interface FileRoutesByFullPath {
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications/': typeof HostApplicationsIndexRoute
   '/matches/': typeof MatchesIndexRoute
-  '/host-applications/apply': typeof HostApplicationsAuthenticatedApplyRoute
+  '/host-applications/apply': typeof AuthenticatedHostApplicationsApplyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,12 +115,12 @@ export interface FileRoutesByTo {
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications': typeof HostApplicationsIndexRoute
   '/matches': typeof MatchesIndexRoute
-  '/host-applications/apply': typeof HostApplicationsAuthenticatedApplyRoute
+  '/host-applications/apply': typeof AuthenticatedHostApplicationsApplyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/members': typeof MembersRoute
   '/_authenticated/host': typeof AuthenticatedHostRoute
@@ -131,7 +131,7 @@ export interface FileRoutesById {
   '/matches/$host': typeof MatchesHostRoute
   '/host-applications/': typeof HostApplicationsIndexRoute
   '/matches/': typeof MatchesIndexRoute
-  '/host-applications/_authenticated/apply': typeof HostApplicationsAuthenticatedApplyRoute
+  '/_authenticated/host-applications/apply': typeof AuthenticatedHostApplicationsApplyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -176,19 +176,18 @@ export interface FileRouteTypes {
     | '/matches/$host'
     | '/host-applications/'
     | '/matches/'
-    | '/host-applications/_authenticated/apply'
+    | '/_authenticated/host-applications/apply'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   MembersRoute: typeof MembersRoute
   MIdRoute: typeof MIdRoute
   MatchesHostRoute: typeof MatchesHostRoute
   HostApplicationsIndexRoute: typeof HostApplicationsIndexRoute
   MatchesIndexRoute: typeof MatchesIndexRoute
-  HostApplicationsAuthenticatedApplyRoute: typeof HostApplicationsAuthenticatedApplyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -204,7 +203,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -226,28 +225,28 @@ declare module '@tanstack/react-router' {
       path: '/host'
       fullPath: '/host'
       preLoaderRoute: typeof AuthenticatedHostRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/modifiers': {
       id: '/_authenticated/modifiers'
       path: '/modifiers'
       fullPath: '/modifiers'
       preLoaderRoute: typeof AuthenticatedModifiersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/quiz': {
       id: '/_authenticated/quiz'
       path: '/quiz'
       fullPath: '/quiz'
       preLoaderRoute: typeof AuthenticatedQuizRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/host-applications/': {
       id: '/host-applications/'
@@ -277,44 +276,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchesHostRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/host-applications/_authenticated/apply': {
-      id: '/host-applications/_authenticated/apply'
+    '/_authenticated/host-applications/apply': {
+      id: '/_authenticated/host-applications/apply'
       path: '/host-applications/apply'
       fullPath: '/host-applications/apply'
-      preLoaderRoute: typeof HostApplicationsAuthenticatedApplyRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedHostApplicationsApplyRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
+interface AuthenticatedRouteChildren {
   AuthenticatedHostRoute: typeof AuthenticatedHostRoute
   AuthenticatedModifiersRoute: typeof AuthenticatedModifiersRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
+  AuthenticatedHostApplicationsApplyRoute: typeof AuthenticatedHostApplicationsApplyRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHostRoute: AuthenticatedHostRoute,
   AuthenticatedModifiersRoute: AuthenticatedModifiersRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
+  AuthenticatedHostApplicationsApplyRoute:
+    AuthenticatedHostApplicationsApplyRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   MembersRoute: MembersRoute,
   MIdRoute: MIdRoute,
   MatchesHostRoute: MatchesHostRoute,
   HostApplicationsIndexRoute: HostApplicationsIndexRoute,
   MatchesIndexRoute: MatchesIndexRoute,
-  HostApplicationsAuthenticatedApplyRoute:
-    HostApplicationsAuthenticatedApplyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
