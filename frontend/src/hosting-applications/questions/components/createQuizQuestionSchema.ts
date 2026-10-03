@@ -33,7 +33,7 @@ export const createQuizQuestionSchema = v.variant('questionType', [
         array => array.reduce((acc, item) => (item.correct ? acc + 1 : acc), 0) === 1,
         'Must have exactly 1 correct choice',
       ),
-      v.checkItems((item, index, array) => array.indexOf(item) === index, 'Duplicate items are not allowed'),
+      v.check(array => new Set(array.map(item => item.text)).size === array.length, 'Duplicate items are not allowed'),
       v.minLength(2, 'Must have at least 2 choices'),
     ),
   }),
