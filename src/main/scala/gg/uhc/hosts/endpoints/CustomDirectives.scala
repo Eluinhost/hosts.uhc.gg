@@ -2,19 +2,19 @@ package gg.uhc.hosts.endpoints
 
 import java.net.InetAddress
 
-import org.apache.pekko.http.scaladsl.model.RemoteAddress
-import org.apache.pekko.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2BearerToken}
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server.directives.Credentials
-import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
-import cats.data.OptionT
-import doobie.free.connection
-import doobie._
-import gg.uhc.hosts.authentication.Session.{Authenticated, RefreshToken}
-import gg.uhc.hosts.database.Database
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
+
+import org.apache.pekko.http.scaladsl.model.RemoteAddress
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, HttpChallenges, OAuth2BearerToken}
+import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0, Directive1}
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import org.apache.pekko.http.scaladsl.server.directives.Credentials
+import cats.data.OptionT
+import doobie.*
+import doobie.free.connection
+import gg.uhc.hosts.authentication.Session.{Authenticated, RefreshToken}
+import gg.uhc.hosts.database.Database
 
 class CustomDirectives(database: Database) {
   def requireRemoteIp: Directive1[InetAddress] =
@@ -48,8 +48,8 @@ class CustomDirectives(database: Database) {
     requireAtLeastOnePermission(permission :: Nil, username)
 
   /**
-    * Checks for an OAuth2 bearer token header with a valid non-expired JWT token.
-    */
+   * Checks for an OAuth2 bearer token header with a valid non-expired JWT token.
+   */
   val optionalJwtAuthentication: Directive1[Option[Authenticated]] =
     optionalHeaderValuePF {
       case Authorization(OAuth2BearerToken(token)) => token
@@ -58,8 +58,8 @@ class CustomDirectives(database: Database) {
     }
 
   /**
-    * Rejects with authentication failed reject if header missing or invalid JWT token
-    */
+   * Rejects with authentication failed reject if header missing or invalid JWT token
+   */
   val requireJwtAuthentication: Directive1[Authenticated] =
     optionalJwtAuthentication.flatMap {
       case Some(token) =>
@@ -101,7 +101,7 @@ class CustomDirectives(database: Database) {
             database.getUserApiKey(id)
           }
           _ <- OptionT[ConnectionIO, Unit] {
-            if (p.verify(key)) connection.raw(_ => Some(()))
+            if p.verify(key) then connection.raw(_ => Some(()))
             else connection.raw(_ => None)
           }
           perms <- OptionT[ConnectionIO, List[String]](
@@ -142,8 +142,8 @@ class CustomDirectives(database: Database) {
     }
 
   /**
-    * Rejects with a DatabaseErrorRejection if query fails, otherwise passes connectionIo return type
-    */
+   * Rejects with a DatabaseErrorRejection if query fails, otherwise passes connectionIo return type
+   */
   def requireSucessfulQuery[T](query: ConnectionIO[T]): Directive1[T] = {
     onComplete(database.run(query)) flatMap {
       case Success(value) => provide(value)

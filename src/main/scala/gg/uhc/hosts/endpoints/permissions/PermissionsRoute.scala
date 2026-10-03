@@ -1,6 +1,6 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 class PermissionsRoute(
@@ -9,8 +9,8 @@ class PermissionsRoute(
     listUsersInPermissionBeginningWith: ListUsersInPermissionBeginningWith,
     addPermission: AddPermission,
     permissionModerationLog: PermissionModerationLog,
-    removePermission: RemovePermission) {
-
+    removePermission: RemovePermission
+                      ) {
 
   // GET / -> show map of perm name to count
   // GET /log -> show log of permission changes

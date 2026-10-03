@@ -1,7 +1,7 @@
 package gg.uhc.hosts.endpoints.modifiers
 
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
 
 class ModifiersRoute(listModifiers: ListModifiers, createModifier: CreateModifier, deleteModifier: DeleteModifier) {
   def apply(): Route =
@@ -16,4 +16,4 @@ class ModifiersRoute(listModifiers: ListModifiers, createModifier: CreateModifie
         pathEndOrSingleSlash(deleteModifier(id))
       }
     )
-  }
+}

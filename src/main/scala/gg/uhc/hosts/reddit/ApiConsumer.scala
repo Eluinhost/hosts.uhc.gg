@@ -1,16 +1,17 @@
 package gg.uhc.hosts.reddit
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.{HttpRequest, HttpResponse}
-import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
-import org.apache.pekko.stream.{Materializer, QueueOfferResult, ThrottleMode}
-
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
 
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.{HttpRequest, HttpResponse}
+import org.apache.pekko.stream.{Materializer, QueueOfferResult, ThrottleMode}
+import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
+
 class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
-  import scala.concurrent.duration._
+
+  import scala.concurrent.duration.*
 
   implicit val s: ActorSystem = system
   implicit val mz: Materializer = Materializer.matFromSystem

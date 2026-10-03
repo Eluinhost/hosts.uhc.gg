@@ -1,16 +1,17 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
-import doobie._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import doobie.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 import doobie.free.connection.delay
 
 class ListUsersInPermission(customDirectives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   // returns a list of usernames if <= 30 are available, otherwise shows a map of first letter to count
   def listUsersInPermission(permission: String): ConnectionIO[Either[List[String], Map[String, Int]]] =

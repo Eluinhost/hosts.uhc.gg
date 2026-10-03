@@ -1,19 +1,19 @@
 package gg.uhc.hosts.endpoints.matches
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
-import doobie._
+import doobie.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 import io.circe.JsonObject
-
 import cats.data.OptionT
 
 class ShowMatch(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
+
+  import CustomJsonCodec.*
+  import directives.*
 
   def fetchData(id: Long): ConnectionIO[Option[JsonObject]] =
     (for {

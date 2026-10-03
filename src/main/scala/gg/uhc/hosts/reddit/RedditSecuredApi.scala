@@ -1,13 +1,13 @@
 package gg.uhc.hosts.reddit
 
+import scala.concurrent.Future
+
 import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, StatusCodes}
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import io.circe.generic.AutoDerivation
 import org.mdedetrich.pekko.http.support.CirceHttpSupport
-
-import scala.concurrent.Future
 
 class RedditSecuredApi(actorSystem: ActorSystem, queueSize: Int)
     extends ApiConsumer(actorSystem, "oauth.reddit.com", queueSize)

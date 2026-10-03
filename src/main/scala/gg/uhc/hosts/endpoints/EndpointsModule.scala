@@ -5,9 +5,13 @@ import com.softwaremill.macwire.wire
 import com.softwaremill.tagging.@@
 import gg.uhc.hosts.HttpSystem
 import gg.uhc.hosts.database.Database
-import gg.uhc.hosts.endpoints.authentication.{Authenticate, AuthenticateCallback, AuthenticateRefresh, AuthenticationRoute}
+import gg.uhc.hosts.endpoints.authentication.{
+  Authenticate,
+  AuthenticateCallback,
+  AuthenticateRefresh,
+  AuthenticationRoute
+}
 import gg.uhc.hosts.endpoints.docs.DocsRoute
-import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
 import gg.uhc.hosts.endpoints.hostapplications.{
   CreateHostApplication,
   CreateQuizQuestion,
@@ -19,14 +23,15 @@ import gg.uhc.hosts.endpoints.hostapplications.{
   QuizRoute,
   ReviewHostApplication
 }
+import gg.uhc.hosts.endpoints.hosts.{GetHostingHistory, HostsRoute}
 import gg.uhc.hosts.endpoints.key.{GetApiKey, KeyRoute, RegenerateApiKey}
-import gg.uhc.hosts.endpoints.matches._
+import gg.uhc.hosts.endpoints.matches.*
+import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.endpoints.modifiers.{CreateModifier, DeleteModifier, ListModifiers, ModifiersRoute}
-import gg.uhc.hosts.endpoints.permissions._
+import gg.uhc.hosts.endpoints.permissions.*
 import gg.uhc.hosts.endpoints.rules.{GetLatestRules, RulesRoute, SetRules}
 import gg.uhc.hosts.endpoints.sync.{GetTime, SyncRoute}
 import gg.uhc.hosts.endpoints.users.{ShowPermissionsForUser, UsersRoute}
-import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.reddit.RedditModule
 
 trait EndpointsModule extends RedditModule {
@@ -35,28 +40,28 @@ trait EndpointsModule extends RedditModule {
 
   lazy val customDirectives: CustomDirectives = wire[CustomDirectives]
 
-  lazy val listUpcomingEndpoint: ListUpcomingMatches                      = wire[ListUpcomingMatches]
-  lazy val createMatchesEndpoint: CreateMatch                             = wire[CreateMatch]
-  lazy val removeMatchesEndpoint: RemoveMatch                             = wire[RemoveMatch]
-  lazy val showMatchEndpoint: ShowMatch                                   = wire[ShowMatch]
-  lazy val showMatchMeta: ShowMatchMeta                                   = wire[ShowMatchMeta]
-  lazy val authEndpoint: Authenticate                                     = wire[Authenticate]
-  lazy val authCallbackEndpoint: AuthenticateCallback                     = wire[AuthenticateCallback]
-  lazy val authRefreshEndpoint: AuthenticateRefresh                       = wire[AuthenticateRefresh]
-  lazy val getTime: GetTime                                               = wire[GetTime]
-  lazy val removePermission: RemovePermission                             = wire[RemovePermission]
-  lazy val addPermission: AddPermission                                   = wire[AddPermission]
-  lazy val permissionModerationLog: PermissionModerationLog               = wire[PermissionModerationLog]
+  lazy val listUpcomingEndpoint: ListUpcomingMatches = wire[ListUpcomingMatches]
+  lazy val createMatchesEndpoint: CreateMatch = wire[CreateMatch]
+  lazy val removeMatchesEndpoint: RemoveMatch = wire[RemoveMatch]
+  lazy val showMatchEndpoint: ShowMatch = wire[ShowMatch]
+  lazy val showMatchMeta: ShowMatchMeta = wire[ShowMatchMeta]
+  lazy val authEndpoint: Authenticate = wire[Authenticate]
+  lazy val authCallbackEndpoint: AuthenticateCallback = wire[AuthenticateCallback]
+  lazy val authRefreshEndpoint: AuthenticateRefresh = wire[AuthenticateRefresh]
+  lazy val getTime: GetTime = wire[GetTime]
+  lazy val removePermission: RemovePermission = wire[RemovePermission]
+  lazy val addPermission: AddPermission = wire[AddPermission]
+  lazy val permissionModerationLog: PermissionModerationLog = wire[PermissionModerationLog]
   lazy val listUserCountForEachPermission: ListUserCountForEachPermission = wire[ListUserCountForEachPermission]
-  lazy val listUsersInPermission: ListUsersInPermission                   = wire[ListUsersInPermission]
+  lazy val listUsersInPermission: ListUsersInPermission = wire[ListUsersInPermission]
   lazy val listUsersInPermissionBeginningWith: ListUsersInPermissionBeginningWith =
     wire[ListUsersInPermissionBeginningWith]
-  lazy val checkConflicts: CheckConflicts       = wire[CheckConflicts]
-  lazy val getApiKey: GetApiKey                 = wire[GetApiKey]
-  lazy val regenerateApiKey: RegenerateApiKey   = wire[RegenerateApiKey]
-  lazy val getLatestRules: GetLatestRules       = wire[GetLatestRules]
-  lazy val setRules: SetRules                   = wire[SetRules]
-  lazy val approveMatch: ApproveMatch           = wire[ApproveMatch]
+  lazy val checkConflicts: CheckConflicts = wire[CheckConflicts]
+  lazy val getApiKey: GetApiKey = wire[GetApiKey]
+  lazy val regenerateApiKey: RegenerateApiKey = wire[RegenerateApiKey]
+  lazy val getLatestRules: GetLatestRules = wire[GetLatestRules]
+  lazy val setRules: SetRules = wire[SetRules]
+  lazy val approveMatch: ApproveMatch = wire[ApproveMatch]
   lazy val getHostingHistory: GetHostingHistory = wire[GetHostingHistory]
   lazy val getHostApplications: GetHostApplications = wire[GetHostApplications]
   lazy val getHostApplicationDetails: GetHostApplicationDetails = wire[GetHostApplicationDetails]
@@ -66,25 +71,25 @@ trait EndpointsModule extends RedditModule {
   lazy val createQuizQuestion: CreateQuizQuestion = wire[CreateQuizQuestion]
   lazy val deleteQuizQuestion: DeleteQuizQuestion = wire[DeleteQuizQuestion]
   lazy val showPermissionsForUser: ShowPermissionsForUser = wire[ShowPermissionsForUser]
-  lazy val listModifiers: ListModifiers         = wire[ListModifiers]
-  lazy val createModifier: CreateModifier       = wire[CreateModifier]
-  lazy val deleteModifier: DeleteModifier       = wire[DeleteModifier]
+  lazy val listModifiers: ListModifiers = wire[ListModifiers]
+  lazy val createModifier: CreateModifier = wire[CreateModifier]
+  lazy val deleteModifier: DeleteModifier = wire[DeleteModifier]
 
-  lazy val basicCache: BasicCache                   = wire[BasicCache]
+  lazy val basicCache: BasicCache = wire[BasicCache]
   lazy val authenticationRoute: AuthenticationRoute = wire[AuthenticationRoute]
-  lazy val docsRoute: DocsRoute                     = wire[DocsRoute]
-  lazy val keyRoute: KeyRoute                       = wire[KeyRoute]
-  lazy val matchesRoute: MatchesRoute               = wire[MatchesRoute]
-  lazy val permissionsRoute: PermissionsRoute       = wire[PermissionsRoute]
-  lazy val rulesRoute: RulesRoute                   = wire[RulesRoute]
-  lazy val syncRoute: SyncRoute                     = wire[SyncRoute]
-  lazy val apiRoute: ApiRoute                       = wire[ApiRoute]
-  lazy val hostsRoute: HostsRoute                   = wire[HostsRoute]
+  lazy val docsRoute: DocsRoute = wire[DocsRoute]
+  lazy val keyRoute: KeyRoute = wire[KeyRoute]
+  lazy val matchesRoute: MatchesRoute = wire[MatchesRoute]
+  lazy val permissionsRoute: PermissionsRoute = wire[PermissionsRoute]
+  lazy val rulesRoute: RulesRoute = wire[RulesRoute]
+  lazy val syncRoute: SyncRoute = wire[SyncRoute]
+  lazy val apiRoute: ApiRoute = wire[ApiRoute]
+  lazy val hostsRoute: HostsRoute = wire[HostsRoute]
   lazy val hostApplicationsRoute: HostApplicationsRoute = wire[HostApplicationsRoute]
-  lazy val quizRoute: QuizRoute                     = wire[QuizRoute]
-  lazy val usersRoute: UsersRoute                   = wire[UsersRoute]
-  lazy val modifiersRoute: ModifiersRoute           = wire[ModifiersRoute]
-  lazy val matchesWebsocket: MatchesWebsocket       = wire[MatchesWebsocket]
+  lazy val quizRoute: QuizRoute = wire[QuizRoute]
+  lazy val usersRoute: UsersRoute = wire[UsersRoute]
+  lazy val modifiersRoute: ModifiersRoute = wire[ModifiersRoute]
+  lazy val matchesWebsocket: MatchesWebsocket = wire[MatchesWebsocket]
 
-  lazy val baseRoute: BaseRoute                     = wire[BaseRoute]
+  lazy val baseRoute: BaseRoute = wire[BaseRoute]
 }

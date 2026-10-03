@@ -1,18 +1,19 @@
 package gg.uhc.hosts.endpoints
 
-import com.github.blemale.scaffeine.{AsyncLoadingCache, Scaffeine}
-import doobie._
-import gg.uhc.hosts.CustomJsonCodec
-import gg.uhc.hosts.database.Database
-import io.circe.syntax._
-import io.circe.{Json, JsonObject}
-
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.language.postfixOps
 
+import com.github.blemale.scaffeine.{AsyncLoadingCache, Scaffeine}
+import doobie.*
+import gg.uhc.hosts.CustomJsonCodec
+import gg.uhc.hosts.database.Database
+import io.circe.{Json, JsonObject}
+import io.circe.syntax.*
+
 class BasicCache(database: Database) {
-  import CustomJsonCodec._
+
+  import CustomJsonCodec.*
 
   private sealed trait ListingKey
   private object UpcomingMatches extends ListingKey

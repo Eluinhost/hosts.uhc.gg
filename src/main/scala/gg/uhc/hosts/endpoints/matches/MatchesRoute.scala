@@ -2,10 +2,10 @@ package gg.uhc.hosts.endpoints.matches
 
 import java.time.Instant
 
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server.{PathMatcher1, Route}
-
 import scala.util.Try
+
+import org.apache.pekko.http.scaladsl.server.{PathMatcher1, Route}
+import org.apache.pekko.http.scaladsl.server.Directives.*
 
 class MatchesRoute(
     approveMatch: ApproveMatch,
@@ -14,7 +14,8 @@ class MatchesRoute(
     listMatches: ListUpcomingMatches,
     removeMatch: RemoveMatch,
     showMatch: ShowMatch,
-    showMatchMeta: ShowMatchMeta) {
+    showMatchMeta: ShowMatchMeta
+                  ) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
@@ -39,6 +40,6 @@ class MatchesRoute(
           (delete & pathEndOrSingleSlash)(removeMatch(id))
         )
       },
-      (get & pathPrefix("conflicts")) (checkConflicts())
+      (get & pathPrefix("conflicts"))(checkConflicts())
     )
 }

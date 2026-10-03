@@ -5,8 +5,8 @@ import org.mdedetrich.pekko.http.support.CirceHttpSupport
 import gg.uhc.hosts.database.MatchRow
 import gg.uhc.hosts.endpoints.matches.websocket.WebsocketEvent
 import io.circe.{Decoder, Encoder, Json, JsonObject, KeyEncoder, Printer}
-import io.circe.syntax.*
 import io.circe.generic.AutoDerivation
+import io.circe.syntax.*
 
 object CustomJsonCodec extends CirceHttpSupport with AutoDerivation {
   // in scala 3 the generics from CirceHttpSupport are ambiguous for Seq/Map. Adding these explicitly here so scala
@@ -14,12 +14,16 @@ object CustomJsonCodec extends CirceHttpSupport with AutoDerivation {
   implicit def circeListMarshaller[A](using e: Encoder[A], P: Printer = Printer.noSpaces): ToEntityMarshaller[List[A]] =
     circeJsonMarshaller(using P).compose(list => Json.fromValues(list.map(e.apply)))
 
-  implicit def circeMapMarshaller[K, V](using k: KeyEncoder[K], e: Encoder[V], P: Printer = Printer.noSpaces): ToEntityMarshaller[Map[K, V]] =
+  implicit def circeMapMarshaller[K, V](
+                                         using k: KeyEncoder[K],
+                                         e: Encoder[V],
+                                         P: Printer = Printer.noSpaces
+                                       ): ToEntityMarshaller[Map[K, V]] =
     circeJsonMarshaller(using P).compose(m => Json.fromFields(m.map { case (key, value) => k(key) -> e(value) }))
 
   implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] =
     a.either(b)
-  
+
   implicit class MatchRowExtensions(m: MatchRow) {
     def toJsonWithRoles(roles: List[String]): JsonObject = {
       m.asJsonObject.add("roles", roles.asJson)

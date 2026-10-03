@@ -1,5 +1,7 @@
 package gg.uhc.hosts.endpoints.matches.websocket
 
+import scala.concurrent.ExecutionContext
+
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.http.scaladsl.model.ws.{Message, TextMessage}
@@ -9,13 +11,11 @@ import org.apache.pekko.http.scaladsl.server.directives.RouteDirectives.complete
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source, SourceQueueWithComplete}
 import com.softwaremill.tagging.@@
-import gg.uhc.hosts.database.MatchRow
-import gg.uhc.hosts.CustomJsonCodec._
+import gg.uhc.hosts.CustomJsonCodec.*
 import gg.uhc.hosts.HttpSystem
+import gg.uhc.hosts.database.MatchRow
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives}
 import io.circe.{Json, Printer}
-
-import scala.concurrent.ExecutionContext
 
 class MatchesWebsocket(actorSystem: ActorSystem @@ HttpSystem, cache: BasicCache, customDirectives: CustomDirectives) {
   implicit val mz: Materializer = Materializer(actorSystem)

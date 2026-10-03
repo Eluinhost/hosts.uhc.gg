@@ -1,14 +1,14 @@
 package gg.uhc.hosts.endpoints.matches
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import scala.util.{Failure, Success}
+
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import org.apache.pekko.http.scaladsl.server.directives.RouteDirectives.{complete, reject}
-import gg.uhc.hosts.CustomJsonCodec._
+import gg.uhc.hosts.CustomJsonCodec.*
 import gg.uhc.hosts.Instrumented
-import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 import gg.uhc.hosts.endpoints.{BasicCache, DatabaseErrorRejection, EndpointRejectionHandler}
-
-import scala.util.{Failure, Success}
+import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 
 class ListUpcomingMatches(cache: BasicCache, websocket: MatchesWebsocket) extends Instrumented {
   private val upcomingMatchesTimer   = metrics.timer("upcoming-matches-request-time")

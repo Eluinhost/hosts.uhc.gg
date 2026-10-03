@@ -1,13 +1,14 @@
 package gg.uhc.hosts.endpoints.authentication
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 class AuthenticationRoute(
     authenticate: Authenticate,
     authenticateCallback: AuthenticateCallback,
-    authenticateRefresh: AuthenticateRefresh) {
+    authenticateRefresh: AuthenticateRefresh
+                         ) {
 
   def apply(): Route =
     concat(

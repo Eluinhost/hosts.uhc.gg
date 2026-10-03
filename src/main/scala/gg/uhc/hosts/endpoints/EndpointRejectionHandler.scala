@@ -1,9 +1,15 @@
 package gg.uhc.hosts.endpoints
 
 import java.sql.SQLException
+
 import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.{
+  AuthenticationFailedRejection,
+  MalformedRequestContentRejection,
+  RejectionHandler,
+  ValidationRejection
+}
 import org.apache.pekko.http.scaladsl.server.Directives.{complete, extractActorSystem}
-import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, MalformedRequestContentRejection, RejectionHandler, ValidationRejection}
 import doobie.postgres.sqlstate
 import io.circe.{DecodingFailure, ParsingFailure}
 import cats.implicits.toShow

@@ -1,6 +1,6 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.PathMatchers.LongNumber
 import org.apache.pekko.http.scaladsl.server.Route
 
@@ -8,7 +8,8 @@ class HostApplicationsRoute(
     getHostApplications: GetHostApplications,
     getHostApplicationDetails: GetHostApplicationDetails,
     createHostApplication: CreateHostApplication,
-    reviewHostApplication: ReviewHostApplication) {
+    reviewHostApplication: ReviewHostApplication
+                           ) {
   def apply(): Route =
     concat(
       (get & pathEndOrSingleSlash)(getHostApplications()),

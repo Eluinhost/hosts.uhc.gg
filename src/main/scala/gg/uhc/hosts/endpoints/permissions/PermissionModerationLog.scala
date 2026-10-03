@@ -1,14 +1,15 @@
 package gg.uhc.hosts.endpoints.permissions
 
-import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.{Directive1, Route}
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 class PermissionModerationLog(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
+
+  import CustomJsonCodec.*
+  import directives.*
 
   private val redactedModifier = "moderation team"
 
@@ -23,7 +24,7 @@ class PermissionModerationLog(directives: CustomDirectives, database: Database) 
             }
             canSeeModifiers { canSee =>
               requireSucessfulQuery(database.getPermissionModerationLog(before, count)) { log =>
-                val visible = if (canSee) log else log.map(_.copy(modifier = redactedModifier))
+                val visible = if canSee then log else log.map(_.copy(modifier = redactedModifier))
                 complete(visible)
               }
             }

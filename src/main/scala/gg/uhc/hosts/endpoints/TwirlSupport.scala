@@ -1,11 +1,11 @@
 package gg.uhc.hosts.endpoints
 
-import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
-import org.apache.pekko.http.scaladsl.model.MediaTypes._
-import org.apache.pekko.http.scaladsl.model.MediaType
-import play.twirl.api.{ Xml, Txt, Html }
-
 import scala.reflect.ClassTag
+
+import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
+import org.apache.pekko.http.scaladsl.model.MediaType
+import org.apache.pekko.http.scaladsl.model.MediaTypes.*
+import play.twirl.api.{Html, Txt, Xml}
 
 object TwirlSupport extends TwirlSupport
 

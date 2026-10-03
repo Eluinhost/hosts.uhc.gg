@@ -2,21 +2,22 @@ package gg.uhc.hosts.endpoints.authentication
 
 import java.net.InetAddress
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
-import doobie._
+import doobie.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.authentication.Session
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 /**
-  * Endpoint that when called with a valid authentication header
-  * will return a new JWT with refreshed permissions from the DB.
-  */
+ * Endpoint that when called with a valid authentication header will return a new JWT with refreshed permissions from
+ * the DB.
+ */
 class AuthenticateRefresh(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
+
+  import CustomJsonCodec.*
+  import directives.*
 
   case class AuthenticateRefreshResponse(accessToken: String, refreshToken: String)
 

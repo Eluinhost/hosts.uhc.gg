@@ -4,11 +4,11 @@ import java.net.InetAddress
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-import doobie._
-import doobie.implicits._
-import doobie.postgres._
-import doobie.postgres.implicits._
-import doobie.postgres.pgisimplicits._
+import doobie.*
+import doobie.implicits.*
+import doobie.postgres.*
+import doobie.postgres.implicits.*
+import doobie.postgres.pgisimplicits.*
 import cats.data.NonEmptyList
 
 class Queries(logger: LogHandler) {
@@ -68,12 +68,11 @@ class Queries(logger: LogHandler) {
       ORDER BY id ASC
     """.query[QuizQuestionRow]
 
-  def getQuizQuestionChoices(questionIds: NonEmptyList[Long]): Query0[QuizQuestionChoiceRow] =
-    (sql"""
+  def getQuizQuestionChoices(questionIds: NonEmptyList[Long]): Query0[QuizQuestionChoiceRow] = (sql"""
       SELECT id, questionId, text, correct
       FROM quiz_question_choices
       WHERE """ ++ Fragments.in(fr"questionId", questionIds) ++ sql""" ORDER BY id ASC""")
-      .query[QuizQuestionChoiceRow]
+    .query[QuizQuestionChoiceRow]
 
   def deleteQuizQuestion(id: Long): Update0 =
     sql"""
@@ -220,8 +219,7 @@ class Queries(logger: LogHandler) {
        WHERE id = $id
     """.query[MatchRow]
 
-  def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] =
-    (sql"""
+  def getMatchesByIds(ids: NonEmptyList[Long]): Query0[MatchRow] = (sql"""
        SELECT
         id,
         author,

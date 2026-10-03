@@ -1,13 +1,14 @@
 package gg.uhc.hosts.endpoints.matches
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
 
 class ApproveMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache) {
-  import customDirectives._
+
+  import customDirectives.*
 
   def apply(id: Int): Route =
     handleRejections(EndpointRejectionHandler()) {

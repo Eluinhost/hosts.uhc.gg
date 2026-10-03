@@ -1,10 +1,10 @@
 package gg.uhc.hosts.endpoints.matches
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import scala.util.Success
+
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.database.Database
-
-import scala.util.Success
 
 class ShowMatchMeta(database: Database) {
 

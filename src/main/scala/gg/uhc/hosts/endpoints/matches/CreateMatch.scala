@@ -1,25 +1,31 @@
 package gg.uhc.hosts.endpoints.matches
 
+import java.time.{Instant, ZoneOffset}
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.{Instant, ZoneOffset}
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives.{entity, _}
-import org.apache.pekko.http.scaladsl.server._
-import gg.uhc.hosts._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.{entity, *}
+import gg.uhc.hosts.*
 import gg.uhc.hosts.database.{Database, MatchRow}
 import gg.uhc.hosts.endpoints.{BasicCache, CustomDirectives, EndpointRejectionHandler}
+import doobie.*
 import doobie.free.connection.delay
-import doobie._
 import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
 
 /**
-  * Creates a new Match object. Requires login + 'host' permission
-  */
-class CreateMatch(customDirectives: CustomDirectives, database: Database, cache: BasicCache, websocket: MatchesWebsocket) {
-  import CustomJsonCodec._
-  import customDirectives._
+ * Creates a new Match object. Requires login + 'host' permission
+ */
+class CreateMatch(
+                   customDirectives: CustomDirectives,
+                   database: Database,
+                   cache: BasicCache,
+                   websocket: MatchesWebsocket
+                 ) {
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   case class CreateMatchPayload(
       opens: Instant,
@@ -40,26 +46,28 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
       mapSize: Int,
       pvpEnabledAt: Int,
       hostingName: Option[String],
-      tournament: Boolean)
+      tournament: Boolean
+                               )
 
   // allowed regions
   private val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
 
   /**
-    * Converts the payload into an insertable MatchRow, does not validate any input
-    */
+   * Converts the payload into an insertable MatchRow, does not validate any input
+   */
   private def convertPayload(payload: CreateMatchPayload, author: String): Directive1[MatchRow] = {
     var row = MatchRow(
       address = payload.address,
       content = payload.content,
       count = payload.count,
-      customStyle = if (payload.teams == "custom") payload.customStyle else None, // remove if not custom
+      customStyle = if payload.teams == "custom" then payload.customStyle else None, // remove if not custom
       ip = payload.ip,
       // Replace time with the UTC offset and set everything sub-minute accuracy to 0
       opens = payload.opens.atOffset(ZoneOffset.UTC).withSecond(0).withNano(0).toInstant,
       region = payload.region,
       teams = payload.teams,
-      size = if (TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle])) payload.size else None, // remove size if not required
+      size = if TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle]) then payload.size
+      else None, // remove size if not required
       location = payload.location,
       version = payload.version,
       slots = payload.slots,
@@ -82,7 +90,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
     )
 
     // Automatically add the 'rush' scenario for games < 45 minutes long if it doesn't already have it and isn't a tournament
-    if (!row.tournament && row.length < 45 && !row.scenarios.exists(_.toLowerCase == "rush")) {
+    if !row.tournament && row.length < 45 && !row.scenarios.exists(_.toLowerCase == "rush") then {
       row = row.copy(scenarios = row.scenarios :+ "Rush")
     }
 
@@ -106,7 +114,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first
         val best = conflicts.find(!_.tournament).getOrElse(conflicts.head)
 
-        reject(ValidationRejection(s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.version}"))
+        reject(ValidationRejection(
+          s"Conflicts with /u/${best.author}'s #${best.count} (${best.region} - $hours) in ${best.version}"
+        ))
     }
 
   private def optionalValidate[T](data: Option[T], message: String)(p: T => Boolean) =
@@ -121,7 +131,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
     val valIp      = row.ip.filter(_.nonEmpty)
     val valAddress = row.address.filter(_.nonEmpty)
 
-    if (valIp.isEmpty && valAddress.isEmpty)
+    if valIp.isEmpty && valAddress.isEmpty then
       reject(ValidationRejection("Either an IP or an address must be provided (or both)"))
 
     val ipCheck = optionalValidate(valIp, "Invalid IP supplied, expected format 111.222.333.444[:55555]") { ip =>
@@ -141,9 +151,9 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
   }
 
   /**
-    * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
-    * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
-    */
+   * Runs full validation of input payload including DB calls for overhost protection. Rejects with ValidationRejection
+   * if something fails, otherwise payload.the validated MatchRow ready for inserting into the DB
+   */
   private def validateRow(row: MatchRow): Directive0 =
     validate(
       row.opens.isAfter(Instant.now().plus(30, ChronoUnit.MINUTES)),
@@ -182,7 +192,7 @@ class CreateMatch(customDirectives: CustomDirectives, database: Database, cache:
 
   private def createMatch(row: MatchRow): ConnectionIO[MatchRow] =
     for {
-      id       <- database.insertMatch(row)
+      id <- database.insertMatch(row)
     } yield row.copy(id = id)
 
   def apply(): Route =

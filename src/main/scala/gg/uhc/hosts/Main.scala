@@ -3,9 +3,9 @@ package gg.uhc.hosts
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.http.scaladsl.Http
 import org.apache.pekko.http.scaladsl.Http.ServerBinding
-import cats.effect._
+import cats.effect.*
 import com.softwaremill.macwire.wire
-import com.softwaremill.tagging._
+import com.softwaremill.tagging.*
 import com.typesafe.config.ConfigFactory
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
@@ -18,8 +18,8 @@ class MainModule(
     transactor: Transactor[IO],
     val httpSystem: ActorSystem @@ HttpSystem,
     val databaseSystem: ActorSystem @@ DatabaseSystem,
-    val redditApiSystem: ActorSystem @@ RedditApiSystem)
-    extends EndpointsModule {
+    val redditApiSystem: ActorSystem @@ RedditApiSystem
+                ) extends EndpointsModule {
   val database: Database = wire[Database]
 }
 
@@ -33,7 +33,8 @@ object Main extends IOApp {
       IO {
         system.log.info(s"Shutting down actor system '$name'...")
         system.terminate()
-    })
+      }
+    )
 
   override def run(args: List[String]): IO[ExitCode] = {
     val resources: Resource[IO, Resources] = for {
@@ -62,10 +63,12 @@ object Main extends IOApp {
         IO.fromFuture(IO {
           implicit val ac: ActorSystem = httpSystem
 
-          val mainModule = new MainModule(transactor,
-                                          httpSystem.taggedWith[HttpSystem],
-                                          databaseSystem.taggedWith[DatabaseSystem],
-                                          redditApiSystem.taggedWith[RedditApiSystem])
+          val mainModule = new MainModule(
+            transactor,
+            httpSystem.taggedWith[HttpSystem],
+            databaseSystem.taggedWith[DatabaseSystem],
+            redditApiSystem.taggedWith[RedditApiSystem]
+          )
 
           httpSystem.log.info("Starting web server...")
 
@@ -82,7 +85,8 @@ object Main extends IOApp {
             httpSystem.log.info("Shutting down web server...")
             binding.unbind()
           }
-        } *> IO.unit)
+        } *> IO.unit
+      )
     } yield Resources(httpSystem, transactor, binding)
 
     resources.use { _ =>

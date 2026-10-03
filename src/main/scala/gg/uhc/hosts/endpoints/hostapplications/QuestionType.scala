@@ -2,10 +2,10 @@ package gg.uhc.hosts.endpoints.hostapplications
 
 import doobie.enumerated.JdbcType
 import doobie.util.meta.Meta
-import io.circe.DecodingFailure.Reason.CustomReason
 import io.circe.{Decoder, DecodingFailure, Encoder}
+import io.circe.DecodingFailure.Reason.CustomReason
 
-enum QuestionType(val id: String){
+enum QuestionType(val id: String) {
   case MULTIPLE_CHOICE extends QuestionType("multiple choice")
   case TEXT extends QuestionType("text")
 }
@@ -18,8 +18,8 @@ object QuestionType {
     Meta.Basic.one[QuestionType](
       JdbcType.VarChar,
       List(JdbcType.Char, JdbcType.LongVarChar, JdbcType.NChar, JdbcType.NVarChar, JdbcType.LongnVarChar),
-      get    = (rs, n) => fromId(rs.getString(n)).fold(msg => throw new IllegalArgumentException(msg), identity),
-      put    = (ps, n, q) => ps.setString(n, q.id),
+      get = (rs, n) => fromId(rs.getString(n)).fold(msg => throw new IllegalArgumentException(msg), identity),
+      put = (ps, n, q) => ps.setString(n, q.id),
       update = (rs, n, q) => rs.updateString(n, q.id)
     )
 

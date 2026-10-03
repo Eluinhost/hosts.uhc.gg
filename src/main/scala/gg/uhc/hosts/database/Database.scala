@@ -4,26 +4,26 @@ import java.net.InetAddress
 import java.time.Instant
 import java.util.UUID
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import org.apache.pekko.actor.ActorSystem
 import cats.data.NonEmptyList
 import cats.effect.IO
 import com.softwaremill.tagging.@@
+import doobie.*
 import doobie.free.connection.{delay, raw}
-import doobie._
-import doobie.implicits._
-import doobie.postgres._
-import doobie.postgres.implicits._
+import doobie.implicits.*
+import doobie.postgres.*
+import doobie.postgres.implicits.*
 import doobie.util.log.{ExecFailure, ProcessingFailure, Success}
 import gg.uhc.hosts.{DatabaseSystem, Instrumented}
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem) extends Instrumented {
   private val queryTimer   = metrics.timer("query-time")
   private val successGauge = metrics.counter("successful-queries")
   private val failureGauge = metrics.counter("failed-queries")
 
-  implicit val s: ActorSystem  = system
+  implicit val s: ActorSystem = system
   implicit val ec: ExecutionContext = system.dispatcher
 
   val queries = new Queries(LogHandler {
@@ -155,7 +155,7 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def addPermission(username: String, permission: String, modifier: String): ConnectionIO[Boolean] =
     for {
       inserted <- queries.addPermission(username = username, permission = permission).run.map(_ > 0)
-      _ <- if (inserted)
+      _ <- if inserted then
         queries
           .addPermissionModerationLog(
             username = username,
@@ -170,7 +170,7 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def removePermission(username: String, permission: String, modifier: String): ConnectionIO[Boolean] =
     for {
       removed <- queries.removePermission(username = username, permission = permission).run.map(_ > 0)
-      _ <- if (removed)
+      _ <- if removed then
         queries
           .addPermissionModerationLog(
             username = username,
@@ -188,15 +188,19 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
   def updateAuthenticationLog(username: String, ip: InetAddress): ConnectionIO[Unit] =
     queries.updateAuthenticationLog(username, ip).run.map(_ => ())
 
-  def getPotentialConflicts(start: Instant, end: Instant, region: String, version: String): ConnectionIO[List[MatchRow]] =
+  def getPotentialConflicts(
+                             start: Instant,
+                             end: Instant,
+                             region: String,
+                             version: String
+                           ): ConnectionIO[List[MatchRow]] =
     queries.getPotentialConflicts(start, end, region, version).to[List]
 
   def getUserApiKey(username: String): ConnectionIO[Option[String]] =
     queries.getUserApiKey(username).option
 
   def regnerateApiKey(username: String): ConnectionIO[String] = {
-    val key =
-      (UUID.randomUUID().toString + UUID.randomUUID().toString + UUID.randomUUID().toString).replaceAll("-", "")
+    val key = (UUID.randomUUID().toString + UUID.randomUUID().toString + UUID.randomUUID().toString).replaceAll("-", "")
 
     queries.setUserApiKey(username, key).run.map(_ => key)
   }
@@ -219,7 +223,7 @@ class Database(transactor: Transactor[IO], system: ActorSystem @@ DatabaseSystem
         query.transact(transactor).unsafeRunSync()
       }
     }.transform { result =>
-      if (result.isSuccess) {
+      if result.isSuccess then {
         successGauge.inc()
       } else {
         failureGauge.inc()

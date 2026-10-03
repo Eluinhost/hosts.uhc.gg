@@ -1,9 +1,9 @@
 package gg.uhc.hosts.endpoints.modifiers
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
-import gg.uhc.hosts.CustomJsonCodec._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import gg.uhc.hosts.CustomJsonCodec.*
 import gg.uhc.hosts.database.{Database, ModifierRow}
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 

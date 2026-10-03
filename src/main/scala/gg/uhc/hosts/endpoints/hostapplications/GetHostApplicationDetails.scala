@@ -1,23 +1,25 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
+import java.time.Instant
+
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
-import java.time.Instant
-
 class GetHostApplicationDetails(database: Database, customDirectives: CustomDirectives) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   private case class AnswerResponse(
                                      prompt: String,
                                      answer: String,
                                      questionType: QuestionType,
-                                     choiceCorrect: Option[Boolean])
+                                     choiceCorrect: Option[Boolean]
+                                   )
 
   private case class HostApplicationDetailsResponse(
       id: Long,
@@ -27,7 +29,8 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
       reviewedBy: Option[String],
       reviewedAt: Option[Instant],
       reviewReason: Option[String],
-      answers: List[AnswerResponse])
+      answers: List[AnswerResponse]
+                                                   )
 
   def apply(id: Long): Route =
     handleRejections(EndpointRejectionHandler()) {
@@ -47,14 +50,14 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
                   reviewedBy = application.reviewedBy,
                   reviewedAt = application.reviewedAt,
                   reviewReason = application.reviewReason,
-                  answers = answers.map(
-                    answer =>
-                      AnswerResponse(
-                        prompt = answer.questionPrompt,
-                        answer = answer.answer,
-                        questionType = answer.questionType,
-                        choiceCorrect = if (canReview) answer.choiceCorrect else None,
-                    ))
+                  answers = answers.map(answer =>
+                    AnswerResponse(
+                      prompt = answer.questionPrompt,
+                      answer = answer.answer,
+                      questionType = answer.questionType,
+                      choiceCorrect = if canReview then answer.choiceCorrect else None,
+                    )
+                  )
                 )
               )
             }

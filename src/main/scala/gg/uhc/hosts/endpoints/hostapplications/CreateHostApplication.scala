@@ -1,8 +1,8 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.{Directive0, Directive1, Route}
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.{
   Database,
@@ -14,8 +14,9 @@ import gg.uhc.hosts.database.{
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 class CreateHostApplication(database: Database, customDirectives: CustomDirectives) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   private case class AnswerPayload(questionId: Long, answer: String)
 
@@ -54,16 +55,16 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
       case QuestionType.MULTIPLE_CHOICE =>
         choices
           .find(_.text == answer)
-          .map(
-            option =>
-              HostApplicationAnswerRow(
-                id = -1,
-                applicationId = -1,
-                questionPrompt = question.prompt,
-                questionType = question.questionType,
-                answer = option.text,
-                choiceCorrect = Some(option.correct)
-              ))
+          .map(option =>
+            HostApplicationAnswerRow(
+              id = -1,
+              applicationId = -1,
+              questionPrompt = question.prompt,
+              questionType = question.questionType,
+              answer = option.text,
+              choiceCorrect = Some(option.correct)
+            )
+          )
           .toRight(s"""Invalid choice for question: "${question.prompt}"""")
     }
 
@@ -81,11 +82,13 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
       questions.map { question =>
         answersByQuestionId
           .get(question.id)
-          .map(answer => validateQuestionAnswered(
-            question = question,
-            answer = answer,
-            choices = choicesByQuestionId.getOrElse(question.id, Nil)
-          ))
+          .map(answer =>
+            validateQuestionAnswered(
+              question = question,
+              answer = answer,
+              choices = choicesByQuestionId.getOrElse(question.id, Nil)
+            )
+          )
           .getOrElse(Left(s"""You must answer question: "${question.prompt}""""))
       }
 

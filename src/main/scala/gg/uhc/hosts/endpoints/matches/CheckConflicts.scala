@@ -2,8 +2,9 @@ package gg.uhc.hosts.endpoints.matches
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import org.apache.pekko.http.scaladsl.server.Directives.*
+
 import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
@@ -12,8 +13,9 @@ import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 case class ConflictCheck(opens: Instant, region: String, version: String)
 
 class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   def parseOpens: Unmarshaller[String, Instant] = Unmarshaller.strict[String, Instant](Instant.parse(_))
 
@@ -27,12 +29,13 @@ class CheckConflicts(customDirectives: CustomDirectives, database: Database) {
 
             requireSucessfulQuery(
               for {
-                conflicts <- database.getPotentialConflicts(start = start, end = end, region = region, version = version)
+                conflicts <-
+                  database.getPotentialConflicts(start = start, end = end, region = region, version = version)
                 perms     <- database.getPermissions(conflicts.map(_.author))
               } yield conflicts.map(row => row.toJsonWithRoles(perms.getOrElse(row.author, List.empty)))
             ) { conflicts =>
-                complete(conflicts)
-              }
+              complete(conflicts)
+            }
           }
         }
       }

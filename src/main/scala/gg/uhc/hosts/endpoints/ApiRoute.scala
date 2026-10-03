@@ -2,12 +2,12 @@ package gg.uhc.hosts.endpoints
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.apache.pekko.http.scaladsl.model.headers.`Access-Control-Allow-Origin`
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.Instrumented
 import gg.uhc.hosts.endpoints.docs.DocsRoute
-import gg.uhc.hosts.endpoints.hosts.HostsRoute
 import gg.uhc.hosts.endpoints.hostapplications.{HostApplicationsRoute, QuizRoute}
+import gg.uhc.hosts.endpoints.hosts.HostsRoute
 import gg.uhc.hosts.endpoints.key.KeyRoute
 import gg.uhc.hosts.endpoints.matches.MatchesRoute
 import gg.uhc.hosts.endpoints.modifiers.ModifiersRoute
@@ -27,28 +27,27 @@ class ApiRoute(
     hostApplicationsRoute: HostApplicationsRoute,
     quizRoute: QuizRoute,
     usersRoute: UsersRoute,
-    modifiersRoute: ModifiersRoute)
-    extends Instrumented {
+    modifiersRoute: ModifiersRoute
+              ) extends Instrumented {
 
   private val apiTimer = metrics.timer("api-request-time")
   private val apiRequests = metrics.counter("api-request-count")
 
-  def apply(): Route =
-    (timed(apiTimer) & counting(apiRequests)) {
-      respondWithHeader(`Access-Control-Allow-Origin`.*) {
-        concat(
-          pathPrefix("sync")(syncRoute()),
-          pathPrefix("rules")(rulesRoute()),
-          pathPrefix("matches")(matchesRoute()),
-          pathPrefix("hosts")(hostsRoute()),
-          pathPrefix("host-applications")(hostApplicationsRoute()),
-          pathPrefix("quiz")(quizRoute()),
-          pathPrefix("permissions")(permissionsRoute()),
-          pathPrefix("key")(keyRoute()),
-          pathPrefix("docs")(docsRoute()),
-          pathPrefix("users")(usersRoute()),
-          pathPrefix("modifiers")(modifiersRoute()),
-        ) ~ complete(StatusCodes.NotFound)
-      }
+  def apply(): Route = (timed(apiTimer) & counting(apiRequests)) {
+    respondWithHeader(`Access-Control-Allow-Origin`.*) {
+      concat(
+        pathPrefix("sync")(syncRoute()),
+        pathPrefix("rules")(rulesRoute()),
+        pathPrefix("matches")(matchesRoute()),
+        pathPrefix("hosts")(hostsRoute()),
+        pathPrefix("host-applications")(hostApplicationsRoute()),
+        pathPrefix("quiz")(quizRoute()),
+        pathPrefix("permissions")(permissionsRoute()),
+        pathPrefix("key")(keyRoute()),
+        pathPrefix("docs")(docsRoute()),
+        pathPrefix("users")(usersRoute()),
+        pathPrefix("modifiers")(modifiersRoute()),
+      ) ~ complete(StatusCodes.NotFound)
     }
+  }
 }

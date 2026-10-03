@@ -1,6 +1,6 @@
 package gg.uhc.hosts.endpoints.key
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 class KeyRoute(getApiKey: GetApiKey, regenerateApiKey: RegenerateApiKey) {

@@ -1,17 +1,18 @@
 package gg.uhc.hosts.endpoints.permissions
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
-import doobie._
-import doobie.implicits._
+import org.apache.pekko.http.scaladsl.server.*
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import doobie.*
 import doobie.free.connection.{raiseError, unit}
+import doobie.implicits.*
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
-import cats.implicits._
+import cats.implicits.*
 
 class AddPermission(customDirectives: CustomDirectives, database: Database) {
-  import customDirectives._
+
+  import customDirectives.*
 
   case class UserIsHostingBannedException()      extends Exception()
   case class UserAlreadyHasPermissionException() extends Exception()
@@ -26,10 +27,11 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
             val withHandler = query(username = username, permission = permission, modifier = session.username).attempt
 
             requireSucessfulQuery(withHandler) {
-              case Right(true)    => complete(StatusCodes.Created)
-              case Right(false)   => complete(StatusCodes.BadRequest -> "Unknown error adding permission")
-              case Left(_: UserIsHostingBannedException)  => complete(StatusCodes.BadRequest -> "User is hosting banned")
-              case Left(_: UserAlreadyHasPermissionException) => complete(StatusCodes.BadRequest -> "User already has this permission")
+              case Right(true) => complete(StatusCodes.Created)
+              case Right(false) => complete(StatusCodes.BadRequest -> "Unknown error adding permission")
+              case Left(_: UserIsHostingBannedException) => complete(StatusCodes.BadRequest -> "User is hosting banned")
+              case Left(_: UserAlreadyHasPermissionException) =>
+                complete(StatusCodes.BadRequest -> "User already has this permission")
               case Left(x) => failWith(x)
             }
           }

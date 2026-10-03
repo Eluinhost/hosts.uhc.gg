@@ -3,12 +3,12 @@ package gg.uhc.hosts.authentication
 import java.time.{Duration, Instant}
 
 import com.typesafe.config.ConfigFactory
-import gg.uhc.hosts.CustomJsonCodec._
+import gg.uhc.hosts.CustomJsonCodec.*
 import io.circe.Json
 import io.circe.parser.parse
-import io.circe.syntax._
-import pdi.jwt.algorithms.JwtHmacAlgorithm
+import io.circe.syntax.*
 import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
+import pdi.jwt.algorithms.JwtHmacAlgorithm
 
 sealed trait Session {
   def toJwt: String
@@ -16,7 +16,7 @@ sealed trait Session {
 
 object Session {
   private val config = ConfigFactory.load()
-  private val jwtSecret: String    = config.getString("jwt.secret")
+  private val jwtSecret: String = config.getString("jwt.secret")
   private val jwtAlgorithm: JwtHmacAlgorithm = JwtAlgorithm.fromString(config.getString("jwt.algorithm")) match {
     case e: JwtHmacAlgorithm => e
     case _                   => throw new IllegalArgumentException("Expected a HMAC algorithm")
@@ -27,7 +27,7 @@ object Session {
   private def generateJwtToken(content: String, timeout: Duration) = {
     val now = Instant.now()
 
-    val claim = JwtClaim (
+    val claim = JwtClaim(
       content = content,
       expiration = Some(now.plus(timeout).getEpochSecond),
       issuedAt = Some(now.getEpochSecond)
@@ -43,10 +43,11 @@ object Session {
     } yield json
 
   /**
-    * @param username the verified username of the user
-    * @param permissions the 'snapshot' of permissions, not to be 100% trusted as permissions can be revoked between
-    *                    issuing and usage
-    */
+   * @param username
+   * the verified username of the user
+   * @param permissions
+   * the 'snapshot' of permissions, not to be 100% trusted as permissions can be revoked between issuing and usage
+   */
   case class Authenticated(username: String, permissions: List[String]) extends Session {
     override def toJwt: String = generateJwtToken(this.asJson.noSpaces, authSessionTimeout)
   }

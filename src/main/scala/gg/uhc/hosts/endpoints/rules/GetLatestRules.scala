@@ -7,8 +7,9 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 class GetLatestRules(customDirectives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   def apply(): Route =
     handleRejections(EndpointRejectionHandler()) {

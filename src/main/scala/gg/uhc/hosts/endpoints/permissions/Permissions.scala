@@ -2,7 +2,7 @@ package gg.uhc.hosts.endpoints.permissions
 
 import org.apache.pekko.http.scaladsl.model.headers.HttpChallenges
 import org.apache.pekko.http.scaladsl.server.{AuthenticationFailedRejection, Directive0}
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 
 object Permissions {
   val base: List[String] =
@@ -19,7 +19,7 @@ object Permissions {
       .flatMap(allowedModifications.getOrElse(_, List.empty))
       .contains(attempting)
 
-    if (canModify)
+    if canModify then
       pass
     else
       reject(

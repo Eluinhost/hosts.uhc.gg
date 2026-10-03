@@ -1,15 +1,16 @@
 package gg.uhc.hosts.endpoints.hostapplications
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import gg.uhc.hosts.CustomJsonCodec
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 class ReviewHostApplication(database: Database, customDirectives: CustomDirectives) {
-  import CustomJsonCodec._
-  import customDirectives._
+
+  import CustomJsonCodec.*
+  import customDirectives.*
 
   case class ReviewPayload(reason: Option[String])
 
@@ -27,14 +28,14 @@ class ReviewHostApplication(database: Database, customDirectives: CustomDirectiv
                   complete(StatusCodes.BadRequest -> "Application has already been reviewed")
                 case Some(application) =>
                   val review = for {
-                    granted <- if (status == "approved")
+                    granted <- if status == "approved" then
                       database.addPermission(application.username, "trial host", session.username)
                     else doobie.free.connection.delay(true)
                     updated <- database.reviewHostApplication(id, status, session.username, reason)
                   } yield granted && updated
 
                   requireSucessfulQuery(review) { updated =>
-                    if (updated) complete(StatusCodes.OK)
+                    if updated then complete(StatusCodes.OK)
                     else complete(StatusCodes.BadRequest -> "Application could not be reviewed")
                   }
               }

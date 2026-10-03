@@ -1,17 +1,23 @@
 package gg.uhc.hosts.reddit
 
+import scala.concurrent.Future
+
 import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.*
 import org.apache.pekko.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import org.mdedetrich.pekko.http.support.CirceHttpSupport
 
-import scala.concurrent.Future
-
-class RedditAuthenticationApi(actorSystem: ActorSystem, clientId: String, secret: String, redirectUri: String, queueSize: Int)
-    extends ApiConsumer(actorSystem, "www.reddit.com", queueSize)
+class RedditAuthenticationApi(
+                               actorSystem: ActorSystem,
+                               clientId: String,
+                               secret: String,
+                               redirectUri: String,
+                               queueSize: Int
+                             ) extends ApiConsumer(actorSystem, "www.reddit.com", queueSize)
     with CirceHttpSupport {
-  import io.circe.generic.auto._
+
+  import io.circe.generic.auto.*
 
   def startAuthFlowUrl(state: String) =
     s"https://www.reddit.com/api/v1/authorize?client_id=$clientId&response_type=code&state=$state&redirect_uri=$redirectUri&duration=temporary&scope=identity"

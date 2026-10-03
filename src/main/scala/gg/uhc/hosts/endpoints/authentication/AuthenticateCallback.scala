@@ -2,28 +2,29 @@ package gg.uhc.hosts.endpoints.authentication
 
 import java.net.{InetAddress, URLEncoder}
 
+import scala.util.{Failure, Success}
+
 import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
-import doobie._
+import doobie.*
 import gg.uhc.hosts.authentication.Session
 import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.CustomDirectives
 import gg.uhc.hosts.reddit.{RedditAuthenticationApi, RedditSecuredApi}
 
-import scala.util.{Failure, Success}
-
 /**
-  * Callback endpoint from Reddit. On valid data will generate a JWT and forward the user to
-  * the frontend with the authentication JWT + any passed 'path' parameter that reddit returned
-  * as part of the 'state' paramter
-  */
+ * Callback endpoint from Reddit. On valid data will generate a JWT and forward the user to the frontend with the
+ * authentication JWT + any passed 'path' parameter that reddit returned as part of the 'state' paramter
+ */
 class AuthenticateCallback(
     authenticationApi: RedditAuthenticationApi,
     oauthApi: RedditSecuredApi,
     database: Database,
-    customDirectives: CustomDirectives) {
-  import customDirectives._
+    customDirectives: CustomDirectives
+                          ) {
+
+  import customDirectives.*
 
   def error(error: String): Route =
     complete(StatusCodes.Unauthorized -> s"You must provide access to use this service, Error: $error")
@@ -60,7 +61,7 @@ class AuthenticateCallback(
     } ~ error("Client IP address unknown")
 
   def apply(): Route =
-    parameter("error")(error) ~                                  // Check for error paramter first
-      parameters("code", "state" ? "/")(valid) ~       // Then check for code parameter
-      error("Invalid callback parameters")                       // Otherwise show invalid parameters message if neither matched
+    parameter("error")(error) ~ // Check for error paramter first
+      parameters("code", "state" ? "/")(valid) ~ // Then check for code parameter
+      error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
 }

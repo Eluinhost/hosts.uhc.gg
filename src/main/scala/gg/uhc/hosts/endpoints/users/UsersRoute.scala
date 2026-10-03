@@ -1,6 +1,6 @@
 package gg.uhc.hosts.endpoints.users
 
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 
 class UsersRoute(showPermissionsForUser: ShowPermissionsForUser) {

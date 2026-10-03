@@ -7,8 +7,9 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 class GetApiKey(directives: CustomDirectives, database: Database) {
-  import CustomJsonCodec._
-  import directives._
+
+  import CustomJsonCodec.*
+  import directives.*
 
   case class Response(key: Option[String])
 
