@@ -3,11 +3,6 @@ allowBuilds:
   core-js: true
   core-js-pure: true
   unrs-resolver: true
-minimumReleaseAgeExclude:
-  - '@tanstack/react-router@1.170.41'
-  - '@tanstack/router-core@1.171.34'
-  - '@tanstack/router-generator@1.167.40'
-  - '@tanstack/router-plugin@1.168.42'
 overrides:
   brace-expansion@<1.1.19: ^1.1.19
   brace-expansion@<1.1.20: ^1.1.20
