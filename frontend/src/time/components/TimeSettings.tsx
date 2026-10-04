@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Space, Paper, Cascader, type CascaderOption } from '@mantine/core';
+import { ActionIcon, Group, Space, Paper, Cascader, type CascaderOption, Switch, useMatches } from '@mantine/core';
 import { CaretLeftIcon, ClockIcon, GearIcon } from '@phosphor-icons/react';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
@@ -21,7 +21,7 @@ const convertTzs = (tzs: string[]): Array<CascaderOption> => {
       if (!node) {
         node = {
           value: segment,
-          label: segment.replaceAll('_', ' '),
+          label: segment === 'Etc' ? 'GMT Offsets' : segment.replaceAll('_', ' '),
           children: [],
         };
         level.push(node);
@@ -41,6 +41,8 @@ export const TimeSettings: React.FC = () => {
   const [is12h, setIs12h] = useAtom(is12hAtom);
   const [open, setOpen] = useState(false);
 
+  const timezoneColumns = useMatches({ base: 2, sm: 3 });
+
   return (
     <Paper className={styles.timeSettings} bdrs="0" shadow="xs" component={Group} align="center">
       <Group flex={1} justify="flex-start" align="center" gap="xs">
@@ -56,20 +58,10 @@ export const TimeSettings: React.FC = () => {
           {open ? <CaretLeftIcon /> : <GearIcon />}
         </ActionIcon>
         {open && (
-          <Button
-            leftSection={<ClockIcon />}
-            variant="subtle"
-            size="compact-sm"
-            onClick={() => {
-              setIs12h(!is12h);
-            }}
-          >
-            {is12h ? '12h' : '24h'}
-          </Button>
-        )}
-        {open && (
           <Cascader
             searchable
+            maxDisplayedLevels={timezoneColumns}
+            maxDropdownHeight={415}
             allowDeselect={false}
             data={cascaderOptions}
             value={timezone.split('/')}
@@ -79,6 +71,24 @@ export const TimeSettings: React.FC = () => {
               }
             }}
             comboboxProps={{ width: 'max-content' }}
+          />
+        )}
+        {open && (
+          <Switch
+            thumbIcon={<ClockIcon color="var(--mantine-color-gray-7)" />}
+            withThumbIndicator={false}
+            onLabel="24h"
+            offLabel="12h"
+            radius="md"
+            color="green"
+            onChange={value => {
+              setIs12h(!value.target.checked);
+            }}
+            checked={!is12h}
+            size="xl"
+            classNames={{
+              trackLabel: styles.is12hLabel,
+            }}
           />
         )}
       </Group>

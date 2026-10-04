@@ -1,6 +1,10 @@
 .timeSettings {
-    position: sticky;
-    top: 0;
-    margin-bottom: var(--mantine-spacing-sm);
-    z-index: var(--mantine-z-index-app);
+  position: sticky;
+  top: 0;
+  margin-bottom: var(--mantine-spacing-sm);
+  z-index: var(--mantine-z-index-app);
+}
+
+.is12hLabel {
+  font-size: 1rem;
 }
