@@ -18,8 +18,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import dayjs from '@/dayjs';
 import { HostApplicationsData } from '@/hosting-applications/api';
+import { ApplicationAnswer } from '@/hosting-applications/components/ApplicationAnswer';
 import { type HostApplication, HostApplicationStatus } from '@/hosting-applications/HostApplication';
-import { QuestionType } from '@/hosting-applications/QuestionType';
 
 interface ExistingHostApplicationProps {
   application: HostApplication;
@@ -87,24 +87,7 @@ export const ExistingHostApplication: React.FC<ExistingHostApplicationProps> = (
           {data && (
             <Stack>
               {data.answers.map((answer, index) => (
-                <Stack key={index}>
-                  <Group>
-                    <Text fw={700} size="lg">
-                      {answer.prompt}
-                    </Text>
-                    {canReview && answer.choiceCorrect !== null && (
-                      <Badge color={answer.choiceCorrect ? 'green' : 'red'}>
-                        {answer.choiceCorrect ? 'correct' : 'incorrect'}
-                      </Badge>
-                    )}
-                  </Group>
-
-                  {answer.questionType === QuestionType.MULTIPLE_CHOICE ? (
-                    <>{answer.answer}</>
-                  ) : (
-                    <Text>{answer.answer}</Text>
-                  )}
-                </Stack>
+                <ApplicationAnswer answer={answer} key={index} />
               ))}
 
               {canReview && application.status === HostApplicationStatus.PENDING && (

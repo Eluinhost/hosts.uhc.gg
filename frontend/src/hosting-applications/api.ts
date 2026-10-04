@@ -23,6 +23,8 @@ const hostApplicationAnswer = v.object({
   choiceCorrect: v.nullable(v.boolean()),
 });
 
+export type HostApplicationAnswer = v.InferOutput<typeof hostApplicationAnswer>;
+
 const hostApplicationDetails = v.object({
   ...hostApplication.entries,
   answers: v.array(hostApplicationAnswer),
