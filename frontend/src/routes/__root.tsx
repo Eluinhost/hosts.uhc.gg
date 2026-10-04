@@ -32,7 +32,7 @@ function RootLayout() {
 
   return (
     <>
-      <Stack w="100vw" h="100vh" align="stretch" gap={0}>
+      <Stack w="100vw" h="100vh" align="stretch" gap={0} style={{ overflow: 'scroll' }}>
         <Navbar />
         <TimeSettings />
         <Container component={Stack} flex={1} w="100%">
