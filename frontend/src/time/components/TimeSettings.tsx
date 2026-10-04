@@ -1,5 +1,5 @@
-import { ActionIcon, Button, Group, Space, ComboboxPopover, Paper } from '@mantine/core';
-import { CaretRightIcon, CaretUpDownIcon, ClockIcon, GearIcon } from '@phosphor-icons/react';
+import { ActionIcon, Button, Group, Space, Paper, Cascader, type CascaderOption } from '@mantine/core';
+import { CaretLeftIcon, ClockIcon, GearIcon } from '@phosphor-icons/react';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 
@@ -8,7 +8,33 @@ import { timezoneAtom } from '@/atoms/timezone';
 import { CurrentTime } from '@/time/components/CurrentTime';
 import styles from '@/time/components/TimeSettings.module.css';
 
-const tzs = Intl.supportedValuesOf('timeZone');
+const convertTzs = (tzs: string[]): Array<CascaderOption> => {
+  const root: Array<CascaderOption> = [];
+
+  for (const tz of tzs) {
+    const segments = tz.split('/');
+    let level = root;
+
+    for (const segment of segments) {
+      let node = level.find(o => o.value === segment);
+
+      if (!node) {
+        node = {
+          value: segment,
+          label: segment.replaceAll('_', ' '),
+          children: [],
+        };
+        level.push(node);
+      }
+
+      level = node.children ?? [];
+    }
+  }
+
+  return root;
+};
+
+const cascaderOptions = convertTzs(Intl.supportedValuesOf('timeZone'));
 
 export const TimeSettings: React.FC = () => {
   const [timezone, setTimezone] = useAtom(timezoneAtom);
@@ -17,11 +43,18 @@ export const TimeSettings: React.FC = () => {
 
   return (
     <Paper className={styles.timeSettings} bdrs="0" shadow="xs" component={Group} align="center">
-      <Space flex={1} />
-      <Group flex={1} justify="center" align="center">
-        <CurrentTime />
-      </Group>
-      <Group flex={1} justify="flex-end" align="center" gap="xs">
+      <Group flex={1} justify="flex-start" align="center" gap="xs">
+        <ActionIcon
+          size="md"
+          ml="md"
+          bdrs={100}
+          variant="subtle"
+          onClick={() => {
+            setOpen(prev => !prev);
+          }}
+        >
+          {open ? <CaretLeftIcon /> : <GearIcon />}
+        </ActionIcon>
         {open && (
           <Button
             leftSection={<ClockIcon />}
@@ -35,36 +68,24 @@ export const TimeSettings: React.FC = () => {
           </Button>
         )}
         {open && (
-          <ComboboxPopover
-            data={tzs}
-            value={timezone}
-            onChange={tz => {
-              if (tz) {
-                setTimezone(tz);
+          <Cascader
+            searchable
+            allowDeselect={false}
+            data={cascaderOptions}
+            value={timezone.split('/')}
+            onChange={value => {
+              if (value) {
+                setTimezone(value.join('/'));
               }
             }}
-            searchable
-            nothingFoundMessage="No items found."
-          >
-            <ComboboxPopover.Target>
-              <Button variant="subtle" size="compact-sm" rightSection={<CaretUpDownIcon />}>
-                {timezone}
-              </Button>
-            </ComboboxPopover.Target>
-          </ComboboxPopover>
+            comboboxProps={{ width: 'max-content' }}
+          />
         )}
-        <ActionIcon
-          size="md"
-          mr="md"
-          bdrs={100}
-          variant="subtle"
-          onClick={() => {
-            setOpen(prev => !prev);
-          }}
-        >
-          {open ? <CaretRightIcon /> : <GearIcon />}
-        </ActionIcon>
       </Group>
+      <Group flex={1} justify="center" align="center">
+        <CurrentTime />
+      </Group>
+      <Space flex={1} />
     </Paper>
   );
 };

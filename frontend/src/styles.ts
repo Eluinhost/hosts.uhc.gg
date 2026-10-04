@@ -50,6 +50,8 @@ import '@mantine/core/styles/Table.css';
 import '@mantine/core/styles/Tabs.css';
 import '@mantine/core/styles/Title.css';
 import '@mantine/core/styles/ActionIcon.css';
+import '@mantine/core/styles/ScrollArea.css';
+import '@mantine/core/styles/Cascader.css';
 
 import '@mantine/core/styles/Notification.css';
 import '@mantine/notifications/styles.css';
