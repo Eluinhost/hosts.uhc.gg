@@ -37,6 +37,7 @@ import '@mantine/core/styles/List.css';
 import '@mantine/core/styles/Menu.css';
 import '@mantine/core/styles/Modal.css';
 import '@mantine/core/styles/Pill.css';
+import '@mantine/core/styles/PillsInput.css';
 import '@mantine/core/styles/NumberInput.css';
 import '@mantine/core/styles/RadioIndicator.css';
 import '@mantine/core/styles/Radio.css';
