@@ -4,6 +4,7 @@ import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect } from 'react';
 import reactGa from 'react-ga4';
 
+import { AuthSplash } from '@/authentication/components/AuthSplash';
 import { useAuthRefresh } from '@/authentication/useAuthRefresh';
 import { LOGIN_ERROR_KEY } from '@/login/captureLoginRedirect';
 import { showToast } from '@/services/AppToaster';
@@ -18,7 +19,7 @@ const DevTools = import.meta.env.DEV ? lazy(() => import('@/dev/DevTools').then(
 reactGa.initialize('G-J9VRXDDL1P');
 
 function RootLayout() {
-  useAuthRefresh();
+  const { isInitialising } = useAuthRefresh();
 
   const { pathname, searchStr } = useLocation();
 
@@ -36,6 +37,8 @@ function RootLayout() {
   }, []);
 
   useEffect(() => {
+    if (isInitialising) return;
+
     const path = pathname + searchStr;
 
     reactGa.set({ page: path });
@@ -43,7 +46,11 @@ function RootLayout() {
       hitType: 'pageview',
       page: path,
     });
-  }, [pathname, searchStr]);
+  }, [isInitialising, pathname, searchStr]);
+
+  if (isInitialising) {
+    return <AuthSplash />;
+  }
 
   return (
     <>
