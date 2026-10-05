@@ -30,7 +30,7 @@ export const LoginPage = ({ path, accessToken, refreshToken }: LoginPageProps) =
     if (path && accessToken && refreshToken && path.startsWith('/')) {
       setAuthentication({ accessToken, refreshToken });
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRedirectPath(redirectPath);
+      setRedirectPath(path);
     } else {
       console.error('Invalid token parameters', path, accessToken, refreshToken);
     }
