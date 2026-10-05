@@ -10,6 +10,11 @@ const client = ky.create({
   hooks: {
     beforeRequest: [
       ({ request }) => {
+        // don't clobber any existing headers, e.g. refresh token set during auth refresh
+        if (request.headers.has('Authorization')) {
+          return;
+        }
+
         const token = store.get(accessTokenAtom);
 
         if (token && new URL(request.url).hostname === window.location.hostname) {
