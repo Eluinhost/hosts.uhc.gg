@@ -5,6 +5,8 @@ import { lazy, Suspense, useEffect } from 'react';
 import reactGa from 'react-ga4';
 
 import { useAuthRefresh } from '@/authentication/useAuthRefresh';
+import { LOGIN_ERROR_KEY } from '@/login/captureLoginRedirect';
+import { showToast } from '@/services/AppToaster';
 import { Footer } from '@/shell/components/Footer';
 import { Navbar } from '@/shell/components/Navbar';
 import { TimeSettings } from '@/time/components/TimeSettings';
@@ -19,6 +21,19 @@ function RootLayout() {
   useAuthRefresh();
 
   const { pathname, searchStr } = useLocation();
+
+  useEffect(() => {
+    const loginError = sessionStorage.getItem(LOGIN_ERROR_KEY);
+
+    if (loginError) {
+      sessionStorage.removeItem(LOGIN_ERROR_KEY);
+      showToast({
+        title: 'Login Error',
+        message: loginError,
+        color: 'red',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const path = pathname + searchStr;

@@ -10,6 +10,7 @@ import { createRoot } from 'react-dom/client';
 
 import { isDarkModeAtom } from '@/atoms/isDarkMode';
 import { migrateOldIndexDb } from '@/atoms/migrateOldIndexDb';
+import { captureLoginRedirect } from '@/login/captureLoginRedirect';
 import { routeTree } from '@/routeTree.gen';
 import { theme } from '@/theme';
 
@@ -51,6 +52,8 @@ void (async () => {
   } catch (error) {
     console.error('Failed to migrate legacy IndexedDB settings, continuing anyway...', error);
   }
+
+  captureLoginRedirect();
 
   createRoot(root).render(
     <React.StrictMode>

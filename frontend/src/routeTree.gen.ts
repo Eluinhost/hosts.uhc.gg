@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as MembersRouteImport } from './routes/members'
 import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated.host'
 import { Route as AuthenticatedModifiersRouteImport } from './routes/_authenticated.modifiers'
@@ -30,11 +29,6 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembersRoute = MembersRouteImport.update({
@@ -91,7 +85,6 @@ const AuthenticatedHostApplicationsApplyRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/members': typeof MembersRoute
   '/host': typeof AuthenticatedHostRoute
   '/modifiers': typeof AuthenticatedModifiersRoute
@@ -105,7 +98,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/members': typeof MembersRoute
   '/host': typeof AuthenticatedHostRoute
   '/modifiers': typeof AuthenticatedModifiersRoute
@@ -121,7 +113,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/login': typeof LoginRoute
   '/members': typeof MembersRoute
   '/_authenticated/host': typeof AuthenticatedHostRoute
   '/_authenticated/modifiers': typeof AuthenticatedModifiersRoute
@@ -137,7 +128,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
     | '/members'
     | '/host'
     | '/modifiers'
@@ -151,7 +141,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
     | '/members'
     | '/host'
     | '/modifiers'
@@ -166,7 +155,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/login'
     | '/members'
     | '/_authenticated/host'
     | '/_authenticated/modifiers'
@@ -182,7 +170,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  LoginRoute: typeof LoginRoute
   MembersRoute: typeof MembersRoute
   MIdRoute: typeof MIdRoute
   MatchesHostRoute: typeof MatchesHostRoute
@@ -204,13 +191,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/members': {
@@ -310,7 +290,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  LoginRoute: LoginRoute,
   MembersRoute: MembersRoute,
   MIdRoute: MIdRoute,
   MatchesHostRoute: MatchesHostRoute,
