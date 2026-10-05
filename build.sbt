@@ -14,6 +14,8 @@ resolvers ++= Seq(
 )
 libraryDependencies ++= Settings.dependencies.value
 
+testFrameworks += new TestFramework("munit.Framework")
+
 reForkOptions / run / connectInput := true
 
 // include frontend assets in build

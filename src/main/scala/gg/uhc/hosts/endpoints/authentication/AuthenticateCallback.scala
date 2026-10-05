@@ -22,7 +22,7 @@ class AuthenticateCallback(
     oauthApi: RedditSecuredApi,
     database: Database,
     customDirectives: CustomDirectives
-                          ) {
+) {
 
   import customDirectives.*
 
@@ -31,7 +31,7 @@ class AuthenticateCallback(
 
   def dbQuery(username: String, ip: InetAddress): ConnectionIO[List[String]] =
     for {
-      _ <- database.updateAuthenticationLog(username, ip)
+      _     <- database.updateAuthenticationLog(username, ip)
       perms <- database.getPermissions(username)
     } yield perms
 
@@ -40,20 +40,20 @@ class AuthenticateCallback(
       extractExecutionContext { implicit ec =>
         val task = for {
           accessToken <- authenticationApi.getAccessToken(authCode = code)
-          username <- oauthApi.getUsername(accessToken.access_token)
+          username    <- oauthApi.getUsername(accessToken.access_token)
           permissions <- database.run(dbQuery(username, ip))
         } yield username -> permissions
 
         onComplete(task) {
-          case Failure(t) =>
+          case Failure(t)                       =>
             extractActorSystem { ac =>
               ac.log.error(t, "Failure to lookup account details")
               complete(StatusCodes.Unauthorized -> "Unable to lookup your account details")
             }
           case Success((username, permissions)) =>
-            val token = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
+            val token   = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
             val refresh = URLEncoder.encode(Session.RefreshToken(username).toJwt, "utf-8")
-            val path = URLEncoder.encode(state, "utf-8")
+            val path    = URLEncoder.encode(state, "utf-8")
 
             redirect(s"/login?path=$path&token=$token&refresh=$refresh", StatusCodes.TemporaryRedirect)
         }
@@ -61,7 +61,7 @@ class AuthenticateCallback(
     } ~ error("Client IP address unknown")
 
   def apply(): Route =
-    parameter("error")(error) ~ // Check for error paramter first
+    parameter("error")(error) ~                  // Check for error paramter first
       parameters("code", "state" ? "/")(valid) ~ // Then check for code parameter
-      error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
+      error("Invalid callback parameters")       // Otherwise show invalid parameters message if neither matched
 }

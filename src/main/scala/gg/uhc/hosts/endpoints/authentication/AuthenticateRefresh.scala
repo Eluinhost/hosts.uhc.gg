@@ -11,8 +11,11 @@ import gg.uhc.hosts.database.Database
 import gg.uhc.hosts.endpoints.{CustomDirectives, EndpointRejectionHandler}
 
 /**
- * Endpoint that when called with a valid authentication header will return a new JWT with refreshed permissions from
- * the DB.
+ * Endpoint that when called with a valid `refresh` token will return a new access token + refresh token pair, with the
+ * permissions looked up freshly from the DB.
+ *
+ * Requires a refresh token, an access token is rejected. A refresh token has no permissions, the permissions of the new
+ * token are fresh from the database.
  */
 class AuthenticateRefresh(directives: CustomDirectives, database: Database) {
 
@@ -23,7 +26,7 @@ class AuthenticateRefresh(directives: CustomDirectives, database: Database) {
 
   def dbQuery(username: String, ip: InetAddress): ConnectionIO[List[String]] =
     for {
-      _ <- database.updateAuthenticationLog(username, ip)
+      _     <- database.updateAuthenticationLog(username, ip)
       perms <- database.getPermissions(username)
     } yield perms
 

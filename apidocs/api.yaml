@@ -18,7 +18,12 @@ components:
       scheme: basic
     SiteApiToken:
       type: http
-      description: "Tokens meant specifically for the website but can be used outside if you want to handle short-lived tokens"
+      description: "Tokens meant specifically for the website but can be used outside if you want to handle short-lived tokens. Short lived `access` JWT (`typ=access`), signed with `jwt.secret`. Not accepted by `POST /authenticate/refresh`"
+      scheme: bearer
+      bearerFormat: JWT
+    RefreshToken:
+      type: http
+      description: "Long lived `refresh` JWT (`typ=refresh`), signed with `jwt.refreshSecret`. Accepted only by `POST /authenticate/refresh`, it cannot be used to call any other endpoint and carries no permissions"
       scheme: bearer
       bearerFormat: JWT
   responses:
@@ -29,6 +34,21 @@ components:
     ForbiddenError:
       description: You don't have permission to use this endpoint
   schemas:
+    TokenPair:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+      properties:
+        accessToken:
+          type: string
+          description: 'Access JWT (`typ=access`), valid for `jwt.timeout`. Use as `Authorization: Bearer <accessToken>` when calling endpoints that require a `SiteApiToken`'
+        refreshToken:
+          type: string
+          description: 'Refresh JWT (`typ=refresh`), valid for `jwt.refreshTimeout`. Only accepted by `POST /authenticate/refresh`, carries no permissions'
+      example:
+        accessToken: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJwZXJtaXNzaW9ucyI6WyJhZG1pbiJdLCJ0eXAiOiJhY2Nlc3MifQ.signature
+        refreshToken: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJ0eXAiOiJyZWZyZXNoIn0.signature
     SyncResponse:
       type: string
       example: '2017-08-10T09:11:22.031Z'
@@ -572,6 +592,72 @@ components:
             correct: true
 
 paths:
+  /authenticate:
+    get:
+      tags:
+        - Authentication
+      summary: Begin the OAuth flow
+      description: |
+        Redirects the user to Reddit to authorise the application. The `path` parameter is carried through the OAuth
+        `state` parameter and comes back with the tokens so the user returns to the page they started from.
+      parameters:
+        - in: query
+          name: path
+          required: false
+          schema:
+            type: string
+          description: Site path to return to after logging in, defaults to `/`
+      responses:
+        '302':
+          description: Redirects
+  /authenticate/callback:
+    get:
+      tags:
+        - Authentication
+      summary: OAuth callback
+      description: |
+        The endpoint oauth redirects to. Exchanges the OAuth code for the user's account, looks up their permissions,
+        and redirects to `/login` with a new access + refresh token pair.
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+          description: OAuth code
+        - in: query
+          name: state
+          required: false
+          schema:
+            type: string
+          description: Site path carried through from `/authenticate`
+      responses:
+        '302':
+          description: Redirects to `/login` with `path`, `token` (access token) and `refresh` (refresh token) query parameters
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /authenticate/refresh:
+    post:
+      tags:
+        - Authentication
+      security:
+        - RefreshToken: []
+      summary: Exchange a refresh token for a new token pair
+      description: |
+        Returns a new access token whose permissions are looked up freshly from the database, plus a new refresh
+        token. Both tokens are rotated on every call.
+
+        Requires a `refresh` token (`typ=refresh`). An `access` token (`typ=access`) is rejected with `401`, it cannot
+        be used to extend a session.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+        '401':
+          description: Refresh token missing, expired, tampered with, or an access token was supplied instead
   /sync:
     get:
       tags:

@@ -34,7 +34,7 @@ class CustomDirectives(database: Database) {
 
   def requireAtLeastOnePermission(permissions: Iterable[String], username: String): Directive0 =
     checkHasAtLeastOnePermission(permissions, username) flatMap {
-      case true => pass
+      case true  => pass
       case false =>
         reject(
           AuthenticationFailedRejection(
@@ -48,7 +48,9 @@ class CustomDirectives(database: Database) {
     requireAtLeastOnePermission(permission :: Nil, username)
 
   /**
-   * Checks for an OAuth2 bearer token header with a valid non-expired JWT token.
+   * Checks for an OAuth2 bearer token header with a valid non-expired JWT access token.
+   *
+   * Refresh tokens are rejected, they are only valid at the refresh endpoint.
    */
   val optionalJwtAuthentication: Directive1[Option[Authenticated]] =
     optionalHeaderValuePF {
@@ -64,7 +66,7 @@ class CustomDirectives(database: Database) {
     optionalJwtAuthentication.flatMap {
       case Some(token) =>
         provide(token)
-      case None =>
+      case None        =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,
@@ -73,6 +75,11 @@ class CustomDirectives(database: Database) {
         )
     }
 
+  /**
+   * Checks for an OAuth2 bearer token header containing a valid non-expired JWT refresh token.
+   *
+   * Access tokens are rejected, they cannot be exchanged for a new session.
+   */
   val optionalRefreshAuthentication: Directive1[Option[RefreshToken]] =
     optionalHeaderValuePF {
       case Authorization(OAuth2BearerToken(token)) => token
@@ -84,7 +91,7 @@ class CustomDirectives(database: Database) {
     optionalRefreshAuthentication.flatMap {
       case Some(token) =>
         provide(token)
-      case None =>
+      case None        =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,
@@ -97,27 +104,27 @@ class CustomDirectives(database: Database) {
     credentials match {
       case p @ Credentials.Provided(id) =>
         val query: OptionT[ConnectionIO, Authenticated] = (for {
-          key <- OptionT[ConnectionIO, String] {
-            database.getUserApiKey(id)
-          }
-          _ <- OptionT[ConnectionIO, Unit] {
-            if p.verify(key) then connection.raw(_ => Some(()))
-            else connection.raw(_ => None)
-          }
+          key   <- OptionT[ConnectionIO, String] {
+                     database.getUserApiKey(id)
+                   }
+          _     <- OptionT[ConnectionIO, Unit] {
+                     if p.verify(key) then connection.raw(_ => Some(()))
+                     else connection.raw(_ => None)
+                   }
           perms <- OptionT[ConnectionIO, List[String]](
-            database.getPermissions(id).map(Some(_))
-          )
+                     database.getPermissions(id).map(Some(_))
+                   )
         } yield Authenticated(username = id, permissions = perms))
 
         database.run(query.value)
-      case _ => Future.successful(None)
+      case _                            => Future.successful(None)
     }
 
   def requireApiTokenAuthentication: Directive1[Authenticated] =
     optionalApiTokenAuthentication.flatMap {
       case Some(token) =>
         provide(token)
-      case None =>
+      case None        =>
         reject(
           AuthenticationFailedRejection(
             AuthenticationFailedRejection.CredentialsMissing,

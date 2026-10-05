@@ -57,7 +57,9 @@ object Settings {
 
       // not direct dependency, for security patching
       "co.fs2"                   %% "fs2-core"                  % "2.5.13",
-      "co.fs2"                   %% "fs2-io"                    % "2.5.13"
+      "co.fs2"                   %% "fs2-io"                    % "2.5.13",
+
+      "org.scalameta"            %% "munit"                     % "1.1.0" % Test
     )
   )
 }
