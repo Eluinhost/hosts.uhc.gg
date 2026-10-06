@@ -8,12 +8,12 @@ class AuthenticationRoute(
     authenticate: Authenticate,
     authenticateCallback: AuthenticateCallback,
     authenticateRefresh: AuthenticateRefresh
-                         ) {
+) {
 
   def apply(): Route =
     concat(
-      (pathEndOrSingleSlash & parameter("path" ? "/")) { path =>
-        authenticate(path)
+      (pathEndOrSingleSlash & parameter("state")) { state =>
+        authenticate(state)
       },
       path("callback")(authenticateCallback()),
       (post & path("refresh"))(authenticateRefresh()),

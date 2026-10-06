@@ -1,10 +1,11 @@
 package gg.uhc.hosts.endpoints.authentication
 
-import java.net.{InetAddress, URLEncoder}
+import java.net.InetAddress
 
 import scala.util.{Failure, Success}
 
 import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.model.headers.HttpCookie
 import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.http.scaladsl.server.Route
 import doobie.*
@@ -15,7 +16,8 @@ import gg.uhc.hosts.reddit.{RedditAuthenticationApi, RedditSecuredApi}
 
 /**
  * Callback endpoint from Reddit. On valid data will generate a JWT and forward the user to the frontend with the
- * authentication JWT + any passed 'path' parameter that reddit returned as part of the 'state' paramter
+ * authentication JWTs delivered via a short-lived handoff cookie (kept out of the URL to avoid leaking into access logs
+ * and browser history) + the 'state' CSRF token that reddit round-tripped from the frontend
  */
 class AuthenticateCallback(
     authenticationApi: RedditAuthenticationApi,
@@ -51,17 +53,24 @@ class AuthenticateCallback(
               complete(StatusCodes.Unauthorized -> "Unable to lookup your account details")
             }
           case Success((username, permissions)) =>
-            val token   = URLEncoder.encode(Session.Authenticated(username, permissions).toJwt, "utf-8")
-            val refresh = URLEncoder.encode(Session.RefreshToken(username).toJwt, "utf-8")
-            val path    = URLEncoder.encode(state, "utf-8")
+            // base64url JWTs with '~' separater
+            val handoff =
+              s"${Session.Authenticated(username, permissions).toJwt}~${Session.RefreshToken(username).toJwt}"
 
-            redirect(s"/login?path=$path&token=$token&refresh=$refresh", StatusCodes.TemporaryRedirect)
+            setCookie(HttpCookie(
+              "uhcgg_handoff",
+              handoff,
+              maxAge = Some(60),
+              path = Some("/login"),
+            )) {
+              redirect(s"/login?state=$state", StatusCodes.TemporaryRedirect)
+            }
         }
       }
     } ~ error("Client IP address unknown")
 
   def apply(): Route =
-    parameter("error")(error) ~                  // Check for error paramter first
-      parameters("code", "state" ? "/")(valid) ~ // Then check for code parameter
-      error("Invalid callback parameters")       // Otherwise show invalid parameters message if neither matched
+    parameter("error")(error) ~            // Check for error paramter first
+      parameters("code", "state")(valid) ~ // Then check for code parameter
+      error("Invalid callback parameters") // Otherwise show invalid parameters message if neither matched
 }
