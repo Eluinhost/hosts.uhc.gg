@@ -9,4 +9,4 @@ case class HostApplicationAnswerRow(
     questionType: QuestionType,
     answer: String,
     choiceCorrect: Option[Boolean]
-                                   )
+)

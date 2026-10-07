@@ -17,12 +17,12 @@ class ShowMatch(directives: CustomDirectives, database: Database) {
 
   def fetchData(id: Long): ConnectionIO[Option[JsonObject]] =
     (for {
-      row <- OptionT[ConnectionIO, MatchRow] {
-        database.matchById(id)
-      }
+      row   <- OptionT[ConnectionIO, MatchRow] {
+                 database.matchById(id)
+               }
       perms <- OptionT[ConnectionIO, List[String]] {
-        database.getPermissions(row.author).map(Some(_))
-      }
+                 database.getPermissions(row.author).map(Some(_))
+               }
     } yield row.toJsonWithRoles(perms)).value
 
   def apply(id: Long): Route =

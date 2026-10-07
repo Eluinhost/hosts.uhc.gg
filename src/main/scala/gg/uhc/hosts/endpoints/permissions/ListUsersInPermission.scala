@@ -18,7 +18,7 @@ class ListUsersInPermission(customDirectives: CustomDirectives, database: Databa
     database.getAllUsersForPermission(permission, 31).flatMap {
       case list if list.length == 31 =>
         database.getUserCountForPermissionByFirstLetter(permission).map(Right(_))
-      case list =>
+      case list                      =>
         delay(Left(list))
     }
 

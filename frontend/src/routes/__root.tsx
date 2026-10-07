@@ -1,11 +1,12 @@
 import { Container, EmptyState, Stack } from '@mantine/core';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { useQuery } from '@tanstack/react-query';
 import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect } from 'react';
 import reactGa from 'react-ga4';
 
+import { AuthenticationApi } from '@/authentication/AuthenticationApi';
 import { AuthSplash } from '@/authentication/components/AuthSplash';
-import { useAuthRefresh } from '@/authentication/useAuthRefresh';
 import { LOGIN_ERROR_KEY } from '@/login/captureLoginRedirect';
 import { showToast } from '@/services/AppToaster';
 import { Footer } from '@/shell/components/Footer';
@@ -19,7 +20,7 @@ const DevTools = import.meta.env.DEV ? lazy(() => import('@/dev/DevTools').then(
 reactGa.initialize('G-J9VRXDDL1P');
 
 function RootLayout() {
-  const { isInitialising } = useAuthRefresh();
+  const { isPending: isInitialising } = useQuery(AuthenticationApi.session);
 
   const { pathname, searchStr } = useLocation();
 

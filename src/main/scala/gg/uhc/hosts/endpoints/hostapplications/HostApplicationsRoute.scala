@@ -9,7 +9,7 @@ class HostApplicationsRoute(
     getHostApplicationDetails: GetHostApplicationDetails,
     createHostApplication: CreateHostApplication,
     reviewHostApplication: ReviewHostApplication
-                           ) {
+) {
   def apply(): Route =
     concat(
       (get & pathEndOrSingleSlash)(getHostApplications()),

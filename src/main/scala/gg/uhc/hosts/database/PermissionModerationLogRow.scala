@@ -9,4 +9,4 @@ case class PermissionModerationLogRow(
     at: Instant,
     permission: String,
     added: Boolean
-                                     )
+)

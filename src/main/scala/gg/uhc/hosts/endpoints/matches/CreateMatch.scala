@@ -18,11 +18,11 @@ import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
  * Creates a new Match object. Requires login + 'host' permission
  */
 class CreateMatch(
-                   customDirectives: CustomDirectives,
-                   database: Database,
-                   cache: BasicCache,
-                   websocket: MatchesWebsocket
-                 ) {
+    customDirectives: CustomDirectives,
+    database: Database,
+    cache: BasicCache,
+    websocket: MatchesWebsocket
+) {
 
   import CustomJsonCodec.*
   import customDirectives.*
@@ -47,7 +47,7 @@ class CreateMatch(
       pvpEnabledAt: Int,
       hostingName: Option[String],
       tournament: Boolean
-                               )
+  )
 
   // allowed regions
   private val regions = List("NA", "SA", "AS", "EU", "AF", "OC")
@@ -67,15 +67,15 @@ class CreateMatch(
       region = payload.region,
       teams = payload.teams,
       size = if TeamStyles.byCode.get(payload.teams).exists(_.isInstanceOf[SizedTeamStyle]) then payload.size
-      else None, // remove size if not required
+      else None,                                                                     // remove size if not required
       location = payload.location,
       version = payload.version,
       slots = payload.slots,
       length = payload.length,
       mapSize = payload.mapSize,
       pvpEnabledAt = payload.pvpEnabledAt,
-      scenarios = payload.scenarios.distinctBy(_.toLowerCase), // removes duplicates
-      tags = payload.tags.distinctBy(_.toLowerCase), // removes duplicates
+      scenarios = payload.scenarios.distinctBy(_.toLowerCase),                       // removes duplicates
+      tags = payload.tags.distinctBy(_.toLowerCase),                                 // removes duplicates
       tournament = payload.tournament,
       // non-user payload.vars below
       id = -1,
@@ -104,11 +104,11 @@ class CreateMatch(
       // Its valid if:
       //  - there are no conflicts
       //  - this is a non-tournament and conflicts are all tournaments
-      case conflicts if conflicts.isEmpty =>
+      case conflicts if conflicts.isEmpty                                 =>
         pass
       case conflicts if !row.tournament && conflicts.forall(_.tournament) =>
         pass
-      case conflicts =>
+      case conflicts                                                      =>
         val hours = row.opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm"))
 
         // Try to find a non-tournament to tell, otherwise just give whatever was returned first

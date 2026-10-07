@@ -34,12 +34,12 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
     }
 
   private def validateQuestionAnswered(
-                                        question: QuizQuestionRow,
-                                        choices: List[QuizQuestionChoiceRow],
-                                        answer: String
-                                      ): Either[String, HostApplicationAnswerRow] =
+      question: QuizQuestionRow,
+      choices: List[QuizQuestionChoiceRow],
+      answer: String
+  ): Either[String, HostApplicationAnswerRow] =
     question.questionType match {
-      case QuestionType.TEXT =>
+      case QuestionType.TEXT            =>
         Either.cond(
           answer.trim.nonEmpty,
           HostApplicationAnswerRow(
@@ -69,10 +69,10 @@ class CreateHostApplication(database: Database, customDirectives: CustomDirectiv
     }
 
   private def validateEachQuestionAnswered(
-                                            questions: List[QuizQuestionRow],
-                                            choices: List[QuizQuestionChoiceRow],
-                                            answers: List[AnswerPayload]
-                                          ): Directive1[List[HostApplicationAnswerRow]] = {
+      questions: List[QuizQuestionRow],
+      choices: List[QuizQuestionChoiceRow],
+      answers: List[AnswerPayload]
+  ): Directive1[List[HostApplicationAnswerRow]] = {
     val choicesByQuestionId = choices.groupBy(_.questionId)
     val answersByQuestionId = answers.groupBy(_.questionId).view.mapValues(_.head.answer).toMap
 

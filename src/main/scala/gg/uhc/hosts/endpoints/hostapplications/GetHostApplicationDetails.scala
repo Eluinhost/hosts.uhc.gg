@@ -15,11 +15,11 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
   import customDirectives.*
 
   private case class AnswerResponse(
-                                     prompt: String,
-                                     answer: String,
-                                     questionType: QuestionType,
-                                     choiceCorrect: Option[Boolean]
-                                   )
+      prompt: String,
+      answer: String,
+      questionType: QuestionType,
+      choiceCorrect: Option[Boolean]
+  )
 
   private case class HostApplicationDetailsResponse(
       id: Long,
@@ -30,7 +30,7 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
       reviewedAt: Option[Instant],
       reviewReason: Option[String],
       answers: List[AnswerResponse]
-                                                   )
+  )
 
   def apply(id: Long): Route =
     handleRejections(EndpointRejectionHandler()) {
@@ -38,7 +38,7 @@ class GetHostApplicationDetails(database: Database, customDirectives: CustomDire
         val canReview = session.exists(_.permissions.contains("hosting advisor"))
 
         requireSucessfulQuery(database.getHostApplication(id)) {
-          case None => complete(StatusCodes.NotFound)
+          case None              => complete(StatusCodes.NotFound)
           case Some(application) =>
             requireSucessfulQuery(database.getHostApplicationAnswers(id)) { answers =>
               complete(

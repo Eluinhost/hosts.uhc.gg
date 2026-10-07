@@ -8,7 +8,7 @@ class QuizRoute(
     getQuizQuestions: GetQuizQuestions,
     createQuizQuestion: CreateQuizQuestion,
     deleteQuizQuestion: DeleteQuizQuestion
-               ) {
+) {
   def apply(): Route =
     concat(
       (get & pathEndOrSingleSlash)(getQuizQuestions()),

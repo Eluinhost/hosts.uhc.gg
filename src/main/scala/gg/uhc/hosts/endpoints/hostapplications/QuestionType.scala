@@ -7,7 +7,7 @@ import io.circe.DecodingFailure.Reason.CustomReason
 
 enum QuestionType(val id: String) {
   case MULTIPLE_CHOICE extends QuestionType("multiple choice")
-  case TEXT extends QuestionType("text")
+  case TEXT            extends QuestionType("text")
 }
 
 object QuestionType {

@@ -7,7 +7,7 @@ import org.apache.pekko.http.scaladsl.server.Route
 class AuthenticationRoute(
     authenticate: Authenticate,
     authenticateCallback: AuthenticateCallback,
-    authenticateRefresh: AuthenticateRefresh
+    authenticateLogout: AuthenticateLogout
 ) {
 
   def apply(): Route =
@@ -16,7 +16,7 @@ class AuthenticationRoute(
         authenticate(state)
       },
       path("callback")(authenticateCallback()),
-      (post & path("refresh"))(authenticateRefresh()),
+      (post & path("logout"))(authenticateLogout()),
       complete(StatusCodes.NotFound)
     )
 }

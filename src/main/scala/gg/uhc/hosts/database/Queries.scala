@@ -523,4 +523,39 @@ class Queries(logger: LogHandler) {
 
   def deleteModifier(id: Int): Update0 =
     sql"""DELETE FROM modifiers WHERE id = ${id}""".update
+
+  def insertSession(
+      id: String,
+      username: String,
+      ip: Option[InetAddress],
+      userAgent: Option[String],
+      absoluteExpiry: Instant
+  ): Update0 =
+    sql"""
+      INSERT INTO sessions (id, username, created, lastSeen, lastRotated, absoluteExpiry, ip, userAgent)
+      VALUES ($id, $username, now(), now(), now(), $absoluteExpiry, $ip, $userAgent)
+    """.update
+
+  def getSession(id: String): Query0[SessionRow] =
+    sql"""
+      SELECT id, username, created, lastSeen, lastRotated, absoluteExpiry, ip, userAgent
+      FROM sessions
+      WHERE id = $id
+    """.query[SessionRow]
+
+  def touchSession(id: String): Update0 =
+    sql"UPDATE sessions SET lastSeen = now() WHERE id = $id".update
+
+  def rotateSession(id: String, newId: String): Update0 =
+    sql"UPDATE sessions SET id = $newId, lastSeen = now(), lastRotated = now() WHERE id = $id".update
+
+  def deleteSession(id: String): Update0 =
+    sql"DELETE FROM sessions WHERE id = $id".update
+
+  def deleteExpiredSessions(idleSeconds: Long): Update0 =
+    sql"""
+      DELETE FROM sessions
+      WHERE lastSeen + $idleSeconds * interval '1 second' <= now()
+         OR absoluteExpiry <= now()
+    """.update
 }

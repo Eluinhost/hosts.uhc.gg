@@ -11,15 +11,15 @@ sealed trait WebsocketEvent[P, M] {
 
 class MatchCreatedEvent(override val payload: MatchRow) extends WebsocketEvent[MatchRow, Unit] {
   override val event = "MATCH_CREATED"
-  override val meta = ()
+  override val meta  = ()
 }
 
 class MatchRemovedEvent(override val payload: MatchRow) extends WebsocketEvent[MatchRow, Unit] {
   override val event = "MATCH_REMOVED"
-  override val meta = ()
+  override val meta  = ()
 }
 
 class UpcomingMatchesEvent(override val payload: Json) extends WebsocketEvent[Json, Unit] {
   override val event = "UPCOMING_MATCHES"
-  override val meta = ()
+  override val meta  = ()
 }

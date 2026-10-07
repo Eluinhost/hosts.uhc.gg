@@ -53,7 +53,11 @@ void (async () => {
     console.error('Failed to migrate legacy IndexedDB settings, continuing anyway...', error);
   }
 
-  captureLoginRedirect();
+  try {
+    await captureLoginRedirect(queryClient);
+  } catch (error) {
+    console.error('Failed to establish session', error);
+  }
 
   createRoot(root).render(
     <React.StrictMode>

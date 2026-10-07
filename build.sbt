@@ -15,6 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Settings.dependencies.value
 
 testFrameworks += new TestFramework("munit.Framework")
+Test / test := (Test / test).dependsOn(Test / clean).value
 
 reForkOptions / run / connectInput := true
 

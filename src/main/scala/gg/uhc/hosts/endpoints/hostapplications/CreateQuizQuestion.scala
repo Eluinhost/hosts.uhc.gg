@@ -34,7 +34,7 @@ class CreateQuizQuestion(database: Database, customDirectives: CustomDirectives)
               payload.choices.count(_.correct) == 1,
               "Multiple choice questions require exactly one correct answer"
             )
-        case QuestionType.TEXT =>
+        case QuestionType.TEXT            =>
           validate(payload.choices.isEmpty, "Text questions cannot have choices")
       })
 

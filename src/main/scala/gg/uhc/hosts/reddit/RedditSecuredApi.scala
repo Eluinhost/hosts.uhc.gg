@@ -26,7 +26,7 @@ class RedditSecuredApi(actorSystem: ActorSystem, queueSize: Int)
     for {
       response <- queueRequest(request)
       if response.status == StatusCodes.OK
-      parsed <- Unmarshal(response).to[MeResponse]
+      parsed   <- Unmarshal(response).to[MeResponse]
     } yield parsed.name
   }
 }

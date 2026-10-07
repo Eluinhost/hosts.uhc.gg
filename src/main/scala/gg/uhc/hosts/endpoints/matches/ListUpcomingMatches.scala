@@ -21,7 +21,7 @@ class ListUpcomingMatches(cache: BasicCache, websocket: MatchesWebsocket) extend
           (timed(upcomingMatchesTimer) & counting(upcomingMatchesCounter)) {
             onComplete(cache.getUpcomingMatches) {
               case Success(value) => complete(value)
-              case Failure(t) => reject(DatabaseErrorRejection(t))
+              case Failure(t)     => reject(DatabaseErrorRejection(t))
             }
           }
         },

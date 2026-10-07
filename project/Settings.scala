@@ -23,11 +23,11 @@ object Settings {
     val flyway          = "13.0.0"
     val hikaricp        = "7.1.0"
     val logback         = "1.6.0"
-    val jwtCirce        = "11.0.4"
     val macwire         = "2.6.7"
     val caffeine        = "5.3.0"
     val metricsScala    = "4.3.7"
     val metricsInfluxDb = "1.1.0"
+    val scalamock       = "7.6.0"
   }
 
   val dependencies = Def.setting(
@@ -48,7 +48,6 @@ object Settings {
       "io.circe"                 %% "circe-parser"              % versions.circe,
       "org.flywaydb"             % "flyway-core"                % versions.flyway,
       "org.flywaydb"             % "flyway-database-postgresql" % versions.flyway,
-      "com.github.jwt-scala"     %% "jwt-circe"                 % versions.jwtCirce,
       "com.softwaremill.macwire" %% "macros"                    % versions.macwire % Provided,
       "com.softwaremill.macwire" %% "util"                      % versions.macwire,
       "com.github.blemale"       %% "scaffeine"                 % versions.caffeine,
@@ -59,7 +58,10 @@ object Settings {
       "co.fs2"                   %% "fs2-core"                  % "2.5.13",
       "co.fs2"                   %% "fs2-io"                    % "2.5.13",
 
-      "org.scalameta"            %% "munit"                     % "1.1.0" % Test
+      "org.scalameta"            %% "munit"                     % "1.1.0" % Test,
+      "org.scalamock"            %% "scalamock"                 % versions.scalamock % Test,
+      "org.apache.pekko"         %% "pekko-http-testkit"        % versions.pekkoHttp % Test,
+      "org.apache.pekko"         %% "pekko-testkit"             % versions.pekko     % Test
     )
   )
 }

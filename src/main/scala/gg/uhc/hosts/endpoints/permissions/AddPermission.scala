@@ -19,7 +19,7 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
 
   def apply(username: String, permission: String): Route =
     handleRejections(EndpointRejectionHandler()) {
-      requireJwtAuthentication { session =>
+      requireSessionAuthentication { session =>
         // get permissions for requester
         requireSucessfulQuery(database.getPermissions(session.username)) { userPermissions =>
           // check they can actual do this
@@ -27,12 +27,12 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
             val withHandler = query(username = username, permission = permission, modifier = session.username).attempt
 
             requireSucessfulQuery(withHandler) {
-              case Right(true) => complete(StatusCodes.Created)
-              case Right(false) => complete(StatusCodes.BadRequest -> "Unknown error adding permission")
-              case Left(_: UserIsHostingBannedException) => complete(StatusCodes.BadRequest -> "User is hosting banned")
+              case Right(true)                                => complete(StatusCodes.Created)
+              case Right(false)                               => complete(StatusCodes.BadRequest -> "Unknown error adding permission")
+              case Left(_: UserIsHostingBannedException)      => complete(StatusCodes.BadRequest -> "User is hosting banned")
               case Left(_: UserAlreadyHasPermissionException) =>
                 complete(StatusCodes.BadRequest -> "User already has this permission")
-              case Left(x) => failWith(x)
+              case Left(x)                                    => failWith(x)
             }
           }
         }
@@ -48,16 +48,16 @@ class AddPermission(customDirectives: CustomDirectives, database: Database) {
     database
       .getPermissions(username)
       .flatMap {
-        case perms if perms.contains(permission) =>
+        case perms if perms.contains(permission)       =>
           raiseError[Unit](UserAlreadyHasPermissionException())
         // don't allow adding permissions if they're hosting banned
         case perms if perms.contains("hosting banned") =>
           raiseError[Unit](UserIsHostingBannedException())
         // if hosting banned is being added, first strip all existing perms from the user
-        case perms if permission == "hosting banned" =>
+        case perms if permission == "hosting banned"   =>
           stripPermissions(username, perms, modifier)
         // Don't do anything pre-add
-        case _ =>
+        case _                                         =>
           unit
       }
       .flatMap { _ =>

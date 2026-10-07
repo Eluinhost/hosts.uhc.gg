@@ -3,7 +3,6 @@ import { getDefaultStore, type ExtractAtomValue } from 'jotai';
 import { isDarkModeAtom } from '@/atoms/isDarkMode';
 import { is12hAtom } from '@/atoms/timeFormatting';
 import { timezoneAtom } from '@/atoms/timezone';
-import { authenticationAtom } from '@/authentication/atoms/authentication';
 import { hostFormDataAtom } from '@/host/atoms/hostFormData';
 import { defaultPreset } from '@/host/defaultPreset';
 import type { CreateMatchData } from '@/host/schema';
@@ -74,8 +73,8 @@ export const migrateOldIndexDb = async (): Promise<void> => {
 
   console.log('found IndexedDB store');
 
-  const [authentication, hostFormData, isDarkMode, is12h, timezone, hideRemoved, showOwnRemoved] = await Promise.all([
-    getObjectValue<ExtractAtomValue<typeof authenticationAtom>>(store, 'settings.authentication'),
+  // explicitly not carrying across authentication state as the new session lives in a HttpOnly session cookie
+  const [hostFormData, isDarkMode, is12h, timezone, hideRemoved, showOwnRemoved] = await Promise.all([
     getObjectValue<CreateMatchData>(store, 'settings.host-form-data'),
     getObjectValue<ExtractAtomValue<typeof isDarkModeAtom>>(store, 'settings.isDarkMode'),
     getObjectValue<ExtractAtomValue<typeof is12hAtom>>(store, 'settings.is12h'),
@@ -89,10 +88,6 @@ export const migrateOldIndexDb = async (): Promise<void> => {
   database.close();
 
   const jotaiStore = getDefaultStore();
-
-  if (authentication !== undefined) {
-    jotaiStore.set(authenticationAtom, authentication);
-  }
 
   if (hostFormData !== undefined) {
     // remove any old serialized opens, not in new data

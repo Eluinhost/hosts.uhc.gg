@@ -23,10 +23,10 @@ class ReviewHostApplication(database: Database, customDirectives: CustomDirectiv
 
             validate(status != "declined" || reason.isDefined, "A reason is required to decline an application") {
               requireSucessfulQuery(database.getHostApplication(id)) {
-                case None => complete(StatusCodes.NotFound)
+                case None                                                 => complete(StatusCodes.NotFound)
                 case Some(application) if application.status != "pending" =>
                   complete(StatusCodes.BadRequest -> "Application has already been reviewed")
-                case Some(application) =>
+                case Some(application)                                    =>
                   val review = for {
                     granted <- if status == "approved" then
                       database.addPermission(application.username, "trial host", session.username)

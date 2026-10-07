@@ -8,7 +8,7 @@ import gg.uhc.hosts.endpoints.authentication.AuthenticationRoute
 class BaseRoute(
     apiRoute: ApiRoute,
     authenticationRoute: AuthenticationRoute
-               ) {
+) {
 
   def apply(): Route = (logRequest("server") & logResult("server")) {
     concat(

@@ -13,7 +13,7 @@ class DeleteModifier(customDirectives: CustomDirectives, database: Database) {
         customDirectives.requirePermission("hosting advisor", authentication.username) {
           customDirectives.requireSucessfulQuery(database.deleteModifier(id)) {
             case false => complete(StatusCodes.NotFound)
-            case true => complete(StatusCodes.NoContent)
+            case true  => complete(StatusCodes.NoContent)
           }
         }
       }

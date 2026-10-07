@@ -18,33 +18,35 @@ object EndpointRejectionHandler {
   val handler: RejectionHandler = RejectionHandler
     .newBuilder()
     .handle {
-      case MissingIpErrorRejection() =>
+      case MissingIpErrorRejection()                                                                           =>
         complete(StatusCodes.InternalServerError -> "Unable to find client IP address")
       case DatabaseErrorRejection(e: SQLException) if e.getSQLState == sqlstate.class23.UNIQUE_VIOLATION.value =>
         complete(StatusCodes.BadRequest -> "Unique field already exists")
-      case DatabaseErrorRejection(t) => // when database explodes
+      case DatabaseErrorRejection(t)                                                                           => // when database explodes
         extractActorSystem { system =>
           system.log.error("DB error", t)
           t.printStackTrace()
           complete(StatusCodes.InternalServerError)
         }
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _) => // when no perms
+      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsRejected, _)                 => // when no perms
         complete(StatusCodes.Forbidden)
-      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsMissing, _) => // when no session
+      case AuthenticationFailedRejection(AuthenticationFailedRejection.CredentialsMissing, _)                  => // when no session
         complete(StatusCodes.Unauthorized)
-      case ValidationRejection(m, _) => // when invalid data
+      case ValidationRejection(m, _)                                                                           => // when invalid data
         complete(StatusCodes.BadRequest -> m)
-      case MalformedRequestContentRejection(_, t: DecodingFailure) =>
+      case MalformedRequestContentRejection(_, t: DecodingFailure)                                             =>
         extractActorSystem { system =>
           system.log.error(t, "Malformed request")
           complete(StatusCodes.BadRequest -> s"Malformed request: ${t.show}")
         }
-      case MalformedRequestContentRejection(_, t: ParsingFailure) =>
+      case MalformedRequestContentRejection(_, t: ParsingFailure)                                              =>
         extractActorSystem { system =>
           system.log.error(t, "Parsing failure")
           complete(StatusCodes.BadRequest -> s"Parsing Failure: ${t.show}")
         }
-      case t =>
+      case CsrfRejection(reason)                                                                               =>
+        complete(StatusCodes.Forbidden -> s"CSRF check failed: $reason")
+      case t                                                                                                   =>
         extractActorSystem { system =>
           system.log.error(s"Unknown rejection type $t")
           complete(StatusCodes.InternalServerError)

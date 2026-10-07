@@ -71,11 +71,7 @@ Create application.conf in main folder using reference.conf if required, minimum
 reddit {
   clientId = "<>"
   clientSecret = "<>"
-  redirectUri = "http://localhost:10000/authenticate/callback"
-}
-jwt {
-  secret = "CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME CHANGE ME"
-  refreshSecret = "CHANGE ME TOO CHANGE ME TOO CHANGE ME TOO CHANGE ME TOO CHANGE ME TOO CHANGE ME TOO CHANGE ME TOO"
+  redirectUri = "http://localhost/authenticate/callback"
 }
 ```
 

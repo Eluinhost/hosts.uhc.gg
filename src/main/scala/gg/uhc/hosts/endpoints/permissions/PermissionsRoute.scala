@@ -10,7 +10,7 @@ class PermissionsRoute(
     addPermission: AddPermission,
     permissionModerationLog: PermissionModerationLog,
     removePermission: RemovePermission
-                      ) {
+) {
 
   // GET / -> show map of perm name to count
   // GET /log -> show log of permission changes

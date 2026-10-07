@@ -17,7 +17,7 @@ class PermissionModerationLog(directives: CustomDirectives, database: Database) 
     parameters("before".as[Int].?, "count" ? 20) { (before, count) =>
       handleRejections(EndpointRejectionHandler()) {
         validate(count >= 1 && count <= 50, "Count must be between 1-50") {
-          optionalJwtAuthentication { maybeSession =>
+          optionalSessionAuthentication { maybeSession =>
             val canSeeModifiers: Directive1[Boolean] = maybeSession match {
               case Some(session) => checkHasAtLeastOnePermission(List("admin", "hosting advisor"), session.username)
               case None          => provide(false)

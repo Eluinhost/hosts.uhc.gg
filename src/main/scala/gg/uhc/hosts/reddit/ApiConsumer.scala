@@ -13,8 +13,8 @@ class ApiConsumer(system: ActorSystem, host: String, queueSize: Int) {
 
   import scala.concurrent.duration.*
 
-  implicit val s: ActorSystem = system
-  implicit val mz: Materializer = Materializer.matFromSystem
+  implicit val s: ActorSystem       = system
+  implicit val mz: Materializer     = Materializer.matFromSystem
   implicit val ec: ExecutionContext = system.dispatcher
 
   private val pool = Http().cachedHostConnectionPoolHttps[Promise[HttpResponse]](host)

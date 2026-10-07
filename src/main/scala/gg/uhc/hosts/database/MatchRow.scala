@@ -33,7 +33,7 @@ case class MatchRow(
     approvedBy: Option[String],
     hostingName: Option[String],
     tournament: Boolean
-                   ) {
+) {
 
   def renderStyle(): String = TeamStyles.byCode(teams) match {
     case t: SimpleTeamStyle => t.render()
@@ -43,7 +43,6 @@ case class MatchRow(
 
   def legacyTitle() =
     s"${opens.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("MMM dd HH:mm"))} UTC $region - ${hostingName.getOrElse(
-      author
-    )
-    }'s #$count - ${renderStyle()} - ${scenarios.mkString(", ")} ${tags.map(t => s"[$t]").mkString("")}"
+        author
+      )}'s #$count - ${renderStyle()} - ${scenarios.mkString(", ")} ${tags.map(t => s"[$t]").mkString("")}"
 }

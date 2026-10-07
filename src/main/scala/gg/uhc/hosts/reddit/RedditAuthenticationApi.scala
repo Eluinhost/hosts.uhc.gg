@@ -9,12 +9,12 @@ import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import org.mdedetrich.pekko.http.support.CirceHttpSupport
 
 class RedditAuthenticationApi(
-                               actorSystem: ActorSystem,
-                               clientId: String,
-                               secret: String,
-                               redirectUri: String,
-                               queueSize: Int
-                             ) extends ApiConsumer(actorSystem, "www.reddit.com", queueSize)
+    actorSystem: ActorSystem,
+    clientId: String,
+    secret: String,
+    redirectUri: String,
+    queueSize: Int
+) extends ApiConsumer(actorSystem, "www.reddit.com", queueSize)
     with CirceHttpSupport {
 
   import io.circe.generic.auto.*
@@ -48,7 +48,7 @@ class RedditAuthenticationApi(
     for {
       response <- queueRequest(request)
       if response.status == StatusCodes.OK
-      parsed <- Unmarshal(response).to[AccessTokenResponse]
+      parsed   <- Unmarshal(response).to[AccessTokenResponse]
     } yield parsed
   }
 }

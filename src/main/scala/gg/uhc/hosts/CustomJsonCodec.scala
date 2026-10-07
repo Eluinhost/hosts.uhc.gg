@@ -15,10 +15,10 @@ object CustomJsonCodec extends CirceHttpSupport with AutoDerivation {
     circeJsonMarshaller(using P).compose(list => Json.fromValues(list.map(e.apply)))
 
   implicit def circeMapMarshaller[K, V](
-                                         using k: KeyEncoder[K],
-                                         e: Encoder[V],
-                                         P: Printer = Printer.noSpaces
-                                       ): ToEntityMarshaller[Map[K, V]] =
+      using k: KeyEncoder[K],
+      e: Encoder[V],
+      P: Printer = Printer.noSpaces
+  ): ToEntityMarshaller[Map[K, V]] =
     circeJsonMarshaller(using P).compose(m => Json.fromFields(m.map { case (key, value) => k(key) -> e(value) }))
 
   implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] =

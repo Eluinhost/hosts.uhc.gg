@@ -10,4 +10,4 @@ case class HostApplicationRow(
     reviewedBy: Option[String],
     reviewedAt: Option[Instant],
     reviewReason: Option[String]
-                             )
+)

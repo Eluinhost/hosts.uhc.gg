@@ -1,24 +1,13 @@
-import { getDefaultStore } from 'jotai';
 import ky from 'ky';
 import type { Input, Options } from 'ky';
 
-import { accessTokenAtom } from '@/authentication/atoms/authentication';
-
-const store = getDefaultStore();
-
 const client = ky.create({
+  credentials: 'same-origin',
   hooks: {
     beforeRequest: [
       ({ request }) => {
-        // don't clobber any existing headers, e.g. refresh token set during auth refresh
-        if (request.headers.has('Authorization')) {
-          return;
-        }
-
-        const token = store.get(accessTokenAtom);
-
-        if (token && new URL(request.url).hostname === window.location.hostname) {
-          request.headers.set('Authorization', `Bearer ${token}`);
+        if (new URL(request.url).hostname === window.location.hostname) {
+          request.headers.set('X-CSRF', '1');
         }
       },
     ],

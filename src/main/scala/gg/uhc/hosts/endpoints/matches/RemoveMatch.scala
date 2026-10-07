@@ -15,11 +15,11 @@ import gg.uhc.hosts.endpoints.matches.websocket.MatchesWebsocket
  * Removes a match. Must provide a reason. Can only be ran by 'moderator' permission or author of match.
  */
 class RemoveMatch(
-                   customDirectives: CustomDirectives,
-                   database: Database,
-                   cache: BasicCache,
-                   websocket: MatchesWebsocket
-                 ) {
+    customDirectives: CustomDirectives,
+    database: Database,
+    cache: BasicCache,
+    websocket: MatchesWebsocket
+) {
 
   import CustomJsonCodec.*
   import customDirectives.*
@@ -30,7 +30,7 @@ class RemoveMatch(
     if data.reason.length < 3 then
       return reject(ValidationRejection("Reason must be at least 3 characters"))
 
-    if data.reason.length > 256 then
+    if data.reason.length > 255 then
       return reject(ValidationRejection("Reason must be at most 255 characters"))
 
     pass
@@ -38,7 +38,7 @@ class RemoveMatch(
 
   def requireOwner(id: Long, username: String): Directive0 =
     requireSucessfulQuery(database.isOwnerOfMatch(id, username)) flatMap {
-      case true =>
+      case true  =>
         pass
       case false =>
         reject(
@@ -51,7 +51,7 @@ class RemoveMatch(
 
   def removeAndFetch(id: Long, reason: String, remover: String): ConnectionIO[Option[MatchRow]] =
     for {
-      count <- database.removeMatch(id, reason, remover)
+      count      <- database.removeMatch(id, reason, remover)
       maybeFound <- if count == 0 then pure(None) else database.matchById(id)
     } yield maybeFound
 
@@ -62,7 +62,7 @@ class RemoveMatch(
           entity(as[RemoveMatchPayload]) { data =>
             validate(data) {
               requireSucessfulQuery(removeAndFetch(id, data.reason, authentication.username)) {
-                case None => complete(StatusCodes.NotFound) // None updated
+                case None    => complete(StatusCodes.NotFound) // None updated
                 case Some(m) =>
                   cache.invalidateUpcomingMatches()
                   websocket.notifyMatchRemoved(m)

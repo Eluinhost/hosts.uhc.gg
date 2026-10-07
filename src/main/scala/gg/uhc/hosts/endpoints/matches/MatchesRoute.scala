@@ -15,7 +15,7 @@ class MatchesRoute(
     removeMatch: RemoveMatch,
     showMatch: ShowMatch,
     showMatchMeta: ShowMatchMeta
-                  ) {
+) {
 
   implicit class JsonParsedSegment(segment: PathMatcher1[String]) {
     def asInstant: PathMatcher1[Instant] =
