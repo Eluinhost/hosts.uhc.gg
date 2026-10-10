@@ -4,6 +4,8 @@ hosts.uhc.gg {
 	import common
 	import frontend_built
 
+	import csp Content-Security-Policy
+
 	header {
 		Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
 	}
