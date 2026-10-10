@@ -10,7 +10,7 @@ interface HostStatusProps {
 export const HostStatus: React.FC<HostStatusProps> = ({ roles = [] }) => {
   if (roles.indexOf('host') !== -1) {
     return (
-      <Badge color="green" size="lg" title="Verified Host" leftSection={<CheckCircleIcon />}>
+      <Badge bdrs="sm" color="green" size="lg" title="Verified Host" leftSection={<CheckCircleIcon />}>
         Verified Host
       </Badge>
     );
