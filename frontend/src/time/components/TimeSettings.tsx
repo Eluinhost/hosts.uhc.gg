@@ -4,7 +4,7 @@ import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 
 import { is12hAtom } from '@/atoms/timeFormatting';
-import { timezoneAtom } from '@/atoms/timezone';
+import { SUPPORTED_TIMEZONES, timezoneAtom, TRIGGER_AUTO_DETECTION } from '@/atoms/timezone';
 import { CurrentTime } from '@/time/components/CurrentTime';
 import styles from '@/time/components/TimeSettings.module.css';
 
@@ -31,10 +31,10 @@ const convertTzs = (tzs: string[]): Array<CascaderOption> => {
     }
   }
 
-  return root;
+  return [...root, { value: TRIGGER_AUTO_DETECTION, label: 'Auto-detect', children: [] }];
 };
 
-const cascaderOptions = convertTzs(Intl.supportedValuesOf('timeZone'));
+const cascaderOptions = convertTzs(SUPPORTED_TIMEZONES);
 
 export const TimeSettings: React.FC = () => {
   const [timezone, setTimezone] = useAtom(timezoneAtom);
@@ -61,7 +61,8 @@ export const TimeSettings: React.FC = () => {
           <Cascader
             searchable
             maxDisplayedLevels={timezoneColumns}
-            maxDropdownHeight={415}
+            maxDropdownHeight={450}
+            expandTrigger="hover"
             allowDeselect={false}
             data={cascaderOptions}
             value={timezone.split('/')}
